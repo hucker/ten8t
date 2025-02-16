@@ -9,6 +9,7 @@ import narwhals as nw
 from narwhals.typing import FrameT
 
 from .ten8t_exception import Ten8tException
+from .ten8t_format import BM
 from .ten8t_result import TR, Ten8tYield
 from .ten8t_util import any_to_str_list
 

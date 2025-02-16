@@ -592,12 +592,12 @@ Here is the setup using a couple of modules in a package folder:
 Python 3.10 to 3.12 and soon to be 3.13. Python 3.9 was dropped for type hinting support using |.
 
 ```text
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-================= 557 passed, 1 skipped, 44 warnings in 13.09s =================
-  py311: OK (14.01=setup[1.40]+cmd[12.61] seconds)
-  py312: OK (14.80=setup[1.76]+cmd[13.04] seconds)
-  py310: OK (14.45=setup[0.63]+cmd[13.82] seconds)
-  lint: OK (15.09=setup[1.73]+cmd[13.35] seconds)
+======================= 777 passed, 32 warnings in 7.27s =======================
+  py310: OK (11.81=setup[4.23]+cmd[7.57] seconds)
+  py311: OK (8.17=setup[1.50]+cmd[6.68] seconds)
+  py312: OK (9.41=setup[1.33]+cmd[8.08] seconds)
+  lint: OK (8.75=setup[1.29]+cmd[7.46] seconds)
+  congratulations :) (38.17 seconds)
 ```
 
 ## Pyproject TOML
