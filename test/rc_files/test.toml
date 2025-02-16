@@ -1,0 +1,11 @@
+[test1]
+display_name = "test1"
+ruids = "ruid_foo +ruid_bar -ruid_baz -ruid_quux"
+tags = "+tag_spam tag_eggs -tag_bacon -tag_ham"
+phases = "phase_alpha +phase_beta -phase_gamma -phase_delta"
+
+[test2]
+display_name = "test1"
+ruids = ["ruid_foo", "+ruid_bar", "-ruid_baz", "-ruid_quux"]
+tags = ["+tag_spam", "tag_eggs", "-tag_bacon", "-tag_ham"]
+phases = ["phase_alpha", "+phase_beta", "-phase_gamma", "-phase_delta"]

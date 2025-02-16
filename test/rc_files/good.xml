@@ -1,0 +1,16 @@
+<root>
+    <package1>
+        <tags>
+            <tag>t1</tag>
+            <tag>-t2</tag>
+        </tags>
+        <phases>
+            <phase>p1</phase>
+            <phase>-p2</phase>
+        </phases>
+        <ruids>
+            <ruid>r1</ruid>
+            <ruid>-r2</ruid>
+        </ruids>
+    </package1>
+</root>

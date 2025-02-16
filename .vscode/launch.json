@@ -1,0 +1,90 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Typer Ten8t_cli Package Verbose",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\src\\cli\\blixer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\src\\cli",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\src;${workspaceFolder}"
+      },
+      "args": [
+        "-s",
+        "--pkg",
+        "${workspaceFolder}\\src\\examples\\my_package",
+        "-v",
+        "-j",
+        "${workspaceFolder}\\src\\cli\\result.json"
+      ]
+    },
+    {
+      "name": "Python: Typer Ten8t_cli Package",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\src\\cli\\blixer.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}\\src\\cli",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\src;${workspaceFolder}"
+      },
+      "args": [
+        "--pkg",
+        "${workspaceFolder}\\src\\examples\\my_package",
+        "-s",
+        "-j",
+        "${workspaceFolder}\\src\\cli\\result.json"
+      ]
+    },
+    {
+      "name": "Python: Typer Ten8t_cli Module Verbose",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\src\\cli\\blixer.py",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\src;${workspaceFolder}"
+      },
+      "args": [
+        "-s",
+        "-m",
+        "${workspaceFolder}\\src\\examples\\my_package\\check_module1.py",
+        "-v",
+        "-j",
+        "${workspaceFolder}\\src\\cli\\result.json"
+      ]
+    },
+    {
+      "name": "Python: Typer Ten8t_cli Module",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\src\\cli\\blixer.py",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\src;${workspaceFolder}"
+      },
+      "args": [
+        "-s",
+        "-m",
+        "${workspaceFolder}\\src\\examples\\my_package\\check_module1.py",
+        "-j",
+        "${workspaceFolder}\\src\\cli\\result.json"
+      ]
+    },
+    {
+      "name": "Python: Typer Ten8t_cli Help",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}\\src\\cli\\blixer.py",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\src;${workspaceFolder}"
+      },
+      "args": [
+        "--help"
+      ]
+    }
+  ]
+}

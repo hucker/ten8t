@@ -1,0 +1,61 @@
+#  keyring get PyPiUser hucker233
+[project]
+name = "ten8t"
+version = "0.0.1"
+authors = [
+    { name = "Chuck Bass", email = "chuck@arcocad.net" },
+]
+maintainers = [
+    { name = "Chuck Bass", email = "chuck@arcocad.net" },
+]
+description = "Tool for generic infrastructure linting."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+
+[project.urls]
+#Homepage = "https://github.com/hucker233/ten8t"
+
+[tool.poetry]
+name = "ten8t"
+version = "0.1.0"
+description = "Quickly verify infrastructure."
+authors = ["Chuck Bass <chuck@acrocad.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.10 || ~3.11 || ~3.12" # || ~3.13"
+requests = "^2.32.3"
+toml = "^0.10.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+coverage = "^7.6.1"
+isort = "^5.13.2"
+pylint = "^3.2.7"
+setuptools = "^74.1.1"
+tox = "^4.18.0"
+mypi = "^0.0.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.extras]
+demos = ["fastapi", "streamlit", "typer", "requests"]
+pdf = ["pypdf", "PyPDF2"]
+df = ["pandas", "numpy"]
+
+[testenv]
+installer = "uv"
+
