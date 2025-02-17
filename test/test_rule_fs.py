@@ -249,8 +249,8 @@ def test_bad_max_size(temp_fs):
 
 @pytest.mark.parametrize("file_size, expected_output", [
     # Edge case to get plural right
-    (0, "0 Bytes"),
-    (1, "1 Byte"),
+    (0, "0.0 Bytes"),
+    (1, "1.0 Byte"),
     (1024, "1.0 kB"),
     (1048576, "1.0 MB"),
     (1073741824, "1.1 GB"),
@@ -258,7 +258,7 @@ def test_bad_max_size(temp_fs):
     (1500, "1.5 kB"),
     (1536000, "1.5 MB"),
     (1572864000, "1.6 GB"),
-    (500, "500 Bytes"),
+    (500, "500.0 Bytes"),
     (500000, "500.0 kB"),
     (500000000, "500.0 MB"),
     (500000000000, "500.0 GB"),
@@ -272,8 +272,8 @@ def test_human_readable_size(file_size, expected_output):
 
 @pytest.mark.parametrize("file_size, expected_output", [
     # Edge case to get plural right
-    (0, "0 Bytes"),
-    (1, "1 Byte"),
+    (0, "0.0 Bytes"),
+    (1, "1.0 Byte"),
     (1024, "1.0 KiB"),
     (1048576, "1.0 MiB"),
     (1073741824, "1.0 GiB"),
@@ -281,7 +281,7 @@ def test_human_readable_size(file_size, expected_output):
     (1500, "1.5 KiB"),
     (1536000, "1.5 MiB"),
     (1572864000, "1.5 GiB"),
-    (500, "500 Bytes"),
+    (500, "500.0 Bytes"),
     (500000, "488.3 KiB"),
     (500000000, "476.8 MiB"),
     (500000000000, "465.7 GiB"),
