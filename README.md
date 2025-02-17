@@ -620,7 +620,7 @@ Your code has been rated at 9.79/10 (previous run: 9.77/10, +0.01)
 
 `Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). Why was this
 chosen...because the first things I picked that were not packages on pypi were "too close" to existing package
-names, is spent more time that I care to admit coming up with different names. It refers to skiing or
+names. I spent more time that I care to admit coming up with different names. It refers to skiing or
 snowboarding tricks involving 3 rotations.
 
 The preferred way for using `ten8t` in code is to say:
@@ -631,9 +631,13 @@ import ten8t as t8
 
 Please pronounce the `t8` as `tee eight` (as in an early prototype for
 a [T-800](https://en.wikipedia.org/wiki/T-800_(character))
-) NOT `tate`.
+) *NOT* `tate`.
 
 ## TODO
 
 1. Change name from `blix` (that was `blick`, that was `splint` that was `scruff`) to `ten8t` checking on pypi is not
    good enough since names that are close will fail, but they won't tell you.
+
+## Latest changes
+
+1. Updated for dependabot.
