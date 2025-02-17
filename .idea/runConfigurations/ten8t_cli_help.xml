@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ten8t_cli help" type="PythonConfigurationType" factoryName="Python">
-    <module name="blick" />
+    <module name="ten8t" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
