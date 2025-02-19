@@ -27,6 +27,7 @@ DEFAULT_FINISH_ON_FAIL = False  # If a ten8t function yields fail result stop pr
 DEFAULT_SKIP_ON_NONE = False
 DEFAULT_FAIL_ON_NONE = False
 DEFAULT_INDEX = 1  # All ten8t functions are given an index of 1 when created.
+DEFAULT_THREAD_ID = "base_thread__"
 
 
 def _parse_ttl_string(input_string: str) -> float:
@@ -84,6 +85,7 @@ def attributes(
         finish_on_fail=DEFAULT_FINISH_ON_FAIL,  # Abort the whole run
         skip_on_none=DEFAULT_SKIP_ON_NONE,
         fail_on_none=DEFAULT_FAIL_ON_NONE,
+        thread_id=DEFAULT_THREAD_ID,
 
 ):
     """
@@ -106,6 +108,7 @@ def attributes(
             raise Ten8tException(f"Invalid characters {bad_chars} found in {attr_name} ")
 
     def decorator(func):
+        """Jam in all the attributes"""
         func.phase = phase
         func.tag = tag
         func.level = level
@@ -116,6 +119,7 @@ def attributes(
         func.finish_on_fail = finish_on_fail
         func.skip_on_none = skip_on_none
         func.fail_on_none = fail_on_none
+        func.thread_id = thread_id
         return func
 
     return decorator
@@ -137,8 +141,10 @@ def get_attribute(func, attr, default_value=None):
         "skip_on_none": DEFAULT_SKIP_ON_NONE,
         "fail_on_none": DEFAULT_FAIL_ON_NONE,
         "index": DEFAULT_INDEX,
+        "thread_id": DEFAULT_THREAD_ID,
     }
 
     default = default_value or defs[attr]
 
     return getattr(func, attr, default)
+

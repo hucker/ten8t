@@ -37,6 +37,7 @@ class Ten8tResult:
         skipped (bool): Function skip flag. Default is False.
         tag (str): Function tag. Default is "".
         level (int): Function level. Default is 1.
+        thread_id(str):Thread the function ran on. Default is "".
         count (int): Return value count from a Ten8tFunction.
         """
 
@@ -85,6 +86,9 @@ class Ten8tResult:
 
     # Indicate summary results, so they can be filtered
     summary_result: bool = False
+
+    # Thread id where function ran
+    thread_id: str = ""
 
     mu = Ten8tMarkup()
 

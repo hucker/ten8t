@@ -679,14 +679,14 @@ class Ten8tChecker:
                                self.function_count,
                                "Rule Check Complete.")
 
-    def run_all(self, env=None):
+    def run_all(self, env=None) -> list[Ten8tResult]:
         """
         List version of yield all.
 
         """
 
         # A deceptively important line of code
-        self.results = list(self.yield_all(env=env))
+        self.results: list[Ten8tResult] = list(self.yield_all(env=env))
 
         self.score = self.score_strategy(self.results)
         self.progress_callback(self.function_count,

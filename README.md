@@ -322,6 +322,7 @@ of how `blick` allows you to filter, sort, select tests to run and view by addin
 | `finish_on_fail` | Aborts processing of `blick` function on the first failure.                                                                         |
 | `skip_on_none `  | If an environment parameter has a None value then the function will be skipped.                                                     |
 | `fail_on_none`   | If an environment parameter has a None value then the function will be failed.                                                      |
+| `thread_id`      | Any function can be assigned a thread to run in to take advantage of concurrency.                                                   |           
 
 ## What are Rule-Ids (RUIDS)?
 
@@ -360,6 +361,44 @@ def check_file_age():
 def check_file_age():
     f = pathlib.Path("/user/file2.txt")
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
+```
+
+## Threading  (PROVISIONAL MANY CHANGE)
+
+It is possible to assign a thread ID to anny `Ten8t` function using the standard attribute mechanism. For larger
+rulesets this can speed things up, the current implementations has you pass a checker object to the thead runner
+which manages putting all the functions in their own thread and collecting results. At this time the code
+supports threading using multi-processing so IO bound code should work better. The only thing that can break code
+is if you are manipulating global state or depend on the order that things run.
+
+```python
+import pathlib
+from ten8t import Ten8tResult, attributes, Ten8tThread, Ten8tChecker
+
+
+@attributes(ruid="file_complex", thread_id='thread1')
+def funciton1():
+    f = pathlib.Path("/user/file1.txt")
+    return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
+
+
+@attributes(ruid="file_complex", thread_id='thread2')
+def funciton2():
+    f = pathlib.Path("/user/file2.txt")
+    return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
+
+
+@attributes(ruid="file_complex", thread_id='thread3')
+def funciton3():
+    f = pathlib.Path("/user/file3.txt")
+    return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
+
+
+checker = Ten8tChecker(check_functions=[funciton1, funciton2, funciton3], auto_setup=True)
+tcheck = Ten8tThread(checker, max_workers=4)  # take checker object and put functions in their own threads
+results = tcheck.run_all()  # now using the thread runner object.
+
+
 ```
 
 ## Ten8t RC
@@ -593,21 +632,17 @@ Python 3.10 to 3.12 and soon to be 3.13. Python 3.9 was dropped for type hinting
 
 ```text
 .pkg: _exit> python /Users/chuck/Projects/ten8t/.venv1/lib/python3.12/site-packages/pyproject_api/_backend.py True poetry.core.masonry.api
-  py310: OK (16.76=setup[6.07]+cmd[10.69] seconds)
-  py311: OK (18.25=setup[3.56]+cmd[14.69] seconds)
-  py312: OK (14.96=setup[2.74]+cmd[12.22] seconds)
-  lint: OK (13.05=setup[2.67]+cmd[10.38] seconds)
-  congratulations :) (63.04 seconds)
+  py310: OK (18.07=setup[6.71]+cmd[11.36] seconds)
+  py311: OK (14.76=setup[3.78]+cmd[10.98] seconds)
+  py312: OK (14.76=setup[3.62]+cmd[11.14] seconds)
+  lint: OK (15.47=setup[2.83]+cmd[12.63] seconds)
+  congratulations :) (63.07 seconds)
 ```
 
 ## Pyproject TOML
 
 In order to build the project you need to use will need to use some form of keyring in order to extract
 the required secrets. Something like:
-
-```shell
-keyring get PyPiUser hucker233
-```
 
 ## Lint
 

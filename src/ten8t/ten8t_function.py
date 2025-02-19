@@ -124,6 +124,7 @@ class Ten8tFunction:
         self.ttl_minutes: float = get_attribute(function_, "ttl_minutes")
         self.finish_on_fail: bool = get_attribute(function_, "finish_on_fail")
         self.index = get_attribute(function_, "index")
+        self.thread_id = get_attribute(function_, "thread_id")
 
         # Support Time To Live using the return value of time.time.  Resolution of this
         # is on the order of 10e-6 depending on OS.  In my case this is WAY more than I
@@ -332,6 +333,7 @@ class Ten8tFunction:
         result.runtime_sec = end_time - start_time
         result.ttl_minutes = self.ttl_minutes
         result.count = count
+        result.thread_id = self.thread_id
 
         result.fail_on_none = self.fail_on_none
         result.skip_on_none = self.skip_on_none
