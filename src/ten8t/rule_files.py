@@ -9,21 +9,16 @@ from typing import Generator
 
 from .ten8t_exception import Ten8tException
 from .ten8t_format import BM
-from .ten8t_result import TR, Ten8tResult, Ten8tYield
+from .ten8t_result import TR, Ten8tYield
 
 
 def rule_path_exists(path_: str) -> Generator[TR, None, None]:
     """Simple rule to check for a file path."""
     path_str = BM.code(path_)
-    try:
-        if pathlib.Path(path_).exists():
-            yield TR(status=True, msg=f"The path {BM.code(path_str)} does exist.")
-        else:
-            yield TR(status=False, msg=f"The path  {BM.code(path_str)} does {BM.bold('NOT')} exist.")
-    except (FileNotFoundError, PermissionError, IOError) as e:
-        yield TR(status=False,
-                 msg="Exception occurred while checking for the path {SM.code(path_str)}",
-                 except_=e)
+    if pathlib.Path(path_).exists():
+        yield TR(status=True, msg=f"The path {BM.code(path_str)} does exist.")
+    else:
+        yield TR(status=False, msg=f"The path  {BM.code(path_str)} does {BM.bold('NOT')} exist.")
 
 
 def rule_paths_exist(paths: list[str] | str,
@@ -54,7 +49,7 @@ def rule_stale_file(
         minutes: float = 0,
         seconds: float = 0,
         current_time=None
-) -> Ten8tResult:
+) -> Generator[TR, None, None]:
     """Check a single file for being stale."""
 
     current_time = current_time or time.time()
@@ -80,8 +75,7 @@ def rule_stale_file(
                 unit = "minutes"
             elif seconds > 0:
                 file_age = file_age_in_seconds
-            else:
-                raise Ten8tException("No file age times were specified.")
+
             age_msg = f"age = {file_age:.2f} {unit} {age_in_seconds=}"
             yield TR(status=False, msg=f"Stale file {BM.code(filepath)} {BM.code(age_msg)}")
         else:

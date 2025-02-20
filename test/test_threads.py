@@ -7,6 +7,16 @@ import src.ten8t as t8
 
 
 @pytest.fixture
+def func_nothread():
+    """Fixture that provides thread functions func1 and func2."""
+
+    @t8.attributes()
+    def nothread():
+        return t8.Ten8tResult(status=True, msg="It works.")
+
+    return t8.Ten8tFunction(nothread)
+
+@pytest.fixture
 def func1():
     """Fixture that provides thread functions func1 and func2."""
 
@@ -88,19 +98,19 @@ def test_repr(func1, func2, func3):
 
 def test_verify_single_thread(func1):
     # This test verifies that we just run through the code path that runs in a single
-    # thread.  Here we just run the same funciton 3 times.
+    # thread.  Here we just run the same function 3 times.
     ch = t8.Ten8tChecker(check_functions=[func1, func1, func1], auto_setup=True)
     tcheck = t8.Ten8tThread(ch)
     results = tcheck.run_all()
 
     assert len(results) == 3
     assert tcheck.expected_threads == 1
-    # Even though we built this as func1,2,3 when each funciton runs in a thread the order the function complate
-    # is random.  So here we verify that the therad id in the result matches the thread_id message.
+    # Even though we built this as func1,2,3 when each function runs in a thread the order the function complete
+    # is random.  So here we verify that the thread id in the result matches the thread_id message.
     for i in range(3):
-        thread = results[i].thread_id
         assert results[i].status == True
         assert results[i].msg == f"It works thread1"
+        assert results[i].thread_id == 'thread1'
 
 
 def test_simple_threads(func1, func2, func3):
@@ -110,8 +120,8 @@ def test_simple_threads(func1, func2, func3):
 
     assert len(results) == 3
     assert tcheck.expected_threads == 3
-    # Even though we built this as func1,2,3 when each funciton runs in a thread the order the function complate
-    # is random.  So here we verify that the therad id in the result matches the thread_id message.
+    # Even though we built this as func1,2,3 when each function runs in a thread the order the function complete
+    # is random.  So here we verify that the thread id in the result matches the thread_id message.
     for i in range(3):
         thread = results[i].thread_id
         assert results[i].status == True
@@ -125,7 +135,7 @@ def test_sorted_threads(funcs_permutation, func1, func2, func3):
 
     # Map the permutation indexes to actual fixtures
     funcs = [func1, func2, func3]
-    selected_funcs = [funcs[i - 1] for i in funcs_permutation]  # Permute based on the fixture list
+    selected_funcs = [funcs[i - 1] for i in list(funcs_permutation)]  # Permute based on the fixture list
 
     # Feature to verify sorting by thread_id
     ch = t8.Ten8tChecker(check_functions=selected_funcs, auto_setup=True)
@@ -156,7 +166,7 @@ def test_many_threads():
     """
     Verify that we can run many io bound functions in parallel by creating 100 test functions, each
     of which takes 1 second to run.  Using the normal test runner this test would take 100 seconds.
-    However, this tests gives each funciton it's own thread so they can all run "at the same time".
+    However, this tests gives each function its own thread so they can all run "at the same time".
 
     This test should only take 1 second to run.
 
@@ -195,16 +205,16 @@ def test_many_threads():
 
 
 @pytest.mark.parametrize("max_workers", [
-    (100),  # 100 Workers
-    (50),  # 50 Workers
-    (25),  # 25 Workers
-    (10),  # 10 Workers
+    100,  # 100 Workers
+    50,  # 50 Workers
+    25,  # 25 Workers
+    10,  # 10 Workers
 ])
 def test_thread_execution(max_workers):
     """
     This test verifies the operation of 100 threads running with varying max_workers.
     Expected execution time depends on max_workers and the number of tests. For example
-    if if you have 100 tests and 100 threads it should take 1 unit of time, but if
+    if you have 100 tests and 100 threads it should take 1 unit of time, but if
     you have 100 tests and 25 threads it should take 4 units of time.  This test
     is a sanity check that the threading behavior of t8 matches expectations.
     """

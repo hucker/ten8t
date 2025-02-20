@@ -32,7 +32,7 @@ class Ten8tThread:
         # Organize the collected functions into groups based on their `thread_id`.
         self.thread_groups = self.make_thread_groups()
 
-        self.results = []
+        self.results: list[Ten8tResult] = []
 
     @property
     def expected_threads(self) -> int:
@@ -128,7 +128,7 @@ class Ten8tThread:
             """
             return checker.run_all()
 
-        final_result = []  # This will collect all results from the threads.
+        final_result: list[Ten8tResult] = []  # This will collect all results from the threads.
 
         # Use ThreadPoolExecutor to execute each checker in parallel.
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -140,11 +140,11 @@ class Ten8tThread:
                 try:
                     # Combine results from the completed thread into `final_result`.
                     final_result.extend(future.result())
-                except Exception as e:
+                except Exception as e:  # pragma: no cover
                     # I don't know how to trigger this exception I have this code here to remind me what could go wrong
                     # This should be impossible, less out of memory type stuff, since the code in the checker handles
                     # all exceptions... ideally this code all goes away and this runner is trivial.
-                    final_result.extend(TR(status=False, msg=f"Unexpected exception in ten8t_thread.runall {e} "))
+                    final_result.append(TR(status=False, msg=f"Unexpected exception in ten8t_thread.runall {e} "))
 
         # Return the aggregated results from all threads.
         self.results = final_result

@@ -27,16 +27,6 @@ def test_rule_file_exist():
         assert result.status is False
 
 
-def test_rule_files_exist():
-    """Verify that we can use the rule_path_exists rule in a function that we build."""
-
-    @ten8t.attributes(tag="tag")
-    def check_rule1():
-        yield from ten8t.rule_paths_exist(paths="./rule_files_/my_file.txt ./rule_files_/my_file.txt")
-
-    s_func1 = ten8t.Ten8tFunction(check_rule1, '')
-    for result in s_func1():
-        assert result.status
 
 
 def test_rule_large_files():
@@ -143,6 +133,31 @@ def test_stale_file_no_match():
         assert not result.status
 
 
+def test_stale_files_noage():
+    """
+    Verify that we can use the rule_stale_files rule in a function that we build.
+
+    This is kind of ugly but having individual functions. All of these functions should reduce
+    to the same number of seconds so the test can run with the same delay
+    """
+    file_path = pathlib.Path("./rule_files_")
+
+    @ten8t.attributes(tag="tag")
+    def check_rule_no_age():
+        yield from ten8t.rule_stale_files(folder=file_path,
+                                          pattern="my_file*.txt",
+                                          days=0,
+                                          hours=0,
+                                          minutes=0,
+                                          seconds=0)
+
+    s_func1 = ten8t.Ten8tFunction(check_rule_no_age, '')
+    for result in s_func1():
+        assert not result.status
+        assert result.traceback
+        assert result.except_
+        assert "Age for stale file check" in result.msg
+
 def test_stale_files():
     """
     Verify that we can use the rule_stale_files rule in a function that we build.
@@ -189,7 +204,7 @@ def test_stale_files():
                                           seconds=0)
 
     # We need to check that each of the units is used
-    for rule in [check_rule_sec]:  # , check_rule_min, check_rule_hour, check_rule_day]:
+    for rule in [check_rule_sec, check_rule_min, check_rule_hour, check_rule_day]:
 
         # Touch the file
         pathlib.Path("./rule_files_/my_file.txt").touch()

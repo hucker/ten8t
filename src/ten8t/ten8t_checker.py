@@ -686,7 +686,7 @@ class Ten8tChecker:
         """
 
         # A deceptively important line of code
-        self.results: list[Ten8tResult] = list(self.yield_all(env=env))
+        self.results = list(self.yield_all(env=env))
 
         self.score = self.score_strategy(self.results)
         self.progress_callback(self.function_count,

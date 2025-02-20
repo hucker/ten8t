@@ -27,7 +27,7 @@ DEFAULT_FINISH_ON_FAIL = False  # If a ten8t function yields fail result stop pr
 DEFAULT_SKIP_ON_NONE = False
 DEFAULT_FAIL_ON_NONE = False
 DEFAULT_INDEX = 1  # All ten8t functions are given an index of 1 when created.
-DEFAULT_THREAD_ID = "base_thread__"
+DEFAULT_THREAD_ID = "main_thread__"
 
 
 def _parse_ttl_string(input_string: str) -> float:
