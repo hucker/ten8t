@@ -1,7 +1,7 @@
 #  keyring get PyPiUser hucker233
 [project]
 name = "ten8t"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
     { name = "Chuck Bass", email = "chuck@arcocad.net" },
 ]
@@ -28,7 +28,7 @@ license-files = ["LICEN[CS]E*"]
 
 [tool.poetry]
 name = "ten8t"
-version = "0.1.0"
+version = "0.0.4"
 description = "Quickly verify infrastructure."
 authors = ["Chuck Bass <chuck@acrocad.net>"]
 readme = "README.md"
