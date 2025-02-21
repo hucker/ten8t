@@ -241,7 +241,7 @@ class Ten8tYield:
         @wraps(Ten8tResult.__init__)
         def sr_wrapper(*args, **kwargs):
             """
-            Make the __call__ method have the same parameter list as the blickResult.__init__
+            Make the __call__ method have the same parameter list as the Ten8tResult.__init__
             method.
             
             You can say:

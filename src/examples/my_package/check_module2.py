@@ -1,4 +1,4 @@
-"""Sample blix module with check functions"""
+"""Sample ten8t module with check functions"""
 
 import time
 

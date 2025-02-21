@@ -1,9 +1,10 @@
 # Ten8t: A `Linting` Framework For Infrastructure
 
-`Ten8t` lets you to create `linting tools` for any task by utilizing a declarative style similar to `pytest`.
-It isn't for code, it is for infrastructure, files, folders, databases, project tracking etc. If you track
-many files, folders, logs, databases, websites or the contents of spreadsheets, PDF, csv files files `ten8t`
-can simplify the task by letting you write `pytest` like tests against your environment.
+`Ten8t` (ten-eighty) lets you create `linting tools` or `design rule checkers` for any task by utilizing
+a declarative style similar to `pytest`. It isn't for code, it is for infrastructure, files, folders,
+databases, project tracking etc. If you track many files, folders, logs, databases, websites or the
+contents of spreadsheets, PDF, csv files, `ten8t` can simplify the task by letting you write
+`pytest` like rules.
 
 ## Overview
 
@@ -67,14 +68,14 @@ target audience.
 
 ## Getting Started with Ten8t
 
-If you're familiar with `pytest`, getting started with `blick` is a breeze. If you're accustomed to writing tests
+If you're familiar with `pytest`, getting started with `ten8t` is a breeze. If you're accustomed to writing tests
 with modules starting with "test" and functions beginning with "test",
-transitioning to `blick` will feel natural. Additionally, if you understand fixtures, you'll find that the concept is
+transitioning to `ten8t` will feel natural. Additionally, if you understand fixtures, you'll find that the concept is
 also available through environments. Rule may be tagged with attributes to allow tight control over running checks.
 
 ### Simple Rules
 
-You can start with simple rules that don't even reference `blick` directly by returning or yielding a boolean value.
+You can start with simple rules that don't even reference `ten8t` directly by returning or yielding a boolean value.
 
 ```python
 from junk import get_drive_space
@@ -176,7 +177,7 @@ def check_file_age(csv_file):
 
 ## How is Ten8t Organized?
 
-A common use case is to have check functions saved in python code files that python can discover via the import
+A common use case is to have check-functions saved in python code files that python can discover via the import
 mechanism allowing files to be more or less, automatically detected.
 
 Ten8t uses the following hierarchy:
@@ -308,7 +309,7 @@ have 100% pass.
 ## What are @attributes?
 
 Each rule function can be assigned attributes that define metadata about the rule function. Attributes are at the heart
-of how `blick` allows you to filter, sort, select tests to run and view by adding decorators to your check functions.
+of how `ten8t` allows you to filter, sort, select tests to run and view by adding decorators to your check functions.
 
 | Attribute        | Description                                                                                                                         |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -319,7 +320,7 @@ of how `blick` allows you to filter, sort, select tests to run and view by addin
 | `skip`           | Indicates the function should be skipped.                                                                                           |
 | `ruid`           | Rule-ID is a unique identifier for a rule.                                                                                          |
 | `ttl_minutes`    | Allow caching of results so expensive tests don't need to be rerun which is only useful in cases where you run tests over and over. |
-| `finish_on_fail` | Aborts processing of `blick` function on the first failure.                                                                         |
+| `finish_on_fail` | Aborts processing of `ten8t` function on the first failure.                                                                         |
 | `skip_on_none `  | If an environment parameter has a None value then the function will be skipped.                                                     |
 | `fail_on_none`   | If an environment parameter has a None value then the function will be failed.                                                      |
 | `thread_id`      | Any function can be assigned a thread to run in to take advantage of concurrency.                                                   |           
@@ -327,7 +328,7 @@ of how `blick` allows you to filter, sort, select tests to run and view by addin
 ## What are Rule-Ids (RUIDS)?
 
 Tags and phases are generic information that is only present for filtering. The values don't mean much to the inner
-workings of blick.  `RUID`s are different. The purpose of a `RUID` is to tag every rule function with a unique value
+workings of `ten8t`.  `RUID`s are different. The purpose of a `RUID` is to tag every rule function with a unique value
 that is, ideally, meaningful to the user. For very large rule sets this becomes prohibitive and ends up looking like
 integers with some leading text. The only rule to the code is that they are unique. If you tag a single
 function with an RUID the system will expect you to put a unique ID on every function, or to set the `auto_ruid` flag
@@ -335,7 +336,7 @@ to True when creating a `Ten8tChecker` object.
 
 What do you get for this? You now have fine grain control to the function level AND the user level to enable/disable
 checks. A `pylint` analogy is that you can turn off-line width checks globally for you project setting values in
-the `.lintrc` file. In the case of `blick`, perhaps part of your system has one set of rules and another part of
+the `.lintrc` file. In the case of `ten8t`, perhaps part of your system has one set of rules and another part of
 the system has the same set but some don't apply.
 Or perhaps in an early phase development a subset of rules is applied, and at another a different set of rules is
 applied.
@@ -363,13 +364,20 @@ def check_file_age():
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
 ```
 
-## Threading  (PROVISIONAL MANY CHANGE)
+## Threading  (PROVISIONAL MAY CHANGE)
 
 It is possible to assign a thread ID to anny `Ten8t` function using the standard attribute mechanism. For larger
 rulesets this can speed things up, the current implementations has you pass a checker object to the thead runner
 which manages putting all the functions in their own thread and collecting results. At this time the code
-supports threading using multi-processing so IO bound code should work better. The only thing that can break code
-is if you are manipulating global state or depend on the order that things run.
+supports threading using so IO bound code should work better. This is not a silver bullet, you still need to
+write rules that don't have dependencies with global state. If you have database connections there should be
+one for each thread that needs it.
+
+The current mechanism is to create a checker object like you normally do, but pass that object to a
+`Ten8yThread` object that manages finding all the functions for each thread and running things as
+needed. For many use cases enabling multi threading is as easy as giving a thread id to your check functions.
+
+In the test suite we run 100 of these in parallel.
 
 ```python
 import pathlib
@@ -377,28 +385,26 @@ from ten8t import Ten8tResult, attributes, Ten8tThread, Ten8tChecker
 
 
 @attributes(ruid="file_complex", thread_id='thread1')
-def funciton1():
+def function1():
     f = pathlib.Path("/user/file1.txt")
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
 
 
 @attributes(ruid="file_complex", thread_id='thread2')
-def funciton2():
+def function2():
     f = pathlib.Path("/user/file2.txt")
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
 
 
 @attributes(ruid="file_complex", thread_id='thread3')
-def funciton3():
+def function3():
     f = pathlib.Path("/user/file3.txt")
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
 
 
-checker = Ten8tChecker(check_functions=[funciton1, funciton2, funciton3], auto_setup=True)
+checker = Ten8tChecker(check_functions=[function1, function2, function3], auto_setup=True)
 tcheck = Ten8tThread(checker, max_workers=4)  # take checker object and put functions in their own threads
 results = tcheck.run_all()  # now using the thread runner object.
-
-
 ```
 
 ## Ten8t RC
@@ -493,7 +499,7 @@ def check_file_age():
 Lots of ways.
 
 1) Just give it a bunch of functions in a list would work. Ideally they each return `Ten8tResults`.
-2) Point it to a file and `ten8t` will find all the funcitons that start with`check` and call them. (`ten8t_module`)
+2) Point it to a file and `ten8t` will find all the functions that start with`check` and call them. (`ten8t_module`)
 3) Point it to a folder (or pass it a bunch of filenames) and ten8t will load each module and collect all the tests (
    `ten8t_package`)
 
@@ -619,7 +625,7 @@ To run it against a folder and start a FastAPI endpoint do:
 
 ## FastAPI Interface Demo
 
-To integrate your rule checking results with a web API using `FastAPI`, you can refer to the `ten8ter.py` file for a
+To integrate your rule checking results with a web API using `FastAPI`, you can refer to the `ten8t_cli.py` file for a
 straightforward approach to creating a `FastAPI` app from your existing code. No changes are required in your code to
 support a `FastAPI` interface. If you have created `rule_id`s for all of your rule functions, they will all be
 accessible via the API. Alternatively, if you haven't used `rule_id`s, you can run the entire set of
@@ -627,14 +633,14 @@ functions or filter by `tag`, `level` or `phase`. The sample command-line app se
 of how to connect a `ten8t` ruleset to the web via FastAPI.
 
 Integration with `FastAPI` is simple since it utilizes Python dicts for result data.
-The `ten8ter` demo tool demonstrates that this can be achieved with just a few lines of code to
+The `ten8t_cli` demo tool demonstrates that this can be achieved with just a few lines of code to
 create a FastAPI interface.
 
 Simply run the command with the `--api` flag, and you'll see `uvicorn` startup your API. Go to
 http://localhost:8000/docs to see the API.
 
 ```
-/Users/chuck/ten8t/.venv/bin/python ten8ter.py --pkg . --api 
+/Users/chuck/ten8t/.venv/bin/python ten8t_cli.py --pkg . --api 
 INFO:     Started server process [3091]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
@@ -703,13 +709,11 @@ import ten8t as t8
 ```
 
 Please pronounce the `t8` as `tee eight` (as in an early prototype for
-a [T-800](https://en.wikipedia.org/wiki/T-800_(character))
-) *NOT* `tate`.
+a [T-800](https://en.wikipedia.org/wiki/T-800_(character))) *NOT* `tate`.
 
 ## TODO
 
-1. Change name from `blix` (that was `blick`, that was `splint` that was `scruff`) to `ten8t` checking on pypi is not
-   good enough since names that are close will fail, but they won't tell you.
+1. Improve threading
 
 ## Latest changes
 
