@@ -38,6 +38,7 @@ class Ten8tModule:
         self.module_file: str = module_file
         self.check_prefix: str = check_prefix
         self.env_prefix: str = env_prefix
+        self.autothread: str = ""
         self.doc = ""
         if auto_load:
             self.load()

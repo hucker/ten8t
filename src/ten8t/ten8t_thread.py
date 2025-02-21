@@ -1,4 +1,5 @@
 import copy
+import threading
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -66,11 +67,11 @@ class Ten8tThread:
     def make_thread_groups(self) -> defaultdict:
         """
         Groups the functions collected by the Ten8tChecker based on their `thread_id` attribute.
-        The result of this is a dictionary where keys are `thread_id` values, and values are lists of
+        The result of this is a dictionary where keys are `thread_id` values, and values are lists
         of functions corresponding to those thread IDs.
 
         Returns:
-            defaultdict: A dictionary where keys are `thread_id` values, and values are lists of
+            defaultdict: A dictionary where keys are `thread_id` values, and values are lists
                          functions corresponding to those thread IDs.
         """
 
@@ -106,7 +107,7 @@ class Ten8tThread:
         checkers = []
         for name, functions in self.thread_groups.items():
             # Create a shallow copy of the Ten8tChecker instance.  This is a bit of paranoia on my part
-            # but not enough to do deep copies.  Perhaps there are usecases for this?
+            # but not enough to do deep copies.  Perhaps there are use cases for this?
             checker = copy.copy(self.checker)
 
             # Assign the subset of functions corresponding to the current group.
@@ -116,17 +117,28 @@ class Ten8tThread:
             checkers.append(checker)
 
         # Helper function to execute a checker's `run_all` method.
-        def runner(checker: Ten8tChecker) -> list[Ten8tResult]:
+        def runner(checker_: Ten8tChecker) -> list[Ten8tResult]:
             """
             Execute the `run_all` method of the given Ten8tChecker instance.
 
             Args:
-                checker (Ten8tChecker): The checker instance to execute.
+                checker_ (Ten8tChecker): The checker instance to execute.
 
             Returns:
                 list[Ten8tResult]: The list of results from executing the checker.
             """
-            return checker.run_all()
+
+            # Assign the thread name of the checker object to the thread.
+            # TODO: This is a hack.  When we run from Ten8tThread we know
+            #       all thread_ids are the same so we are safe grabbing the first one
+            #       this will need to be refactored.  This is ONLY done to make
+            #       log messages know the thread_id.
+            if len(checker_.collected) > 0:
+                threading.current_thread().name = checker_.collected[0].thread_id
+            else:
+                threading.current_thread().name = "Checker"
+
+            return checker_.run_all()
 
         final_result: list[Ten8tResult] = []  # This will collect all results from the threads.
 
@@ -144,12 +156,12 @@ class Ten8tThread:
                     # I don't know how to trigger this exception I have this code here to remind me what could go wrong
                     # This should be impossible, less out of memory type stuff, since the code in the checker handles
                     # all exceptions... ideally this code all goes away and this runner is trivial.
-                    final_result.append(TR(status=False, msg=f"Unexpected exception in ten8t_thread.runall {e} "))
+                    final_result.append(TR(status=False, msg=f"Unexpected exception in ten8t_thread.run_all {e} "))
 
         # Return the aggregated results from all threads.
         self.results = final_result
 
-        # This might not be needed, but it is useful since threaded code returts the results interleaved.
+        # This might not be needed, but it is useful since threaded code returns the results interleaved.
         self.results.sort(key=lambda result: result.thread_id)
 
         return self.results

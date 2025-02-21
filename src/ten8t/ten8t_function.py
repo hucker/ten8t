@@ -12,6 +12,7 @@ from typing import Any, Generator
 
 from .ten8t_attribute import get_attribute
 from .ten8t_exception import Ten8tException
+from .ten8t_logging import ten8t_logger
 from .ten8t_result import Ten8tResult
 
 
@@ -273,6 +274,7 @@ class Ten8tFunction:
             result.traceback = traceback.format_exc()
             mod_msg = "" if not self.module else f"{self.module}"
             result.msg = f"Exception '{e}' occurred while running {mod_msg}.{self.function.__name__}"
+            ten8t_logger.error(result.msg)
             yield result
 
     def _get_section(self, header="", text=None):

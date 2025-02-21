@@ -10,6 +10,7 @@ from .ten8t_exception import Ten8tException
 from .ten8t_format import Ten8tAbstractRender, Ten8tRenderText
 from .ten8t_function import Ten8tFunction
 from .ten8t_immutable import Ten8tEnvDict, Ten8tEnvList, Ten8tEnvSet
+from .ten8t_logging import ten8t_logger
 from .ten8t_module import Ten8tModule
 from .ten8t_package import Ten8tPackage
 from .ten8t_rc import Ten8tRC
@@ -199,7 +200,7 @@ def keep_phases(phases: list[str]):
     return filter_func
 
 
-def debug_progress(count, msg: str | None = None, result: Ten8tResult | None = None
+def debug_progress(_, msg: str | None = None, result: Ten8tResult | None = None
                    ):  # pylint: disable=unused-argument
     """Print a debug message."""
     if msg:
@@ -238,6 +239,7 @@ class Ten8tChecker:
             abort_on_exception=False,
             auto_setup: bool = False,
             auto_ruid: bool = False,
+            auto_thread: str | bool = None,
     ):
         """
 
@@ -258,6 +260,7 @@ class Ten8tChecker:
             abort_on_exception: A bool flag indicating whether to abort on exceptions. def=False.
             auto_setup: A bool flag automatically invoke pre_collect/prepare. def=False.
             auto_ruid: A bool flag automatically generate rule_ids if they don't exist.
+            auto_thread: A bool flag to indicate if the check functions should be automatically put in threads.
         Raises:
             Ten8tException: If the provided packages, modules, or check_functions 
                              are not in the correct format.
@@ -320,6 +323,28 @@ class Ten8tChecker:
         if auto_setup:
             self.pre_collect()
             self.prepare()
+
+        # Useful in some contexts.  Instead of manually setting these
+        self._set_auto_thread_names(auto_thread)
+
+    def _set_auto_thread_names(self, auto_thread: str):
+        """
+        Assigns thread names automatically to functions in `self.collected` if they don't already
+        have a `thread_id`. Uses a naming pattern with placeholders for indexing and RUIDs.
+
+        Args:
+            auto_thread (str): The thread naming template. If `True`, defaults to "auto_{i}_{ruid}".
+        """
+        # Default naming template if auto_thread is True
+        if not auto_thread:
+            return
+        if auto_thread is True:
+            auto_thread = "auto_{i}_{ruid}_autothread"
+
+        for i, func in enumerate(self.collected):
+            if not func.thread_id:
+                # Use `str.format()` to replace placeholders with values
+                func.thread_id = auto_thread.format(i=i, ruid=func.ruid, name=func.function_name, module=func.module)
 
     @staticmethod
     def _make_immutable_env(env: dict) -> dict:
@@ -619,6 +644,8 @@ class Ten8tChecker:
         self.progress_callback(count, self.function_count, "Start Rule Check")
         self.start_time = dt.datetime.now()
 
+        ten8t_logger.info("Checker start with %d functions", len(self.collected))
+
         try:
             # Magic happens here.  Each module is checked for any functions that start with 
             # env_ (which is configurable).  Env is a dictionary that has values that may be
@@ -645,13 +672,17 @@ class Ten8tChecker:
                     # much as possible at this point.
                     result.msg_rendered = result.msg if not self.renderer else self.renderer.render(result.msg)
 
+                    ten8t_logger.debug("%s:%s:%s", result.func_name, result.status, result.msg)
+
                     yield result
 
                     # Check early exits
                     if self.abort_on_fail and result.status is False:
+                        ten8t_logger.info("Abort on fail")
                         raise self.AbortYieldException()
 
                     if self.abort_on_exception and result.except_:
+                        ten8t_logger.info("Abort on exception")
                         raise self.AbortYieldException()
 
                     # Stop yielding from a function
@@ -678,6 +709,8 @@ class Ten8tChecker:
         self.progress_callback(count,
                                self.function_count,
                                "Rule Check Complete.")
+        ten8t_logger.info("Checker complete ran %s check functions", self.function_count)
+
 
     def run_all(self, env=None) -> list[Ten8tResult]:
         """

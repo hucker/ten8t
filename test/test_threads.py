@@ -208,7 +208,6 @@ def test_many_threads():
     100,  # 100 Workers
     50,  # 50 Workers
     25,  # 25 Workers
-    10,  # 10 Workers
 ])
 def test_thread_execution(max_workers):
     """

@@ -1,7 +1,6 @@
 """
 Public API for the Ten8t project.
 """
-
 from .rule_files import rule_large_files  # noqa: F401
 from .rule_files import rule_max_files  # noqa: F401
 from .rule_files import rule_path_exists  # noqa: F401
@@ -37,6 +36,9 @@ from .ten8t_immutable import Ten8tEnvDict  # noqa: F401
 from .ten8t_immutable import Ten8tEnvList  # noqa: F401
 from .ten8t_immutable import Ten8tEnvSet  # noqa: F401
 from .ten8t_jsonrc import Ten8tJsonRC  # noqa: F401
+from .ten8t_logging import ten8t_logger  # noqa: F401
+from .ten8t_logging import ten8t_reset_logging  # noqa: F401
+from .ten8t_logging import ten8t_setup_logging  # noqa: F401
 from .ten8t_module import Ten8tModule  # noqa: F401
 from .ten8t_package import Ten8tPackage  # noqa: F401
 from .ten8t_rc import Ten8tRC  # noqa: F401

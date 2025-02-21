@@ -544,7 +544,45 @@ def check_env2(number_config):
     yield ten8t.TR(status=number_config == 42, msg=f"Got number {42}")
 ```
 
-## Typer Command Line Demo App For `ten8ter`:
+## Logging
+
+`ten8t` supports opt in logging. If you do nothing, nothing will get logged. A setup function is
+provided that lets you write to your own log and/or propagate to system level logging.
+
+```python
+import logging
+import ten8t as t8
+
+# Setup t8 logging to log messages along with whatever the application is doing
+t8.ten8t_setup_logging(level=logging.DEBUG)
+```
+
+```python
+import logging
+import ten8t as t8
+
+# Setup t8 logging of t8 message to a file and (by default propagate to the system)
+t8.ten8t_setup_logging(level=logging.DEBUG, file_name="./t8.log")
+```
+
+```python
+import logging
+import ten8t as t8
+
+# Setup t8 logging of t8 messages and NOT propagating those messages to the root logger.
+t8.ten8t_setup_logging(level=logging.DEBUG, file_name="./t8.log", propagate=False)
+```
+
+```python
+import logging
+import ten8t as t8
+from sys import stderr
+
+# Setup t8 logging of message to the console
+t8.ten8t_setup_logging(level=logging.DEBUG, stream=stderr, propagate=False)
+```
+
+## Typer Command Line Demo App For `ten8t_cli`:
 
 Included is a light weight `typer` app that allows to point `ten8t` at a file or folder and check the rules via the
 command

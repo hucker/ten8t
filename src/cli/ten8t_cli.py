@@ -1,6 +1,7 @@
 """Trivial Typer App to run Ten8t checks on a given target."""
 
 import json
+import logging
 import pathlib
 import sys
 
@@ -59,6 +60,20 @@ def run_checks(
 ):
     """Run Ten8t checks on a given package or module from command line."""
 
+    if verbose:
+        t8.ten8t_setup_logging(level=logging.DEBUG, file_name="./ten8t_cli.log")
+    else:
+        t8.ten8t_setup_logging(level=logging.INFO, file_name="./ten8t_cli.log")
+
+    t8.ten8t_logger.debug("Module=%s", module)
+    t8.ten8t_logger.debug("pkg=%s", pkg)
+    t8.ten8t_logger.debug("json_file=%s", json_file)
+    t8.ten8t_logger.debug("flat=%s", flat)
+    t8.ten8t_logger.debug("score=%s", score)
+    t8.ten8t_logger.debug("api=%s", api)
+    t8.ten8t_logger.debug("port=%s", port)
+    t8.ten8t_logger.debug("verbose=%s", verbose)
+
     try:
         mod = None
         if module:
@@ -83,7 +98,9 @@ def run_checks(
                 uvicorn.run(ten8t_api.app, host='localhost', port=port)
                 return
             else:
+                t8.ten8t_logger.info("Running %s check functions.", ch.function_count)
                 results = ch.run_all()
+                t8.ten8t_logger.info("Pass=%s Fail=%s Skip=%s", ch.pass_count, ch.fail_count, ch.skip_count)
         else:
             typer.echo('Please provide a module, package to run checks on.')
             return
