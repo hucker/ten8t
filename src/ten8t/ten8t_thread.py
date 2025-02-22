@@ -156,7 +156,9 @@ class Ten8tThread:
                     # I don't know how to trigger this exception I have this code here to remind me what could go wrong
                     # This should be impossible, less out of memory type stuff, since the code in the checker handles
                     # all exceptions... ideally this code all goes away and this runner is trivial.
-                    final_result.append(TR(status=False, msg=f"Unexpected exception in ten8t_thread.run_all {e} "))
+                    final_result.append(
+                        TR(status=False, msg=f"Unexpected exception in ten8t_thread.run_all {str(e)} ", except_=e,
+                           traceback=str(e.__traceback__)))
 
         # Return the aggregated results from all threads.
         self.results = final_result

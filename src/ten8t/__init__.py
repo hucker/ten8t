@@ -22,6 +22,7 @@ from .ten8t_checker import keep_phases  # noqa: F401
 from .ten8t_checker import keep_ruids  # noqa: F401
 from .ten8t_checker import keep_tags  # noqa: F401
 from .ten8t_exception import Ten8tException  # noqa: F401
+from .ten8t_exec import Ten8tExecutor
 from .ten8t_format import BM
 from .ten8t_format import Ten8tBasicHTMLRenderer
 from .ten8t_format import Ten8tBasicMarkdown
