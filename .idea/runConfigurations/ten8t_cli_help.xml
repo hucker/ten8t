@@ -8,12 +8,12 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/cli" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/ten8t/cli" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/cli/ten8t_cli.py" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/ten8t/cli/ten8t_cli.py" />
     <option name="PARAMETERS" value="--help" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="true" />

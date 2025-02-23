@@ -163,7 +163,7 @@ cython_debug/
 
 ./result.json
 vscode/launch.json
-src/cli/result.json
+src/ten8t/cli/result.json
 src/.DS_Store
 /.idea/inspectionProfiles/profiles_settings.xml
 

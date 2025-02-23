@@ -1,7 +1,7 @@
 #  keyring get PyPiUser hucker233
 [project]
 name = "ten8t"
-version = "0.0.5"
+version = "0.0.9"
 authors = [
     { name = "Chuck Bass", email = "chuck@arcocad.net" },
 ]
@@ -10,7 +10,7 @@ maintainers = [
 ]
 description = "Tool for generic infrastructure linting."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -21,40 +21,62 @@ classifiers = [
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
+packages = [
+    { include = "ten8t", from = "src" },
+    { include = "cli", from = "src" },
+    { include = "st_ten8t", from = "src" },
+    { include = "examples", from = "src" }
+]
 
+dependencies = ["requests", "toml", "narwhals", "SQLAlchemy", "fs", "click", "typer", "rich", "humanize", "streamlit", "uvicorn"]
+#    requiest == "^2.32.3"
+#    toml = "^0.10.2"
+#    narwhals="^1.20.1"
+#   SQLAlchemy="^2.0.38"
+#   fs="^2.4.10"
+#   click="^8.1.0"
+#   typer="^0.14.0"
+#   rich="^13.9.0"]
 
 [project.urls]
-#Homepage = "https://github.com/hucker233/ten8t"
+Homepage = "https://github.com/hucker233/ten8t"
 
 [tool.poetry]
 name = "ten8t"
-version = "0.0.4"
-description = "Quickly verify infrastructure."
+version = "0.0.9"
+description = "Infrastructure Verfication Framework."
 authors = ["Chuck Bass <chuck@acrocad.net>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "~3.10 || ~3.11 || ~3.12" # || ~3.13"
-requests = "^2.32.3"
-toml = "^0.10.2"
+
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.2"
+pytest = "^8.3.4"
 coverage = "^7.6.1"
 isort = "^5.13.2"
 pylint = "^3.2.7"
 setuptools = "^74.1.1"
-tox = "^4.18.0"
+tox = "^4.24.0"
 mypi = "^0.0.3"
+ruff = "^0.9.7"
+uv = "^0.6.2"
+
+
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.extras]
-demos = ["fastapi", "streamlit", "typer", "requests"]
+demos = ["fastapi", "streamlit", "typer", "requests", "rich", "fastapi-cli"]
 pdf = ["pypdf", "PyPDF2"]
-df = ["pandas", "numpy"]
+df = ["narwhals"]
+fs = ["fs", "humanize"]
+requests = ["requests"]
+xl = ["openpyxl"]
+sql = ["SQLAlchemy"]
 
 [testenv]
 installer = "uv"

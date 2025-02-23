@@ -61,9 +61,9 @@ def run_checks(
     """Run Ten8t checks on a given package or module from command line."""
 
     if verbose:
-        t8.ten8t_setup_logging(level=logging.DEBUG, file_name="./ten8t_cli.log")
+        t8.ten8t_setup_logging(level=logging.DEBUG, file_name="ten8t_cli.log")
     else:
-        t8.ten8t_setup_logging(level=logging.INFO, file_name="./ten8t_cli.log")
+        t8.ten8t_setup_logging(level=logging.INFO, file_name="ten8t_cli.log")
 
     t8.ten8t_logger.debug("Module=%s", module)
     t8.ten8t_logger.debug("pkg=%s", pkg)
