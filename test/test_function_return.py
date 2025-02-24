@@ -1,15 +1,15 @@
-from src import ten8t
+from src import ten8t as t8
 
 
 def test_simple_return_function():
     """ Test cases for checking that test functions (rather than generators) work as expected. """
 
-    @ten8t.attributes(tag="Return")
+    @t8.attributes(tag="Return")
     def return_not_yield():
         """Test Function With Return"""
-        return ten8t.TR(status=True, msg="It works with return", info_msg="This uses return")
+        return t8.TR(status=True, msg="It works with return", info_msg="This uses return")
 
-    sfunc = ten8t.Ten8tFunction(return_not_yield)
+    sfunc = t8.Ten8tFunction(return_not_yield)
 
     for result in sfunc():
         assert result.func_name == "return_not_yield"
@@ -26,13 +26,13 @@ def test_simple_return_function():
 def test_multiple_return_function():
     """ Test cases for checking that test functions returning a list works. """
 
-    @ten8t.attributes(tag="Return")
+    @t8.attributes(tag="Return")
     def returns_not_yield():
         """Test Function With Returns"""
-        return [ten8t.TR(status=True, msg="It works with return1", info_msg="This uses return1"),
-                ten8t.TR(status=True, msg="It works with return2", info_msg="This uses return2")]
+        return [t8.TR(status=True, msg="It works with return1", info_msg="This uses return1"),
+                t8.TR(status=True, msg="It works with return2", info_msg="This uses return2")]
 
-    sfunc = ten8t.Ten8tFunction(returns_not_yield)
+    sfunc = t8.Ten8tFunction(returns_not_yield)
 
     for count, result in enumerate(sfunc(), start=1):
         assert result.func_name == "returns_not_yield"
@@ -49,12 +49,12 @@ def test_multiple_return_function():
 def test_boolean_only_return_function():
     """ Test cases that allows for only returning a boolean. """
 
-    @ten8t.attributes(tag="BoolOnly")
+    @t8.attributes(tag="BoolOnly")
     def return_boolean_only():
         """Test Function that returns a boolean"""
         return True
 
-    sfunc = ten8t.Ten8tFunction(return_boolean_only)
+    sfunc = t8.Ten8tFunction(return_boolean_only)
 
     for result in sfunc():
         assert result.func_name == "return_boolean_only"
@@ -70,12 +70,12 @@ def test_boolean_only_return_function():
 def test_boolean_only_yield_function():
     """ Test cases that allows for only returning a boolean. """
 
-    @ten8t.attributes(tag="BoolOnly")
+    @t8.attributes(tag="BoolOnly")
     def yield_boolean_only():
         """Test Function that yields a boolean True"""
         yield True
 
-    sfunc = ten8t.Ten8tFunction(yield_boolean_only)
+    sfunc = t8.Ten8tFunction(yield_boolean_only)
 
     for result in sfunc():
         assert result.func_name == "yield_boolean_only"
@@ -91,12 +91,12 @@ def test_boolean_only_yield_function():
 def test_boolean_only_yield_function_fail():
     """ Test cases that allows for only returning a boolean. """
 
-    @ten8t.attributes(tag="BoolOnly")
+    @t8.attributes(tag="BoolOnly")
     def yield_boolean_only_fail():
         """Test Function that yields a boolean False"""
         yield False
 
-    sfunc = ten8t.Ten8tFunction(yield_boolean_only_fail, None)
+    sfunc = t8.Ten8tFunction(yield_boolean_only_fail, None)
 
     for result in sfunc():
         assert result.func_name == "yield_boolean_only_fail"

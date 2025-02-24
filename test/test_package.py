@@ -2,42 +2,42 @@ import sys
 
 import pytest
 
-from src import ten8t
+from src import ten8t as t8
 
 
 @pytest.fixture
 def simple1_pkg():
-    return ten8t.Ten8tPackage(folder="./simple1", name="Simple1")
+    return t8.Ten8tPackage(folder="./simple1", name="Simple1")
 
 
 @pytest.fixture
 def decorator1_pkg():
-    return ten8t.Ten8tPackage(folder="./decorator1", name="Decorator1")
+    return t8.Ten8tPackage(folder="./decorator1", name="Decorator1")
 
 
 @pytest.fixture
 def decorator2_pkg():
-    return ten8t.Ten8tPackage(folder="./decorator2", name="Decorator2")
+    return t8.Ten8tPackage(folder="./decorator2", name="Decorator2")
 
 
 @pytest.fixture
 def skip_pkg():
-    return ten8t.Ten8tPackage(folder="./skip", name="Skip")
+    return t8.Ten8tPackage(folder="./skip", name="Skip")
 
 
 @pytest.fixture
 def pkg_2_modules():
-    return ten8t.Ten8tPackage(folder="./ruid")
+    return t8.Ten8tPackage(folder="./ruid")
 
 
 @pytest.fixture
 def skip_no_name_pkg():
-    return ten8t.Ten8tPackage(folder="./skip")
+    return t8.Ten8tPackage(folder="./skip")
 
 
 def test_index_in_modules(skip_pkg):
     """ Verify that packages read from modules have the check functions indexed correctly """
-    ch = ten8t.Ten8tChecker(packages=[skip_pkg], auto_setup=True)
+    ch = t8.Ten8tChecker(packages=[skip_pkg], auto_setup=True)
 
     for count, func in enumerate(ch.collected, start=1):
         assert count == func.index
@@ -65,13 +65,13 @@ def test_add_to_path_none(pkg_2_modules):
 
 
 def test_no_package():
-    with pytest.raises(ten8t.Ten8tException):
-        _ = ten8t.Ten8tPackage(folder="__non_existent_folder")
+    with pytest.raises(t8.Ten8tException):
+        _ = t8.Ten8tPackage(folder="__non_existent_folder")
 
 
 def test_sugar():
-    r1 = ten8t.Ten8tResult(status=True, msg="msg")
-    r2 = ten8t.TR(status=True, msg="msg")
+    r1 = t8.Ten8tResult(status=True, msg="msg")
+    r2 = t8.TR(status=True, msg="msg")
     assert r1 == r2
 
 

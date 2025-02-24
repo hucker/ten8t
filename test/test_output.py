@@ -1,31 +1,31 @@
 import pytest
 
-from src import ten8t
+from src import ten8t as t8
 
 
 @pytest.fixture
 def simple1():
-    @ten8t.attributes(tag="t1", level=1, ruid="ruid_1", phase='proto')
+    @t8.attributes(tag="t1", level=1, ruid="ruid_1", phase='proto')
     def func1():
         """my doc string"""
-        yield ten8t.Ten8tResult(status=True, msg="It works1")
+        yield t8.Ten8tResult(status=True, msg="It works1")
 
-    return ten8t.Ten8tFunction(func1)
+    return t8.Ten8tFunction(func1)
 
 
 @pytest.fixture
 def simple2():
-    @ten8t.attributes(tag="t2", level=2, ruid="ruid_2", phase='production')
+    @t8.attributes(tag="t2", level=2, ruid="ruid_2", phase='production')
     def func2():
         """my doc string"""
-        yield ten8t.Ten8tResult(status=True, msg="It works2")
+        yield t8.Ten8tResult(status=True, msg="It works2")
 
-    return ten8t.Ten8tFunction(func2)
+    return t8.Ten8tFunction(func2)
 
 
 def test_json(simple1, simple2):
     """Test that the as_dict method serializes  nicely"""
-    ch = ten8t.Ten8tChecker(check_functions=[simple1, simple2], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[simple1, simple2], auto_setup=True)
     _ = ch.run_all()
     d = ch.as_dict()
     assert d['function_count'] == 2

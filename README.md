@@ -200,10 +200,10 @@ Alternatively you can ignore the file and folder discovery mechanism provide lis
 functions and `Ten8t` will happily run them for you if pass a list of check functions the make a `Ten8tChecker`
 
 ```python
-import ten8t
+import ten8t as t8
 from rules import rule1, rule2, rule3, rule4, rule5, sql_conn
 
-checker = ten8t.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4, rule5], auto_setup=True)
+checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4, rule5], auto_setup=True)
 results = checker.run_all(env={'db': sql_conn, 'cfg': 'cfg.json'})
 ```
 
@@ -220,26 +220,26 @@ The rules shown below trigger errors if there are any log files > 100k in length
 in the last 5 minutes.
 
 ```python
-import ten8t
+import ten8t as t8
 
 
-@ten8t.attributes(tag="tag")
+@t8.attributes(tag="tag")
 def check_rule1():
     for folder in ['folder1', 'folder2', 'folder3']:
-        yield from ten8t.rule_large_files(folder=folder, pattern="log*.txt", max_size=100_000)
+        yield from t8.rule_large_files(folder=folder, pattern="log*.txt", max_size=100_000)
 
 
-@ten8t.attributes(tag="tag")
+@t8.attributes(tag="tag")
 def check_rule2():
     for folder in ['folder1', 'folder2', 'folder3']:
-        yield from ten8t.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
+        yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
 
 
-@ten8t.attributes(tag="tag")
+@t8.attributes(tag="tag")
 def check_rule3(cfg):
     """cfg: application config file."""
     for folder in cfg['logging']['folders']:
-        yield from ten8t.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
+        yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
 ```
 
 ## What is the output?
@@ -520,7 +520,7 @@ making putting all the parameters in the function signature.
 Note that the variable names in the dictionary are the parameters that are passed to the function.
 
 ```python
-import ten8t
+import ten8t as t8
 import pandas as pd
 
 
@@ -537,17 +537,17 @@ def env_setup(_: dict) -> dict:
 
 def check_global(global_env):
     """This value is pulled from another module """
-    yield ten8t.TR(status=global_env == "hello", msg=f"Got global env={global_env}")
+    yield t8.TR(status=global_env == "hello", msg=f"Got global env={global_env}")
 
 
 def check_env1(db_config):
     """Should pick up db config from local env"""
-    yield ten8t.TR(status=db_config == 'sqlite.sql', msg=f"Got db_config as string {db_config}")
+    yield t8.TR(status=db_config == 'sqlite.sql', msg=f"Got db_config as string {db_config}")
 
 
 def check_env2(number_config):
     """Should pick up db config from local env"""
-    yield ten8t.TR(status=number_config == 42, msg=f"Got number {42}")
+    yield t8.TR(status=number_config == 42, msg=f"Got number {42}")
 ```
 
 ## Logging

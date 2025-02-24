@@ -1,7 +1,7 @@
 import pathlib
 import time
 
-import ten8t
+import ten8t as t8
 
 
 def test_ttl_func(tmp_path):
@@ -35,15 +35,15 @@ def test_ttl_func(tmp_path):
     f.touch(exist_ok=True)
 
     # This function checks if the file exists
-    @ten8t.attributes(ttl_minutes='1s')
+    @t8.attributes(ttl_minutes='1s')
     def func():
-        yield ten8t.TR(status=f.exists(), msg="Exist 1")
-        yield ten8t.TR(status=f.exists(), msg="Exist 2")
-        yield ten8t.TR(status=f.exists(), msg="Exist 3")
+        yield t8.TR(status=f.exists(), msg="Exist 1")
+        yield t8.TR(status=f.exists(), msg="Exist 2")
+        yield t8.TR(status=f.exists(), msg="Exist 3")
 
-    ten8t_func = ten8t.Ten8tFunction(func, "")
+    ten8t_func = t8.Ten8tFunction(func, "")
 
-    ch = ten8t.Ten8tChecker(check_functions=[ten8t_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[ten8t_func], auto_setup=True)
     results = ch.run_all()
 
     # All 3 different messages and all pass
@@ -83,13 +83,13 @@ def test_ttl_func_boolean_return(tmp_path):
     f.touch(exist_ok=True)
 
     # This function checks if the file exists and uses RETURN NOT YIELD
-    @ten8t.attributes(ttl_minutes='1s')
+    @t8.attributes(ttl_minutes='1s')
     def func():
         return f.exists()
 
-    ten8t_func = ten8t.Ten8tFunction(func, "")
+    ten8t_func = t8.Ten8tFunction(func, "")
 
-    ch = ten8t.Ten8tChecker(check_functions=[ten8t_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[ten8t_func], auto_setup=True)
     results = ch.run_all()
 
     # All 3 different messages and all pass

@@ -1,13 +1,13 @@
-from src import ten8t
+from src import ten8t as t8
 
 
-@ten8t.attributes(ruid="suid11")
+@t8.attributes(ruid="suid11")
 def check_suid11_x():
     """Check RUID"""
-    yield ten8t.Ten8tResult(status=True, msg="RUID 11")
+    yield t8.Ten8tResult(status=True, msg="RUID 11")
 
 
-@ten8t.attributes(ruid="suid12")
+@t8.attributes(ruid="suid12")
 def check_suid12_x():
     """Check RUID"""
-    yield ten8t.Ten8tResult(status=True, msg="RUID 12")
+    yield t8.Ten8tResult(status=True, msg="RUID 12")

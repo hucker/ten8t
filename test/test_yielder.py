@@ -1,18 +1,18 @@
-from src import ten8t
+from src import ten8t as t8
 
 
 def test_yielder_do_something():
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func1():
-        y = ten8t.Ten8tYield()
+        y = t8.Ten8tYield()
         for i in [1, 2, 3]:
-            yield from y.results(ten8t.Ten8tResult(status=False, msg=f"Msg {i}"))
+            yield from y.results(t8.Ten8tResult(status=False, msg=f"Msg {i}"))
         if not y.yielded:
-            yield from y.results(ten8t.Ten8tResult(status=True, msg="Nothing was to be done"))
+            yield from y.results(t8.Ten8tResult(status=True, msg="Nothing was to be done"))
 
-    s_func = ten8t.Ten8tFunction(func1)
+    s_func = t8.Ten8tFunction(func1)
 
-    ch = ten8t.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
     results = ch.run_all()
 
     assert len(results) == 3
@@ -34,23 +34,23 @@ def test_result_yielder_counts():
 
     """
 
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func1():
-        y = ten8t.Ten8tYield()
-        yield from y.results(ten8t.Ten8tResult(status=False, msg="Here's a fail"))
-        yield from y.results(ten8t.Ten8tResult(status=True, msg="Here's a pass"))
-        yield from y.results(ten8t.Ten8tResult(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
+        y = t8.Ten8tYield()
+        yield from y.results(t8.Ten8tResult(status=False, msg="Here's a fail"))
+        yield from y.results(t8.Ten8tResult(status=True, msg="Here's a pass"))
+        yield from y.results(t8.Ten8tResult(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
                                                msg=f"Should be 1/1 counted {y.pass_count} pass and {y.fail_count} fail."))
-        yield from y.results(ten8t.Ten8tResult(y.fail_count == 1 and y.pass_count == 2 and y.count == 3,
+        yield from y.results(t8.Ten8tResult(y.fail_count == 1 and y.pass_count == 2 and y.count == 3,
                                                msg=f"Should be 2/1 counted {y.pass_count} pass and {y.fail_count} fail."))
-        yield from y.results(ten8t.Ten8tResult(status=False, msg="Here's another fail"))
-        yield from y.results(ten8t.Ten8tResult(y.fail_count == 2 and y.pass_count == 3 and y.count == 5,
+        yield from y.results(t8.Ten8tResult(status=False, msg="Here's another fail"))
+        yield from y.results(t8.Ten8tResult(y.fail_count == 2 and y.pass_count == 3 and y.count == 5,
                                                msg=f"Should be 2/1 counted {y.pass_count} pass and {y.fail_count} fail."))
         p, f, t = y.counts
         yield from y.results(
-            ten8t.Ten8tResult(status=all((f == 2, p == 4, t == 6)), msg=f"Counts check {p}==1 and {f}==1 and {t}==5"))
+            t8.Ten8tResult(status=all((f == 2, p == 4, t == 6)), msg=f"Counts check {p}==1 and {f}==1 and {t}==5"))
 
-    s_func = ten8t.Ten8tFunction(func1)
+    s_func = t8.Ten8tFunction(func1)
     results = list(s_func())
     assert len(results) == 7
     assert results[0].status is False  # Hardcoded false
@@ -69,9 +69,9 @@ def test__call__yielder_counts():
 
     """
 
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func1():
-        y = ten8t.Ten8tYield()
+        y = t8.Ten8tYield()
         yield from y(status=False, msg="Here's a fail")
         yield from y(status=True, msg="Here's a pass")
         yield from y(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
@@ -84,7 +84,7 @@ def test__call__yielder_counts():
         p, f, t = y.counts
         yield from y(status=all((f == 2, p == 4, t == 6)), msg=f"Counts check {p}==1 and {f}==1 and {t}==5")
 
-    s_func = ten8t.Ten8tFunction(func1)
+    s_func = t8.Ten8tFunction(func1)
     results = list(s_func())
     assert len(results) == 7
     assert results[0].status is False  # Hardcoded false
@@ -102,17 +102,17 @@ def test_yielder_do_nothing():
     def false():
         return False
 
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func():
-        y = ten8t.Ten8tYield()
+        y = t8.Ten8tYield()
         if false():
-            yield from y.results(ten8t.Ten8tResult(status=False, msg="Done"))
+            yield from y.results(t8.Ten8tResult(status=False, msg="Done"))
         if not y.yielded:
-            yield from y.results(ten8t.Ten8tResult(status=True, msg="Nothing needed to be done."))
+            yield from y.results(t8.Ten8tResult(status=True, msg="Nothing needed to be done."))
 
-    s_func = ten8t.Ten8tFunction(func)
+    s_func = t8.Ten8tFunction(func)
 
-    ch = ten8t.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
     results = ch.run_all()
 
     assert len(results) == 1
@@ -121,12 +121,12 @@ def test_yielder_do_nothing():
 
 
 def test_yielder_exc():
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def should_pass_a_result_not_a_string():
-        y = ten8t.Ten8tYield()
+        y = t8.Ten8tYield()
         yield from y.results("foo")
 
-    s_func = ten8t.Ten8tFunction(should_pass_a_result_not_a_string)
+    s_func = t8.Ten8tFunction(should_pass_a_result_not_a_string)
 
     results = s_func()
     for result in results:
@@ -135,12 +135,12 @@ def test_yielder_exc():
 
 
 def test_yielder_result():
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def yield_a_result():
-        y = ten8t.Ten8tYield()
-        yield from y(ten8t.TR(status=True, msg="Yield result the 'normal' way."))
+        y = t8.Ten8tYield()
+        yield from y(t8.TR(status=True, msg="Yield result the 'normal' way."))
 
-    s_func = ten8t.Ten8tFunction(yield_a_result)
+    s_func = t8.Ten8tFunction(yield_a_result)
 
     results = s_func()
     for result in results:
@@ -159,9 +159,9 @@ def test_yielder_summary():
 
     """
 
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func1():
-        y = ten8t.Ten8tYield(summary_only=True, summary_name="Func1 Summary")
+        y = t8.Ten8tYield(summary_only=True, summary_name="Func1 Summary")
         yield from y(status=False, msg="Here's a fail")
         yield from y(status=True, msg="Here's a pass")
         yield from y(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
@@ -175,7 +175,7 @@ def test_yielder_summary():
         yield from y(status=all((f == 2, p == 4, t == 6)), msg=f"Counts check {p}==1 and {f}==1 and {t}==5")
         yield from y.yield_summary()
 
-    s_func = ten8t.Ten8tFunction(func1)
+    s_func = t8.Ten8tFunction(func1)
     results = list(s_func())
     assert len(results) == 1
     assert results[0].status is False

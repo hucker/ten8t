@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-import ten8t
+import ten8t as t8
 
 
 @pytest.fixture(scope="module")
@@ -10,7 +10,7 @@ def check_func():
     def func(value):
         return value == 1
 
-    return ten8t.Ten8tFunction(func)
+    return t8.Ten8tFunction(func)
 
 
 def test__str__(check_func):
@@ -22,34 +22,34 @@ def test__str__(check_func):
 @pytest.mark.parametrize("weight", [True, False, None])
 def test_weight_none(weight):
     # Note this will fail if you say Ten8tException since weights
-    with pytest.raises(ten8t.Ten8tException):
-        @ten8t.attributes(weight=weight)
+    with pytest.raises(t8.Ten8tException):
+        @t8.attributes(weight=weight)
         def func():
-            yield ten8t.TR(status=True, msg="Hello")
+            yield t8.TR(status=True, msg="Hello")
 
 
 def test_weight_exception():
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def func():
-        yield ten8t.TR(status=True, msg="Hello")
+        yield t8.TR(status=True, msg="Hello")
 
     func.weight = 0
     # Note this will fail if you say Ten8tException
-    with pytest.raises(ten8t.Ten8tException):
-        ten8t.Ten8tFunction(func)
+    with pytest.raises(t8.Ten8tException):
+        t8.Ten8tFunction(func)
 
 
 def test_function_str():
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def func():
-        yield ten8t.TR(status=True, msg="Hello")
+        yield t8.TR(status=True, msg="Hello")
 
-    ten8t_func = ten8t.Ten8tFunction(func)
+    ten8t_func = t8.Ten8tFunction(func)
     assert ten8t_func.function_name == "func"
 
 
 def test_func_doc_string_extract():
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def func():
         """This is a test function
 
@@ -69,7 +69,7 @@ def test_func_doc_string_extract():
         """
         return True
 
-    s_func = ten8t.Ten8tFunction(func)
+    s_func = t8.Ten8tFunction(func)
     for result in s_func():
         assert result.func_name == "func"
         assert result.status is True
@@ -94,9 +94,9 @@ def test_function_bad_weight():
         pass
 
     try:
-        attribute_decorator = ten8t.attributes(tag="tag", phase="phase", level=1, weight=0, skip=False)
+        attribute_decorator = t8.attributes(tag="tag", phase="phase", level=1, weight=0, skip=False)
         attribute_decorator(dummy_func)
-    except ten8t.Ten8tException:
+    except t8.Ten8tException:
         assert True
 
     except Exception:
@@ -108,7 +108,7 @@ def test_function_bad_weight():
 def test_function_attributes():
     """Test arbitrary attributes"""
 
-    @ten8t.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func():
         pass
 
@@ -122,7 +122,7 @@ def test_function_attributes():
 def test_def_function_attributes():
     """Check default tags"""
 
-    @ten8t.attributes(tag="")
+    @t8.attributes(tag="")
     def func():
         pass
 
@@ -134,12 +134,12 @@ def test_def_function_attributes():
 
 
 def test_basic_func_call():
-    @ten8t.attributes(tag="Test")
+    @t8.attributes(tag="Test")
     def func():
         """Test Function"""
-        yield ten8t.TR(status=True, msg="It works")
+        yield t8.TR(status=True, msg="It works")
 
-    sfunc = ten8t.Ten8tFunction(func)
+    sfunc = t8.Ten8tFunction(func)
 
     for result in sfunc():
         assert result.func_name == "func"
@@ -154,29 +154,29 @@ def test_basic_func_call():
 
 
 def test_basic_func_call_timing():
-    @ten8t.attributes(tag="Timing")
+    @t8.attributes(tag="Timing")
     def func():
         """Test Timing Function"""
         time.sleep(1.1)
-        yield ten8t.TR(status=True, msg="Timing works")
+        yield t8.TR(status=True, msg="Timing works")
 
-    sfunc1 = ten8t.Ten8tFunction(func)
+    sfunc1 = t8.Ten8tFunction(func)
 
-    @ten8t.attributes(tag="Timing")
+    @t8.attributes(tag="Timing")
     def fast_func():
         """Test Timing Function"""
         time.sleep(0.1)
-        yield ten8t.TR(status=True, msg="Timing works")
+        yield t8.TR(status=True, msg="Timing works")
 
-    sfunc2 = ten8t.Ten8tFunction(fast_func)
+    sfunc2 = t8.Ten8tFunction(fast_func)
 
-    result: ten8t.Ten8tResult = next(sfunc1())
+    result: t8.Ten8tResult = next(sfunc1())
     assert result.status is True
     assert result.skipped is False
     assert result.except_ is None
     assert result.runtime_sec > 1.0
 
-    result: ten8t.Ten8tResult = next(sfunc2())
+    result: t8.Ten8tResult = next(sfunc2())
     assert result.status is True
     assert result.skipped is False
     assert result.except_ is None
@@ -186,14 +186,14 @@ def test_basic_func_call_timing():
 def test_info_warning_func_call():
     """Verify that warning message gets to result"""
 
-    @ten8t.attributes(tag="InfoWarning")
+    @t8.attributes(tag="InfoWarning")
     def func():
         """Test Complex Function"""
-        yield ten8t.TR(status=True, msg="It still works", warn_msg="Warning")
+        yield t8.TR(status=True, msg="It still works", warn_msg="Warning")
 
-    sfunc = ten8t.Ten8tFunction(func)
+    sfunc = t8.Ten8tFunction(func)
 
-    result: ten8t.Ten8tResult = next(sfunc())
+    result: t8.Ten8tResult = next(sfunc())
     assert result.func_name == "func"
     assert result.status is True
     assert result.skipped is False
@@ -204,14 +204,14 @@ def test_info_warning_func_call():
 def test_divide_by_zero():
     """Test exception handling data passes through to result and automatic tracebacks """
 
-    @ten8t.attributes(tag="DivideByZero")
+    @t8.attributes(tag="DivideByZero")
     def func():
         """Test Exception Function"""
         return 1 / 0
 
-    sfunc = ten8t.Ten8tFunction(func)
+    sfunc = t8.Ten8tFunction(func)
 
-    result: ten8t.Ten8tResult = next(sfunc())
+    result: t8.Ten8tResult = next(sfunc())
     assert result.status is False
     assert result.msg == "Exception 'division by zero' occurred while running .func"
     assert result.doc == "Test Exception Function"
@@ -234,8 +234,8 @@ def test_simplest_case_ever():
         yield True
 
     # The above function requires all default cases to work correctly
-    s_func1 = ten8t.Ten8tFunction(return_only)
-    s_func2 = ten8t.Ten8tFunction(yield_only)
+    s_func1 = t8.Ten8tFunction(return_only)
+    s_func2 = t8.Ten8tFunction(yield_only)
     for s_func, name in ((s_func1, "return_only"), (s_func2, "yield_only")):
         for result in s_func():
             assert result.status is True

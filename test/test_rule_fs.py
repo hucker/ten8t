@@ -12,7 +12,7 @@ from fs.base import FS
 from fs.osfs import OSFS
 
 import ten8t.rule_fs as rule_fs
-from src import ten8t
+from src import ten8t as t8
 
 
 @pytest.fixture
@@ -86,12 +86,12 @@ def test_fs_fixture_exists(temp_fs: FS):
     """This just checks that the fixture is doing what we expect"""
     assert temp_fs.exists('test.txt')
 
-    @ten8t.attributes(tag='tag')
+    @t8.attributes(tag='tag')
     def check_temp_file(filesys: FS):
-        yield ten8t.TR(status=filesys.exists('test.txt'), msg="Check if file exists")
+        yield t8.TR(status=filesys.exists('test.txt'), msg="Check if file exists")
 
-    sfunc = ten8t.Ten8tFunction(check_temp_file)
-    chk = ten8t.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
+    sfunc = t8.Ten8tFunction(check_temp_file)
+    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
     for result in chk.run_all():
         assert result.status
         assert result.msg == 'Check if file exists'
@@ -102,8 +102,8 @@ def test_fs_rule_exists(temp_fs: FS):
         yield from rule_fs.rule_fs_path_exists(filesys, 'test.txt')  # Should pass
         yield from rule_fs.rule_fs_path_exists(filesys, 'test1.txt')  # Should fail
 
-    sfunc = ten8t.Ten8tFunction(check_temp_file)
-    chk = ten8t.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
+    sfunc = t8.Ten8tFunction(check_temp_file)
+    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
     results = chk.run_all()
     assert results[0].status is True
     assert results[1].status is False
@@ -113,8 +113,8 @@ def test_fs_rule_files_exist(temp_fs: FS):
     def check_temp_files(filesys: FS):
         yield from rule_fs.rule_fs_paths_exist(filesys, ['test.txt', 'test1.txt'])  # Should pass
 
-    sfunc = ten8t.Ten8tFunction(check_temp_files)
-    chk = ten8t.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
+    sfunc = t8.Ten8tFunction(check_temp_files)
+    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
     results = chk.run_all()
     assert results[0].status is True
     assert results[1].status is False
@@ -249,7 +249,7 @@ def test_bad_max_size(temp_fs):
 
 @pytest.mark.parametrize("file_size, expected_output", [
     # Edge case to get plural right
-    (0, "0.0 Bytes"),
+    (0, "0 Bytes"),
     (1, "1.0 Byte"),
     (1024, "1.0 kB"),
     (1048576, "1.0 MB"),
@@ -258,7 +258,7 @@ def test_bad_max_size(temp_fs):
     (1500, "1.5 kB"),
     (1536000, "1.5 MB"),
     (1572864000, "1.6 GB"),
-    (500, "500.0 Bytes"),
+    (500, "500 Bytes"),
     (500000, "500.0 kB"),
     (500000000, "500.0 MB"),
     (500000000000, "500.0 GB"),
@@ -272,7 +272,7 @@ def test_human_readable_size(file_size, expected_output):
 
 @pytest.mark.parametrize("file_size, expected_output", [
     # Edge case to get plural right
-    (0, "0.0 Bytes"),
+    (0, "0 Bytes"),
     (1, "1.0 Byte"),
     (1024, "1.0 KiB"),
     (1048576, "1.0 MiB"),
@@ -281,7 +281,7 @@ def test_human_readable_size(file_size, expected_output):
     (1500, "1.5 KiB"),
     (1536000, "1.5 MiB"),
     (1572864000, "1.5 GiB"),
-    (500, "500.0 Bytes"),
+    (500, "500 Bytes"),
     (500000, "488.3 KiB"),
     (500000000, "476.8 MiB"),
     (500000000000, "465.7 GiB"),

@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import Column, MetaData, Table, create_engine
 from sqlalchemy.types import BOOLEAN, DATE, DATETIME, DECIMAL, DOUBLE, INTEGER, VARCHAR
 
-from src import ten8t
+from src import ten8t as t8
 
 
 @pytest.fixture
@@ -64,28 +64,28 @@ def engine_alltypes():
         (
                 ['id', 'name', 'email', 'age'],
                 [
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>id<</code>> is present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>name<</code>> is present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>email<</code>> is present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>age<</code>> is present in table <<code>>users<</code>>")
                 ]
         ),
         (
                 ['id', 'name', 'email', 'age', 'unexpected'],
                 [
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>id<</code>> is present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>name<</code>> is present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>email<</code>> is present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>age<</code>> is present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=False,
+                    t8.Ten8tResult(status=False,
                                       msg="Column <<code>>unexpected<</code>> is <<fail>>MISSING<</fail>> in table <<code>>users<</code>>")
                 ]
         ),
@@ -93,7 +93,7 @@ def engine_alltypes():
 )
 def test_rule_sql_table_schema(engine, expected_columns, expected_results):
     # Call the function with the expected columns list
-    results = list(ten8t.rule_sql_table_col_name_schema(engine, 'users', expected_columns))
+    results = list(t8.rule_sql_table_col_name_schema(engine, 'users', expected_columns))
 
     for e, r in zip(results, expected_results):
         assert e.status == r.status
@@ -107,22 +107,22 @@ def test_rule_sql_table_schema(engine, expected_columns, expected_results):
         (
                 ['name', 'email', 'age'],
                 [
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>name<</code>> is correctly present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>email<</code>> is correctly present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>age<</code>> is correctly present in table <<code>>users<</code>>")
                 ]
         ),
         (
                 ['id', 'name', 'email'],
                 [
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>id<</code>> is correctly present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>name<</code>> is correctly present in table <<code>>users<</code>>"),
-                    ten8t.Ten8tResult(status=True,
+                    t8.Ten8tResult(status=True,
                                       msg="Column <<code>>email<</code>> is correctly present in table <<code>>users<</code>>"),
                 ]
         ),
@@ -130,7 +130,7 @@ def test_rule_sql_table_schema(engine, expected_columns, expected_results):
 )
 def test_rule_sql_table_schema_with_extra(engine, expected_columns, expected_results):
     # Call the function with the expected columns list
-    results = list(ten8t.rule_sql_table_col_name_schema(engine, 'users', expected_columns, extra_columns_ok=True))
+    results = list(t8.rule_sql_table_col_name_schema(engine, 'users', expected_columns, extra_columns_ok=True))
 
     # NOTE: This is a bit tricky, you would think you could just compare the lists, but the code that 
     #       runs the rule fills in other low level details that we aren't concerned with
@@ -141,7 +141,7 @@ def test_rule_sql_table_schema_with_extra(engine, expected_columns, expected_res
 def test_rule_sql_table_bad_table(engine):
     # Call the function with the expected columns list
     results = list(
-        ten8t.rule_sql_table_col_name_schema(engine, table='', expected_columns=['users'], extra_columns_ok=True))
+        t8.rule_sql_table_col_name_schema(engine, table='', expected_columns=['users'], extra_columns_ok=True))
 
     assert results[0].msg == "Table name cannot be blank."
     assert not results[0].status
@@ -150,7 +150,7 @@ def test_rule_sql_table_bad_table(engine):
 def test_rule_sql_table_bad_column(engine):
     # Call the function with the expected columns list
     results = list(
-        ten8t.rule_sql_table_col_name_schema(engine, table='users', expected_columns=[''], extra_columns_ok=True))
+        t8.rule_sql_table_col_name_schema(engine, table='users', expected_columns=[''], extra_columns_ok=True))
 
     assert results[0].msg == "Column names cannot be empty."
     assert not results[0].status
@@ -159,7 +159,7 @@ def test_rule_sql_table_bad_column(engine):
 def test_rule_sql_table_bad_column_list(engine):
     # Call the function with the expected columns list
     results = list(
-        ten8t.rule_sql_table_col_name_schema(engine, table='users', expected_columns=[], extra_columns_ok=True))
+        t8.rule_sql_table_col_name_schema(engine, table='users', expected_columns=[], extra_columns_ok=True))
 
     assert not results[0].status
     assert results[0].msg == "Column list cannot be empty."
@@ -167,7 +167,7 @@ def test_rule_sql_table_bad_column_list(engine):
 
 def test_rule_sql_table_bad_extra_columns(engine):
     # Call the function with the expected columns list
-    results = list(ten8t.rule_sql_table_col_name_schema(engine, table='users', expected_columns=['id', 'name'],
+    results = list(t8.rule_sql_table_col_name_schema(engine, table='users', expected_columns=['id', 'name'],
                                                         extra_columns_ok=False))
     msgs = ["Column <<code>>id<</code>> is present in table <<code>>users<</code>>",
             "Column <<code>>name<</code>> is present in table <<code>>users<</code>>",
@@ -186,13 +186,13 @@ def test_rule_sql_table_bad_extra_columns(engine):
 
 
 def test_rule_sql_table_types(engine):
-    results = list(ten8t.rule_sql_table_schema(engine,
+    results = list(t8.rule_sql_table_schema(engine,
                                                table='users',
                                                expected_columns=[('id', INTEGER())],
                                                extra_columns_ok=True))
     assert results[0].status is True
 
-    results = list(ten8t.rule_sql_table_schema(engine,
+    results = list(t8.rule_sql_table_schema(engine,
                                                table='users',
                                                expected_columns=[('email', VARCHAR())],
                                                extra_columns_ok=True))
@@ -201,7 +201,7 @@ def test_rule_sql_table_types(engine):
 
 def test_rule_sql_all(engine_alltypes):
     """Verify column names and types are correctly handled."""
-    results = list(ten8t.rule_sql_table_schema(engine_alltypes,
+    results = list(t8.rule_sql_table_schema(engine_alltypes,
                                                table='users',
                                                expected_columns=[('id', INTEGER()),
                                                                  ('name', VARCHAR()),
@@ -217,7 +217,7 @@ def test_rule_sql_all(engine_alltypes):
 
 def test_rule_sql_schema_missing_cols(engine_alltypes):
     """Verify column names and types are correctly handled."""
-    results = list(ten8t.rule_sql_table_schema(engine_alltypes,
+    results = list(t8.rule_sql_table_schema(engine_alltypes,
                                                table='users',
                                                expected_columns=[('id', INTEGER()),
                                                                  ('name', VARCHAR()),
@@ -253,7 +253,7 @@ def test_permutations_rule_sql_all(engine_alltypes):
         all_combinations.extend(combs)
 
     for combination in all_combinations:
-        results = list(ten8t.rule_sql_table_schema(engine_alltypes,
+        results = list(t8.rule_sql_table_schema(engine_alltypes,
                                                    table='users',
                                                    expected_columns=list(combination),
                                                    extra_columns_ok=True))

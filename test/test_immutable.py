@@ -47,139 +47,139 @@ and raise the appropriate exception, consistent with the intention of preserving
 
 import pytest
 
-from src import ten8t
+from src import ten8t as t8
 
 
 @pytest.fixture(scope="module")
 def env_list():
-    return ten8t.Ten8tEnvList([1, 2, 3, 4, 5])
+    return t8.Ten8tEnvList([1, 2, 3, 4, 5])
 
 
 def test_list_setitem(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list[0] = 100
 
 
 def test_list_delitem(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         del env_list[0]
 
 
 def test_list_append(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.append(6)
 
 
 def test_list_extend(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.extend([7, 8, 9])
 
 
 def test_list_insert(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.insert(0, 10)
 
 
 def test_list_remove(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.remove(1)
 
 
 def test_list_pop(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.pop(0)
 
 
 def test_list_clear(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.clear()
 
 
 def test_list_sort(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.sort()
 
 
 def test_list_reverse(env_list):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_list.reverse()
 
 
 # Define a fixture to provide the test target
 @pytest.fixture
 def env_dict():
-    return ten8t.Ten8tEnvDict({"a": 1, "b": 2, "c": 3})
+    return t8.Ten8tEnvDict({"a": 1, "b": 2, "c": 3})
 
 
 def test_dict_setitem(env_dict):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_dict["a"] = 100
 
 
 def test_dict_delitem(env_dict):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         del env_dict["a"]
 
 
 def test_dict_pop(env_dict):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_dict.pop("a")
 
 
 def test_dict_popitem(env_dict):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_dict.popitem()
 
 
 def test_clear(env_dict):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_dict.clear()
 
 
 def test_dict_update(env_dict):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_dict.update({"a": 0, "d": 4})
 
 
 def test_dict_setdefault(env_dict):
-    with pytest.raises(ten8t.Ten8tException):
+    with pytest.raises(t8.Ten8tException):
         env_dict.setdefault("d", 4)
 
 
 @pytest.fixture
 def func_list():
-    @ten8t.attributes(tag="t1")
+    @t8.attributes(tag="t1")
     def func_list(env_list):
         env_list[0] = 'a'
-        yield ten8t.Ten8tResult(status=True, msg="It works1")
+        yield t8.Ten8tResult(status=True, msg="It works1")
 
-    return ten8t.Ten8tFunction(func_list)
+    return t8.Ten8tFunction(func_list)
 
 
 @pytest.fixture
 def func_dict():
-    @ten8t.attributes(tag="t1")
+    @t8.attributes(tag="t1")
     def func_dict(env_dict):
         env_dict['a'] = 100
-        yield ten8t.Ten8tResult(status=True, msg="It works1")
+        yield t8.Ten8tResult(status=True, msg="It works1")
 
-    return ten8t.Ten8tFunction(func_dict)
+    return t8.Ten8tFunction(func_dict)
 
 
 @pytest.fixture
 def func_set():
-    @ten8t.attributes(tag="env_set")
+    @t8.attributes(tag="env_set")
     def func_list(env_set):
         env_set.clear()
-        yield ten8t.Ten8tResult(status=True, msg="It works1")
+        yield t8.Ten8tResult(status=True, msg="It works1")
 
-    return ten8t.Ten8tFunction(func_list)
+    return t8.Ten8tFunction(func_list)
 
 
 def test_ten8t_function_writing_to_env_dict(func_dict):
     env = {'env_list': [1, 2, 3], 'env_dict': {'a': 10, 'b': 11}, 'env_set': {1, 2, 3}}
 
-    ch = ten8t.Ten8tChecker(check_functions=[func_dict], env=env, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func_dict], env=env, auto_setup=True)
     results = ch.run_all()
     assert len(results) == 1
     assert results[0].except_
@@ -187,7 +187,7 @@ def test_ten8t_function_writing_to_env_dict(func_dict):
 
 def test_ten8t_function_writing_to_env_list(func_list):
     env = {'env_list': [1, 2, 3], 'env_dict': {'a': 10, 'b': 11}, 'env_set': {1, 2, 3}}
-    ch = ten8t.Ten8tChecker(check_functions=[func_list], env=env, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func_list], env=env, auto_setup=True)
     results = ch.run_all()
     assert len(results) == 1
     assert results[0].except_
@@ -195,7 +195,7 @@ def test_ten8t_function_writing_to_env_list(func_list):
 
 def test_ten8t_function_writing_to_env_set(func_set):
     env = {'env_list': [1, 2, 3], 'env_dict': {'a': 10, 'b': 11}, 'env_set': {1, 2, 3}}
-    ch = ten8t.Ten8tChecker(check_functions=[func_set], env=env, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func_set], env=env, auto_setup=True)
     results = ch.run_all()
     assert len(results) == 1
     assert results[0].except_

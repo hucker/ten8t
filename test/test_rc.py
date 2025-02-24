@@ -10,7 +10,7 @@ exact same tests should be run against the derived classes.
 
 import pytest
 
-import ten8t
+import ten8t as t8
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def test_data():
 
 
 def test_simple_summary(test_data):
-    rc = ten8t.Ten8tRC(rc_d=test_data)
+    rc = t8.Ten8tRC(rc_d=test_data)
 
     assert rc.tags == ['a', 'b', 'c']
     assert rc.ruids == ['r1', 'r2', 'r3']
@@ -43,12 +43,12 @@ def test_simple_summary(test_data):
     ],
 )
 def test_bad_rcd(bad_type):
-    with pytest.raises(ten8t.Ten8tException) as exec_info:
-        _ = ten8t.Ten8tRC(rc_d=bad_type)
+    with pytest.raises(t8.Ten8tException) as exec_info:
+        _ = t8.Ten8tRC(rc_d=bad_type)
 
 
 def test_simple_rc(test_data):
-    rc = ten8t.Ten8tRC(rc_d=test_data)
+    rc = t8.Ten8tRC(rc_d=test_data)
     assert rc.does_match(tag='a')
     assert rc.does_match(ruid='r1')
     assert rc.does_match(phase='p1')
@@ -61,7 +61,7 @@ def test_simple_rc(test_data):
 
 
 def test_simple_fail_rc(test_data):
-    rc = ten8t.Ten8tRC(rc_d=test_data)
+    rc = t8.Ten8tRC(rc_d=test_data)
 
     assert rc.does_match(tag='d') is False
     assert rc.does_match(ruid='r4') is False
@@ -70,20 +70,20 @@ def test_simple_fail_rc(test_data):
 
 
 def test_regex_rc(test_data):
-    rc = ten8t.Ten8tRC(rc_d={'ruids': 'r.*'})
+    rc = t8.Ten8tRC(rc_d={'ruids': 'r.*'})
 
     assert rc.does_match(ruid='r1')
     assert rc.does_match(ruid='r2')
     assert rc.does_match(ruid='rasdfasdfasdf')
 
-    rc = ten8t.Ten8tRC(rc_d={'ruids': r'r\d', 'phases': r'p\d'})
+    rc = t8.Ten8tRC(rc_d={'ruids': r'r\d', 'phases': r'p\d'})
 
     assert rc.does_match(ruid='r1', phase='p1')
     assert rc.does_match(ruid='r2', phase='p2')
     assert rc.does_match(ruid='r22', phase='p2') is False
     assert rc.does_match(ruid='r2', phase='p22') is False
 
-    rc = ten8t.Ten8tRC(rc_d={'ruids': r'r\d+', 'phases': r'p\d+'})
+    rc = t8.Ten8tRC(rc_d={'ruids': r'r\d+', 'phases': r'p\d+'})
     assert rc.does_match(ruid='r12', phase='p1')
     assert rc.does_match(ruid='r2', phase='p22')
 
@@ -113,7 +113,7 @@ def test_regex_rc(test_data):
 
 ])
 def test_regex_fixture_rc(rules, ruid, phase, tag, expected):
-    rc = ten8t.Ten8tRC(rc_d=rules)
+    rc = t8.Ten8tRC(rc_d=rules)
     assert rc.does_match(ruid=ruid, phase=phase, tag=tag) is expected
 
 
@@ -152,7 +152,7 @@ def test_regex_fixture_rc(rules, ruid, phase, tag, expected):
     ({'ruids': r'r\d', 'phases': r'p\d', 'tags': r't\d'}, 'r1', 'p1', 't1', True),
 ])
 def test_regex_big_rc(rules, ruid, phase, tag, expected):
-    rc = ten8t.Ten8tRC(rc_d=rules)
+    rc = t8.Ten8tRC(rc_d=rules)
     assert rc.does_match(ruid=ruid, phase=phase, tag=tag) is expected
 
 
@@ -162,12 +162,12 @@ def test_regex_big_rc(rules, ruid, phase, tag, expected):
     ({'levels': '1|2|3'}, '2', True),
 ])
 def test_regex_rc_2(rules, level, expected):
-    rc = ten8t.Ten8tRC(rc_d=rules)
+    rc = t8.Ten8tRC(rc_d=rules)
     assert rc.does_match(level=level) is expected
 
 
 def test_neg():
-    rc = ten8t.Ten8tRC(rc_d={'tags': ['t1', '-t2'],
+    rc = t8.Ten8tRC(rc_d={'tags': ['t1', '-t2'],
                              'ruids': ['r1', '-r2'],
                              'phases': 'p1,-p2'})
 

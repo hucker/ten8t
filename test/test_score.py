@@ -5,19 +5,19 @@
 
 import pytest
 
-from src import ten8t
+from src import ten8t as t8
 
 
 @pytest.fixture
 def by_func_weights_with_skip():
     # NOTE: This gives a case than handles most of the edge case
     return [
-        ten8t.TR(status=False, msg="No RUID", func_name="func1", weight=100.0),
-        ten8t.TR(status=False, msg="No RUID", func_name="func1", weight=100.0),
-        ten8t.TR(status=True, msg="No RUID", func_name="func2", weight=200.0),
-        ten8t.TR(status=True, msg="No RUID", func_name="func2", weight=200.0, skipped=True),
-        ten8t.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
-        ten8t.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=False, msg="No RUID", func_name="func1", weight=100.0),
+        t8.TR(status=False, msg="No RUID", func_name="func1", weight=100.0),
+        t8.TR(status=True, msg="No RUID", func_name="func2", weight=200.0),
+        t8.TR(status=True, msg="No RUID", func_name="func2", weight=200.0, skipped=True),
+        t8.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
     ]
 
 
@@ -25,9 +25,9 @@ def by_func_weights_with_skip():
 def half_pass():
     # NOTE: This gives a case than handles most of the edge case
     return [
-        ten8t.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
-        ten8t.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
-        ten8t.TR(status=False, msg="No RUID", func_name="func3", weight=300.0, skipped=True),
+        t8.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=False, msg="No RUID", func_name="func3", weight=300.0, skipped=True),
     ]
 
 
@@ -35,9 +35,9 @@ def half_pass():
 def all_pass():
     # NOTE: This gives a case than handles most of the edge case
     return [
-        ten8t.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
-        ten8t.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
-        ten8t.TR(status=False, msg="No RUID", func_name="func3", weight=300.0, skipped=True),
+        t8.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=True, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=False, msg="No RUID", func_name="func3", weight=300.0, skipped=True),
     ]
 
 
@@ -45,15 +45,15 @@ def all_pass():
 def all_fail():
     # NOTE: This gives a case than handles most of the edge case
     return [
-        ten8t.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
-        ten8t.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
-        ten8t.TR(status=True, msg="No RUID", func_name="func3", weight=300.0, skipped=True),
+        t8.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=False, msg="No RUID", func_name="func3", weight=300.0),
+        t8.TR(status=True, msg="No RUID", func_name="func3", weight=300.0, skipped=True),
     ]
 
 
 def test_score_by_result(by_func_weights_with_skip):
     # Set up the 3 strategies
-    by_result = ten8t.ScoreByResult()
+    by_result = t8.ScoreByResult()
 
     # By result, it is easy to just add with code
     total_weight = 2 * 100 + 1 * 200 + 2 * 300
@@ -65,7 +65,7 @@ def test_score_by_result(by_func_weights_with_skip):
 
 
 def test_score_by_function_binary(by_func_weights_with_skip):
-    by_function_binary = ten8t.ScoreByFunctionBinary()
+    by_function_binary = t8.ScoreByFunctionBinary()
     # for the binary function case I'll do it by hand.  There are 3 functions with 3 different weights
     total_weight = 100 + 200 + 300  # weights for 3 functions
     total_pass = 0 * 100 + 1 * 200 + 0 * 300
@@ -78,7 +78,7 @@ def test_score_by_function_binary(by_func_weights_with_skip):
 
 
 def test_score_by_function_mean(by_func_weights_with_skip):
-    by_function_mean = ten8t.ScoreByFunctionMean()
+    by_function_mean = t8.ScoreByFunctionMean()
 
     # for the mean function case I'll do it by hand.  There are 3 functions with 3 different weights
     total_weight = (2 * 100) + (1 * 200) + (2 * 300)  # weights for 3 functions
@@ -91,7 +91,7 @@ def test_score_by_function_mean(by_func_weights_with_skip):
 
 def test_score_binary_pass(all_pass, all_fail, half_pass):
     """Check that the full binary pass works"""
-    by_binary_pass = ten8t.ScoreBinaryPass()
+    by_binary_pass = t8.ScoreBinaryPass()
     assert by_binary_pass(all_pass) == 100.0
     assert by_binary_pass(all_fail) == 0.0
     assert by_binary_pass(half_pass) == 100
@@ -100,7 +100,7 @@ def test_score_binary_pass(all_pass, all_fail, half_pass):
 
 def test_score_binary_fail(all_pass, all_fail, half_pass):
     """Check that the full binary fail works"""
-    by_binary_fail = ten8t.ScoreBinaryFail()
+    by_binary_fail = t8.ScoreBinaryFail()
     assert by_binary_fail(all_pass) == 100.0
     assert by_binary_fail(all_fail) == 0.0
     assert by_binary_fail(half_pass) == 0.0
@@ -108,40 +108,40 @@ def test_score_binary_fail(all_pass, all_fail, half_pass):
 
 
 @pytest.mark.parametrize("strategy_name, strategy_class", [
-    ("by_function_mean", ten8t.ScoreByFunctionMean),
-    ("by_function_binary", ten8t.ScoreByFunctionBinary),
-    ("by_result", ten8t.ScoreByResult),
-    ("by_binary_pass", ten8t.ScoreBinaryPass),
-    ("by_binary_fail", ten8t.ScoreBinaryFail),
-    ("ScoreByFunctionMean", ten8t.ScoreByFunctionMean),
-    ("ScoreByFunctionBinary", ten8t.ScoreByFunctionBinary),
-    ("ScoreByResult", ten8t.ScoreByResult),
-    ("ScoreBinaryPass", ten8t.ScoreBinaryPass),
-    ("ScoreBinaryFail", ten8t.ScoreBinaryFail),
+    ("by_function_mean", t8.ScoreByFunctionMean),
+    ("by_function_binary", t8.ScoreByFunctionBinary),
+    ("by_result", t8.ScoreByResult),
+    ("by_binary_pass", t8.ScoreBinaryPass),
+    ("by_binary_fail", t8.ScoreBinaryFail),
+    ("ScoreByFunctionMean", t8.ScoreByFunctionMean),
+    ("ScoreByFunctionBinary", t8.ScoreByFunctionBinary),
+    ("ScoreByResult", t8.ScoreByResult),
+    ("ScoreBinaryPass", t8.ScoreBinaryPass),
+    ("ScoreBinaryFail", t8.ScoreBinaryFail),
 ])
 def test_strategy_factory(strategy_name, strategy_class):
     """Test the strategy factory in  both methods."""
-    assert isinstance(ten8t.ScoreStrategy.strategy_factory(strategy_name), strategy_class)
+    assert isinstance(t8.ScoreStrategy.strategy_factory(strategy_name), strategy_class)
 
 
 def test_bad_strategy_name():
     """Exception on invalid strategy name."""
-    with pytest.raises(ten8t.Ten8tException):
-        ten8t.ScoreStrategy.strategy_factory("bad_strategy_name")
+    with pytest.raises(t8.Ten8tException):
+        t8.ScoreStrategy.strategy_factory("bad_strategy_name")
 
 
 def test_bad_strategy_class():
     """Exception from non-derived class"""
-    with pytest.raises(ten8t.Ten8tException):
-        ten8t.ScoreStrategy.strategy_factory(dict)
+    with pytest.raises(t8.Ten8tException):
+        t8.ScoreStrategy.strategy_factory(dict)
 
 
 @pytest.mark.parametrize("scoring_function", [
-    ten8t.ScoreBinaryFail,
-    ten8t.ScoreBinaryPass,
-    ten8t.ScoreByResult,
-    ten8t.ScoreByFunctionMean,
-    ten8t.ScoreByFunctionBinary,
+    t8.ScoreBinaryFail,
+    t8.ScoreBinaryPass,
+    t8.ScoreByResult,
+    t8.ScoreByFunctionMean,
+    t8.ScoreByFunctionBinary,
 ])
 def test_null_results(scoring_function):
     score = scoring_function()

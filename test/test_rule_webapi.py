@@ -1,6 +1,6 @@
 import pytest
 
-from src import ten8t
+from src import ten8t as t8
 from src.ten8t.rule_webapi import is_mismatch
 
 
@@ -33,9 +33,9 @@ def expected_json():
 def test_urls():
     urls = ["https://www.google.com", "https://www.yahoo.com", "https://www.bing.com"]
 
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def check_rule1():
-        yield from ten8t.rule_url_200(urls=urls)
+        yield from t8.rule_url_200(urls=urls)
 
     for result in check_rule1():
         assert result.status
@@ -44,9 +44,9 @@ def test_urls():
 def test_urls_as_strings():
     urls = "https://www.google.com https://www.yahoo.com https://www.bing.com"
 
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def check_rule1():
-        yield from ten8t.rule_url_200(urls=urls)
+        yield from t8.rule_url_200(urls=urls)
 
     for result in check_rule1():
         assert result.status
@@ -55,9 +55,9 @@ def test_urls_as_strings():
 def test_urls_summary_only():
     urls = "https://www.google.com https://www.yahoo.com https://www.bing.com"
 
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def check_rule1():
-        yield from ten8t.rule_url_200(urls=urls, summary_only=True)
+        yield from t8.rule_url_200(urls=urls, summary_only=True)
 
     for result in check_rule1():
         assert result.status
@@ -66,9 +66,9 @@ def test_urls_summary_only():
 def test_bad_urls():
     urls = ["https://www.google.com/doesnotexist", "https://www.yahooXXXXXX"]
 
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def check_rule1():
-        yield from ten8t.rule_url_200(urls=urls)
+        yield from t8.rule_url_200(urls=urls)
 
     for result in check_rule1():
         assert not result.status
@@ -76,9 +76,9 @@ def test_bad_urls():
 
 def test_missing_web_api():
     # Try to get a non-existent webapi end point
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def check_rule2():
-        yield from ten8t.rule_web_api(url='https://httpbin.org/json1',
+        yield from t8.rule_web_api(url='https://httpbin.org/json1',
                                       json_d={'name': 'Luke Skywalker'},
                                       expected_response=[404, 502],
                                       # WARNING: This used to return 404, not sometimes is 502
@@ -89,9 +89,9 @@ def test_missing_web_api():
 
 
 def test_wrong_response(expected_json):
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def check_rule1():
-        yield from ten8t.rule_web_api(url='https://httpbin.org/json',
+        yield from t8.rule_web_api(url='https://httpbin.org/json',
                                       json_d=expected_json,
                                       expected_response=404,  # Returns 200
                                       timeout_sec=10)
@@ -101,9 +101,9 @@ def test_wrong_response(expected_json):
 
 
 def test_web_api(expected_json):
-    @ten8t.attributes(tag="tag")
+    @t8.attributes(tag="tag")
     def check_rule1():
-        yield from ten8t.rule_web_api(url='https://httpbin.org/json',
+        yield from t8.rule_web_api(url='https://httpbin.org/json',
                                       json_d=expected_json,
                                       timeout_sec=10)
 
