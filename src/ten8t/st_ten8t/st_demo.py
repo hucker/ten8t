@@ -106,7 +106,9 @@ def display_results(results: list[t8.Ten8tResult]):
 
         # Append each row directly to the table, note that I'm using the "rendered" view
         table.append(
-            f"| {count} | {c_f(r.status)} | {orange(yes_or_none(r.warn_msg))} | {violet(yes_or_none(r.skipped))}| {blue(r.tag)} | {r.level} | {r.phase} | {r.ruid} | {c_f(r.module_name)} | {c_f(r.func_name)} |{c_f(r.msg_rendered)} |")
+            f"| {count} | {c_f(r.status)} | {orange(yes_or_none(r.warn_msg))} | {violet(yes_or_none(r.skipped))}| " \
+            f"{blue(r.tag)} | {r.level} | {r.phase} | {r.ruid} | {c_f(r.module_name)} | {c_f(r.func_name)} " \
+            f"|{c_f(r.msg_rendered)} |")
 
         # Convert the list of rows into a single string with line breaks
     markdown_table = "\n".join(table)
@@ -159,6 +161,7 @@ def display_json_results(checker: t8.Ten8tChecker):
         st.json(checker.as_dict())
 
 
+
 class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
     """ Implementation of a progress bar for streamlit. """
 
@@ -198,7 +201,7 @@ def main():
         "Generic": "../examples/my_package"
     }
     info_mkdown = """
-    # Ten8t (pronounced ten-eight) Checker Demonstrator
+    # Ten8t (pronounced ten-eighty) Checker Demonstrator
     
     This demonstrates the way the `ten8t` package can work by having sample checks residing in a folder and
     allowing those checks to be easily run with the json output displayed in a basic UI.
@@ -218,14 +221,16 @@ def main():
 
         if include_ui:
             st.write(
-                "All of these options are ANDed together, if you select everything from 1 of the lists all functions will be run.")
+                "All of these options are ANDed together, if you select everything " \
+                "from 1 of the lists all functions will be run.")
             tags = st.multiselect("Include These Tags", options=checker.tags, default=checker.tags)
             ruids = st.multiselect("Include These Rule Ids", options=checker.ruids, default=[])
             levels = st.multiselect('Include These Levels', options=checker.levels, default=[])
             phases = st.multiselect('Include These Phases', options=checker.phases, default=[])
         else:
             st.write(
-                "All of these options are ANDed together, if you select everything from 1 of the lists no functions will be run.")
+                "All of these options are ANDed together, if you select everything from 1 of " \
+                "the lists no functions will be run.")
             tags = st.multiselect("Exclude These Tags", options=checker.tags, default=None)
             ruids = st.multiselect("Exclude These Rule Ids", options=checker.ruids, default=None)
             levels = st.multiselect('Exclude These Levels', options=checker.levels, default=None)
@@ -256,6 +261,8 @@ def main():
             with st.container(border=True):
                 display_json_results(checker)
 
+            with st.container(border=True):
+                display_full_results(checker)
 
 if __name__ == "__main__":
     main()

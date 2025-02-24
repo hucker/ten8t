@@ -72,8 +72,8 @@ def test_stream_logger_installed():
     # Example stream (we'll use a StringIO object for simplicity)
     test_stream = io.StringIO()
 
-    # Setup the logger with the stream parameter
-    ten8t_setup_logging(stream=test_stream)
+    # Set up the logger with the stream parameter
+    ten8t_setup_logging(stream_=test_stream)
 
     # Verify that a StreamHandler is added
     handlers = [handler for handler in ten8t_logger.handlers if isinstance(handler, logging.StreamHandler)]

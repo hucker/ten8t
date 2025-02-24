@@ -32,14 +32,16 @@ def rule_validate_ndf_schema(df: FrameT,
         int_cols: A list or a string representing column(s) that should contain integers
         float_cols: A list or a string representing column(s) that should contain floats
         str_cols: A list or a string representing column(s) that should contain strings
-        number_cols: A list or a string representing column(s) that should contain numeric values (either int or float)
+        number_cols: A list or a string representing column(s) that should contain numeric
+                     values (either int or float)
         no_null_cols: A list or a string representing column(s) that should not contain null values
         summary_name: An optional name for the summary of the validation result
         summary_only: A boolean flag indicating whether to yield only the summary of the validation result
         name: An optional name for this rule
 
         Returns:
-        A generator of TR (Test Result) objects, each representing the validation result of a particular rule on a column
+        A generator of TR (Test Result) objects, each representing the validation result
+        of a particular rule on a column
 
         Raises:
         Ten8tException: If no schema checks (i.e., no columns for each of the column types) were specified
@@ -133,7 +135,8 @@ def rule_ndf_columns_check(name: str, df: FrameT, expected_cols_: str | list[str
             yield TR(status=True,
                      msg=f"All columns were found in the {BM.code(name)} dataframe: {BM.expected(expected_cols)}")
         else:
-            msg = f"Data frame {BM.code(name)} is missing {BM.expected(missing_columns)} columns and has extra {BM.expected(extra_columns)} columns"
+            msg = f"Data frame {BM.code(name)} is missing {BM.expected(missing_columns)} " \
+                  "columns and has extra {BM.expected(extra_columns)} columns"
             yield TR(status=False, msg=msg)
 
     else:
@@ -304,7 +307,7 @@ def extended_bool(value) -> bool:
 
     """
     truthy_values = [True, 1, '1', 'true', 't', 'pass', 'p', 'yes', 'y']
-    untruthy_values = [None, False, 0, '0', 'false', 't' 'fail', 'f', 'no', 'n']
+    untruthy_values = [None, False, 0, '0', 'false', 't', 'fail', 'f', 'no', 'n']
 
     # If value is boolean True, return True
     if isinstance(value, bool) and value is True:

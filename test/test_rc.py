@@ -168,8 +168,8 @@ def test_regex_rc_2(rules, level, expected):
 
 def test_neg():
     rc = t8.Ten8tRC(rc_d={'tags': ['t1', '-t2'],
-                             'ruids': ['r1', '-r2'],
-                             'phases': 'p1,-p2'})
+                          'ruids': ['r1', '-r2'],
+                          'phases': 'p1,-p2'})
 
     assert rc.does_match(tag='t1')
     assert rc.does_match(tag='t2') is False

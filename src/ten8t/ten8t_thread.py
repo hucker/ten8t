@@ -1,3 +1,7 @@
+"""
+Use the class to enable the usage of threading for a checker object.
+"""
+
 import copy
 import threading
 from collections import defaultdict
@@ -105,7 +109,7 @@ class Ten8tThread:
 
         # List to hold checkers, each assigned a subset of functions to process.
         checkers = []
-        for name, functions in self.thread_groups.items():
+        for _, functions in self.thread_groups.items():
             # Create a shallow copy of the Ten8tChecker instance.  This is a bit of paranoia on my part
             # but not enough to do deep copies.  Perhaps there are use cases for this?
             checker = copy.copy(self.checker)

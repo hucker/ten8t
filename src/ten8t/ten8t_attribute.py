@@ -147,4 +147,3 @@ def get_attribute(func, attr, default_value=None):
     default = default_value or defs[attr]
 
     return getattr(func, attr, default)
-

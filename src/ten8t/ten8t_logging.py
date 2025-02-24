@@ -1,3 +1,19 @@
+"""
+Logging support for Ten8t.
+
+The purpose of this module is to setup package logging in a general way that integrates
+with other packages and loggers.
+
+The key feature is that you can call ten8t_setup_logging AFTER you have configured
+other packages' loggers' and it will just work along with them.
+
+If the only logging in the system is setup with this tool then you can still
+use this and provide a target stream (e.g., stdout) and a file name.
+
+This method is set up to manage a single global logger object named ten8t_logger
+that should be used by all the ten8t modules.
+
+"""
 import logging
 
 # Create a library-specific logger
@@ -9,7 +25,7 @@ def ten8t_setup_logging(
         level: int = logging.WARNING,
         propagate: bool = True,
         file_name: str | None = None,
-        stream=None,
+        stream_=None,
         format_string: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 ) -> None:
     """
@@ -19,7 +35,7 @@ def ten8t_setup_logging(
         level (int): Logging level (default=logging.WARNING).
         propagate (bool): If True, propagates logs to the parent logger (default=True).
         file_name (str): Optional file path to save logs.
-        stream (io.TextIOWrapper | None): Optional stream (e.g., sys.stdout, sys.stderr).
+        stream_ (io.TextIOWrapper | None): Optional stream (e.g., sys.stdout, sys.stderr).
         format_string (str): Format string for log messages (default includes timestamp, name, level, and message).
 
     Returns:
@@ -37,13 +53,13 @@ def ten8t_setup_logging(
             file_handler.setFormatter(formatter)
             ten8t_logger.addHandler(file_handler)
         except (OSError, PermissionError) as e:
-            raise ValueError(f"Error setting up file handler for '{file_name}'. Details: {e}")
+            raise ValueError(f"Error setting up file handler for '{file_name}'. Details: {e}") from e
 
     # Add a stream handler if stream is specified
-    if stream:
-        if not hasattr(stream, "write"):
-            raise ValueError(f"The provided stream '{stream}' is not a valid writable stream.")
-        stream_handler = logging.StreamHandler(stream)
+    if stream_:
+        if not hasattr(stream_, "write"):
+            raise ValueError(f"The provided stream '{stream_}' is not a valid writable stream.")
+        stream_handler = logging.StreamHandler(stream_)
         stream_handler.setFormatter(formatter)
         ten8t_logger.addHandler(stream_handler)
 

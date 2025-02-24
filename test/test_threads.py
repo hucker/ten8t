@@ -16,6 +16,7 @@ def func_nothread():
 
     return t8.Ten8tFunction(nothread)
 
+
 @pytest.fixture
 def func1():
     """Fixture that provides thread functions func1 and func2."""

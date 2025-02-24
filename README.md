@@ -585,7 +585,7 @@ import ten8t as t8
 from sys import stderr
 
 # Setup t8 logging of message to the console
-t8.ten8t_setup_logging(level=logging.DEBUG, stream=stderr, propagate=False)
+t8.ten8t_setup_logging(level=logging.DEBUG, stream_=stderr, propagate=False)
 ```
 
 ## Typer Command Line Demo App For `ten8t_cli`:
@@ -710,6 +710,12 @@ import ten8t as t8
 
 Please pronounce the `t8` as `tee eight` (as in an early prototype for
 a [T-800](https://en.wikipedia.org/wiki/T-800_(character))) *NOT* `tate`.
+
+## Why does this exist?
+
+This project is a piece of code that is useful to me, and it serves as non-trivial piece of code where
+I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
+advanced yielding, strategy patterns, dynamic function creation, hook functions, mypy, using pypi.
 
 ## TODO
 

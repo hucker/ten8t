@@ -694,3 +694,39 @@ def test_check_render_color(renderer, expected):
     assert results[0].status == True
     assert results[0].msg == "It works1 <<red>>hello<</red>>"
     assert results[0].msg_rendered == expected
+
+
+@pytest.fixture(scope="module")
+def bare_func1():
+    def func():
+        return True
+
+    return func
+
+
+@pytest.fixture(scope="module")
+def bare_func2():
+    def func():
+        return False
+
+    return func
+
+
+def test_auto_ten8t_funct(bare_func1, bare_func2):
+    """
+    Show that we can natively handle regular python functions.
+
+    This depends on the checker setup code detecting that the function isn't "right" and it automatically
+    wrapping it with the Ten8tFunction class when detected.
+    """
+
+    def bare_func3():
+        return t8.TR(status=True, msg="Hello world.")
+
+    ch = t8.Ten8tChecker(check_functions=[bare_func1, bare_func2, bare_func3], auto_setup=True)
+    results = ch.run_all()
+    assert len(results) == 3
+    assert results[0].status is True
+    assert results[1].status is False
+    assert results[2].status is True
+    assert results[2].msg == "Hello world."

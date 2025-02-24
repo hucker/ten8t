@@ -21,6 +21,7 @@ def test_simple_return_function():
         assert result.warn_msg == ""
         assert result.info_msg == "This uses return"
         assert result.tag == "Return"
+        assert result.thread_id == 'main_thread__'
 
 
 def test_multiple_return_function():

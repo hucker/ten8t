@@ -187,6 +187,7 @@ class Ten8tYield:
         return self.pass_count, self.fail_count, self.count
 
     def increment_counter(self, result: Ten8tResult) -> None:
+        """Increment counters based on result status."""
         self._count += 1
         if not result.status:
             self._fail_count += 1

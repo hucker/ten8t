@@ -48,7 +48,7 @@ def check_env1(db_config):
 def check_env2(number_config):
     """Should pick up number_config from local_env"""
     yield t8.Ten8tResult(status=number_config == CONST_NUMBER_CONFIG,
-                            msg=f"Numeric config is correct {number_config}")
+                         msg=f"Numeric config is correct {number_config}")
 
 
 def check_env3(data_frame):
@@ -61,7 +61,7 @@ def check_check_lots_of_stuff(db_config, number_config, global_env, data_frame):
     """Should pick them all up """
     yield t8.Ten8tResult(status=db_config == CONST_DB_CONFIG, msg="DB config is correct")
     yield t8.Ten8tResult(status=number_config == CONST_NUMBER_CONFIG,
-                            msg=f"Numeric config is correct {number_config}")
+                         msg=f"Numeric config is correct {number_config}")
     yield t8.Ten8tResult(status=isinstance(data_frame, pd.DataFrame), msg="Data_frame is actually a dataframe.")
     yield t8.Ten8tResult(status=data_frame.empty is True, msg="Dataframe is empty")
     yield t8.Ten8tResult(status=global_env == "hello", msg=f"Got global env={global_env}")
@@ -71,7 +71,7 @@ def check_order_doesnt_matter(number_config, data_frame, db_config, global_env):
     """Should pick them all up in different order """
     yield t8.Ten8tResult(status=db_config == CONST_DB_CONFIG, msg="DB config is correct")
     yield t8.Ten8tResult(status=number_config == CONST_NUMBER_CONFIG,
-                            msg=f"Numeric config is correct {number_config}")
+                         msg=f"Numeric config is correct {number_config}")
     yield t8.Ten8tResult(status=isinstance(data_frame, pd.DataFrame), msg="Data_frame is actually a dataframe.")
     yield t8.Ten8tResult(status=data_frame.empty is True, msg="Dataframe is empty")
     yield t8.Ten8tResult(status=global_env == "hello", msg=f"Got global env={global_env}")

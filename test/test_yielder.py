@@ -40,12 +40,12 @@ def test_result_yielder_counts():
         yield from y.results(t8.Ten8tResult(status=False, msg="Here's a fail"))
         yield from y.results(t8.Ten8tResult(status=True, msg="Here's a pass"))
         yield from y.results(t8.Ten8tResult(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
-                                               msg=f"Should be 1/1 counted {y.pass_count} pass and {y.fail_count} fail."))
+                                            msg=f"Should be 1/1 counted {y.pass_count} pass and {y.fail_count} fail."))
         yield from y.results(t8.Ten8tResult(y.fail_count == 1 and y.pass_count == 2 and y.count == 3,
-                                               msg=f"Should be 2/1 counted {y.pass_count} pass and {y.fail_count} fail."))
+                                            msg=f"Should be 2/1 counted {y.pass_count} pass and {y.fail_count} fail."))
         yield from y.results(t8.Ten8tResult(status=False, msg="Here's another fail"))
         yield from y.results(t8.Ten8tResult(y.fail_count == 2 and y.pass_count == 3 and y.count == 5,
-                                               msg=f"Should be 2/1 counted {y.pass_count} pass and {y.fail_count} fail."))
+                                            msg=f"Should be 2/1 counted {y.pass_count} pass and {y.fail_count} fail."))
         p, f, t = y.counts
         yield from y.results(
             t8.Ten8tResult(status=all((f == 2, p == 4, t == 6)), msg=f"Counts check {p}==1 and {f}==1 and {t}==5"))

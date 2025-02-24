@@ -53,7 +53,7 @@ def result_hook_fix_blank_msg(sfunc: "Ten8tFunction",
 
 
 ATTRIBUTES = ("tag", "level", "phase", "weight", "skip", "ruid", "skip_on_none",
-              "fail_on_none", "ttl_minutes", "finish_on_fail")
+              "fail_on_none", "ttl_minutes", "finish_on_fail", "index", "thread_id")
 
 
 class Ten8tFunction:
@@ -161,7 +161,7 @@ class Ten8tFunction:
         return args
 
     def _cache_result(self, result):
-        """Simple caching saves results if ttl_minutes is no 0"""
+        """Simple caching saves results if ttl_minutes is not 0"""
         if self.ttl_minutes:
             self.last_results.append(result)
 
@@ -340,9 +340,48 @@ class Ten8tFunction:
         result.fail_on_none = self.fail_on_none
         result.skip_on_none = self.skip_on_none
 
+        # This is a bit of a reach but this allows for the lazy coding of
+        # def test_case():
+        #     "Test of something"
+        #     return True
+        # To act like it returned Result(status=True,msg="Test of Something")
+        if result.msg == "":
+            result.msg = self.make_default_message(self.function, status=result.status)
+
         # Apply all (usually 1 or 0) hooks to the result
         for hook in self.result_hooks:
             if result is not None:
                 result = hook(self, result)
 
         return result
+
+    def make_default_message(self, func, status=None, message=""):
+        """
+        Returns the first line of the docstring if it exists,
+        or a default message in the format 'Pass/Fail from function {func}'.
+
+        This handle the case where the user provided no message.  This shouldn't
+        really happen, but in support of the minimal test functions this can
+        provide a path to laziness.
+
+        Args:
+            func (callable): The function whose docstring to use.
+            message (str): A default message to override the fallback.
+
+        Returns:
+            str: The extracted first line of the docstring or a default message.
+        """
+        if message.strip():  # If a non-empty message exists, return it directly
+            return message
+
+        if func.__doc__:  # Check if the docstring exists
+            # Use only the first line of the docstring (up to the first newline)
+            return func.__doc__.strip().split("\n")[0]
+
+        # Fallback to default message if no docstring or message exists
+        if status is None:
+            return f"Pass/Fail from function {func.__name__}"
+        elif status is True:
+            return f"Pass from function {func.__name__}"
+        else:
+            return f"Fail from function {func.__name__}"

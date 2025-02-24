@@ -27,8 +27,6 @@ def test_rule_file_exist():
         assert result.status is False
 
 
-
-
 def test_rule_large_files():
     """Verify that we can use the rule_path_exists rule in a function that we build."""
 
@@ -55,9 +53,9 @@ def test_rule_large_files():
 def test_rule_large_file_bad_setup():
     def check_rule_bad_setup():
         yield from t8.rule_large_files(folder="./rule_files_",
-                                          pattern="*.foobar",
-                                          max_size=-50,
-                                          no_files_pass_status=True)
+                                       pattern="*.foobar",
+                                       max_size=-50,
+                                       no_files_pass_status=True)
 
     s_func1 = t8.Ten8tFunction(check_rule_bad_setup)
     for result in s_func1():
@@ -71,16 +69,16 @@ def test_rule_large_files_missing():
     @t8.attributes(tag="tag")
     def check_rule_missing_pass():
         yield from t8.rule_large_files(folder="./rule_files_",
-                                          pattern="*.foobar",
-                                          max_size=50,
-                                          no_files_pass_status=True)
+                                       pattern="*.foobar",
+                                       max_size=50,
+                                       no_files_pass_status=True)
 
     @t8.attributes(tag="tag")
     def check_rule_missing_fail():
         yield from t8.rule_large_files(folder="./rule_files_",
-                                          pattern="*.foobar",
-                                          max_size=50,
-                                          no_files_pass_status=False)
+                                       pattern="*.foobar",
+                                       max_size=50,
+                                       no_files_pass_status=False)
 
     s_func1 = t8.Ten8tFunction(check_rule_missing_pass)
     for result in s_func1():
@@ -104,7 +102,7 @@ def test_bad_stale_file_setup(days, hours, minutes, seconds):
 
     def check_rule_files():
         yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.txt", days=days, hours=hours,
-                                          minutes=minutes, seconds=seconds)
+                                       minutes=minutes, seconds=seconds)
 
     s_func = t8.Ten8tFunction(check_rule_files)
     for result in s_func():
@@ -118,11 +116,11 @@ def test_stale_file_no_match():
 
     def check_rule_missing_true():
         yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.foobar", days=0, hours=0, minutes=0,
-                                          seconds=.5, no_files_pass_status=True)
+                                       seconds=.5, no_files_pass_status=True)
 
     def check_rule_missing_false():
         yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.foobar", days=0, hours=0, minutes=0,
-                                          seconds=.5, no_files_pass_status=False)
+                                       seconds=.5, no_files_pass_status=False)
 
     s_func1 = t8.Ten8tFunction(check_rule_missing_true)
     for result in s_func1():
@@ -145,11 +143,11 @@ def test_stale_files_noage():
     @t8.attributes(tag="tag")
     def check_rule_no_age():
         yield from t8.rule_stale_files(folder=file_path,
-                                          pattern="my_file*.txt",
-                                          days=0,
-                                          hours=0,
-                                          minutes=0,
-                                          seconds=0)
+                                       pattern="my_file*.txt",
+                                       days=0,
+                                       hours=0,
+                                       minutes=0,
+                                       seconds=0)
 
     s_func1 = t8.Ten8tFunction(check_rule_no_age, '')
     for result in s_func1():
@@ -157,6 +155,7 @@ def test_stale_files_noage():
         assert result.traceback
         assert result.except_
         assert "Age for stale file check" in result.msg
+
 
 def test_stale_files():
     """
@@ -170,38 +169,38 @@ def test_stale_files():
     @t8.attributes(tag="tag")
     def check_rule_sec():
         yield from t8.rule_stale_files(folder=file_path,
-                                          pattern="my_file*.txt",
-                                          days=0,
-                                          hours=0,
-                                          minutes=0,
-                                          seconds=.5)
+                                       pattern="my_file*.txt",
+                                       days=0,
+                                       hours=0,
+                                       minutes=0,
+                                       seconds=.5)
 
     @t8.attributes(tag="tag")
     def check_rule_min():
         yield from t8.rule_stale_files(folder=file_path,
-                                          pattern="my_file*.txt",
-                                          days=0,
-                                          hours=0,
-                                          minutes=1 / (2 * 60.0),
-                                          seconds=0)
+                                       pattern="my_file*.txt",
+                                       days=0,
+                                       hours=0,
+                                       minutes=1 / (2 * 60.0),
+                                       seconds=0)
 
     @t8.attributes(tag="tag")
     def check_rule_hour():
         yield from t8.rule_stale_files(folder=file_path,
-                                          pattern="my_file*.txt",
-                                          days=0,
-                                          hours=1 / (2 * 3600.0),
-                                          minutes=0,
-                                          seconds=0)
+                                       pattern="my_file*.txt",
+                                       days=0,
+                                       hours=1 / (2 * 3600.0),
+                                       minutes=0,
+                                       seconds=0)
 
     @t8.attributes(tag="tag")
     def check_rule_day():
         yield from t8.rule_stale_files(folder=file_path,
-                                          pattern="my_file*.txt",
-                                          days=1 / (2 * 86400.0),
-                                          hours=0,
-                                          minutes=0,
-                                          seconds=0)
+                                       pattern="my_file*.txt",
+                                       days=1 / (2 * 86400.0),
+                                       hours=0,
+                                       minutes=0,
+                                       seconds=0)
 
     # We need to check that each of the units is used
     for rule in [check_rule_sec, check_rule_min, check_rule_hour, check_rule_day]:
@@ -229,7 +228,7 @@ def test_stale_file_summary():
     @t8.attributes(tag="tag")
     def check_rule_sec():
         yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.txt", days=0, hours=0, minutes=0,
-                                          seconds=.5, summary_only=True, summary_name="Rule_files_ stale check")
+                                       seconds=.5, summary_only=True, summary_name="Rule_files_ stale check")
 
     sfunc = t8.Ten8tFunction(check_rule_sec)
     # Touch the file
@@ -273,9 +272,9 @@ def test_max_file_summary():
     @t8.attributes(tag="tag")
     def check_rule():
         yield from t8.rule_max_files(folders='./rule_files_',
-                                        max_files=10,
-                                        summary_only=True,
-                                        summary_name="Rule_files max check.")
+                                     max_files=10,
+                                     summary_only=True,
+                                     summary_name="Rule_files max check.")
 
     for result in check_rule():
         assert result.status is True

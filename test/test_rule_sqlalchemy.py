@@ -65,28 +65,28 @@ def engine_alltypes():
                 ['id', 'name', 'email', 'age'],
                 [
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>id<</code>> is present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>id<</code>> is present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>name<</code>> is present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>name<</code>> is present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>email<</code>> is present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>email<</code>> is present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>age<</code>> is present in table <<code>>users<</code>>")
+                                   msg="Column <<code>>age<</code>> is present in table <<code>>users<</code>>")
                 ]
         ),
         (
                 ['id', 'name', 'email', 'age', 'unexpected'],
                 [
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>id<</code>> is present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>id<</code>> is present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>name<</code>> is present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>name<</code>> is present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>email<</code>> is present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>email<</code>> is present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>age<</code>> is present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>age<</code>> is present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=False,
-                                      msg="Column <<code>>unexpected<</code>> is <<fail>>MISSING<</fail>> in table <<code>>users<</code>>")
+                                   msg="Column <<code>>unexpected<</code>> is <<fail>>MISSING<</fail>> in table <<code>>users<</code>>")
                 ]
         ),
     ],
@@ -108,22 +108,22 @@ def test_rule_sql_table_schema(engine, expected_columns, expected_results):
                 ['name', 'email', 'age'],
                 [
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>name<</code>> is correctly present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>name<</code>> is correctly present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>email<</code>> is correctly present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>email<</code>> is correctly present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>age<</code>> is correctly present in table <<code>>users<</code>>")
+                                   msg="Column <<code>>age<</code>> is correctly present in table <<code>>users<</code>>")
                 ]
         ),
         (
                 ['id', 'name', 'email'],
                 [
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>id<</code>> is correctly present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>id<</code>> is correctly present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>name<</code>> is correctly present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>name<</code>> is correctly present in table <<code>>users<</code>>"),
                     t8.Ten8tResult(status=True,
-                                      msg="Column <<code>>email<</code>> is correctly present in table <<code>>users<</code>>"),
+                                   msg="Column <<code>>email<</code>> is correctly present in table <<code>>users<</code>>"),
                 ]
         ),
     ],
@@ -168,7 +168,7 @@ def test_rule_sql_table_bad_column_list(engine):
 def test_rule_sql_table_bad_extra_columns(engine):
     # Call the function with the expected columns list
     results = list(t8.rule_sql_table_col_name_schema(engine, table='users', expected_columns=['id', 'name'],
-                                                        extra_columns_ok=False))
+                                                     extra_columns_ok=False))
     msgs = ["Column <<code>>id<</code>> is present in table <<code>>users<</code>>",
             "Column <<code>>name<</code>> is present in table <<code>>users<</code>>",
             "Column <<code>>age<</code>> is UNEXPECTED in table <<code>>users<</code>>",
@@ -187,30 +187,30 @@ def test_rule_sql_table_bad_extra_columns(engine):
 
 def test_rule_sql_table_types(engine):
     results = list(t8.rule_sql_table_schema(engine,
-                                               table='users',
-                                               expected_columns=[('id', INTEGER())],
-                                               extra_columns_ok=True))
+                                            table='users',
+                                            expected_columns=[('id', INTEGER())],
+                                            extra_columns_ok=True))
     assert results[0].status is True
 
     results = list(t8.rule_sql_table_schema(engine,
-                                               table='users',
-                                               expected_columns=[('email', VARCHAR())],
-                                               extra_columns_ok=True))
+                                            table='users',
+                                            expected_columns=[('email', VARCHAR())],
+                                            extra_columns_ok=True))
     assert results[0].status is True
 
 
 def test_rule_sql_all(engine_alltypes):
     """Verify column names and types are correctly handled."""
     results = list(t8.rule_sql_table_schema(engine_alltypes,
-                                               table='users',
-                                               expected_columns=[('id', INTEGER()),
-                                                                 ('name', VARCHAR()),
-                                                                 ('age', DOUBLE()),
-                                                                 ('date', DATE()),
-                                                                 ('arrival', DATETIME()),
-                                                                 ('adult', BOOLEAN()),
-                                                                 ('dec', DECIMAL())],
-                                               extra_columns_ok=True))
+                                            table='users',
+                                            expected_columns=[('id', INTEGER()),
+                                                              ('name', VARCHAR()),
+                                                              ('age', DOUBLE()),
+                                                              ('date', DATE()),
+                                                              ('arrival', DATETIME()),
+                                                              ('adult', BOOLEAN()),
+                                                              ('dec', DECIMAL())],
+                                            extra_columns_ok=True))
     assert len(results) == 7
     assert all(r.status for r in results)
 
@@ -218,12 +218,12 @@ def test_rule_sql_all(engine_alltypes):
 def test_rule_sql_schema_missing_cols(engine_alltypes):
     """Verify column names and types are correctly handled."""
     results = list(t8.rule_sql_table_schema(engine_alltypes,
-                                               table='users',
-                                               expected_columns=[('id', INTEGER()),
-                                                                 ('name', VARCHAR()),
-                                                                 ('adult', BOOLEAN()),
-                                                                 ('dec', DECIMAL())],
-                                               extra_columns_ok=True))
+                                            table='users',
+                                            expected_columns=[('id', INTEGER()),
+                                                              ('name', VARCHAR()),
+                                                              ('adult', BOOLEAN()),
+                                                              ('dec', DECIMAL())],
+                                            extra_columns_ok=True))
     assert len(results) == 4
     assert all(r.status for r in results)
 
@@ -254,8 +254,8 @@ def test_permutations_rule_sql_all(engine_alltypes):
 
     for combination in all_combinations:
         results = list(t8.rule_sql_table_schema(engine_alltypes,
-                                                   table='users',
-                                                   expected_columns=list(combination),
-                                                   extra_columns_ok=True))
+                                                table='users',
+                                                expected_columns=list(combination),
+                                                extra_columns_ok=True))
         assert len(results) == len(combination)
         assert all(r.status for r in results)

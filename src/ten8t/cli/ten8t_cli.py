@@ -111,7 +111,7 @@ def run_checks(
 
         if not flat:
             # Show the results in a hierarchy rather than the flat version the data is stored as.
-            results = t8.ten8t.group_by(results, ['pkg_name', 'module_name', 'func_name'])
+            results = t8.group_by(results, ['pkg_name', 'module_name', 'func_name'])
             pretty_data = pretty_print_json(results)
             typer.echo(pretty_data)
             return

@@ -79,10 +79,10 @@ def test_missing_web_api():
     @t8.attributes(tag="tag")
     def check_rule2():
         yield from t8.rule_web_api(url='https://httpbin.org/json1',
-                                      json_d={'name': 'Luke Skywalker'},
-                                      expected_response=[404, 502],
-                                      # WARNING: This used to return 404, not sometimes is 502
-                                      timeout_sec=5)
+                                   json_d={'name': 'Luke Skywalker'},
+                                   expected_response=[404, 502],
+                                   # WARNING: This used to return 404, not sometimes is 502
+                                   timeout_sec=5)
 
     for result in check_rule2():
         assert result.status
@@ -92,9 +92,9 @@ def test_wrong_response(expected_json):
     @t8.attributes(tag="tag")
     def check_rule1():
         yield from t8.rule_web_api(url='https://httpbin.org/json',
-                                      json_d=expected_json,
-                                      expected_response=404,  # Returns 200
-                                      timeout_sec=10)
+                                   json_d=expected_json,
+                                   expected_response=404,  # Returns 200
+                                   timeout_sec=10)
 
     for result in check_rule1():
         assert result.status is False
@@ -104,8 +104,8 @@ def test_web_api(expected_json):
     @t8.attributes(tag="tag")
     def check_rule1():
         yield from t8.rule_web_api(url='https://httpbin.org/json',
-                                      json_d=expected_json,
-                                      timeout_sec=10)
+                                   json_d=expected_json,
+                                   timeout_sec=10)
 
     for result in check_rule1():
         assert result.status

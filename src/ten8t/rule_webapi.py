@@ -110,7 +110,8 @@ def rule_web_api(url: str,
 
         if response.status_code not in expected_response:
             yield from y(status=False,
-                         msg=f"URL {BM.code(url)} expected {BM.expected(expected_response)} returned {BM.actual(response.status_code)} ")
+                         msg=f"URL {BM.code(url)} expected {BM.expected(expected_response)} " \
+                             "returned {BM.actual(response.status_code)} ")
             return
 
         # This handles an expected failure by return true but not checking the json

@@ -4,7 +4,7 @@ There is also support for low level progress for functions/classes.
 """
 import datetime as dt
 from abc import ABC, abstractmethod
-from typing import Any, Sequence
+from typing import Any, Callable, Sequence
 
 from .ten8t_exception import Ten8tException
 from .ten8t_format import Ten8tAbstractRender, Ten8tRenderText
@@ -386,11 +386,19 @@ class Ten8tChecker:
         raise Ten8tException('Modules must be a list of Ten8tModule objects.')
 
     @staticmethod
-    def _process_check_funcs(check_functions: list[Ten8tFunction] | None) -> list[Ten8tFunction]:
+    def _process_check_funcs(check_functions: list[Ten8tFunction | Callable] | None) -> list[Ten8tFunction]:
         """ Load up an arbitrary list of ten8t functions.
         These functions are tagged with adhoc for module"""
         if isinstance(check_functions, list) and len(check_functions) >= 1:
             for count, f in enumerate(check_functions, start=1):
+
+                # It is arguable if this is a good idea or not.  This allows you to pass regular old
+                # python functions to ten8t.  This code will automatically covert those callables to
+                # Ten8tFunctions so they can be used by the system.  This is mostly useful for testing
+                # and for easy demos
+                if not isinstance(f, Ten8tFunction) and callable(f):
+                    f = Ten8tFunction(f)
+
                 if not isinstance(f, Ten8tFunction):
                     raise Ten8tException(
                         "Functions must be a list of Ten8tFunction objects."
@@ -422,9 +430,14 @@ class Ten8tChecker:
             self.pre_collected += [func for module in pkg.modules for func in module.check_functions]
 
         for module in self.modules:
-            self.pre_collected += [func for func in module.check_functions]
+            self.pre_collected += module.check_functions
 
-        self.pre_collected += [func for func in self.check_functions]
+        self.pre_collected += self.check_functions
+
+        # This is a bit of a hack and is NOT required and one could argue that it is bad code. I suspect that
+        # this will only be useful for testing.
+        self.pre_collected = [Ten8tFunction(func) if not isinstance(func, Ten8tFunction) else func for func in
+                              self.pre_collected]
 
         # List of all possible functions that could be run
         return self.pre_collected
@@ -710,7 +723,6 @@ class Ten8tChecker:
                                self.function_count,
                                "Rule Check Complete.")
         ten8t_logger.info("Checker complete ran %s check functions", self.function_count)
-
 
     def run_all(self, env=None) -> list[Ten8tResult]:
         """

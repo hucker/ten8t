@@ -52,7 +52,7 @@ def test_row_col_pass_fail_with_sheet(sheet, desc_col, val_col, row_start, expec
     def check_pass_fail():
         wb = load_workbook('./rule_xlsx/BaseCase.xlsx')
         yield from t8.rule_xlsx_a1_pass_fail(wb, sheet_name=sheet, val_col=val_col, row_start=str(row_start),
-                                                desc_col=desc_col)
+                                             desc_col=desc_col)
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
@@ -84,13 +84,13 @@ def test_row_col_pass_fail_with_sheet_from_env(sheet, desc_col, val_col, row, ex
     @t8.attributes(tag='foo')
     def check_pass_fail(wb):
         yield from t8.rule_xlsx_a1_pass_fail(wb, sheet_name=sheet, val_col=val_col, row_start=str(row),
-                                                desc_col=desc_col)
+                                             desc_col=desc_col)
 
     # Test that we can load workbooks from the environment.  Same test as above.
     s_func = t8.Ten8tFunction(check_pass_fail)
     ch = t8.Ten8tChecker(check_functions=[s_func],
-                            env={"wb": load_workbook('./rule_xlsx/BaseCase.xlsx')},
-                            auto_setup=True)
+                         env={"wb": load_workbook('./rule_xlsx/BaseCase.xlsx')},
+                         auto_setup=True)
     results = ch.run_all()
 
     # Verify that we got the status correct and that the messages are correct
@@ -102,7 +102,7 @@ def test_row_col_pass_fail_with_auto_detect():
     @t8.attributes(tag='foo')
     def check_pass_fail(wb):
         yield from t8.rule_xlsx_a1_pass_fail(wb, sheet_name="Sheet1", val_col='B', row_start='2', row_end="auto",
-                                                desc_col='A')
+                                             desc_col='A')
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     wb = load_workbook('./rule_xlsx/BaseCase.xlsx')
@@ -120,7 +120,7 @@ def test_row_col_pass_fail_with_hardcoded():
     @t8.attributes(tag='foo')
     def check_pass_fail(wb):
         yield from t8.rule_xlsx_a1_pass_fail(wb, sheet_name="Sheet1", val_col='B', row_start='2', row_end="5",
-                                                desc_col='A')
+                                             desc_col='A')
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     wb = load_workbook('./rule_xlsx/BaseCase.xlsx')

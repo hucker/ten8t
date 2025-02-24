@@ -26,6 +26,10 @@ def rule_paths_exist(paths: list[str] | str,
                      summary_name=None,
                      name="Path Check",
                      no_paths_pass_status=False) -> Generator[TR, None, None]:
+    """
+    Verify that a list of paths exist.
+    This funciton delegates to rule_path_exists for all checking.
+    """
     y = Ten8tYield(summary_only=summary_only, summary_name=summary_name)
 
     if isinstance(paths, str):
@@ -138,16 +142,17 @@ def rule_large_files(folder: str,
     if max_size <= 0:
         raise Ten8tException(f"Size for large file check should be > 0 not {max_size=}")
 
+    code = BM.code
     for filepath in pathlib.Path(folder).rglob(pattern):
         size_bytes = filepath.stat().st_size
         if size_bytes > max_size:
             yield from y(
                 status=False,
-                msg=f"Large file {BM.code(filepath)}, {BM.code(size_bytes)} bytes, exceeds limit of {BM.code(max_size)} bytes",
+                msg=f"Large file {code(filepath)}, {code(size_bytes)} bytes, exceeds limit of {code(max_size)} bytes",
             )
     if y.count == 0:
         yield from y(status=no_files_pass_status,
-                     msg=f"No files found matching {BM.code(pattern)} in {BM.code(folder)}.")
+                     msg=f"No files found matching {code(pattern)} in {code(folder)}.")
 
     if summary_only:
         yield from y.yield_summary()
