@@ -261,8 +261,5 @@ def main():
             with st.container(border=True):
                 display_json_results(checker)
 
-            with st.container(border=True):
-                display_full_results(checker)
-
 if __name__ == "__main__":
     main()

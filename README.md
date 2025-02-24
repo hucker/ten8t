@@ -672,15 +672,16 @@ Here is the setup using a couple of modules in a package folder:
 
 ## TOX
 
-Python 3.10 to 3.12 and soon to be 3.13. Python 3.9 was dropped for type hinting support using |.
+Python 3.10, 3.11, 3.12 and 3.13.
 
 ```text
 .pkg: _exit> python /Users/chuck/Projects/ten8t/.venv1/lib/python3.12/site-packages/pyproject_api/_backend.py True poetry.core.masonry.api
-  py310: OK (18.07=setup[6.71]+cmd[11.36] seconds)
-  py311: OK (14.76=setup[3.78]+cmd[10.98] seconds)
-  py312: OK (14.76=setup[3.62]+cmd[11.14] seconds)
-  lint: OK (15.47=setup[2.83]+cmd[12.63] seconds)
-  congratulations :) (63.07 seconds)
+  py310: OK (13.87=setup[3.60]+cmd[10.27] seconds)
+  py311: OK (13.21=setup[1.81]+cmd[11.40] seconds)
+  py312: OK (12.50=setup[2.09]+cmd[10.41] seconds)
+  py313: OK (20.45=setup[9.49]+cmd[10.96] seconds)
+  lint: OK (52.95=setup[28.13]+cmd[24.82] seconds)
+  congratulations :) (113.01 seconds)
 ```
 
 ## Pyproject TOML
