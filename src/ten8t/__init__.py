@@ -64,6 +64,7 @@ from .ten8t_thread import Ten8tThread  # noqa: F401
 from .ten8t_tomlrc import Ten8tTomlRC  # noqa: F401
 from .ten8t_util import any_to_int_list  # noqa: F401
 from .ten8t_util import any_to_str_list  # noqa: F401
+from .ten8t_util import next_int_value  # noqa: F401
 from .ten8t_util import str_to_bool  # noqa: F401
 
 try:

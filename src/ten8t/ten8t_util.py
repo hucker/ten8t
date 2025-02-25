@@ -3,6 +3,20 @@ This is the sad place for lonely functions that don't have a place
 """
 
 
+def next_int_value():
+    """
+    Returns the next unique incremental ID using a function attribute.
+    This is used to create unique numbers in the system without resorting to huge random numbers.
+    """
+    next_int_value.current_id += 1
+    return next_int_value.current_id
+
+
+# Prime the first value, these gets around an if statement in the above function.
+next_int_value.current_id = 1
+
+
+
 def str_to_bool(s: str, default=None) -> bool:
     """ Convert a string value to a boolean."""
     s = s.strip().lower()  # Remove spaces at the beginning/end and convert to lower case

@@ -18,13 +18,25 @@ def test_rule_file_exist():
     def check_rule2():
         yield from t8.rule_path_exists(path_="./rule_files_/my_file.dummy")
 
-    s_func1 = t8.Ten8tFunction(check_rule1, '')
-    s_func2 = t8.Ten8tFunction(check_rule2, '')
-    for result in s_func1():
+    for result in t8.Ten8tFunction(check_rule1, '')():
         assert result.status
 
-    for result in s_func2():
+    for result in t8.Ten8tFunction(check_rule2, '')():
         assert result.status is False
+
+
+@pytest.mark.parametrize("paths", [
+    (["rule_files_/my_file.txt", "rule_files_/my_big_file.txt"]),  # Test with a list of paths
+    ("rule_files_/my_file.txt rule_files_/my_big_file.txt"),  # Test with a string of paths
+
+])
+def test_rule_files_exist(paths):
+    @t8.attributes(tag="tag")
+    def check_files():
+        yield from t8.rule_paths_exist(paths=paths)
+
+    for result in t8.Ten8tFunction(check_files)():
+        assert result.status is True
 
 
 def test_rule_large_files():

@@ -35,6 +35,12 @@ def test_ruid1():
     assert t8.module_ruids(pkg.modules[1]) == ["suid21", "suid22"]
 
 
+def test_ruids1_module_str():
+    """Make sure we can load modules individually and extract the ruids"""
+    module = t8.Ten8tModule(module_name="check_suid1_a", module_file='./ruid/check_suid1_a.py')
+    assert str(module) == "Ten8tModule(module_name='check_suid1_a',check_function_count=2)"
+
+
 def test_ruids1_module1():
     """Make sure we can load modules individually and extract the ruids"""
     module = t8.Ten8tModule(module_name="check_suid1_a", module_file='./ruid/check_suid1_a.py')

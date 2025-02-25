@@ -13,6 +13,7 @@ from collections import Counter
 
 from .ten8t_exception import Ten8tException
 from .ten8t_function import Ten8tFunction
+from .ten8t_util import next_int_value
 
 
 class Ten8tModule:
@@ -21,6 +22,7 @@ class Ten8tModule:
     are used to verify rules, while the env_functions are used to set up any parameters
     that the rule functions might need.
     """
+    AUTO_THREAD_PREFIX = "auto_thread_module"
 
     def __init__(
             self,
@@ -30,6 +32,7 @@ class Ten8tModule:
             env_prefix="env_",
             env_functions: list | None = None,
             auto_load=True,
+            auto_thread=False
     ) -> None:
         self.module_name: str = module_name
         self.check_functions: list[Ten8tFunction] = []
@@ -38,14 +41,14 @@ class Ten8tModule:
         self.module_file: str = module_file
         self.check_prefix: str = check_prefix
         self.env_prefix: str = env_prefix
-        self.autothread: str = ""
+        self.auto_thread: str = auto_thread
         self.doc = ""
         if auto_load:
             self.load()
 
     def __str__(self):
         return (
-            f"Ten8tModule({self.module_name=},{self.check_function_count=} functions)"
+            f"Ten8tModule({self.module_name=},{self.check_function_count=})".replace("self.", '')
         )
 
     @property
@@ -81,7 +84,21 @@ class Ten8tModule:
     # If not, add it to sys.path
 
     def load(self, module_name=None):
-        """Load a module using importlib."""
+        """
+        Loads a specified module and initializes relevant properties. The method dynamically loads a Python
+        module by its name, processes its documentation, handles specific functionalities, and manages multi-
+        threading behaviors if required.
+
+        Args:
+            module_name (str, optional): The name of the module to load. If not provided, it will
+                default to `self.module_name`.
+
+        Returns:
+            bool: True if the module loads successfully.
+
+        Raises:
+            Ten8tException: If the specified module cannot be loaded due to an import error.
+        """
         module_name = module_name or self.module_name
         self._add_sys_path(self.module_file)
         try:
@@ -90,13 +107,56 @@ class Ten8tModule:
             # self.doc = module.__doc__
             self.doc = inspect.getdoc(module)
             self.load_special_functions(module)
+            self.setup_autothread()
             return True
 
         except ImportError as iex:
             raise Ten8tException(f"Can't load {module_name}:{iex.msg}") from iex
 
+    def setup_autothread(self):
+        """
+        Handles automatic threading for functions that do not have an assigned thread ID.
+
+        This method checks if the `autothread` property is enabled. If it is, it generates
+        a new threading ID in the format "auto_thread_module_{module_name}_{threading_number}_@@".
+        Then, for each function in the `check_functions` list, if the function does not have
+        an existing `thread_id`, it assigns the generated threading ID to it.
+
+        Raises:
+            No explicit exceptions are raised by this method.
+
+        Attributes:
+            autothread (bool): Indicates whether the automatic threading is enabled.
+            module_name (str): Name of the module for generating the threading ID.
+            check_functions (List[Function]): List of function instances to be checked
+                for threading.
+
+        """
+        if not self.auto_thread:
+            return
+        threading_number = next_int_value()
+        auto_thread_id = f"{self.AUTO_THREAD_PREFIX}_{self.module_name}_{threading_number}_@@"
+        for function in self.check_functions:
+            if not function.thread_id or function.thread_id == "main_thread__":
+                function.thread_id = auto_thread_id
+
+
     def load_special_functions(self, module):
-        """Look through all the functions in the module and load the check/env functions"""
+        """
+        Loads and processes special functions from a provided module or the default module. This
+        includes environment functions (prefixed by a specific string) and check functions
+        (prefixed by a different specific string). For check functions, an index is assigned to
+        each function based on their order in the module. Additionally, the method verifies the
+        uniqueness of RUIDs (Resource Unique Identifiers) in the module and raises an exception
+        if duplicates are found.
+
+        Args:
+            module (object | None): The module to load special functions from. If None, the
+                method defaults to using the module associated with the instance.
+
+        Raises:
+            Ten8tException: If duplicate RUIDs are found in the module.
+        """
 
         module = module or self.module
 

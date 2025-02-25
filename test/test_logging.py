@@ -16,6 +16,21 @@ def reset_logger():
     ten8t_reset_logging()
 
 
+def test_stream_exception(reset_logger):
+    with pytest.raises(ValueError):
+        ten8t_setup_logging(
+            level=logging.INFO,
+            stream_=123  # Convert to string for file path
+        )
+
+
+def test_file_exception(reset_logger):
+    with pytest.raises(ValueError):
+        ten8t_setup_logging(
+            level=logging.INFO,
+            file_name="/foo/man/chu.txt"  # folders don't exist
+        )
+
 def test_file_logger(reset_logger, tmp_path):
     """
     Test that the logger writes logs to the specified file using the 'file_name' parameter.

@@ -37,7 +37,8 @@ def func3_dup():
 
     @t8.attributes(tag="t3", level=3, phase='p3', ruid="suid_3")
     def func():
-        yield t8.Ten8tResult(status=True, msg="It works3")
+        yield t8.Ten8tResult(status=True, msg="It works3")  # pragma: no cover
+
 
     return t8.Ten8tFunction(func)
 
@@ -187,6 +188,15 @@ def test_abort_on_exception(func1, func2, func_exc):
     assert ch.perfect_run
     assert ch.clean_run
 
+
+def test_check_counts(func1, func2, func3):
+    """ Because func4 has finish_on_fail is set, this function will only yield 3 results rather then 4"""
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True)
+    assert ch.function_count == 3
+    assert ch.collected_count == 3
+    assert ch.pre_collected_count == 3
+    assert ch.module_count == 0
+    assert ch.package_count == 0
 
 def test_function_list(func1, func2):
     """Test that run_all returns results"""
@@ -565,7 +575,11 @@ def test_bad_get_str_list_2(bad_list):
         _ = t8.ten8t_checker._param_str_list(bad_list)
 
 
-def xxx_test_bad_tag_phase_ruid_strings():
+# Define a list of disallowed characters for _param_str_list
+DISALLOWED_CHARS = ["[", "]", "{", "}", "<", ">", "|", ":", "*", "?", '"']
+
+
+def test_bad_tag_phase_ruid_strings():
     """Strings used in attributes can't have illegal characters
 
     This isn't very strict
@@ -730,3 +744,21 @@ def test_auto_ten8t_funct(bare_func1, bare_func2):
     assert results[1].status is False
     assert results[2].status is True
     assert results[2].msg == "Hello world."
+
+
+def test_pre_hooks(bare_func1):
+    ch = t8.Ten8tChecker(check_functions=[bare_func1], auto_setup=True, )
+
+
+def test_module_autothread2():
+    """Make sure we can load modules individually and extract the ruids"""
+    module1 = t8.Ten8tModule(module_name="check_suid1_a", module_file='./ruid/check_suid1_a.py', auto_thread=True)
+    module2 = t8.Ten8tModule(module_name="check_suid2_a", module_file='./ruid/check_suid2_a.py', auto_thread=True)
+
+    ch = t8.Ten8tChecker(modules=[module1, module2], auto_setup=True)
+
+    # Now we added two modules, each with auto threading on, so there should be 2 unique thread ids.
+    assert len(set(func.thread_id for func in ch.collected)) == 2
+
+    # Since there is no filtering of functions the pre-collect and collect counts should be the same
+    assert ch.collected_count == ch.pre_collected_count

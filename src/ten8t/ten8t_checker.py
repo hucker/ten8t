@@ -89,7 +89,7 @@ def _param_str_list(params: Sequence[str] | str | None,
             raise Ten8tException(f"Invalid parameter list {param}")
         bad_chars = [c for c in disallowed if c in param]
         if bad_chars:
-            raise Ten8tException(f"Parameter '{bad_chars}' has a space in it.  ")
+            raise Ten8tException(f"Parameter '{bad_chars}' is in the disallowed list.  ")
 
     return params
 
@@ -303,9 +303,11 @@ class Ten8tChecker:
         # If any exception occurs stop processing
         self.abort_on_exception = abort_on_exception
 
-        # These two have the collection of all checker functions from packages, modules, and adhoc
-        self.collected: list[Ten8tFunction] = []
+        # All checker functions from packages, modules, and adhoc BEFORE filtering
         self.pre_collected: list[Ten8tFunction] = []
+
+        # Filtered list of functions from packages, modules, and adhoc
+        self.collected: list[Ten8tFunction] = []
 
         self.start_time = dt.datetime.now()
         self.end_time = dt.datetime.now()
@@ -324,27 +326,29 @@ class Ten8tChecker:
             self.pre_collect()
             self.prepare()
 
-        # Useful in some contexts.  Instead of manually setting these
-        self._set_auto_thread_names(auto_thread)
-
-    def _set_auto_thread_names(self, auto_thread: str):
+    @property
+    def check_function_count(self) -> int:
         """
-        Assigns thread names automatically to functions in `self.collected` if they don't already
-        have a `thread_id`. Uses a naming pattern with placeholders for indexing and RUIDs.
+        Return the check function count.
 
-        Args:
-            auto_thread (str): The thread naming template. If `True`, defaults to "auto_{i}_{ruid}".
+        These are the functions passed directly in not as part of a module or package.
         """
-        # Default naming template if auto_thread is True
-        if not auto_thread:
-            return
-        if auto_thread is True:
-            auto_thread = "auto_{i}_{ruid}_autothread"
+        return len(self.check_functions) if self.check_functions else 0
 
-        for i, func in enumerate(self.collected):
-            if not func.thread_id:
-                # Use `str.format()` to replace placeholders with values
-                func.thread_id = auto_thread.format(i=i, ruid=func.ruid, name=func.function_name, module=func.module)
+    @property
+    def collected_count(self) -> int:
+        """Return the check function count.
+
+        This is the could AFTER filtering
+        """
+        return len(self.collected) if self.collected else 0
+
+    @property
+    def pre_collected_count(self) -> int:
+        """Return the number of "pre_collected" functions
+        This is the functions BEFORE filtering
+        ..."""
+        return len(self.pre_collected) if self.pre_collected else 0
 
     @staticmethod
     def _make_immutable_env(env: dict) -> dict:
