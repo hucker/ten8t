@@ -5,7 +5,7 @@ This module provides functions for using ping to verify network connectivity.
 """
 from typing import Generator
 
-import ping3
+import ping3  # type: ignore
 
 from .ten8t_format import BM
 from .ten8t_result import TR

@@ -94,11 +94,18 @@ def attributes(
     Note the *, I always forget that this means that the function is kwarg only.
     """
 
-    # throws exception on bad input
-    ttl_minutes = _parse_ttl_string(str(ttl_minutes))
 
     if weight in [None, True, False] or weight <= 0:
         raise Ten8tException("Weight must be numeric and > than 0.0.  Nominal value is 100.0.")
+
+    if not isinstance(thread_id, str):
+        raise Ten8tException("thread_id must be a string.")
+
+    if not isinstance(ruid, str):
+        raise Ten8tException("ruid must be a string.")
+
+    # throws exception on bad input
+    ttl_minutes = _parse_ttl_string(str(ttl_minutes))
 
     # Make sure these names don't have bad characters.  Very important for regular expressions
     disallowed = ' ,!@#$%^&:?*<>\\/(){}[]<>~`-+=\t\n\'"'

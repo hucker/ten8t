@@ -134,11 +134,7 @@ class Ten8tFunction:
         self.last_ttl_start: float = 0.0  # this will be compared to time.time() for ttl caching
         self.last_results: list[Ten8tResult] = []
 
-        if self.weight in [True, False, None]:
-            raise Ten8tException("Boolean and none types are not allowed for weights.")
 
-        if self.weight <= 0.0:
-            raise Ten8tException("Weight must be greater than 0.0")
 
         # This allows the library user to control how lenient the underlying code is
         # with exceptions.  This is a pain point in the implementation since we don't
@@ -253,11 +249,17 @@ class Ten8tFunction:
 
                     if isinstance(result, bool):
                         result = Ten8tResult(status=result)
+                    elif "Ten8tResult" in str(
+                            type(result)):  # TODO: Need to reliably have isinstance(result, Ten8tResult) work
+                        pass
                     elif isinstance(result, list):
                         raise Ten8tException(
                             "Function yielded a list rather than a Ten8tResult or boolean"
                         )
-
+                    else:
+                        raise Ten8tException(
+                            "Function yielded a unknown type rather than a Ten8tResult or boolean"
+                        )
                     result = self.load_result(result, start_time, end_time, count)
 
                     yield result
@@ -267,14 +269,21 @@ class Ten8tFunction:
                     start_time = time.time()
 
         except self.allowed_exceptions as e:
+            # These exceptions ARE not expected and indicative of a bug so we abort from the loop.  Thus
+            # processing of the function is stopped (hence the loop is inside the try/except) regardless
+            # of the state of any flags telling you to ignore exceptions...those flags are only for
+            # exceptions that are caught in check functions and indicated in the result object
+
             # Generically handle exceptions here so we can keep running.
             result = Ten8tResult(status=False)
             result = self.load_result(result, 0, 0, count)
             result.except_ = e
             result.traceback = traceback.format_exc()
             mod_msg = "" if not self.module else f"{self.module}"
-            result.msg = f"Exception '{e}' occurred while running {mod_msg}.{self.function.__name__}"
+            result.msg = f"Exception '{e}' occurred while running {mod_msg}.{self.function.__name__} " \
+                         f"iteration {count}."
             ten8t_logger.error(result.msg)
+            # Should we have a critical error flag to handle this case????
             yield result
 
     def _get_section(self, header="", text=None):

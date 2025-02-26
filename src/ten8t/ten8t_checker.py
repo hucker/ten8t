@@ -4,7 +4,7 @@ There is also support for low level progress for functions/classes.
 """
 import datetime as dt
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Sequence
+from typing import Any, Callable
 
 from .ten8t_exception import Ten8tException
 from .ten8t_format import Ten8tAbstractRender, Ten8tRenderText
@@ -17,6 +17,7 @@ from .ten8t_rc import Ten8tRC
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
 from .ten8t_score import ScoreByResult, ScoreStrategy
+from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
 
 
 # pylint: disable=R0903
@@ -58,8 +59,8 @@ class Ten8tDebugProgress(Ten8tProgress):
             print("+" if result.status else "-", end="")
 
 
-def _param_str_list(params: Sequence[str] | str | None,
-                    disallowed=' ,!@#$%^&*(){}[]<>~`-+=\t\n\'"') -> Sequence[str]:
+def _param_str_list(params: StrListOrNone,
+                    disallowed=' ,!@#$%^&*(){}[]<>~`-+=\t\n\'"') -> StrList:
     """
     Allow user to specify "foo fum" instead of ["foo","fum"] or slightly more
     shady "foo" instead of ["foo"].  This is strictly for reducing friction
@@ -94,7 +95,7 @@ def _param_str_list(params: Sequence[str] | str | None,
     return params
 
 
-def _param_int_list(params: list[str] | list[int] | int | str | None) -> list[int]:
+def _param_int_list(params: IntListOrNone) -> IntList:
     """
     That's a lot of options there.
     
@@ -229,7 +230,7 @@ class Ten8tChecker:
             self,
             packages: list[Ten8tPackage] | None = None,
             modules: list[Ten8tModule] | None = None,
-            check_functions: list[Ten8tFunction] | None = None,
+            check_functions: list[Ten8tFunction | Callable] | None = None,
             progress_object: Ten8tProgress | None = None,
             score_strategy: ScoreStrategy | None = None,
             rc: Ten8tRC | None = None,
@@ -524,10 +525,10 @@ class Ten8tChecker:
 
         return self.collected
 
-    def exclude_by_attribute(self, tags: Sequence[str] | str | None = None,
-                             ruids: Sequence[str] | str | None = None,
-                             levels: Sequence[int] | int | None = None,
-                             phases: Sequence[str] | str | None = None) -> list[Ten8tFunction]:
+    def exclude_by_attribute(self, tags: StrListOrNone = None,
+                             ruids: StrListOrNone = None,
+                             levels: IntListOrNone = None,
+                             phases: StrListOrNone = None) -> list[Ten8tFunction]:
         """ Run everything except the ones that match these attributes """
 
         # Make everything nice lists
@@ -544,10 +545,10 @@ class Ten8tChecker:
         return self.collected
 
     def include_by_attribute(self,
-                             tags: list | str | None = None,
-                             ruids: list | str | None = None,
-                             levels: list | str | None = None,
-                             phases: list | str | None = None) -> list[Ten8tFunction]:
+                             tags: StrListOrNone = None,
+                             ruids: StrListOrNone = None,
+                             levels: IntListOrNone = None,
+                             phases: StrListOrNone = None) -> list[Ten8tFunction]:
         """ Run everything that matches these attributes """
 
         # Make everything nice lists
@@ -557,8 +558,8 @@ class Ten8tChecker:
         levels_ = _param_int_list(levels)
 
         # This is a special case to make including everything the default
-        if not tags and not ruids and not levels and not phases:
-            return self.collected
+        # if not tags and not ruids and not levels and not phases:
+        #    return self.collected
 
         # Only include the attributes that match
         self.collected = [f for f in self.collected if (f.tag in tags_) or
@@ -669,10 +670,6 @@ class Ten8tChecker:
             # used as function parameters to check functions (very similar to pytest).  At this
             # time environments are global, hence there could be collisions on larger projects.
             env = self.load_environments()
-
-            # Shuts up linter
-            # result: Ten8tResult | None = None
-            # function: Ten8tFunction | None = None
 
             # Count here to enable progress bars
             for count, function_ in enumerate(self.collected, start=1):
@@ -828,10 +825,21 @@ class Ten8tChecker:
 
             "functions": [f.function_name for f in self.check_functions],
             "passed_count": self.pass_count,
+            "warn_count": self.warn_count,
             "failed_count": self.fail_count,
             "skip_count": self.skip_count,
             "total_count": self.result_count,
-
+            "package_count": self.package_count,
+            "module_count": self.module_count,
+            "check_count": self.function_count,
+            "result_count": self.result_count,
+            "clean_run": self.clean_run,
+            "perfect_run": self.perfect_run,
+            "abort_on_fail": self.abort_on_fail,
+            "abort_on_exception": self.abort_on_exception,
+            "phases": self.phases,
+            "levels": self.levels,
+            "tags": self.tags,
             # the meat of the output lives here
             "results": [r.as_dict() for r in self.results],
         }

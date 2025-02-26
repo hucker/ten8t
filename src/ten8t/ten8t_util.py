@@ -1,18 +1,41 @@
 """
 This is the sad place for lonely functions that don't have a place
 """
+from typing import Sequence
+
+# Type aliases.
+# Note: the *OrNone are meant to be constructors that allow a None value to be passed
+#       that code will take care to convert to a [] or a ''
+StrOrNone = str | None
+StrList = Sequence[str]
+StrListOrNone = StrList | StrOrNone
+IntOrNone = int | None
+IntList = Sequence[int]
+IntListOrNone = IntList | StrList | None
+FloatOrNone = float | None
+FloatList = Sequence[float]
+FloatListOrNone = FloatList | FloatOrNone
 
 
-def next_int_value():
+class NextIntValue:
     """
-    Returns the next unique incremental ID using a function attribute.
-    This is used to create unique numbers in the system without resorting to huge random numbers.
+    I had to create this class in order to make mypy happy.
+    Mypy does not knowhow to handle dynamic functions and  playing
+    games
     """
-    next_int_value.current_id += 1
-    return next_int_value.current_id
+
+    def __init__(self):
+        self.current_id: int = 1  # Initialize to 1
+
+    def __call__(self) -> int:
+        self.current_id += 1
+        return self.current_id
 
 
-# Prime the first value, these gets around an if statement in the above function.
+# Create an instance of the callable class
+next_int_value = NextIntValue()
+
+# next_int_value can be called like a function and the class manages the count
 next_int_value.current_id = 1
 
 
@@ -32,7 +55,7 @@ def str_to_bool(s: str, default=None) -> bool:
     raise ValueError(f'Cannot convert {s} to a boolean.')
 
 
-def any_to_str_list(param: str | list | None, sep=' ') -> list[str]:
+def any_to_str_list(param: StrListOrNone, sep=' ') -> StrList:
     """
     Convert a string to a list of strings or if a list is given make sure it is all strings.
     Args:
@@ -56,7 +79,7 @@ def any_to_str_list(param: str | list | None, sep=' ') -> list[str]:
     raise ValueError('Invalid parameter type, expected all strings.')
 
 
-def any_to_int_list(param: str | list[int] | None, sep=' ') -> list[int]:
+def any_to_int_list(param: IntListOrNone, sep=' ') -> IntList:
     """
     Convert a string to a list of integers or if a list is given make sure it is all integers.
     Args:

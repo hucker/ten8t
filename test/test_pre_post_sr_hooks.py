@@ -1,4 +1,7 @@
 """ Test the pre- and post-hooks for the Ten8tResult"""
+import pytest
+
+import ten8t
 from src import ten8t as t8
 
 
@@ -72,3 +75,16 @@ def test_verify_post_changes_pre():
     for result in sp_func():
         assert result.msg == "Post Hook"
         assert result.status is True
+
+
+def test_hook_except():
+    @t8.attributes(tag="BoolOnly")
+    def hook_test():
+        """Hook Test Doc String"""
+        yield t8.Ten8tResult(status=True, msg="It works")
+
+    with pytest.raises(ten8t.Ten8tException):
+        _ = ten8t.Ten8tFunction(hook_test, pre_sr_hooks=1)
+
+    with pytest.raises(ten8t.Ten8tException):
+        _ = ten8t.Ten8tFunction(hook_test, post_sr_hooks=1)

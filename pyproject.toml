@@ -28,9 +28,26 @@ packages = [
     { include = "examples", from = "src" }
 ]
 
-dependencies = ["requests", "toml", "narwhals", "SQLAlchemy", "fs",
-    "click", "typer", "rich", "humanize", "streamlit", "uvicorn",
-    "openpyxl", "pypdf", "fastapi"]
+dependencies = [
+    "requests",
+    "toml",
+    "narwhals",
+    "SQLAlchemy",
+    "fs",
+    "click",
+    "typer",
+    "rich",
+    "humanize",
+    "streamlit",
+    "uvicorn",
+    "openpyxl",
+    "pypdf",
+    "fastapi",
+    "uv==0.6.3",
+    "nh3==0.2.20",
+    "ruff==0.9.7",
+    "pkginfo==1.12.0",
+]
 #    requiest == "^2.32.3"
 #    toml = "^0.10.2"
 #    narwhals="^1.20.1"

@@ -11,17 +11,17 @@ from narwhals.typing import FrameT
 from .ten8t_exception import Ten8tException
 from .ten8t_format import BM
 from .ten8t_result import TR, Ten8tYield
-from .ten8t_util import any_to_str_list
+from .ten8t_util import StrList, StrListOrNone, any_to_str_list
 
 
 @nw.narwhalify()
 def rule_validate_ndf_schema(df: FrameT,
-                             int_cols: str | list[str] = None,
-                             float_cols: str | list[str] = None,
-                             str_cols: str | list[str] = None,
-                             number_cols: str | list[str] = None,
-                             no_null_cols: str | list[str] = None,
-                             summary_name: str | None = '',
+                             int_cols: StrList = None,
+                             float_cols: StrList = None,
+                             str_cols: StrList = None,
+                             number_cols: StrList = None,
+                             no_null_cols: StrList = None,
+                             summary_name: StrList = '',
                              summary_only: bool = False,
                              name=None) -> Generator[TR, None, None]:
     """
@@ -91,7 +91,7 @@ def rule_validate_ndf_schema(df: FrameT,
             yield from y(TR(False, f"Column {BM.code(str_col)} is {BM.bold('NOT')} an string type"))
 
     for no_null_col in no_null_cols:
-        null_count = len(v for v in df[no_null_col] if v is None or v == '')
+        null_count = len([v for v in df[no_null_col] if v is None or v == ''])
         if null_count == 0:
             yield from y(TR(True, f"Column {BM.code(no_null_col)} has {null_count} empty/null values."))
         else:
@@ -164,15 +164,15 @@ def convert_to_tuple(input_val: tuple[float, list[str] | str] | None) -> tuple[f
 
 @nw.narwhalify()
 def rule_validate_ndf_values_by_col(df: FrameT,
-                                    positive: list[str] | str | None = None,
-                                    non_negative: list[str] | str | None = None,
-                                    percent: list[str] | str | None = None,
+                                    positive: StrListOrNone = None,
+                                    non_negative: StrListOrNone = None,
+                                    percent: StrListOrNone = None,
                                     min_: tuple[float, list[str]] | None = None,
                                     max_: tuple[float, list[str]] | None = None,
-                                    negative: list[str] | str | None = None,
-                                    non_positive: list[str] | str | None = None,
-                                    correlation: list[str] | str | None = None,
-                                    probability: list[str] | str | None = None,
+                                    negative: StrListOrNone = None,
+                                    non_positive: StrListOrNone = None,
+                                    correlation: StrListOrNone = None,
+                                    probability: StrListOrNone = None,
                                     name: str = '') -> Generator[TR, None, None]:
     """
         Validate DataFrame schema based on given conditions. Parameters are as follows:

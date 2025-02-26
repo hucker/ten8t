@@ -2,7 +2,9 @@ import time
 
 import pytest
 
+import ten8t
 import ten8t as t8
+from ten8t.ten8t_exception import Ten8tException
 
 
 @pytest.fixture(scope="module")
@@ -89,27 +91,11 @@ def test_func_doc_string_extract():
         assert s_func._get_section() == "This is a test function"
 
 
-def test_function_bad_weight():
-    def dummy_func():
-        pass
-
-    try:
-        attribute_decorator = t8.attributes(tag="tag", phase="phase", level=1, weight=0, skip=False)
-        attribute_decorator(dummy_func)
-    except t8.Ten8tException:
-        assert True
-
-    except Exception:
-        # The above cases don't work, even though the debugger says the exception is a Ten8tValueError
-        # if I compare type(e) to Ten8tValueError it says False?
-        assert False
-
-
 def test_function_attributes():
     """Test arbitrary attributes"""
 
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False, thread_id='tid')
-    def func():
+    def func():  # pragma: no cover
         return True
 
     assert func.tag == "tag"
@@ -124,7 +110,7 @@ def test_def_function_attributes():
     """Check default tags"""
 
     @t8.attributes(tag="")
-    def func():
+    def func():  # pragma: no cover
         """Generic Test"""
         pass
 
@@ -312,7 +298,7 @@ def test_divide_by_zero():
 
     result: t8.Ten8tResult = next(sfunc())
     assert result.status is False
-    assert result.msg == "Exception 'division by zero' occurred while running .func"
+    assert result.msg == "Exception 'division by zero' occurred while running .func iteration 1."
     assert result.doc == "Test Exception Function"
     assert result.skipped is False
     assert str(result.except_) == "division by zero"
@@ -350,3 +336,27 @@ def test_use_return_with_no_info():
                 assert result.msg == f'Pass from function {s_func.function_name}'
             else:
                 assert result.msg == f'Fail from function {s_func.function_name}'
+
+
+def test_weight_exception():
+    # Catch invalid weight
+    with pytest.raises(Ten8tException):
+        @ten8t.attributes(weight=-1)
+        def yield_only():
+            yield ten8t.Ten8tResult(status=True)
+
+
+def test_ruid_exception():
+    # Catch invalid rule id
+    with pytest.raises(Ten8tException):
+        @ten8t.attributes(ruid=1)
+        def yield_only():
+            yield ten8t.Ten8tResult(status=True)
+
+
+def test_thread_id_exception():
+    # Catch invalid thread_id
+    with pytest.raises(Ten8tException):
+        @ten8t.attributes(thread_id=1)
+        def yield_only():
+            yield ten8t.Ten8tResult(status=True)

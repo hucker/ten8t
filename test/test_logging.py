@@ -31,6 +31,7 @@ def test_file_exception(reset_logger):
             file_name="/foo/man/chu.txt"  # folders don't exist
         )
 
+
 def test_file_logger(reset_logger, tmp_path):
     """
     Test that the logger writes logs to the specified file using the 'file_name' parameter.

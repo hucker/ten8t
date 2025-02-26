@@ -5,6 +5,7 @@ import re
 from typing import Sequence
 
 from .ten8t_exception import Ten8tException
+from .ten8t_util import IntList, StrList
 
 
 class Ten8tRC:
@@ -34,14 +35,14 @@ class Ten8tRC:
         }
 
         # These will get overwritten
-        self.ruids: Sequence[str] = []
-        self.ex_ruids: Sequence[str] = []
-        self.phases: Sequence[str] = []
-        self.ex_phases: Sequence[str] = []
-        self.tags: Sequence[str] = []
-        self.ex_tags: Sequence[str] = []
-        self.levels: Sequence[int] = []
-        self.ex_levels: Sequence[int] = []
+        self.ruids: StrList = []
+        self.ex_ruids: StrList = []
+        self.phases: StrList = []
+        self.ex_phases: StrList = []
+        self.tags: StrList = []
+        self.ex_tags: StrList = []
+        self.levels: IntList = []
+        self.ex_levels: IntList = []
 
         self.expand_attributes(rc_data)
         self.name = rc_data['display_name']

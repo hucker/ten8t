@@ -676,12 +676,12 @@ Python 3.10, 3.11, 3.12 and 3.13.
 
 ```text
 .pkg: _exit> python /Users/chuck/Projects/ten8t/.venv1/lib/python3.12/site-packages/pyproject_api/_backend.py True poetry.core.masonry.api
-  py310: OK (13.87=setup[3.60]+cmd[10.27] seconds)
-  py311: OK (13.21=setup[1.81]+cmd[11.40] seconds)
-  py312: OK (12.50=setup[2.09]+cmd[10.41] seconds)
-  py313: OK (20.45=setup[9.49]+cmd[10.96] seconds)
-  lint: OK (52.95=setup[28.13]+cmd[24.82] seconds)
-  congratulations :) (113.01 seconds)
+  py310: OK (14.53=setup[3.64]+cmd[10.89] seconds)
+  py311: OK (13.90=setup[3.25]+cmd[10.65] seconds)
+  py312: OK (12.57=setup[1.91]+cmd[10.67] seconds)
+  py313: OK (14.83=setup[3.97]+cmd[10.86] seconds)
+  lint: OK (12.68=setup[1.88]+cmd[10.81] seconds)
+  congratulations :) (68.54 seconds)
 ```
 
 ## Pyproject TOML

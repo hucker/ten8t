@@ -39,7 +39,6 @@ def func3_dup():
     def func():
         yield t8.Ten8tResult(status=True, msg="It works3")  # pragma: no cover
 
-
     return t8.Ten8tFunction(func)
 
 
@@ -197,6 +196,7 @@ def test_check_counts(func1, func2, func3):
     assert ch.pre_collected_count == 3
     assert ch.module_count == 0
     assert ch.package_count == 0
+
 
 def test_function_list(func1, func2):
     """Test that run_all returns results"""
@@ -391,13 +391,11 @@ def test_builtin_filter_tags(func1, func2, func3):
 
 
 def test_null_check():
-    """Test exclude_ruids"""
+    """Exception if empty check function list"""
     with pytest.raises(t8.Ten8tException):
         funcs = []
 
         ch = t8.Ten8tChecker(check_functions=funcs, auto_setup=True)
-
-        _ = ch.run_all()
 
 
 def test_null_checker_types():
@@ -446,6 +444,19 @@ def test_as_dict(func1, func2):
     assert d["passed_count"] == 2
     assert d["failed_count"] == 0
     assert d["total_count"] == 2
+    assert d["phases"] == ['p1', 'p2']
+    assert d["levels"] == [1, 2]
+    assert d["tags"] == ['t1', 't2']
+    assert d["ruids"] == ['suid_1', 'suid_2']
+    assert d["score"] == 100.0
+    assert d["skip_count"] == ch.skip_count
+    assert d["warn_count"] == 0
+    assert d["start_time"] == ch.start_time
+    assert d["end_time"] == ch.end_time
+    assert d["abort_on_fail"] is False
+    assert d["abort_on_exception"] is False
+    assert d["perfect_run"] is ch.perfect_run
+    assert d["clean_run"] is ch.clean_run
 
 
 def test_progress(capsys, func1, func2):

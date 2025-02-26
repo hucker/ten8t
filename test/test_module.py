@@ -1,4 +1,4 @@
-from ten8t import Ten8tModule
+from ten8t import Ten8tChecker
 from ten8t import Ten8tModule
 
 

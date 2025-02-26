@@ -267,7 +267,7 @@ class Ten8tYield:
 
         # This is when we get a generator
         elif len(args_) == 1 and len(kwargs_) == 0 and isinstance(args_[0], Generator):
-            results = (x for x in args_[0])
+            results = [x for x in args_[0]]
         else:
             # package up the result information
             results = [sr_wrapper(*args_, **kwargs_)]
