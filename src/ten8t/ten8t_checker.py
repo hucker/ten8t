@@ -17,7 +17,7 @@ from .ten8t_rc import Ten8tRC
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
 from .ten8t_score import ScoreByResult, ScoreStrategy
-from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
+from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone, StrOrNone
 
 
 # pylint: disable=R0903
@@ -201,7 +201,7 @@ def keep_phases(phases: list[str]):
     return filter_func
 
 
-def debug_progress(_, msg: str | None = None, result: Ten8tResult | None = None
+def debug_progress(_, msg: StrOrNone = None, result: Ten8tResult | None = None
                    ):  # pylint: disable=unused-argument
     """Print a debug message."""
     if msg:

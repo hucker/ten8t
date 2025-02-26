@@ -15,7 +15,7 @@ import pandas as pd
 
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import str_to_bool
+from .ten8t_util import StrOrNone, str_to_bool
 
 
 def extract_tables_from_pdf(file_path: str,
@@ -71,7 +71,7 @@ DEFAULT_COL_NAMES = {
 
 def rule_from_pdf_rule_ids(file_path: str,
                            rule_id: str,
-                           default_msg: str | None = None,
+                           default_msg: StrOrNone = None,
                            col_names: dict | None = None,
                            max_results: int = 1,
                            pages="all") -> Generator[TR, None, None]:

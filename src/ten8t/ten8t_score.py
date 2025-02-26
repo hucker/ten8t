@@ -5,6 +5,7 @@ from typing import Any
 
 from .ten8t_exception import Ten8tException
 from .ten8t_result import Ten8tResult
+from .ten8t_util import StrOrNone
 
 
 class ScoreStrategy(abc.ABC):
@@ -15,7 +16,7 @@ class ScoreStrategy(abc.ABC):
     by providing a name that matches the class strategy name attribute.
     """
 
-    strategy_name: str | None = None
+    strategy_name: StrOrNone = None
 
     @abc.abstractmethod
     def score(self, results: list[Ten8tResult]) -> float:  # pragma: no cover

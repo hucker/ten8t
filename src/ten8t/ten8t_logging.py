@@ -16,6 +16,8 @@ that should be used by all the ten8t modules.
 """
 import logging
 
+from .ten8t_util import StrOrNone
+
 # Create a library-specific logger
 ten8t_logger = logging.getLogger("ten8t")
 ten8t_logger.addHandler(logging.NullHandler())  # Default to NullHandler
@@ -24,7 +26,7 @@ ten8t_logger.addHandler(logging.NullHandler())  # Default to NullHandler
 def ten8t_setup_logging(
         level: int = logging.WARNING,
         propagate: bool = True,
-        file_name: str | None = None,
+        file_name: StrOrNone = None,
         stream_=None,
         format_string: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 ) -> None:
