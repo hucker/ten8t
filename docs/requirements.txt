@@ -1,2 +1,3 @@
 sphinx                 # The core Sphinx documentation generator
 sphinx-rtd-theme       # The "Read the Docs" theme for HTML output
+myst-parser            # Markdown support

@@ -91,7 +91,7 @@ class Ten8tModule:
 
         Args:
             module_name (str, optional): The name of the module to load. If not provided, it will
-                default to `self.module_name`.
+                default to self.module_name.
 
         Returns:
             bool: True if the module loads successfully.
@@ -117,10 +117,10 @@ class Ten8tModule:
         """
         Handles automatic threading for functions that do not have an assigned thread ID.
 
-        This method checks if the `autothread` property is enabled. If it is, it generates
+        This method checks if the ``autothread`` property is enabled. If it is, it generates
         a new threading ID in the format "auto_thread_module_{module_name}_{threading_number}_@@".
-        Then, for each function in the `check_functions` list, if the function does not have
-        an existing `thread_id`, it assigns the generated threading ID to it.
+        Then, for each function in the ``check_functions`` list, if the function does not have
+        an existing ``thread_id``, it assigns the generated threading ID to it.
 
         Raises:
             No explicit exceptions are raised by this method.

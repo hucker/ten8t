@@ -13,7 +13,24 @@ from .ten8t_result import TR, Ten8tYield
 
 
 def rule_path_exists(path_: str) -> Generator[TR, None, None]:
-    """Simple rule to check for a file path."""
+    """
+    Checks whether a given file path exists on the filesystem and yields the result.
+
+    This function determines the existence of a specified file path. It yields a
+    generator object containing the status of the check along with an appropriate
+    message. The status indicates whether the path exists or not, while the message
+    provides a formatted string for additional details regarding the existence
+    status of the path.
+
+    Args:
+        path_ (str): The file system path to check for existence.
+
+    Yields:
+        TR: A generator object containing the status of the check and a message
+        detailing whether the path exists or not. The `status` attribute is a
+        boolean indicating the result of the existence check, and the `msg`
+        attribute provides a formatted string message describing the result.
+    """
     path_str = BM.code(path_)
     if pathlib.Path(path_).exists():
         yield TR(status=True, msg=f"The path {BM.code(path_str)} does exist.")
@@ -27,8 +44,27 @@ def rule_paths_exist(paths: list[str] | str,
                      name="Path Check",
                      no_paths_pass_status=False) -> Generator[TR, None, None]:
     """
-    Verify that a list of paths exist.
-    This funciton delegates to rule_path_exists for all checking.
+    Generator function to verify the existence of provided file paths. The function
+    iterates over the given paths, checks their presence, and yields results for each
+    path. Optionally, it can also yield a summary of all checks. If no paths are provided
+    for validation, it yields a specific status message.
+
+    Args:
+        paths (list[str] | str): A list of file paths or a string containing space-separated
+            file paths to verify for existence.
+        summary_only (bool): A flag indicating whether to only return a summary of the
+            checks instead of individual results. Defaults to False.
+        summary_name (Optional[str]): A summary label or name to be included in the
+            summarized output. Defaults to None.
+        name (str): A descriptive name or identifier for the verification process.
+            Defaults to "Path Check".
+        no_paths_pass_status (bool): A status to determine the result to be yielded in
+            case no paths are provided for validation. Defaults to False.
+
+    Yields:
+        Generator[TR, None, None]: Generator yielding verification results for each path,
+        status for missing paths, or a summary of checks depending on the configuration.
+
     """
     y = Ten8tYield(summary_only=summary_only, summary_name=summary_name)
 
@@ -54,8 +90,28 @@ def rule_stale_file(
         seconds: float = 0,
         current_time=None
 ) -> Generator[TR, None, None]:
-    """Check a single file for being stale."""
+    """
+    Checks whether a given file is stale based on its modification time and the
+    specified age thresholds. Files older than the provided duration in days,
+    hours, minutes, or seconds are considered stale.
 
+    Args:
+        filepath (pathlib.Path): The path to the file being checked.
+        days (float): The threshold number of days for the file to be considered stale.
+        hours (float): The threshold number of hours for the file to be considered stale.
+        minutes (float): The threshold number of minutes for the file to be considered stale.
+        seconds (float): The threshold number of seconds for the file to be considered stale.
+        current_time (float): Current time in seconds since the epoch. If not
+            provided, `time.time()` is used by default.
+
+    Yields:
+        Generator[TR, None, None]: A generator yielding TR objects indicating
+            the status of the file (stale or not) and an accompanying message.
+
+    Raises:
+        Ten8tException: If the combined age threshold (days, hours, minutes,
+            seconds) is less than or equal to 0.
+    """
     current_time = current_time or time.time()
 
     age_in_seconds = days * 86400.0 + hours * 3600.0 + minutes * 60.0 + seconds
@@ -102,10 +158,28 @@ def rule_stale_files(
         summary_name=None
 ) -> Generator[TR, None, None]:
     """
-        Rule verifies no files older than a specified age. Each too-old file is reported.
-        Age defined in days, hours, minutes, and seconds.
+    Identify and evaluate files within a specified folder and pattern against a defined age criteria
+    in terms of days, hours, minutes, and seconds. The rule checks the files recursively based
+    on the provided pattern and compares their last modified time against the stipulated duration.
 
-        No files found could be deemed pass or fail. This behavior can be set, with True as default.
+    Args:
+        folder: The folder path where the files should be searched. This can be either
+            a string or a pathlib.Path object.
+        pattern: The file name pattern to search for within the folder. It supports
+            wildcard patterns and can also be a pathlib.Path.
+        days: The number of full days to be used for calculating the age limit, defaulting to 0.
+        hours: The number of hours to include in the age threshold, defaulting to 0.
+        minutes: The number of minutes to include in the age threshold, defaulting to 0.
+        seconds: The number of seconds to add to the age limit, defaulting to 0.
+        no_files_pass_status: A flag indicating whether the rule should pass (`True`)
+            or fail (`False`) when no files matching the pattern are found. Defaults to True.
+        summary_only: A Boolean that, when set to True, instructs the rule to yield only a
+            summary of the evaluation results instead of individual file details. Defaults to False.
+        summary_name: An optional custom name for the summary to replace the default "Rule_stale_files".
+
+    Yields:
+        Generator[TR, None, None]: Provides results or a summary of the stale file evaluations,
+            indicating whether files matched the criteria and detailing their respective status.
     """
     y = Ten8tYield(summary_only=summary_only, summary_name=summary_name or "Rule_stale_files")
 
@@ -133,8 +207,20 @@ def rule_large_files(folder: str,
                      summary_only=False,
                      summary_name=None):
     """
-    Rule to verify that there are no files larger than a given size.
-    Each file that is too big is reported.
+    Checks for any large files exceeding the specified maximum size in a folder
+    matching a given pattern and generates corresponding status messages.
+
+    Args:
+        folder (str): The directory to search for files.
+        pattern (str): The file search pattern to apply (e.g., "*.txt").
+        max_size (float): The maximum allowed file size in bytes.
+                          Files exceeding this size will be flagged.
+        no_files_pass_status (bool): The status to use if no files matching
+                                     the pattern are found. Default is True.
+        summary_only (bool, optional): If set to True, only the summary is yielded.
+                                        Default is False.
+        summary_name (str or None, optional): The name to assign to the summary.
+                                              Default is None.
     """
 
     y = Ten8tYield(summary_only=summary_only, summary_name=summary_name or "Rule_large_files")
@@ -164,8 +250,26 @@ def rule_max_files(folders: list,
                    summary_only=False,
                    summary_name=None):
     """
-    Rule to verify that the number of files in a list of folders does not
-    exceed a given limit.
+    Checks if the number of files in specified folders is within the provided maximum limit, based on a pattern.
+
+    This function validates the count of files in each folder provided against the maximum file limits. If the file
+    count exceeds the defined maximum, it yields a failure message. It also supports providing summary results only
+    via the `summary_only` parameter.
+
+    Args:
+        folders (list or str): The directories to check for files. Can be a single folder or a list of folders.
+        max_files (list or int): The maximum number of files allowed in the corresponding folder(s). Can be a single
+            integer to apply the same limit to all folders or a list of limits corresponding to the folders.
+        pattern (str): The file-matching pattern to count files in the folder(s). Default is '*' for all files.
+        summary_only (bool): Whether to yield only a summary result instead of individual checks. Default is False.
+        summary_name (str or None): An optional name for the summary. Default is None.
+
+    Raises:
+        Ten8tException: If the lengths of `folders` and `max_files` are not the same when `max_files` is provided
+            as a list.
+
+    Yields:
+        Ten8tYield: The result of each folder's file count check or a summary if `summary_only` is True.
     """
     y = Ten8tYield(summary_only=summary_only, summary_name=summary_name or "Rule_max_files")
 

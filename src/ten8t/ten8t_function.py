@@ -295,7 +295,7 @@ class Ten8tFunction:
 
         Parameters:
         header (str): The header of the section to extract.
-        text (str): IInternally this is never used, but is useful for testing.
+        text (str): Internally this is never used, but is useful for testing.
 
         Returns:
         str: The text of the requested section.
