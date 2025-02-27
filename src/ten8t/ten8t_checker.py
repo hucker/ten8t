@@ -240,7 +240,6 @@ class Ten8tChecker:
             abort_on_exception=False,
             auto_setup: bool = False,
             auto_ruid: bool = False,
-            auto_thread: str | bool = None,
     ):
         """
 
@@ -261,7 +260,6 @@ class Ten8tChecker:
             abort_on_exception: A bool flag indicating whether to abort on exceptions. def=False.
             auto_setup: A bool flag automatically invoke pre_collect/prepare. def=False.
             auto_ruid: A bool flag automatically generate rule_ids if they don't exist.
-            auto_thread: A bool flag to indicate if the check functions should be automatically put in threads.
         Raises:
             Ten8tException: If the provided packages, modules, or check_functions 
                              are not in the correct format.
