@@ -22,7 +22,18 @@ from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone, StrOrNon
 
 # pylint: disable=R0903
 class Ten8tProgress(ABC):
-    """ Base class for all ten8t progress bars"""
+    """
+    Abstract base class for tracking and managing progress.
+
+    This class serves as a base for defining progress tracking mechanisms in
+    iterative processes. It is designed to be subclassed, with custom behavior
+    to be implemented in the '__call__' method. Users can leverage this class
+    to provide updates for operations with finite or infinite iterations, display
+    status messages, and optionally handle results.
+
+    Attributes:
+        None
+    """
 
     def __init__(self):
         pass
@@ -38,7 +49,16 @@ class Ten8tProgress(ABC):
 
 # pylint: disable=R0903
 class Ten8tNoProgress(Ten8tProgress):
-    """Progress 'bar' that does nothing.  Useful for testing and debugging."""
+    """
+    Brief summary of what the class does.
+
+    A subclass of Ten8tProgress that overrides progress functionality by
+    performing no operation. This class is particularly useful for testing
+    purposes when progress tracking is not required.
+
+    Attributes:
+        None
+    """
 
     def __call__(self, current_iteration: int,
                  max_iterations,
@@ -48,7 +68,18 @@ class Ten8tNoProgress(Ten8tProgress):
 
 # pylint: disable=R0903
 class Ten8tDebugProgress(Ten8tProgress):
-    """ Progress 'bar' that is useful for debugging by printing data to the console"""
+    """
+    Manages and displays debug progress messages for a process.
+
+    This class is a subclass of `Ten8tProgress` and is specifically
+    designed for debugging purposes. It provides functionality to
+    print debug messages alongside an optional status indicator based
+    on the provided result. Typically used during iterative processes
+    to notify about current progress and outcomes.
+
+    Attributes:
+        No specific attributes are defined for this subclass.
+    """
 
     def __call__(self, current_iteration: int, max_iteration: int, msg: str,
                  result=None):  # pylint: disable=unused-argument

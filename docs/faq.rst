@@ -3,11 +3,11 @@ Frequently Asked Questions (FAQ)
 
 **Q: How do I install the `ten8t` package?**
 
-A: Use `pip install ten8t`:
+A: Use pip!
 
 .. code-block:: bash
 
-   pip install mylibrary
+   pip install ten8t
 
 ---
 
