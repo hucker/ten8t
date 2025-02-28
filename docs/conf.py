@@ -15,7 +15,7 @@ def copy_readme_to_docs(ignore_errors=True):
     Parameters:
         ignore_errors (bool): If True, ignores errors like file not found.
     """
-
+    source_path = None
     try:
         import os
         import shutil

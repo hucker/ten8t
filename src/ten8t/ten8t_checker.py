@@ -31,8 +31,6 @@ class Ten8tProgress(ABC):
     to provide updates for operations with finite or infinite iterations, display
     status messages, and optionally handle results.
 
-    Attributes:
-        None
     """
 
     def __init__(self):
@@ -56,8 +54,6 @@ class Ten8tNoProgress(Ten8tProgress):
     performing no operation. This class is particularly useful for testing
     purposes when progress tracking is not required.
 
-    Attributes:
-        None
     """
 
     def __call__(self, current_iteration: int,
@@ -692,7 +688,8 @@ class Ten8tChecker:
         self.start_time = dt.datetime.now()
 
         ten8t_logger.info("Checker start with %d functions", len(self.collected))
-
+        # Fixes linting issue
+        function_ = None
         try:
             # Magic happens here.  Each module is checked for any functions that start with 
             # env_ (which is configurable).  Env is a dictionary that has values that may be

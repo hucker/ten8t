@@ -1,15 +1,7 @@
 ten8t package
 =============
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 4
-
-   ten8t.cli
-   ten8t.examples
-   ten8t.st_ten8t
 
 Submodules
 ----------
