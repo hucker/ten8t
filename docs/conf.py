@@ -5,6 +5,37 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import shutil
+
+
+def copy_readme_to_docs(ignore_errors=False):
+    """
+    Copies the README.md file from the root folder to the docs folder.
+
+    Parameters:
+        ignore_errors (bool): If True, ignores errors like file not found.
+    """
+    source_path = os.path.abspath("../README.md")  # The README.md in the root folder
+    destination_path = os.path.abspath("README.md")  # The README.md to be placed in the docs folder
+
+    try:
+
+        # Copy the README.md file
+        shutil.copy(source_path, destination_path)
+        print(f"Copied {source_path} to {destination_path}")
+    except FileNotFoundError as e:
+        if not ignore_errors:
+            print(f"Error: Source file {source_path} not found.")
+        else:
+            print(f"Ignored error: {e}")
+    except Exception as e:
+        if not ignore_errors:
+            print(f"An unexpected error occurred: {e}")
+        else:
+            print(f"Ignored unexpected error: {e}")
+
+
+copy_readme_to_docs(ignore_errors=True)
 
 project = 'ten8t'
 copyright = '2025, Chuck Bass'

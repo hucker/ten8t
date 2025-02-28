@@ -25,9 +25,6 @@ For larger projects there are attributes that may be assigned to all of your che
 fine-grained control over running your checks. For small projects you don't even bother, for large projects
 the tags, levels, phases can all be very useful to running just the tests you care about.
 
-When running your checks against your project `ten8t` allows you to generate scores. By default, each check
-counts as 1 "point" and all the points are added up to a score which is reported as a percentage. If you
-have more detailed needs you have a lot of control over this mechanism.
 
 ## Why Not pytest, Great Expectations or other popular tools?
 
@@ -76,9 +73,10 @@ also available through environments. Rule may be tagged with attributes to allow
 ### Simple Rules
 
 You can start with simple rules that don't even reference `ten8t` directly by returning or yielding a boolean value.
+If you hava a module with a get_drive_space function the following would be some simple tests.
 
 ```python
-from junk import get_drive_space
+from drive_tool import get_drive_space
 
 
 def check_boolean():
@@ -96,17 +94,19 @@ but with very limited feedback.
 You can up your game and return status information by returning or yielding `Ten8tResults`.
 
 ```python
-from ten8t import Ten8tResult, BR
-from junk import get_drive_space
+from ten8t import TR
+from drive_tool import get_drive_space
 
+
+#NOTE TR is an alias for Tent8tResult.  Since it is used very often it is useful to have a short version.
 
 def check_boolean():
-    return Ten8tResult(status=get_drive_space('/foo') > 1_000_000_000, msg="Drive space check for foo")
+    return TR(status=get_drive_space('/foo') > 1_000_000_000, msg="Drive space check for foo")
 
 
 def check_yielded_values():
-    yield BR(status=get_drive_space('/foo') > 1_000_000_000, msg="Drive space check for foo")
-    yield BR(status=get_drive_space('/fum') > 1_000_000_000, msg="Drive space check for fum")
+    yield TR(status=get_drive_space('/foo') > 1_000_000_000, msg="Drive space check for foo")
+    yield TR(status=get_drive_space('/fum') > 1_000_000_000, msg="Drive space check for fum")
 ```
 
 As you might expect running this will also provide 3 passing test results with better messages.
@@ -116,7 +116,7 @@ two functions are given different tags. When you make calls to run checks you ca
 you want to allow to run.
 
 ```python
-from ten8t import Ten8tResult, attributes
+from ten8t import attributes, TR
 import datetime as dt
 import pathlib
 
@@ -125,7 +125,7 @@ import pathlib
 def check_file_exists():
     """ Verify this that my_file exists """
     status = pathlib.Path("my_file.csv").exists()
-    return Ten8tResult(status=status, msg="Verify daily CSV file exists")
+    return TR(status=status, msg="Verify daily CSV file exists")
 
 
 @attributes(tag="file_age")
@@ -136,9 +136,9 @@ def check_file_age():
     file_age_in_seconds = current_time - modification_time
     file_age_in_hours = file_age_in_seconds / 3600
     if file_age_in_hours < 24:
-        return Ten8tResult(status=True, msg="The file age is OK {file_age_in_hours}")
+        return TR(status=True, msg="The file age is OK {file_age_in_hours}")
     else:
-        return Ten8tResult(status=False, msg="The file is stale")
+        return TR(status=False, msg="The file is stale")
 ```
 
 And even a bit more complexity pass values to these functions using environments, which are similar to `pytest`
@@ -149,7 +149,7 @@ connections, filenames, config files are passed around with this mechanism.
 ```python
 import datetime as dt
 import pathlib
-from ten8t import attributes, Ten8tResult
+from ten8t import attributes, TR
 
 
 def env_csv_file():
@@ -160,7 +160,7 @@ def env_csv_file():
 @attributes(tag="file")
 def check_file_exists(csv_file):
     """ Verify this that my_file exists """
-    return Ten8tResult(status=csv_file.exists(), msg="Verify daily CSV file exists")
+    return TR(status=csv_file.exists(), msg="Verify daily CSV file exists")
 
 
 @attributes(tag="file")
@@ -170,15 +170,18 @@ def check_file_age(csv_file):
     file_age_in_seconds = current_time - modification_time
     file_age_in_hours = file_age_in_seconds / 3600
     if file_age_in_hours < 24:
-        return Ten8tResult(status=True, msg="The file age is OK {file_age_in_hours}")
+        return TR(status=True, msg="The file age is OK {file_age_in_hours}")
     else:
-        return Ten8tResult(status=False, msg="The file is stale")
+        return TR(status=False, msg="The file is stale")
 ```
 
-## How is Ten8t Organized?
+## How is Ten8t Used?
 
-A common use case is to have check-functions saved in python code files that python can discover via the import
-mechanism allowing files to be more or less, automatically detected.
+Well, once you have your check functions written you need to setup a `Ten8tChecker` object to run them
+for you. Essentially you need to pass the checker all of your check functions so they can be run.
+
+A common use case is to have check-functions saved in python source files that `ten8t` can discover via
+the import mechanism allowing files to be more or less, automatically detected.
 
 Ten8t uses the following hierarchy:
 
@@ -190,28 +193,32 @@ Typically one works at the module or package level where you have python files t
 them.
 
 Each `Ten8tFunction` returns/yields 0-to-N results from its generator function. By convention, if None is returned, the
-rule
-was skipped.
+rule was skipped.
+
 The rule functions that you write don't need to use generators. They can return a variety of output
 (e.g., Boolean, List of Boolean, `Ten8tResult`, List of `Ten8tResult`), or you can write a generator that yields
-results as they are checked.
+results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant.
 
 Alternatively you can ignore the file and folder discovery mechanism provide list of rules as regular python
-functions and `Ten8t` will happily run them for you if pass a list of check functions the make a `Ten8tChecker`
+functions and `Ten8t` will happily run them for you when you pass a list of check functions
+the make a `Ten8tChecker` object.
 
 ```python
 import ten8t as t8
-from rules import rule1, rule2, rule3, rule4, rule5, sql_conn
+from rules import rule1, rule2, rule3, rule4, rule5
 
+sql_conn = make_sql_conn()
 checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4, rule5], auto_setup=True)
 results = checker.run_all(env={'db': sql_conn, 'cfg': 'cfg.json'})
 ```
 
+This example shows a bunch of rulls that are passed in some of which might need a single sql connection object.
+
 ## Rule Integrations
 
 To simplify getting started, there are included rules you can call to check files and folders on your file system
-dataframes, Excel spreadsheets, PDF files and web APIs. These integrations make many common checks just a few lines of
-code.
+dataframes, Excel spreadsheets, PDF files and web APIs. These integrations make many common checks just a
+few lines of code.
 
 These generally take the form of you wrapping them in some way to provide the required inputs and any attributes
 required by your app as well as messages specific to your application.
@@ -308,8 +315,10 @@ have 100% pass.
 
 ## What are @attributes?
 
-Each rule function can be assigned attributes that define metadata about the rule function. Attributes are at the heart
-of how `ten8t` allows you to filter, sort, select tests to run and view by adding decorators to your check functions.
+Each rule function can be assigned attributes that define metadata about the rule function. Attributes
+are at the heart of how `ten8t` allows you to filter, sort, select tests to run and view by adding
+decorators to your check functions. For large projects where subsets of rules need to be run and
+detailed setup information is required attributes provide a consistant way to tag check functions.
 
 | Attribute        | Description                                                                                                                         |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -696,7 +705,7 @@ the required secrets. Something like:
 Your code has been rated at 9.79/10 (previous run: 9.77/10, +0.01)
 ```
 
-## WTH does `Ten8t` mean and HTH do you say it?
+## WTH does `Ten8t` and what's with your wierd names?
 
 `Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). Why was this
 chosen...because the first things I picked that were not packages on pypi were "too close" to existing package
@@ -712,15 +721,19 @@ import ten8t as t8
 Please pronounce the `t8` as `tee eight` (as in an early prototype for
 a [T-800](https://en.wikipedia.org/wiki/T-800_(character))) *NOT* `tate`.
 
+Why is your name `hucker`? It is a portmanteau of Chuck (my name) and hacker with the added benefit
+that is a derogatory name for someone who isn't very good at skiing. I'll call it a portmanthree.
+
 ## Why does this exist?
 
 This project is a piece of code that is useful to me, and it serves as non-trivial piece of code where
 I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
-advanced yielding, strategy patterns, dynamic function creation, hook functions, mypy, using pypi.
+advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
+mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial test bed.
 
 ## TODO
 
-1. Improve threading
+1. Currently testing free threading.
 
 ## Latest changes
 
