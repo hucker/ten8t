@@ -8,17 +8,17 @@
 import shutil
 
 
-def copy_readme_to_docs(ignore_errors=False):
+def copy_readme_to_docs(ignore_errors=True):
     """
     Copies the README.md file from the root folder to the docs folder.
 
     Parameters:
         ignore_errors (bool): If True, ignores errors like file not found.
     """
-    source_path = os.path.abspath("../README.md")  # The README.md in the root folder
-    destination_path = os.path.abspath("README.md")  # The README.md to be placed in the docs folder
 
     try:
+        source_path = os.path.abspath("../README.md")  # The README.md in the root folder
+        destination_path = os.path.abspath("README.md")  # The README.md to be placed in the docs folder
 
         # Copy the README.md file
         shutil.copy(source_path, destination_path)
@@ -35,7 +35,7 @@ def copy_readme_to_docs(ignore_errors=False):
             print(f"Ignored unexpected error: {e}")
 
 
-copy_readme_to_docs(ignore_errors=True)
+copy_readme_to_docs()
 
 project = 'ten8t'
 copyright = '2025, Chuck Bass'
