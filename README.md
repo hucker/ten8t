@@ -212,7 +212,7 @@ checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4, rule5], a
 results = checker.run_all(env={'db': sql_conn, 'cfg': 'cfg.json'})
 ```
 
-This example shows a bunch of rulls that are passed in some of which might need a single sql connection object.
+This example shows a bunch of rules that are passed in some of which might need a single sql connection object.
 
 ## Rule Integrations
 
@@ -318,7 +318,7 @@ have 100% pass.
 Each rule function can be assigned attributes that define metadata about the rule function. Attributes
 are at the heart of how `ten8t` allows you to filter, sort, select tests to run and view by adding
 decorators to your check functions. For large projects where subsets of rules need to be run and
-detailed setup information is required attributes provide a consistant way to tag check functions.
+detailed setup information is required attributes provide a consistent way to tag check functions.
 
 | Attribute        | Description                                                                                                                         |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -412,8 +412,8 @@ def function3():
 
 
 checker = Ten8tChecker(check_functions=[function1, function2, function3], auto_setup=True)
-tcheck = Ten8tThread(checker, max_workers=4)  # take checker object and put functions in their own threads
-results = tcheck.run_all()  # now using the thread runner object.
+tcheck = Ten8tThread(checker)  # take checker object and put functions in their own threads
+results = tcheck.run_all(max_workers=4)  # now using the thread runner object.
 ```
 
 ## Ten8t RC
@@ -704,10 +704,10 @@ Your code has been rated at 9.79/10 (previous run: 9.77/10, +0.01)
 
 `Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). Why was this
 chosen...because the first things I picked that were not packages on pypi were "too close" to existing package
-names. I spent more time that I care to admit coming up with different names. It refers to skiing or
+names. I spent more time that I care to admit coming up with different names. The name refers to skiing or
 snowboarding tricks involving 3 rotations.
 
-The preferred way for using `ten8t` in code is to say:
+The preferred way for using `ten8t` in code is to write:
 
 ```python
 import ten8t as t8
@@ -725,6 +725,12 @@ This project is a piece of code that is useful to me, and it serves as non-trivi
 I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
 advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
 mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial test bed.
+
+## Status
+
+### Read The Docs
+
+[![Read The Docs Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://your-project.ten8t.io/en/latest/)
 
 ## TODO
 
