@@ -38,6 +38,7 @@ def copy_readme_to_docs(ignore_errors=True):
             print(f"Ignored unexpected error: {e}")
 
 
+# This really should be a symlink so it could be two way?
 copy_readme_to_docs()
 
 project = 'ten8t'
@@ -79,7 +80,7 @@ exclude_patterns = ['_build',
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_book_theme'
 html_static_path = ['_static', '../img']
 
 # Specify source file extensions
