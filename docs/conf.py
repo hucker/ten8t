@@ -5,7 +5,7 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import shutil
+
 
 
 def copy_readme_to_docs(ignore_errors=True):
@@ -17,6 +17,9 @@ def copy_readme_to_docs(ignore_errors=True):
     """
 
     try:
+        import os
+        import shutil
+
         source_path = os.path.abspath("../README.md")  # The README.md in the root folder
         destination_path = os.path.abspath("README.md")  # The README.md to be placed in the docs folder
 

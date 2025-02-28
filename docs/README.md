@@ -693,11 +693,6 @@ Python 3.10, 3.11, 3.12 and 3.13.
   congratulations :) (68.54 seconds)
 ```
 
-## Pyproject TOML
-
-In order to build the project you need to use will need to use some form of keyring in order to extract
-the required secrets. Something like:
-
 ## Lint
 
 ```text
