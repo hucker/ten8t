@@ -125,7 +125,8 @@ class Ten8tYield:
     if not gen.yielded:
         yield from gen(BR(False,"Nothing to do"))
     if show_summary:
-        yield BR(status=self.fail_count==0,msg=f"{self.pass_count} passes and {self.fail_count} fails")
+        yield BR(status=self.fail_count==0,msg=f"{self.pass_count} passes "
+                 f"and {self.fail_count} fails")
 
     """
 
@@ -192,7 +193,8 @@ class Ten8tYield:
         if not result.status:
             self._fail_count += 1
 
-    def results(self, results: Ten8tResult | list[Ten8tResult]) -> Generator[Ten8tResult, None, None]:
+    def results(self,
+                results: Ten8tResult | list[Ten8tResult]) -> Generator[Ten8tResult, None, None]:
         """
         This lets you pass a result or results to be yielded and mimics the way ten8t results
         work in other places where traditional result collection is used, for example code
@@ -205,7 +207,8 @@ class Ten8tYield:
         if isinstance(results, Ten8tResult):
             results = [results]
 
-        if isinstance(results, Generator) or (isinstance(results, list) and isinstance(results[0], Ten8tResult)):
+        if isinstance(results, Generator) or (isinstance(results, list) and
+                                              isinstance(results[0], Ten8tResult)):
             # At this point we are iterating over a list or a generator.
             for result in results:
                 if isinstance(result, Ten8tResult):
@@ -385,7 +388,8 @@ def group_by(results: Sequence[Ten8tResult], keys: Sequence[str]) -> dict[str, A
 
     # Sort and group by the first key
     results = sorted(results, key=key_func)
-    group_results: list[tuple[str, Any]] = [(k, list(g)) for k, g in itertools.groupby(results, key=key_func)]
+    group_results: list[tuple[str, Any]] = [(k, list(g))
+                                            for k, g in itertools.groupby(results, key=key_func)]
 
     # Recursively group by the remaining keys
     if len(keys) > 1:

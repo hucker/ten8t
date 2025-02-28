@@ -464,10 +464,10 @@ class Ten8tChecker:
 
         self.pre_collected += self.check_functions
 
-        # This is a bit of a hack and is NOT required and one could argue that it is bad code. I suspect that
-        # this will only be useful for testing.
-        self.pre_collected = [Ten8tFunction(func) if not isinstance(func, Ten8tFunction) else func for func in
-                              self.pre_collected]
+        # This is a bit of a hack and is NOT required and one could argue that it is bad code.
+        # I suspect that this will only be useful for testing.
+        self.pre_collected = [Ten8tFunction(func) if not isinstance(func, Ten8tFunction) else func
+                              for func in self.pre_collected]
 
         # List of all possible functions that could be run
         return self.pre_collected

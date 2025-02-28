@@ -98,7 +98,8 @@ async def check_all() -> dict:
 @app.get("/ten8t/rule_id_re/{rule_id}")
 async def check_rule_id_regular_expression(rule_id: str):
     """
-    Use this endpoint to check if any functions match the provided rule_id. The rule_id can be a regular expression.
+    Use this endpoint to check if any functions match the provided rule_id.
+    The rule_id can be a regular expression.
 
     You can call this function using the following format:
 
@@ -175,13 +176,15 @@ async def check_level_range(
     the function defaults to checking within the entire possible range.
 
     Args:
-        low (int, optional): Lower boundary of the range. If provided, the level of the function must
-            be greater than or equal to this value. Defaults to None.
-        high (int, optional): Upper boundary of the range. If provided, the level of the function must
-            be less than or equal to this value. Defaults to None.
+        low (int, optional): Lower boundary of the range. If provided, the
+            level of the function must be greater than or equal to this value.
+            Defaults to None.
+        high (int, optional): Upper boundary of the range. If provided, the level of the
+             function must be less than or equal to this value. Defaults to None.
 
     Returns:
-        dict: A dictionary containing key 'results' with a list of results for each function that matches
+        dict: A dictionary containing key 'results' with a list of results for each
+              function that matches
         the level criteria. Each result is represented as a dictionary.
 
     Examples:
@@ -223,4 +226,4 @@ async def check_phase(phases: str) -> dict:
 @app.get("/apple-touch-icon.png")
 def get_apple_touch_icon():
     """Return something for an icon"""
-    return FileResponse('apple_touch_icon.png')  # assumes you have an "images" directory your icon is located there
+    return FileResponse('apple_touch_icon.png')

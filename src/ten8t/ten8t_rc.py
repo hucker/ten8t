@@ -66,7 +66,8 @@ class Ten8tRC:
 
         This method receives a list of data values and splits it into two lists:
         included values and excluded values. A data value is considered as 'excluded'
-        if it starts with a '-' sign, while it is 'included' otherwise (including values without any prefix).
+        if it starts with a '-' sign, while it is 'included' otherwise
+        (including values without any prefix).
 
         Spaces and commas are treated as separators for the elements in the list. Non-string
         data elements will be converted to strings.

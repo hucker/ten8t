@@ -48,17 +48,17 @@ class Ten8tMarkup:
     """
     Baseline formatter class to be used by ten8t rules. 
     
-    The idea of ten8t markup is a way to tag all result message with formatting information that
-    may be used to provide the end user with a richer formatting experience targeting multiple
-    output environments.  Since I use rich, markdown and streamlit and a bit of HTML I needed it
-    to work for those platforms.  
+    The idea of ten8t markup is a way to tag all result message with formatting
+    information that may be used to provide the end user with a richer formatting
+    experience targeting multiple output environments.  Since I use rich, markdown
+     and streamlit and a bit of HTML I needed it to work for those platforms.
     
-    Ten8t messages can have embedded formatting information that indicates to higher level
-    code how the text could be formatted.  Rendering class can choose what to do with the tags
-    including doing nothing.
+    Ten8t messages can have embedded formatting information that indicates to
+    higher level code how the text could be formatted.  Rendering class can choose
+    what to do with the tags including doing nothing.
     
-    The markup looks like html, with open and close tags.  This was chosen to make the simple
-    search/replace algorithm have easy matches.
+    The markup looks like html, with open and close tags.  This was chosen to
+    make the simple search/replace algorithm have easy matches.
     
     The idea is that you could want a way to write a red message, so you could do:
     
@@ -70,8 +70,8 @@ class Ten8tMarkup:
     
     to make your formatted output.  
     
-    If no formatter was specified, a text formatter would just run through the code and strip out
-    all the <<>> tags, leaving the plain text:
+    If no formatter was specified, a text formatter would just run through the code
+    and strip out all the <<>> tags, leaving the plain text:
     
     Hello world!
     
@@ -308,8 +308,10 @@ class Ten8tBasicRichRenderer(Ten8tRenderText):
                         }
 
         # Phase 1 replace all substitutions
-        for md, replacement in replacements.items():
-            msg = msg.replace(f"{fmt.open_tag(md)}", replacement[0]).replace(f"{fmt.close_tag(md)}", replacement[1])
+        # for md, replacement in replacements.items():
+        #    msg = msg.replace(f"{fmt.open_tag(md)}", replacement[0]).replace(f"{fmt.close_tag(md)}", replacement[1])
+        for md, (start, end) in replacements.items():
+            msg = msg.replace(fmt.open_tag(md), start).replace(fmt.close_tag(md), end)
 
         # Phase 2 replace all unused tags.
         return self.cleanup(msg)

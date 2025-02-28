@@ -85,13 +85,13 @@ class Ten8tModule:
 
     def load(self, module_name=None):
         """
-        Loads a specified module and initializes relevant properties. The method dynamically loads a Python
-        module by its name, processes its documentation, handles specific functionalities, and manages multi-
-        threading behaviors if required.
+        Loads a specified module and initializes relevant properties. The method dynamically
+        loads a Python module by its name, processes its documentation, handles specific
+        functionalities, and manages multi-threading behaviors if required.
 
         Args:
-            module_name (str, optional): The name of the module to load. If not provided, it will
-                default to self.module_name.
+            module_name (str, optional): The name of the module to load. If not provided,
+            it will default to self.module_name.
 
         Returns:
             bool: True if the module loads successfully.
@@ -139,7 +139,6 @@ class Ten8tModule:
         for function in self.check_functions:
             if not function.thread_id or function.thread_id == "main_thread__":
                 function.thread_id = auto_thread_id
-
 
     def load_special_functions(self, module):
         """

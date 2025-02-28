@@ -175,7 +175,8 @@ def rule_stale_files(
             or fail (`False`) when no files matching the pattern are found. Defaults to True.
         summary_only: A Boolean that, when set to True, instructs the rule to yield only a
             summary of the evaluation results instead of individual file details. Defaults to False.
-        summary_name: An optional custom name for the summary to replace the default "Rule_stale_files".
+        summary_name: An optional custom name for the summary to replace the default
+             "Rule_stale_files".
 
     Yields:
         Generator[TR, None, None]: Provides results or a summary of the stale file evaluations,
@@ -194,7 +195,8 @@ def rule_stale_files(
 
     if y.count == 0:
         yield from y(status=no_files_pass_status,
-                     msg=f"No files were found in {BM.code(folder)} matching pattern {BM.code(folder)}")
+                     msg=f"No files were found in {BM.code(folder)} matching pattern " \
+                         f"{BM.code(folder)}")
 
     if summary_only:
         yield from y.yield_summary()
@@ -234,7 +236,8 @@ def rule_large_files(folder: str,
         if size_bytes > max_size:
             yield from y(
                 status=False,
-                msg=f"Large file {code(filepath)}, {code(size_bytes)} bytes, exceeds limit of {code(max_size)} bytes",
+                msg=f"Large file {code(filepath)}, {code(size_bytes)} bytes, " \
+                    f"exceeds limit of {code(max_size)} bytes",
             )
     if y.count == 0:
         yield from y(status=no_files_pass_status,
@@ -250,27 +253,37 @@ def rule_max_files(folders: list,
                    summary_only=False,
                    summary_name=None):
     """
-    Checks if the number of files in specified folders is within the provided maximum limit, based on a pattern.
+    Checks if the number of files in specified folders is within the provided maximum limit,
+    based on a pattern.
 
-    This function validates the count of files in each folder provided against the maximum file limits. If the file
-    count exceeds the defined maximum, it yields a failure message. It also supports providing summary results only
-    via the `summary_only` parameter.
+    This function validates the count of files in each folder provided against the maximum file
+    limits. If the file count exceeds the defined maximum, it yields a failure message. It also
+    supports providing summary results only via the `summary_only` parameter.
 
     Args:
-        folders (list or str): The directories to check for files. Can be a single folder or a list of folders.
-        max_files (list or int): The maximum number of files allowed in the corresponding folder(s). Can be a single
-            integer to apply the same limit to all folders or a list of limits corresponding to the folders.
-        pattern (str): The file-matching pattern to count files in the folder(s). Default is '*' for all files.
-        summary_only (bool): Whether to yield only a summary result instead of individual checks. Default is False.
-        summary_name (str or None): An optional name for the summary. Default is None.
+        folders (list or str):
+            The directories to check for files. Can be a single folder or a list of folders.
+        max_files (list or int):
+            The maximum number of files allowed in the corresponding folder(s). Can be a single
+            integer to apply the same limit to all folders or a list of limits corresponding to the
+            folders.
+        pattern (str):
+            The file-matching pattern to count files in the folder(s). Default is '*' for all files.
+        summary_only (bool):
+            Whether to yield only a summary result instead of individual checks. Default is False.
+        summary_name (str or None):
+            An optional name for the summary. Default is None.
 
     Raises:
-        Ten8tException: If the lengths of `folders` and `max_files` are not the same when `max_files` is provided
-            as a list.
+        Ten8tException:
+            If the lengths of `folders` and `max_files` are not the same when `max_files` is
+            provided as a list.
 
     Yields:
-        Ten8tYield: The result of each folder's file count check or a summary if `summary_only` is True.
+        Ten8tYield:
+            The result of each folder's file count check or a summary if `summary_only` is True.
     """
+
     y = Ten8tYield(summary_only=summary_only, summary_name=summary_name or "Rule_max_files")
 
     if isinstance(folders, (str, pathlib.Path)):
@@ -289,10 +302,12 @@ def rule_max_files(folders: list,
 
         if count <= max_file:
             yield from y(status=True,
-                         msg=f"Folder {BM.code(folder)} contains less than or equal to {BM.code(max_file)} files.")
+                         msg=f"Folder {BM.code(folder)} contains less than or equal to " \
+                             f"{BM.code(max_file)} files.")
         else:
             yield from y(status=False,
-                         msg=f"Folder {BM.code(folder)} contains greater than {BM.code(max_file)} files.")
+                         msg=f"Folder {BM.code(folder)} contains greater than " \
+                             f"{BM.code(max_file)} files.")
 
     if summary_only:
         yield from y.yield_summary()

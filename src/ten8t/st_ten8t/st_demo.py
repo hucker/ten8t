@@ -89,8 +89,8 @@ def display_results(results: list[t8.Ten8tResult]):
     Args:
         results: list of ten8t results
     """
-    headers = ['Count', 'Status', 'Warn', 'Skipped', 'Tag', 'Level', 'Phase', 'RUID', 'Module Name', 'Function Name',
-               'Message']
+    headers = ['Count', 'Status', 'Warn', 'Skipped', 'Tag', 'Level', 'Phase', 'RUID',
+               'Module Name', 'Function Name', 'Message']
 
     # Start with the table headers and separators created as f-strings
     table = [
@@ -106,8 +106,9 @@ def display_results(results: list[t8.Ten8tResult]):
 
         # Append each row directly to the table, note that I'm using the "rendered" view
         table.append(
-            f"| {count} | {c_f(r.status)} | {orange(yes_or_none(r.warn_msg))} | {violet(yes_or_none(r.skipped))}| " \
-            f"{blue(r.tag)} | {r.level} | {r.phase} | {r.ruid} | {c_f(r.module_name)} | {c_f(r.func_name)} " \
+            f"| {count} | {c_f(r.status)} | {orange(yes_or_none(r.warn_msg))} | " \
+            f"{violet(yes_or_none(r.skipped))}| {blue(r.tag)} | {r.level} | {r.phase} " \
+            f"| {r.ruid} | {c_f(r.module_name)} | {c_f(r.func_name)} " \
             f"|{c_f(r.msg_rendered)} |")
 
         # Convert the list of rows into a single string with line breaks
@@ -161,7 +162,6 @@ def display_json_results(checker: t8.Ten8tChecker):
         st.json(checker.as_dict())
 
 
-
 class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
     """ Implementation of a progress bar for streamlit. """
 
@@ -188,9 +188,10 @@ def main():
     Main method for running the Ten8t package checker.
 
     Usage:
-        Run this method to run the Ten8t package checker. It prompts the user to select options for including or
-        excluding functions based on tags, rule IDs, levels, and phases. After selecting the options,
-        click the "Run Ten8t" button to start the rule checking process. The results will be displayed in the UI.
+        Run this method to run the Ten8t package checker. It prompts the user to select
+        options for including or excluding functions based on tags, rule IDs, levels,
+        and phases. After selecting the options, click the "Run Ten8t" button to start
+        the rule checking process. The results will be displayed in the UI.
 
     Example:
         main()
@@ -260,6 +261,7 @@ def main():
 
             with st.container(border=True):
                 display_json_results(checker)
+
 
 if __name__ == "__main__":
     main()

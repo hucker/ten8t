@@ -15,8 +15,9 @@ class Ten8tThread:
     """
     A class to manage and execute Ten8tChecker tasks in parallel using threading.
 
-    This class groups functions collected by a Ten8tChecker instance based on their `thread_id`
-    attribute, executes each group in parallel using `ThreadPoolExecutor`, and aggregates the results.
+    This class groups functions collected by a Ten8tChecker instance based on
+    their `thread_id` attribute, executes each group in parallel using `ThreadPoolExecutor`,
+    and aggregates the results.
 
     Example:
         checker = Ten8tChecker(...)
@@ -29,8 +30,8 @@ class Ten8tThread:
         Initialize the Ten8tThread instance with a specific Ten8tChecker.
 
         Args:
-            checker (Ten8tChecker): An instance of Ten8tChecker containing the collected functions
-                                    that need to be executed.
+            checker (Ten8tChecker): An instance of Ten8tChecker containing the collected
+                                    functions that need to be executed.
         """
         self.checker = checker
 
@@ -99,8 +100,7 @@ class Ten8tThread:
                                Default is 5.
 
         Returns:
-            list[Ten8tResult]: A list of `Ten8tResult` objects representing the results of executed
-                               check functions.
+            list[Ten8tResult]: A list of `Ten8tResult` objects of executed check functions.
         """
         # If only one group of functions exists, execute them sequentially without threading.
 
@@ -110,7 +110,7 @@ class Ten8tThread:
         # List to hold checkers, each assigned a subset of functions to process.
         checkers = []
         for _, functions in self.thread_groups.items():
-            # Create a shallow copy of the Ten8tChecker instance.  This is a bit of paranoia on my part
+            # Create a shallow copy of the Ten8tChecker instance.  Paranoia on my part
             # but not enough to do deep copies.  Perhaps there are use cases for this?
             checker = copy.copy(self.checker)
 
@@ -157,15 +157,18 @@ class Ten8tThread:
                     # Combine results from the completed thread into `final_result`.
                     final_result.extend(future.result())
                 except Exception as e:  # pragma: no cover
-                    # I don't know how to trigger this exception I have this code here to remind me what could go wrong
-                    # This should be impossible, less out of memory type stuff, since the code in the checker handles
-                    # all exceptions... ideally this code all goes away and this runner is trivial.
-                    final_result.append(TR(status=False, msg=f"Unexpected exception in ten8t_thread.run_all {e} "))
+                    # I don't know how to trigger this exception I have this code here to remind
+                    # me what could go wrong. This should be impossible, less out of memory type
+                    # stuff, since the code in the checker handles all exceptions... ideally this
+                    # code all goes away and this runner is trivial.
+                    final_result.append(TR(status=False, msg="Unexpected exception in " \
+                                                             f"ten8t_thread.run_all {e} "))
 
         # Return the aggregated results from all threads.
         self.results = final_result
 
-        # This might not be needed, but it is useful since threaded code returns the results interleaved.
+        # This might not be needed, but it is useful since threaded code returns
+        # the results interleaved.
         self.results.sort(key=lambda result: result.thread_id)
 
         return self.results

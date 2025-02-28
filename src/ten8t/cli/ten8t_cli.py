@@ -49,10 +49,10 @@ def pretty_print_json(json_obj):
 
 @app.command()
 def run_checks(
-        module: str = typer.Option(None, '-m', '--mod', help='The module to run rules against.'),
-        pkg: str = typer.Option(None, '--pkg', help='The package to run rules against.'),
-        json_file: str = typer.Option(None, '-j', '--json', help='The JSON file to write results to.'),
-        flat: bool = typer.Option(False, '-f', '--flat', help='Should the output be flat or a hierarchy.'),
+        module: str = typer.Option(None, '-m', '--mod', help='Module to run rules against.'),
+        pkg: str = typer.Option(None, '--pkg', help='Package to run rules against.'),
+        json_file: str = typer.Option(None, '-j', '--json', help='JSON file to write results to.'),
+        flat: bool = typer.Option(False, '-f', '--flat', help='Flat or hierarchical output.'),
         score: bool = typer.Option(False, '-s', '--score', help='Print the score of the rules.'),
         api: bool = typer.Option(False, '-a', '--api', help='Start FastAPI.'),
         port: int = typer.Option(8000, '-p', '--port', help='FastAPI Port'),
@@ -90,17 +90,18 @@ def run_checks(
             else:
                 typer.echo(f'Invalid package: {pkg} is not a folder.')
 
-        # If they supply 1 or both they are all run since the checker can handle arbitrary combinations
+        # If they supply 1 or both, run all since the checker handles arbitrary combinations
         if mod or pkg:
             ch = t8.Ten8tChecker(modules=mod, packages=pkg, auto_setup=True)
             if api:
                 ten8t_api.set_ten8t_checker(ch)
                 uvicorn.run(ten8t_api.app, host='localhost', port=port)
                 return
-            else:
-                t8.ten8t_logger.info("Running %s check functions.", ch.function_count)
-                results = ch.run_all()
-                t8.ten8t_logger.info("Pass=%s Fail=%s Skip=%s", ch.pass_count, ch.fail_count, ch.skip_count)
+
+            t8.ten8t_logger.info("Running %s check functions.", ch.function_count)
+            results = ch.run_all()
+            t8.ten8t_logger.info("Pass=%s Fail=%s Skip=%s",
+                                 ch.pass_count, ch.fail_count, ch.skip_count)
         else:
             typer.echo('Please provide a module, package to run checks on.')
             return

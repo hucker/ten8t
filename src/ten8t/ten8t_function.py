@@ -81,7 +81,7 @@ class Ten8tFunction:
 
     def __init__(self, function_: Any,
                  module: str = '',
-                 allowed_exceptions: tuple[type[BaseException], ...] = None,  # So mypy understands types
+                 allowed_exceptions: tuple[type[BaseException], ...] = None,
                  env: dict[Any, Any] = None,
                  pre_sr_hooks: Any = None,
                  post_sr_hooks: Any = None):
@@ -133,8 +133,6 @@ class Ten8tFunction:
         # care about microseconds.
         self.last_ttl_start: float = 0.0  # this will be compared to time.time() for ttl caching
         self.last_results: list[Ten8tResult] = []
-
-
 
         # This allows the library user to control how lenient the underlying code is
         # with exceptions.  This is a pain point in the implementation since we don't
@@ -269,10 +267,11 @@ class Ten8tFunction:
                     start_time = time.time()
 
         except self.allowed_exceptions as e:
-            # These exceptions ARE not expected and indicative of a bug so we abort from the loop.  Thus
-            # processing of the function is stopped (hence the loop is inside the try/except) regardless
-            # of the state of any flags telling you to ignore exceptions...those flags are only for
-            # exceptions that are caught in check functions and indicated in the result object
+            # These exceptions ARE not expected and indicative of a bug so we abort from the loop.
+            # Thus processing of the function is stopped (hence the loop is inside the try/except)
+            # regardless of the state of any flags telling you to ignore exceptions...those flags
+            # are only for exceptions that are caught in check functions and indicated in the
+            # result object.
 
             # Generically handle exceptions here so we can keep running.
             result = Ten8tResult(status=False)
@@ -280,7 +279,8 @@ class Ten8tFunction:
             result.except_ = e
             result.traceback = traceback.format_exc()
             mod_msg = "" if not self.module else f"{self.module}"
-            result.msg = f"Exception '{e}' occurred while running {mod_msg}.{self.function.__name__} " \
+            result.msg = f"Exception '{e}' occurred while running " \
+                         f"{mod_msg}.{self.function.__name__} " \
                          f"iteration {count}."
             ten8t_logger.error(result.msg)
             # Should we have a critical error flag to handle this case????

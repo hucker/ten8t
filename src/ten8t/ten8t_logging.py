@@ -38,7 +38,7 @@ def ten8t_setup_logging(
         propagate (bool): If True, propagates logs to the parent logger (default=True).
         file_name (str): Optional file path to save logs.
         stream_ (io.TextIOWrapper | None): Optional stream (e.g., sys.stdout, sys.stderr).
-        format_string (str): Format string for log messages (default includes timestamp, name, level, and message).
+        format_string (str): Format string for log messages (default:time, name, level, and msg).
 
     Returns:
         None: Configures the global `ten8t_logger`.
@@ -55,7 +55,8 @@ def ten8t_setup_logging(
             file_handler.setFormatter(formatter)
             ten8t_logger.addHandler(file_handler)
         except (OSError, PermissionError) as e:
-            raise ValueError(f"Error setting up file handler for '{file_name}'. Details: {e}") from e
+            raise ValueError(f"Error setting up file handler for '{file_name}'. " \
+                             f"Details: {e}") from e
 
     # Add a stream handler if stream is specified
     if stream_:
@@ -79,7 +80,7 @@ def ten8t_reset_logging():
     """
     global ten8t_logger
     # Remove all existing handlers
-    for handler in list(ten8t_logger.handlers):  # Make a copy to avoid modifying the list during iteration
+    for handler in list(ten8t_logger.handlers):  # Copy to avoid modifying list during iteration
         ten8t_logger.removeHandler(handler)
 
     # Add a NullHandler to restore the default silent state

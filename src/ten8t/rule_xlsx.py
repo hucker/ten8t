@@ -67,8 +67,9 @@ def rule_xlsx_a1_pass_fail(wb: openpyxl.workbook.Workbook,
         a specific sheet/row/col of an Excel workbook.  It is very unforgiving
         to format changes in the work book
 
-        Using start and end row numbers you can iterate over many items in the notebook.  If row
-        end is set to 'auto' it will run until the first blank is detected in the value column.
+        Using start and end row numbers you can iterate over many items in the notebook.
+        If row end is set to 'auto' it will run until the first blank is detected in
+        the value column.
 
         """
     sheet = _get_sheet(wb, sheet_name)

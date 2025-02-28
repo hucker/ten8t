@@ -94,7 +94,6 @@ def attributes(
     Note the *, I always forget that this means that the function is kwarg only.
     """
 
-
     if weight in [None, True, False] or weight <= 0:
         raise Ten8tException("Weight must be numeric and > than 0.0.  Nominal value is 100.0.")
 

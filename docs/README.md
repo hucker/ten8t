@@ -697,7 +697,7 @@ Python 3.10, 3.11, 3.12 and 3.13.
 
 ```text
 ------------------------------------------------------------------
-Your code has been rated at 9.79/10 (previous run: 9.77/10, +0.01)
+Your code has been rated at 9.79/10 (previous run: 9.79/10, +0.00)
 ```
 
 ## WTH does `Ten8t` and what's with your wierd names?

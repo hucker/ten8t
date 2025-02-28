@@ -80,12 +80,13 @@ def rule_from_pdf_rule_ids(file_path: str,
         Yield matching rule ID results from tables contained in a specified PDF file.
 
 
-        The tables within the PDF file are expected to have the following columns structure with these default names:
+        The tables within the PDF file are expected to have the following columns structure
+        with these default names:
 
         Reads tables from a specified PDF file and inspects each table for data that matches
-        the supplied `rule_id`. For each match found, the function extracts the corresponding status, note,
-        and skip values, and yields these in a namedtuple. If multiple tables exist or the `rule_id` does not
-        match any table, the function continues execution.
+        the supplied `rule_id`. For each match found, the function extracts the corresponding
+        status, note, and skip values, and yields these in a namedtuple. If multiple tables
+        exist or the `rule_id` does not match any table, the function continues execution.
 
         Parameters:
         ----------
@@ -94,12 +95,14 @@ def rule_from_pdf_rule_ids(file_path: str,
         rule_id : str
            Specific rule ID to search for within the tables.
         default_msg : str, optional
-           Default message to return with the rule result. If provided, it overrides column name information.
+           Default message to return with the rule result. If provided, it overrides
+           column name information.
            Defaults to None.
         col_names : dict, optional
            Dictionary for renaming column names. Defaults to None.
         max_results : int, optional
-           Maximum number of results to yield. The function raises an exception when exceed this number. Defaults to 1.
+           Maximum number of results to yield. The function raises an exception when
+           exceed this number. Defaults to 1.
         pages : str
            Specific pages from the PDF file to be read. Defaults to 'all'.
 
@@ -136,6 +139,7 @@ def rule_from_pdf_rule_ids(file_path: str,
                 yield TR(status=status, msg=msg, skipped=skip)
                 count += 1
                 if count > max_results:
-                    raise Ten8tException(f"Maximum number of results ({max_results}) exceeded for {file_path}")
+                    raise Ten8tException(f"Maximum number of results ({max_results}) " \
+                                         f"exceeded for {file_path}")
     if count == 0:
         yield TR(status=None, skipped=True, msg=f"No results found in {file_path}")

@@ -39,7 +39,6 @@ next_int_value = NextIntValue()
 next_int_value.current_id = 1
 
 
-
 def str_to_bool(s: str, default=None) -> bool:
     """ Convert a string value to a boolean."""
     s = s.strip().lower()  # Remove spaces at the beginning/end and convert to lower case
