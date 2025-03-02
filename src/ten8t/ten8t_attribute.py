@@ -13,6 +13,7 @@ along way never using an attribute...and once you learn them you will use them a
 the time.
 """
 import re
+from typing import Callable
 
 from .ten8t_exception import Ten8tException
 
@@ -75,23 +76,42 @@ def _parse_ttl_string(input_string: str) -> float:
 
 def attributes(
         *,
-        tag=DEFAULT_TAG,
-        phase=DEFAULT_PHASE,
-        level=DEFAULT_LEVEL,
-        weight=DEFAULT_WEIGHT,
-        skip=DEFAULT_SKIP,
-        ruid=DEFAULT_RUID,
-        ttl_minutes=DEFAULT_TTL_MIN,
-        finish_on_fail=DEFAULT_FINISH_ON_FAIL,  # Abort the whole run
-        skip_on_none=DEFAULT_SKIP_ON_NONE,
-        fail_on_none=DEFAULT_FAIL_ON_NONE,
-        thread_id=DEFAULT_THREAD_ID,
-
-):
+        tag: str = DEFAULT_TAG,
+        phase: str = DEFAULT_PHASE,
+        level: int = DEFAULT_LEVEL,
+        weight: float = DEFAULT_WEIGHT,
+        skip: bool = DEFAULT_SKIP,
+        ruid: str = DEFAULT_RUID,
+        ttl_minutes: str = DEFAULT_TTL_MIN,
+        finish_on_fail: bool = DEFAULT_FINISH_ON_FAIL,
+        skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
+        fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
+        thread_id: str = DEFAULT_THREAD_ID
+) -> Callable:
     """
-    Decorator to add attributes to a Ten8t function.
+    A decorator to assign metadata and control attributes to functions for processing logic.
 
-    Note the *, I always forget that this means that the function is kwarg only.
+    Allows specifying function attributes for processing flows configuration and metadata tagging.
+    Validates attribute values and raises exceptions for constraint violations.
+
+    Args:
+        tag (str): Tag associated with the function
+        phase (str): Operation phase
+        level (int): Execution level
+        weight (float): Function weight (must be > 0.0)
+        skip (bool): Whether to skip the function
+        ruid (str): Unique identifier string
+        ttl_minutes (str): Time-to-live in minutes
+        finish_on_fail (bool): Abort entire process on function failure
+        skip_on_none (bool): Skip function when inputs are None
+        fail_on_none (bool): Fail function when inputs are None
+        thread_id (str): Thread identifier for processing
+
+    Raises:
+        Ten8tException: On invalid weight/ruid/thread_id or disallowed characters
+
+    Returns:
+        Callable: Decorated function with injected attributes
     """
 
     if weight in [None, True, False] or weight <= 0:
@@ -131,25 +151,36 @@ def attributes(
     return decorator
 
 
-def get_attribute(func, attr, default_value=None):
-    """
-    Returns an attribute from a function.
-    """
-    defs = {
-        "tag": DEFAULT_TAG,
-        "phase": DEFAULT_PHASE,
-        "level": DEFAULT_LEVEL,
-        "weight": DEFAULT_WEIGHT,
-        "skip": DEFAULT_SKIP,
-        "ruid": DEFAULT_RUID,
-        "ttl_minutes": DEFAULT_TTL_MIN,
-        "finish_on_fail": DEFAULT_FINISH_ON_FAIL,
-        "skip_on_none": DEFAULT_SKIP_ON_NONE,
-        "fail_on_none": DEFAULT_FAIL_ON_NONE,
-        "index": DEFAULT_INDEX,
-        "thread_id": DEFAULT_THREAD_ID,
-    }
+# Define defaults at module level since they're constant
+ATTRIBUTE_DEFAULTS = {
+    "tag": DEFAULT_TAG,
+    "phase": DEFAULT_PHASE,
+    "level": DEFAULT_LEVEL,
+    "weight": DEFAULT_WEIGHT,
+    "skip": DEFAULT_SKIP,
+    "ruid": DEFAULT_RUID,
+    "ttl_minutes": DEFAULT_TTL_MIN,
+    "finish_on_fail": DEFAULT_FINISH_ON_FAIL,
+    "skip_on_none": DEFAULT_SKIP_ON_NONE,
+    "fail_on_none": DEFAULT_FAIL_ON_NONE,
+    "index": DEFAULT_INDEX,
+    "thread_id": DEFAULT_THREAD_ID,
+}
 
-    default = default_value or defs[attr]
 
-    return getattr(func, attr, default)
+def get_attribute(func, attr: str, default_value=None):
+    """
+    Retrieves a function's metadata attribute with fallback to default values.
+
+    Args:
+        func: Function to inspect for the attribute
+        attr (str): Attribute name to retrieve (tag, phase, level, weight, etc.)
+        default_value: Optional override for built-in defaults
+
+    Returns:
+        Value of the requested attribute or its default
+    """
+    if default_value is not None:
+        return getattr(func, attr, default_value)
+
+    return getattr(func, attr, ATTRIBUTE_DEFAULTS[attr])

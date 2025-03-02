@@ -150,8 +150,8 @@ def test_dict_setdefault(env_dict):
 def func_list():
     @t8.attributes(tag="t1")
     def func_list(env_list):
-        env_list[0] = 'a'
-        yield t8.Ten8tResult(status=True, msg="It works1")
+        env_list[0] = 'a'  # throws exception when change is made
+        yield t8.Ten8tResult(status=True, msg="Can't get here")  # pragma no cover
 
     return t8.Ten8tFunction(func_list)
 
@@ -160,8 +160,8 @@ def func_list():
 def func_dict():
     @t8.attributes(tag="t1")
     def func_dict(env_dict):
-        env_dict['a'] = 100
-        yield t8.Ten8tResult(status=True, msg="It works1")
+        env_dict['a'] = 100  # throws exception when change is made
+        yield t8.Ten8tResult(status=True, msg="Can't get here")  # pragma no cover
 
     return t8.Ten8tFunction(func_dict)
 
@@ -170,8 +170,8 @@ def func_dict():
 def func_set():
     @t8.attributes(tag="env_set")
     def func_list(env_set):
-        env_set.clear()
-        yield t8.Ten8tResult(status=True, msg="It works1")
+        env_set.clear()  # throws exception when change is made
+        yield t8.Ten8tResult(status=True, msg="Can't get here")  # pragma no cover
 
     return t8.Ten8tFunction(func_list)
 

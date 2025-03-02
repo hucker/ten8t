@@ -180,6 +180,13 @@ class Ten8tFunction:
         # Call the stored function and collect information about the result
         start_time: float = time.time()
 
+        # Function is tagged with skip attribute.  (Allows config files to disable tests)
+        if self.skip:
+            yield Ten8tResult(status=None, skipped=True,
+                              msg=f"Skipped due to attribute in func='{self.function_name}'",
+                              )
+            return
+
         # Function returns a generator that needs to be iterated over
         args = self._get_parameter_values()
 

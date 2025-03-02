@@ -6,14 +6,16 @@ from src import ten8t as t8
 @pytest.fixture
 def func1():
     @t8.attributes(tag="t1", level=1, phase='p1', ruid="ruid_1")
-    def func1():
+    def func1():  # pragma no cover
+        # This function will never run because we are only checking that the function is loaded
         yield t8.Ten8tResult(status=True, msg="It works1")
 
     return t8.Ten8tFunction(func1)
 
 
 @pytest.fixture
-def func2():
+def func2():  # pragma no cover
+    # This function will never run because we are only checking that the function is loaded
     @t8.attributes(tag="t2", level=2, phase='p2', ruid="ruid_2")
     def func2():
         yield t8.Ten8tResult(status=True, msg="It works2")
@@ -22,7 +24,8 @@ def func2():
 
 
 @pytest.fixture
-def func3():
+def func3():  # pragma no cover
+    # This function will never run because we are only checking that the function is loaded
     @t8.attributes(tag="t3", level=3, phase='p3', ruid="ruid_3")
     def func3():
         yield t8.Ten8tResult(status=True, msg="It works3")

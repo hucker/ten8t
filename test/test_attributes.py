@@ -1,7 +1,9 @@
 import pytest
 
-import src.ten8t.ten8t_attribute as ten8t_attribute
-import src.ten8t.ten8t_exception as ten8t_exception
+import ten8t.ten8t_attribute as ten8t_attribute
+import ten8t.ten8t_exception as ten8t_exception
+import ten8t.ten8t_function as ten8t_function
+import ten8t.ten8t_result as ten8t_result
 
 
 @pytest.mark.parametrize("ttl,units,result", [
@@ -74,3 +76,31 @@ def test_ttl_fail(unit_group, bad_time):
             with pytest.raises(ten8t_exception.Ten8tException):
                 s = f"{bad_time}{sep}{unit}"
                 ten8t_attribute._parse_ttl_string(s)
+
+
+def test_skip_attribute_when_true():
+    @ten8t_attribute.attributes(skip=True)
+    def check_skip():
+        # This will never get called because the skip happens before the call
+        return ten8t_result.Ten8tResult(status=True, msg="It works")  # pragma no cover
+
+    result = next(ten8t_function.Ten8tFunction(check_skip)())
+    assert result.skipped is True
+
+
+def test_skip_attribute_when_not_specified():
+    @ten8t_attribute.attributes()
+    def check_skip():
+        return ten8t_result.Ten8tResult(status=True, msg="It works")
+
+    result = next(ten8t_function.Ten8tFunction(check_skip)())
+    assert result.skipped is False
+
+
+def test_skip_attribute_when_false():
+    @ten8t_attribute.attributes(skip=False)
+    def check_no_skip():
+        return ten8t_result.Ten8tResult(status=True, msg="It works")
+
+    result = next(ten8t_function.Ten8tFunction(check_no_skip)())
+    assert result.skipped is False

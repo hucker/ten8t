@@ -50,7 +50,8 @@ def func4():
         yield t8.Ten8tResult(status=True, msg="It works1")
         yield t8.Ten8tResult(status=True, msg="It works2")
         yield t8.Ten8tResult(status=False, msg="It works3")
-        yield t8.Ten8tResult(status=True, msg="It works4")
+        # This is supposed to not run because finish_on_fail
+        yield t8.Ten8tResult(status=True, msg="It works4")  # pragma no cover
 
     return t8.Ten8tFunction(func)
 
@@ -66,7 +67,8 @@ def func_exc():
 
 def test_no_attrs():
     def func():
-        return t8.Ten8tResult(status=True, msg="It works")
+        # This never runs because the checker doesn't run
+        return t8.Ten8tResult(status=True, msg="It works")  # pragma no cover
 
     sfunc = t8.Ten8tFunction(func)
 
@@ -472,28 +474,32 @@ def test_progress(capsys, func1, func2):
 def attr_functions():
     def func_a():
         @t8.attributes(tag="t1", level=1, phase='p1', ruid="ruid_1")
-        def func():
+        def func():  # pragma no cover
+            """Not called because we are only checking attributes"""
             yield t8.Ten8tResult(status=True, msg="It works1")
 
         return t8.Ten8tFunction(func)
 
     def func_b():
+        """Not called because we are only checking attributes"""
         @t8.attributes(tag="t2", level=2, phase='p2', ruid="ruid_2")
-        def func():
+        def func():  # pragma no cover
             yield t8.Ten8tResult(status=True, msg="It works2")
 
         return t8.Ten8tFunction(func)
 
     def func_c():
+        """Not called because we are only checking attributes"""
         @t8.attributes(tag="t3", level=3, phase='p3', ruid="ruid_3")
-        def func():
+        def func():  # pragma no cover
             yield t8.Ten8tResult(status=True, msg="It works3")
 
         return t8.Ten8tFunction(func)
 
     def func_d():
+        """Not called because we are only checking attributes"""
         @t8.attributes(tag="t4", level=4, phase='p4', ruid="ruid_4")
-        def func():
+        def func():  # pragma no cover
             yield t8.Ten8tResult(status=True, msg="It works4")
 
         return t8.Ten8tFunction(func)

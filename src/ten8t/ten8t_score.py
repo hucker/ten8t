@@ -28,7 +28,8 @@ class ScoreStrategy(abc.ABC):
     @classmethod
     def strategy_factory(cls, strategy_name_or_class) -> "ScoreStrategy":
         """Make a strategy object from a name or class.
-        This will be read from files or code, so they support both"""
+        The main usecase for this method is to load configuration from file.  This enables the
+        config file to have a strategy name to be provided so it can be instantiated."""
         if isinstance(strategy_name_or_class, str):
             # Note this only goes one level deep in subclasses, which for now is good enough.
             for subclass in cls.__subclasses__():

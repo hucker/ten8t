@@ -48,9 +48,10 @@ def rule_ping_check(hosts: str | list, timeout_ms: float = 4000.0, skip_on_none=
             if latency is False:
                 yield TR(status=False,
                          msg=f"No ping response from server {BM.code(host)} timeout = {BM.code(timeout_str)} ms")
-            elif latency < MIN_LATENCY_MS:
-                latency_str = f"{MIN_LATENCY_MS:0.1f}"
-                yield TR(status=True, msg=f"Host {BM.code(host)} is up: response time < {BM.code(latency_str)} ms")
+            # This is not required, remove at some point?
+            # elif latency < MIN_LATENCY_MS:
+            #    latency_str = f"{MIN_LATENCY_MS:0.1f}"
+            #    yield TR(status=True, msg=f"Host {BM.code(host)} is up: response time < {BM.code(latency_str)} ms")
             else:
                 latency_str = f"{latency:0.1f}"
                 yield TR(status=True, msg=f"Host {BM.code(host)} is up, response time = {BM.code(latency_str)} ms")

@@ -105,8 +105,7 @@ def test_yielder_do_nothing():
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func():
         y = t8.Ten8tYield()
-        if false():
-            yield from y.results(t8.Ten8tResult(status=False, msg="Done"))
+        # This degenerate function does no checks so by definition it hasn't yielded
         if not y.yielded:
             yield from y.results(t8.Ten8tResult(status=True, msg="Nothing needed to be done."))
 

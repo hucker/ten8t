@@ -7,17 +7,6 @@ import src.ten8t as t8
 
 
 @pytest.fixture
-def func_nothread():
-    """Fixture that provides thread functions func1 and func2."""
-
-    @t8.attributes()
-    def nothread():
-        return t8.Ten8tResult(status=True, msg="It works.")
-
-    return t8.Ten8tFunction(nothread)
-
-
-@pytest.fixture
 def func1():
     """Fixture that provides thread functions func1 and func2."""
 
@@ -77,8 +66,10 @@ def two_sec_func():
 def test_verify_no_threads():
     with pytest.raises(t8.Ten8tException) as e_info:
         ch = t8.Ten8tChecker(check_functions=[], auto_setup=True)
-        tcheck = t8.Ten8tThread(ch)
-        _ = tcheck.run_all()
+        # This code could be omitted, but it is nice to show that it doesn't get here
+        assert False  # pragma no cover
+        tcheck = t8.Ten8tThread(ch)  # pragma no cover
+        _ = tcheck.run_all()  # pragma no cover
     assert str(e_info.value) == "You must provide at least one package, module or function to check."
 
 

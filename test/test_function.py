@@ -9,8 +9,8 @@ from ten8t.ten8t_exception import Ten8tException
 
 @pytest.fixture(scope="module")
 def check_func():
-    def func(value):
-        return value == 1
+    def func():
+        return t8.Ten8tResult(status=True, msg="Pass")
 
     return t8.Ten8tFunction(func)
 
@@ -19,6 +19,7 @@ def test__str__(check_func):
     str_value = str(check_func)
     assert check_func.function_name == 'func'
     assert str_value == "Ten8tFunction(self.function_name='func')"
+    assert next(check_func()).status == True
 
 
 @pytest.mark.parametrize("weight", [True, False, None])
@@ -26,28 +27,9 @@ def test_weight_none(weight):
     # Note this will fail if you say Ten8tException since weights
     with pytest.raises(t8.Ten8tException):
         @t8.attributes(weight=weight)
-        def func():
+        def func():  # pragma no cover
+            """ Function never runs because weight fails"""
             yield t8.TR(status=True, msg="Hello")
-
-
-def test_weight_exception():
-    @t8.attributes(tag="tag")
-    def func():
-        yield t8.TR(status=True, msg="Hello")
-
-    func.weight = 0
-    # Note this will fail if you say Ten8tException
-    with pytest.raises(t8.Ten8tException):
-        t8.Ten8tFunction(func)
-
-
-def test_function_str():
-    @t8.attributes(tag="tag")
-    def func():
-        yield t8.TR(status=True, msg="Hello")
-
-    ten8t_func = t8.Ten8tFunction(func)
-    assert ten8t_func.function_name == "func"
 
 
 def test_func_doc_string_extract():
@@ -342,21 +324,24 @@ def test_weight_exception():
     # Catch invalid weight
     with pytest.raises(Ten8tException):
         @ten8t.attributes(weight=-1)
-        def yield_only():
-            yield ten8t.Ten8tResult(status=True)
+        # never run because of attribute exception
+        def yield_only():  # pragma no cover
+            return True
 
 
 def test_ruid_exception():
     # Catch invalid rule id
     with pytest.raises(Ten8tException):
         @ten8t.attributes(ruid=1)
-        def yield_only():
-            yield ten8t.Ten8tResult(status=True)
+        # never run because of attribute exception
+        def yield_only():  # pragma no cover
+            return True
 
 
 def test_thread_id_exception():
     # Catch invalid thread_id
     with pytest.raises(Ten8tException):
         @ten8t.attributes(thread_id=1)
-        def yield_only():
-            yield ten8t.Ten8tResult(status=True)
+        # never run because of attribute exception
+        def yield_only():  # pragma no cover
+            return True

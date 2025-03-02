@@ -92,3 +92,4 @@ def test_nonexistent_host(bad_urls):
 
     for result in check_nonexistent_url():
         assert not result.status
+

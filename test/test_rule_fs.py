@@ -120,13 +120,6 @@ def test_fs_rule_files_exist(temp_fs: FS):
     assert results[1].status is False
 
 
-@pytest.fixture
-def setup_temp_file(tmp_path):
-    filesys = OSFS(str(tmp_path))
-    file = tmp_path / "test.txt"
-    file.write_text("content")
-    return filesys, str(tmp_path)
-
 
 def test_oldest_file_within_max_age():
     # Get the absolute path to the current script's directory

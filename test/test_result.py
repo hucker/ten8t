@@ -101,7 +101,8 @@ def test_bad_generator_type(caplog):
     @ten8t.attributes(tag="tag")
     def check_func1():
         yield 123
-        yield ten8t.Ten8tResult(status=True, msg="Yield OK")
+        # This won't run!
+        yield ten8t.Ten8tResult(status=True, msg="Yield OK")  # pragma no cover
 
     ch = Ten8tChecker(check_functions=[check_func1], auto_setup=True, abort_on_exception=False)
     results = ch.run_all()
@@ -112,7 +113,8 @@ def test_bad_generator_type(caplog):
     def check_func2():
         yield ten8t.Ten8tResult(status=True, msg="Yield OK")
         yield 123
-        yield ten8t.Ten8tResult(status=True, msg="Yield OK")
+        # This won't run
+        yield ten8t.Ten8tResult(status=True, msg="Yield OK")  # pragma no cover
 
     ch = Ten8tChecker(check_functions=[check_func2], auto_setup=True, abort_on_exception=False)
     results = ch.run_all()

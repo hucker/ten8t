@@ -28,7 +28,8 @@ def test_module_not_in_list(para_env):
 
 def test_fail_on_none():
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, fail_on_none=True)
-    def env_test_function(var):
+    def env_test_function(var):  # pragma no cover
+        # This won't run because we are testing missing var
         yield t8.TR(status=True, msg=f"This will pass if it ever gets here. {var=}")
 
     s_func = t8.Ten8tFunction(function_=env_test_function)
@@ -42,7 +43,8 @@ def test_fail_on_none():
 
 def test_skip_on_none():
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip_on_none=True)
-    def env_test_function(var):
+    def env_test_function(var):  # pragma no cover
+        # This won't run because we are testing None var
         yield t8.TR(status=True, msg="This will pass if it ever gets here.")
 
     s_func = t8.Ten8tFunction(function_=env_test_function)

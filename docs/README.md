@@ -700,11 +700,11 @@ Python 3.10, 3.11, 3.12 and 3.13.
 Your code has been rated at 9.79/10 (previous run: 9.79/10, +0.00)
 ```
 
-## WTH does `Ten8t` and what's with your wierd names?
+## WTH does `Ten8t` mean and what's with your wierd names?
 
 `Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). Why was this
 chosen...because the first things I picked that were not packages on pypi were "too close" to existing package
-names. I spent more time that I care to admit coming up with different names. The name refers to skiing or
+names. I spent more time that I care to admit coming up with different names. The name 1080 refers to skiing or
 snowboarding tricks involving 3 rotations.
 
 The preferred way for using `ten8t` in code is to write:

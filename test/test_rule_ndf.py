@@ -212,10 +212,13 @@ def test_rule_ndf_missing_cols(pass_dataframe: pd.DataFrame):
                                        enabled_col='')
 
     with pytest.raises(AttributeError):
-        for sfunc in [check_narwhals_no_desc_frame,
-                      check_narwhals_no_pf_frame,
-                      check_narwhals_no_enabled_frame]:
-            _ = list(sfunc())
+        results = list(check_narwhals_no_desc_frame())
+
+    with pytest.raises(AttributeError):
+        results = list(check_narwhals_no_pf_frame())
+
+    with pytest.raises(AttributeError):
+        results = list(check_narwhals_no_enabled_frame())
 
 
 @pytest.fixture
