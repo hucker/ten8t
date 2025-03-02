@@ -60,6 +60,8 @@ from .ten8t_score import ScoreByFunctionBinary  # noqa: F401
 from .ten8t_score import ScoreByFunctionMean  # noqa: F401
 from .ten8t_score import ScoreByResult  # noqa: F401
 from .ten8t_score import ScoreStrategy  # noqa: F401
+from .ten8t_score import register_score_class
+from .ten8t_score import reset_score_strategy_registry
 from .ten8t_thread import Ten8tThread  # noqa: F401
 from .ten8t_tomlrc import Ten8tTomlRC  # noqa: F401
 from .ten8t_util import any_to_int_list  # noqa: F401

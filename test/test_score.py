@@ -5,9 +5,7 @@
 
 import pytest
 
-import ten8t
 import ten8t as t8
-from src.ten8t.ten8t_score import ScoreStrategy
 
 
 @pytest.fixture
@@ -150,24 +148,33 @@ def test_null_results(scoring_function):
     assert score([]) == 0.0
 
 
-@pytest.mark.skip(reason="Derived scoring not detected by factory")
+@pytest.mark.parametrize("scoring_function", [
+    t8.ScoreBinaryFail,
+    t8.ScoreBinaryPass,
+    t8.ScoreByResult,
+    t8.ScoreByFunctionMean,
+    t8.ScoreByFunctionBinary,
+])
+def test_None_results(scoring_function):
+    score = scoring_function()
+    assert score(None) == 0.0
+
+
+# @pytest.mark.skip(reason="Derived scoring not detected by factory")
 def test_derived_class(by_func_weights_with_skip):
-    # TODO Derived classes are not detected by the strategy factory when trying to ispect the
-    #      class metadata.  I suspect that for this to be reliable there will need to be a registration
-    #      method for new classes, because the class hierarchy depends on how you import classes.
-    #      At this time, you cannot create a scoring class outside of ten8t and import it via
-    #      the class factory (unless you are somewhat lucky where you do the imports).
-    class DerivedScore(ten8t.ten8t_score.ScoreByResult):
+    @t8.register_score_class
+    class DerivedScoreByResult(t8.ScoreByResult):
         """Derived class to check that lower level code handles new classes"""
-        pass
+        strategy_name = 'derived_score_by_result'
 
-    # This should pass the same test that ScoreByResult passed.
-    by_result = ScoreStrategy.strategy_factory("DerivedScore")
+    for name in ["DerivedScoreByResult", 'derived_score_by_result']:
+        # This should pass the same test that ScoreByResult passed.
+        by_result = t8.ScoreStrategy.strategy_factory(name)
 
-    # By result, it is easy to just add with code
-    total_weight = 2 * 100 + 1 * 200 + 2 * 300
-    total_pass = 1 * 200 + 1 * 300
-    score = 100.0 * (total_pass * 1.0 / total_weight * 1.0)
-    assert by_result.score(by_func_weights_with_skip) == pytest.approx(score)
-    assert by_result(by_func_weights_with_skip) == pytest.approx(score)
-    assert by_result([]) == 0.0
+        # By result, it is easy to just add with code
+        total_weight = 2 * 100 + 1 * 200 + 2 * 300
+        total_pass = 1 * 200 + 1 * 300
+        score = 100.0 * (total_pass * 1.0 / total_weight * 1.0)
+        assert by_result.score(by_func_weights_with_skip) == pytest.approx(score)
+        assert by_result(by_func_weights_with_skip) == pytest.approx(score)
+        assert by_result([]) == 0.0
