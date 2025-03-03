@@ -3,6 +3,7 @@ import pytest
 from src import ten8t as t8
 from src.ten8t.rule_webapi import is_mismatch
 
+TIME_OUT_SEC = 15  # This doesn't always need to be this large but sometimes the endpoints are slow
 
 @pytest.fixture
 def expected_json():
@@ -82,7 +83,7 @@ def test_missing_web_api():
                                    json_d={'name': 'Luke Skywalker'},
                                    expected_response=[404, 502],
                                    # WARNING: This used to return 404, not sometimes is 502
-                                   timeout_sec=5)
+                                   timeout_sec=TIME_OUT_SEC)
 
     for result in check_rule2():
         assert result.status
@@ -94,7 +95,7 @@ def test_wrong_response(expected_json):
         yield from t8.rule_web_api(url='https://httpbin.org/json',
                                    json_d=expected_json,
                                    expected_response=404,  # Returns 200
-                                   timeout_sec=10)
+                                   timeout_sec=TIME_OUT_SEC)
 
     for result in check_rule1():
         assert result.status is False
@@ -105,7 +106,7 @@ def test_web_api(expected_json):
     def check_rule1():
         yield from t8.rule_web_api(url='https://httpbin.org/json',
                                    json_d=expected_json,
-                                   timeout_sec=10)
+                                   timeout_sec=TIME_OUT_SEC)
 
     for result in check_rule1():
         assert result.status

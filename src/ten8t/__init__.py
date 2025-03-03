@@ -117,3 +117,9 @@ try:
     from .rule_sqlachemy import rule_sql_table_schema
 except ImportError:
     pass
+
+try:
+    from .rule_fs import rule_fs_path_exists, rule_fs_paths_exist
+    from .rule_fs import rule_fs_oldest_file_age, rule_fs_file_within_max_size
+except ImportError:
+    pass
