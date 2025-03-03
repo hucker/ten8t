@@ -62,6 +62,15 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/hucker233/ten8t"
 
+[tool.coverage.run]
+omit = [
+    "test/*",
+    "src/ten8t/cli",
+    "src/ten8t/examples",
+    "src/ten8t/st_ten8t"
+]
+
+
 [tool.poetry]
 name = "ten8t"
 version = "0.0.10"
