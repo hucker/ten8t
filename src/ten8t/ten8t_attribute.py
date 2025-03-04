@@ -33,16 +33,26 @@ DEFAULT_THREAD_ID = "main_thread__"
 
 def _parse_ttl_string(input_string: str) -> float:
     """
-    Use regular expression to match a TTL string.  This pattern was a pain to figure out.  There
-    are so many permutations that need to be handled that are subtle (like the order matters in the
-    list).
+    Parses a time-to-live (TTL) string and converts it into a numeric value in minutes.
+
+    The function takes an input string representing a time duration (e.g., "5 seconds",
+    "2 hours") and converts it into a floating-point number representing the value
+    in minutes. The time duration can be specified with various units such as seconds,
+    minutes, or hours. If the string does not contain a valid unit, "minutes" is used
+    as the default unit. For input values less than zero, an exception is raised. If the
+    input string does not match the expected pattern, a default value of 0.0 minutes is returned.
 
     Args:
-        input_string (str): The input string to parse.
+        input_string (str): A string representing the time-to-live (TTL) value. It can
+            contain a number followed by an optional unit such as 's', 'sec', 'seconds',
+            'm', 'min', 'minutes', 'h', 'hr', 'hrs', or 'hour'. If no unit is provided,
+            minutes is used by default.
 
     Returns:
-        Tuple[Optional[float], Optional[str]]: A tuple containing the parsed floating-point number
-        and optional units. Returns (None, None) if no match is found.
+        float: A floating-point value representing the TTL in minutes.
+
+    Raises:
+        Ten8tException: If the TTL value is less than 0.0.
     """
     scale = {"seconds": 60,
              "second": 60,
