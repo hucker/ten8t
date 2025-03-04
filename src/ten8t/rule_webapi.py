@@ -17,7 +17,8 @@ from requests.exceptions import RequestException
 
 from . import Ten8tException
 from .ten8t_format import BM
-from .ten8t_result import TR, Ten8tYield
+from .ten8t_result import TR
+from .ten8t_yield import Ten8tYield
 
 
 def rule_url_200(urls: str | Sequence[str],

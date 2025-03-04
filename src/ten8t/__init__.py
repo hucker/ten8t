@@ -50,7 +50,6 @@ from .ten8t_rc import Ten8tRC  # noqa: F401
 from .ten8t_rc_factory import ten8t_rc_factory  # noqa:F401
 from .ten8t_result import TR  # noqa: F401
 from .ten8t_result import Ten8tResult  # noqa: F401
-from .ten8t_result import Ten8tYield  # noqa: F401
 from .ten8t_result import group_by  # noqa: F401
 from .ten8t_result import overview  # noqa: F401
 from .ten8t_ruid import empty_ruids  # noqa: F401
@@ -72,6 +71,7 @@ from .ten8t_util import any_to_int_list  # noqa: F401
 from .ten8t_util import any_to_str_list  # noqa: F401
 from .ten8t_util import next_int_value  # noqa: F401
 from .ten8t_util import str_to_bool  # noqa: F401
+from .ten8t_yield import Ten8tYield  # noqa: F401
 
 try:
     import narwhals as nw

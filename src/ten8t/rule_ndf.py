@@ -12,8 +12,9 @@ from narwhals.typing import FrameT
 
 from .ten8t_exception import Ten8tException
 from .ten8t_format import BM
-from .ten8t_result import TR, Ten8tYield
+from .ten8t_result import TR
 from .ten8t_util import StrList, StrListOrNone, any_to_str_list
+from .ten8t_yield import Ten8tYield
 
 
 @nw.narwhalify()
