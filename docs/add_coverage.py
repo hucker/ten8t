@@ -75,7 +75,7 @@ def create_shields_io_link(coverage):
     """
     color = badge_color(coverage)
     badge_url = image_base_url.format(int(coverage))
-    return f"![Ten8t Package Test Coverage]({badge_url})](#)"
+    return f"![Ten8t Package Test Coverage]({badge_url})"
 
 
 def update_readme_with_badge(readme_path, coverage):

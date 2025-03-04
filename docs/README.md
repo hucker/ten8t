@@ -732,6 +732,9 @@ mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial te
 
 [![Read The Docs Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://your-project.ten8t.io/en/latest/)
 
+### Package Test Coverage
+
+![Ten8t Package Test Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
 ## TODO
 
 1. Currently testing free threading.
