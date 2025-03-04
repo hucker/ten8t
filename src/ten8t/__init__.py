@@ -11,9 +11,6 @@ from .ten8t_attribute import attributes  # noqa: F401
 from .ten8t_attribute import get_attribute  # noqa: F401
 # from .ten8t_attribute import _convert_to_minutes # noqa:F401
 from .ten8t_checker import Ten8tChecker  # noqa: F401
-from .ten8t_checker import Ten8tDebugProgress  # noqa; F401
-from .ten8t_checker import Ten8tNoProgress  # noqa; F401
-from .ten8t_checker import Ten8tProgress  # noqa: F401
 from .ten8t_checker import exclude_levels  # noqa: F401
 from .ten8t_checker import exclude_phases  # noqa: F401
 from .ten8t_checker import exclude_ruids  # noqa: F401
@@ -42,6 +39,9 @@ from .ten8t_logging import ten8t_reset_logging  # noqa: F401
 from .ten8t_logging import ten8t_setup_logging  # noqa: F401
 from .ten8t_module import Ten8tModule  # noqa: F401
 from .ten8t_package import Ten8tPackage  # noqa: F401
+from .ten8t_progress import Ten8tDebugProgress  # noqa: F401
+from .ten8t_progress import Ten8tNoProgress  # noqa: F401
+from .ten8t_progress import Ten8tProgress  # noqa: F401
 from .ten8t_rc import Ten8tRC  # noqa: F401
 from .ten8t_rc_factory import ten8t_rc_factory  # noqa:F401
 from .ten8t_result import TR  # noqa: F401
