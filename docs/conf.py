@@ -75,10 +75,18 @@ exclude_patterns = ['_build',
                     'src/ten8t/examples/**',
                     'src/ten8t/cli/**',
                     'src/ten8t/st_ten8t/**',
+                    'src/ten8t/setup.py',
                     ]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+autodoc_mock_imports = ["ping3", "openpyxl", "camelot", "pandas", "sqlalchemy"]
+
+autodoc_type_aliases = {
+    "pd": "pandas",
+    "np": "numpy",
+}
 
 html_theme = 'sphinx_book_theme'
 html_static_path = ['_static', '../img']

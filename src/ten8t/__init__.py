@@ -1,6 +1,10 @@
 """
 Public API for the Ten8t project.
 """
+
+# This depends on pathlib which should always be there so
+# there is no need to try to import the dependency before
+# exporting these rules.
 from .rule_files import rule_large_files  # noqa: F401
 from .rule_files import rule_max_files  # noqa: F401
 from .rule_files import rule_path_exists  # noqa: F401
@@ -89,7 +93,8 @@ except ImportError:
 # ping rules
 try:
     import ping3
-    from .rule_ping import rule_ping_check  # noqa: F401
+    from .rule_ping import rule_ping_host_check  # noqa: F401
+    from .rule_ping import rule_ping_hosts_check  # noqa: F401
 except ImportError:
     pass
 

@@ -702,54 +702,119 @@ class Ten8tChecker:
 
     @property
     def clean_run(self):
-        """ No exceptions """
+        """
+        Determine whether all results are free of exceptions.
+
+        Returns:
+            bool: True if none of the results contain an exception, False otherwise.
+        """
         return all(not r.except_ for r in self.results)
 
     @property
     def perfect_run(self):
-        """No fails or skips"""
+        """
+        Check if all results indicate a perfect run without failures, skips, or warnings.
+
+        Returns:
+            bool: True if all results passed successfully without warnings or skips, False otherwise.
+        """
         return all(r.status and not r.skipped and not r.warn_msg for r in self.results)
 
     @property
     def skip_count(self):
-        """Number of skips"""
+        """
+        Count the number of results marked as skipped.
+
+        Returns:
+            int: The number of skipped results.
+        """
         return len([r for r in self.results if r.skipped])
 
     @property
     def warn_count(self):
-        """Number of warns"""
+        """
+        Count the number of results that contain warnings.
+
+        Returns:
+            int: The number of results with warnings.
+        """
         return len([r for r in self.results if r.warn_msg])
 
     @property
     def pass_count(self):
-        """Number of passes"""
+        """
+        Count the number of results that passed without being skipped.
+
+        Returns:
+            int: The number of passing results excluding skips.
+        """
         return len([r for r in self.results if r.status and not r.skipped])
 
     @property
     def fail_count(self):
-        """Number of fails"""
+        """
+        Count the number of results that failed but were not skipped.
+
+        Returns:
+            int: The number of failed results excluding skips.
+        """
         return len([r for r in self.results if not r.status and not r.skipped])
 
     @property
     def result_count(self):
-        """ Possibly redundant call to get the number of results."""
+        """
+        Get the total number of results available.
+
+        Returns:
+            int: The total count of results.
+        """
         return len(self.results)
 
     @property
     def function_count(self):
-        """ Count all the collected functions (this is not the ones that are run)"""
+        """
+        Count all collected functions.
+
+        Note:
+            This includes all functions collected, regardless of whether they were run.
+
+        Returns:
+            int: The total number of collected functions.
+        """
         return len(self.collected)
 
     @property
     def module_count(self):
-        """Count up all the modules in all the packages"""
+        """
+        Count the total number of modules across all available packages and modules.
+
+        Returns:
+            int: The total number of modules, including those in individual packages.
+        """
         return len(self.modules) + sum(1 for pkg in self.packages for _ in pkg.modules)
 
     @property
     def module_names(self):
-        """Get a list of module names."""
+        """
+        Retrieve a list of all module names.
+
+        Returns:
+            list: A list of all module names from standalone modules and packages.
+        """
         return [module.name for module in self.modules] + \
             [m.module_name for pkg in self.packages for m in pkg.modules]
+
+    @property
+    def duration_seconds(self) -> float:
+        """
+        Calculate the duration in seconds between start_time and end_time.
+
+        Returns:
+            float: The duration in seconds. Returns 0 if start_time or end_time is not set.
+        """
+        if self.end_time and self.start_time:
+            return (self.end_time - self.start_time).total_seconds()
+        return 0.0
 
     @property
     def package_count(self):
@@ -781,8 +846,7 @@ class Ten8tChecker:
         r = {
             "start_time": self.start_time,
             "end_time": self.end_time,
-            "duration_seconds": (self.end_time - self.start_time).total_seconds(),
-
+            "duration_seconds": self.duration_seconds,
             "functions": [f.function_name for f in self.check_functions],
             "passed_count": self.pass_count,
             "warn_count": self.warn_count,

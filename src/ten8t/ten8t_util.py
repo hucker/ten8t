@@ -75,7 +75,7 @@ def any_to_str_list(param: StrListOrNone, sep=' ') -> StrList:
     if isinstance(param, list):
         if all(isinstance(item, str) for item in param):
             return param
-    raise ValueError('Invalid parameter type, expected all strings.')
+    raise ValueError(f'Invalid parameter type, expected all strings. {param}')
 
 
 def any_to_int_list(param: IntListOrNone, sep=' ') -> IntList:
