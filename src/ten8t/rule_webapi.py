@@ -154,7 +154,7 @@ def rule_web_api(url: str,
         if response.status_code not in expected_response:
             yield from y(status=False,
                          msg=f"URL {BM.code(url)} expected {BM.expected(expected_response)} " \
-                             "returned {BM.actual(response.status_code)} ")
+                             f"returned {BM.actual(response.status_code)} ")
             return
 
         # This handles an expected failure by return true but not checking the json
@@ -165,7 +165,6 @@ def rule_web_api(url: str,
             return
 
         response_json: dict = response.json()
-        # d_status = verify_dicts(response_json, json_d)
 
         d_status = is_mismatch(json_d, response_json)
 
