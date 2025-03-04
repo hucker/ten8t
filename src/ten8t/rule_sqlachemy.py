@@ -1,6 +1,7 @@
 """
-Set of baseline rules that uses the pyfilesystem module to OS-agnostic checks on things
-about the file system, file existing, age etc.
+Defines a set of baseline rules that utilize the pyfilesystem module to perform OS-agnostic
+checks on various aspects of the file system. These checks include verifying the existence of
+files, inspecting file age, and other file system-related properties.
 """
 
 from typing import Generator, Sequence

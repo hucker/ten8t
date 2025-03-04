@@ -1,8 +1,10 @@
 """
-This module contains the rules for interacting with dataframes.  Instead of using a single type of
-dataframe like pandas, polars or versions of these data frames, I'm using narwhals which is
-a compatibility layer that allows ANY type of dataframe to be handled.
+This module provides rules for interacting with dataframes. Instead of using a single type of
+dataframe implementation, such as pandas or polars, we utilize a compatibility layer called
+"narwhals." Narwhals enable seamless handling of any type of dataframe, offering flexibility and
+compatibility across diverse frameworks.
 """
+
 from typing import Generator
 
 import narwhals as nw

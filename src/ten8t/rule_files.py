@@ -1,8 +1,12 @@
 """
-This module contains ten8t rules that are useful for checking the status of files
-on the native file system.  This functions me be removed in a future release
-and replaced by functions that use the pyfilesystem package.
+This module contains ten8t rules that are useful for checking the status of
+files on the native file system.
+
+Note:
+    These functions may be removed in a future release and replaced by alternatives
+    that utilize the pyfilesystem package.
 """
+
 import pathlib
 import time
 from typing import Generator

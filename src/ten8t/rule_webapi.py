@@ -26,15 +26,30 @@ def rule_url_200(urls: str | Sequence[str],
                  summary_only=False,
                  summary_name=None) -> Generator[TR, None, None]:
     """
-    Simple rule check to verify that URL is active.
-    
-    TAs setup this just checks that a web API URL is active. The urls parameter
-    is set up to be tolerant of varius ways you could pass a list of URLS
-    
-    urls(str|Sequence[str]): List of URLs to check or a string that can be split into URLs
-    expected_status(200): Expected response status code
-    timeout_sec(int): Timeout in seconds.
-    
+    Verifies the HTTP status code for one or more URLs, and optionally summarizes
+    the results.
+
+    This function checks the response status codes of one or more URLs by sending
+    a GET request and comparing the result against the expected status code. For
+    each URL, it yields a result indicating whether the response matched the
+    expected status code or an exception occurred. A summary of the evaluations
+    is yielded if the `summary_only` flag is set.
+
+    Args:
+        urls (str | Sequence[str]): A single URL as a string, a comma-separated
+            string of URLs, or a sequence of URLs.
+        expected_status (int): The expected HTTP status code for a successful
+            response. Default is 200.
+        timeout_sec (int): The maximum waiting time (in seconds) for the server's
+            response. Default is 5.
+        summary_only (bool): If `True`, only yields a summary of the results after
+            all URLs have been processed. Default is `False`.
+        summary_name (str | None): A custom name used in the summary result. If
+            not provided, defaults to "Rule 200 Check".
+
+    Yields:
+        Generator[TR, None, None]: A generator yielding results for each URL and
+        an optional summary.
     """
     y = Ten8tYield(summary_only=summary_only, summary_name=summary_name or "Rule 200 Check")
 
@@ -65,14 +80,18 @@ def rule_url_200(urls: str | Sequence[str],
 
 def is_mismatch(dict1, dict2):
     """
-    Return the first differing values from dict1 and dict2
+    Checks if two dictionaries have mismatching values or missing keys. If
+    a mismatch is found, returns a dictionary that represents the mismatched
+    key(s) and their corresponding values from the first dictionary.
+    Supports nested dictionary comparison.
+
     Args:
-        dict1:
-        dict2:
+        dict1: The first dictionary to compare.
+        dict2: The second dictionary to compare.
 
-    Returns: None if every key/value pair in dict1 is in dict, otherwise
-            returns the first value that differs from dict 2
-
+    Returns:
+        A dictionary containing the mismatched key(s) and their values from
+        the first dictionary. If no mismatch is found, returns None.
     """
     if not isinstance(dict1, dict) or not isinstance(dict2, dict):
         return False
@@ -95,7 +114,30 @@ def rule_web_api(url: str,
                  timeout_expected=False,
                  summary_only=False,
                  summary_name=None) -> Generator[TR, None, None]:
-    """Simple rule check to verify that URL is active and handles timeouts."""
+    """
+    Validates a web API response based on the provided parameters and expected conditions. The function
+    verifies the response status code, checks for timeouts, and performs JSON structure comparisons if
+    applicable. It generates a detailed result for each check and optionally provides a summary.
+
+    Args:
+        url (str): The URL to be requested for the API call.
+        json_d (dict): The dictionary representing the expected JSON structure for comparison against
+            the API response.
+        timeout_sec (int, optional): The timeout period in seconds for the API request. Defaults to 5.
+        expected_response (int | list[int] | str, optional): The expected HTTP response code(s).
+            Can be an integer, list of integers, or a string. Defaults to 200.
+        timeout_expected (bool, optional): Indicates whether a timeout is an expected outcome.
+            Defaults to False.
+        summary_only (bool, optional): If True, only the summary results from all checks will be
+            generated. Defaults to False.
+        summary_name (str, optional): The custom name for the summary check. If not provided, a
+            default of "Rule 200 check" is used. Defaults to None.
+
+    Yields:
+        Generator[TR, None, None]: A generator that provides individual and summary results of
+        each validation step. Each result indicates the validation status, associated messages,
+        and key mismatches where applicable.
+    """
     y = Ten8tYield(summary_only=summary_only)
     try:
 

@@ -16,13 +16,46 @@ from .ten8t_result import TR
 
 
 def rule_fs_paths_exist(fs_obj: OSFS, paths: Sequence[str]) -> Generator[TR, None, None]:
-    """ Check a bunch of paths."""
+    """
+    Checks the existence of multiple file system paths and yields results.
+
+    This function iterates over a sequence of file system paths and checks
+    their existence using the `rule_fs_path_exists` function. It delegates
+    the verification of each individual path to the `rule_fs_path_exists`
+    helper, and yields results accordingly. It operates on an `OSFS` file
+    system object and can handle multiple paths in a single invocation.
+
+    Args:
+        fs_obj (OSFS): The file system object representing the context in
+            which paths should be verified.
+        paths (Sequence[str]): A sequence of file system paths to check for
+            existence within the provided file system context.
+
+    Yields:
+        Any: Results from the `rule_fs_path_exists` function for each path
+            in the provided sequence, based on their existence.
+    """
     for path in paths:
         yield from rule_fs_path_exists(fs_obj, path)
 
 
 def rule_fs_path_exists(fs_obj: OSFS, path_: str) -> Generator[TR, None, None]:
-    """Simple rule to check for a file path."""
+    """
+    Check if a given path exists in the specified filesystem object and yield the result.
+
+    This function verifies whether the specified path exists within an OSFS filesystem
+    object. It yields a result containing the status of existence and an appropriate
+    message.
+
+    Args:
+        fs_obj (OSFS): The filesystem object in which the path exists. This is expected
+            to be an instance of the OSFS class.
+        path_ (str): The path to be checked for existence within the filesystem object.
+
+    Yields:
+        TR: A generator object yielding a result that includes the status of the path's
+            existence and a corresponding message.
+    """
     yield TR(status=fs_obj.exists(path_), msg=f"The path {path_} on {fs_obj.root_path} exists.")
 
 
@@ -36,7 +69,24 @@ def rule_fs_file_within_max_size(filesys: OSFS,
                                  max_file_size: int,
                                  binary: bool = False,
                                  skip_if_missing=False):
-    """Check if a file exists and its size is within the given max_file_size limit"""
+    """
+    Validates whether a file within a given filesystem adheres to a specified maximum size limit. The function
+    can optionally operate in binary size units and provides a feature to skip validation if the file is missing.
+    This functionality enables fine-grained control over file size validation in OSFS-based operations.
+
+    Args:
+        filesys (OSFS): An instance of OSFS representing the filesystem where the file resides.
+        path (str): The relative path to the file within the given filesystem.
+        max_file_size (int): The maximum allowed file size in bytes for the specified file.
+        binary (bool): Determines whether the size calculation uses binary units (e.g., KiB, MiB) or not. Defaults
+            to False.
+        skip_if_missing (bool): A flag to control whether the validation is skipped if the file does not exist.
+            Defaults to False.
+
+    Yields:
+        TR: An instance of TR containing the validation result. It includes the status (True for success, False
+            for failure), a descriptive message, and an indication if the validation was skipped.
+    """
     if not filesys.isfile(path):
         yield TR(status=False, msg=f'File "{path}" does {BM.bold("NOT")} exist in {filesys.root_path}',
                  skipped=skip_if_missing)
@@ -124,9 +174,44 @@ def rule_fs_oldest_file_age(filesys: FS, max_age_minutes: float = 0,
                             no_files_skip=True,
                             now__: dt.datetime | None = None):
     """
-    This rule is useful for ensuring that files are being removed in
-    a timely manner as in the case where a folder is used to queue up
-    data files that are processed.  Old files indicates an issue.
+    Checks the age of the oldest file in a filesystem against a specified maximum
+    age. It determines whether the oldest file satisfies the required age limit
+    criteria based on provided inputs. If no files match the specified patterns,
+    or if the files cannot be accessed, the method handles such cases accordingly.
+
+    Args:
+        filesys (FS): The filesystem to operate on. Must support typical file
+            system operations like listing files, checking if a path is a file,
+            and retrieving file metadata.
+        max_age_minutes (float, optional): Maximum allowable age for a file, in
+            minutes. Defaults to 0.
+        max_age_hours (float, optional): Maximum allowable age for a file, in
+            hours. Defaults to 0.
+        max_age_days (float, optional): Maximum allowable age for a file, in days.
+            Defaults to 0.
+        max_age_seconds (float, optional): Maximum allowable age for a file, in
+            seconds. Defaults to 0.
+        patterns (list | str, optional): Filename patterns to filter files,
+            provided as a single string (comma-separated) or a list of strings.
+            Defaults to ['*'], which matches all files.
+        no_files_stat (bool, optional): Status to yield when no files are found.
+            True if this condition should be treated as a successful condition.
+            Defaults to True.
+        no_files_skip (bool, optional): Indicates whether the check for file age
+            should be skipped if no files are found. Defaults to True.
+        now__ (datetime.datetime | None, optional): A specific point in time to
+            use as the current time for comparison. If None, the current system
+            time is used. Defaults to None.
+
+    Yields:
+        TR: A result object with the status, message, and additional information
+            about the file check. The result will indicate whether the oldest
+            file's age satisfies the limit or describe any error encountered.
+
+    Raises:
+        This function does not raise exceptions directly but yields result objects
+        containing exception details (if any). The caller is responsible for
+        handling yielded errors as appropriate.
     """
     patterns = patterns or ['*']
 

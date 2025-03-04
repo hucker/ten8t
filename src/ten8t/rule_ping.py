@@ -1,6 +1,9 @@
 """
-This module provides functions for using ping to verify network connectivity.
+This module provides functions to verify network connectivity by using the ping utility.
 
+The module includes mechanisms to send ICMP echo requests to specified hosts and interpret
+the responses to determine network reachability and latency. It is intended for diagnosing
+network issues or monitoring network status.
 
 """
 from typing import Generator
