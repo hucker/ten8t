@@ -735,10 +735,11 @@ mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial te
 ### Package Test Coverage
 
 ![Ten8t Package Test Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
+
 ## TODO
 
-1. Currently testing free threading.
+1. Add support for handling coroutines and async generators, so ten8t can support all function types.
 
 ## Latest changes
 
-1. Updated for dependabot.
+1. Added explicit error messages for async check functions

@@ -1,6 +1,12 @@
 """
 Public API for the Ten8t project.
 """
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("ten8t")  # Replace with the actual package name in pyproject.toml
+except PackageNotFoundError:
+    __version__ = "unknown"  # Fallback if version can't be found
 
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
