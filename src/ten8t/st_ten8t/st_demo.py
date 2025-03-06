@@ -242,7 +242,7 @@ def main():
             checker.include_by_attribute(tags=tags, ruids=ruids, levels=levels, phases=phases)
         else:
             checker.exclude_by_attribute(tags=tags, ruids=ruids, levels=levels, phases=phases)
-        if len(checker.collected) == 0:
+        if len(checker.check_func_list) == 0:
             st.warning("No rule functions found. It appears that you have filtered everything out.")
         else:
             prog_bar = st.progress(0, text=f"Rule checking status 0 of {checker.function_count}")

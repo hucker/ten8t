@@ -81,7 +81,7 @@ class Ten8tThread:
         """
 
         fg = defaultdict(list)
-        for function_ in self.checker.collected:
+        for function_ in self.checker.check_func_list:
             fg[function_.thread_id].append(function_)
         self.thread_groups = fg
         return fg
@@ -115,7 +115,7 @@ class Ten8tThread:
             checker = copy.copy(self.checker)
 
             # Assign the subset of functions corresponding to the current group.
-            checker.collected = functions
+            checker.check_func_list = functions
 
             # Add this modified checker to the list of checkers to process.
             checkers.append(checker)
@@ -137,8 +137,8 @@ class Ten8tThread:
             #       all thread_ids are the same so we are safe grabbing the first one
             #       this will need to be refactored.  This is ONLY done to make
             #       log messages know the thread_id.
-            if len(checker_.collected) > 0:
-                threading.current_thread().name = checker_.collected[0].thread_id
+            if len(checker_.check_func_list) > 0:
+                threading.current_thread().name = checker_.check_func_list[0].thread_id
             else:
                 threading.current_thread().name = "Checker"
 

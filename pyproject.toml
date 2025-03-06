@@ -50,6 +50,7 @@ dependencies = [
     "setuptools==75.8.2",
     "pydantic-core==2.29.0",
     "pydantic==2.11.0a2",
+    "isort==6.0.1",
 ]
 #    requiest == "^2.32.3"
 #    toml = "^0.10.2"

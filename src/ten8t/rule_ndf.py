@@ -416,8 +416,7 @@ def rule_ndf_pf_columns(df: FrameT,
         pass_status = extended_bool(row[pf_col])
         row_description = BM.code(row[desc_col])
         ten8t_result = TR(pass_status,
-                          f"{row_description} {BM.pass_('passed.')
-                          if pass_status else BM.fail('failed.')}")
+                          f"{row_description} {BM.pass_('passed.') if pass_status else BM.fail('failed.')}")
 
         yield from y(ten8t_result)
 

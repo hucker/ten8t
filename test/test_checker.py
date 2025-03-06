@@ -74,8 +74,8 @@ def test_no_attrs():
 
     ch = t8.Ten8tChecker(check_functions=[sfunc], auto_setup=True)
 
-    assert ch.collected[0].function == func
-    assert ch.collected[0] == sfunc
+    assert ch.check_func_list[0].function == func
+    assert ch.check_func_list[0] == sfunc
 
 
 def test_checker_indexing(func1, func2, func3, func4):
@@ -226,7 +226,7 @@ def test_filtered_function_list(func1, func2):
         return f.ruid == "suid_2"
 
     ch.pre_collect()
-    ch.prepare(filter_functions=[filter1])
+    ch.prepare_functions(filter_functions=[filter1])
 
     results = ch.run_all()
     assert len(results) == 1
@@ -235,7 +235,7 @@ def test_filtered_function_list(func1, func2):
     assert results[0].ruid == "suid_1"
 
     # Rerun with second filter
-    ch.prepare(filter_functions=[filter2])
+    ch.prepare_functions(filter_functions=[filter2])
 
     results = ch.run_all()
     assert len(results) == 1
@@ -276,24 +276,24 @@ def test_builtin_filter_ruids(func1, func2, func3):
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_ruids(["suid_1"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_ruids(["suid_1"])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func2, func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_ruids(["suid_1", "suid_2"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_ruids(["suid_1", "suid_2"])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.keep_ruids(["suid_3"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_ruids(["suid_3"])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.keep_ruids(["suid_1", "suid_2"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_ruids(["suid_1", "suid_2"])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func1, func2}
@@ -307,24 +307,24 @@ def test_builtin_filter_phase(func1, func2, func3):
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_phases(["p1"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_phases(["p1"])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func2, func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_phases(["p1", "p2"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_phases(["p1", "p2"])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.keep_phases(["p3"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_phases(["p3"])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.keep_phases(["p1", "p2"])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_phases(["p1", "p2"])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func1, func2}
@@ -338,24 +338,24 @@ def test_builtin_filter_level(func1, func2, func3):
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_levels([1])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_levels([1])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func2, func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_levels([1, 2])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_levels([1, 2])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.keep_levels([3])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_levels([3])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.keep_levels([1, 2])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_levels([1, 2])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func1, func2}
@@ -369,24 +369,24 @@ def test_builtin_filter_tags(func1, func2, func3):
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_tags(['t1'])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_tags(['t1'])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func2, func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.exclude_tags(['t1', 't2'])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.exclude_tags(['t1', 't2'])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
     ch = t8.Ten8tChecker(check_functions=funcs)
     ch.pre_collect()
-    s_funcs = ch.prepare(filter_functions=[t8.keep_tags(['t3'])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_tags(['t3'])])
 
     assert len(s_funcs) == 1
     assert set(s_funcs) == {func3}
 
-    s_funcs = ch.prepare(filter_functions=[t8.keep_tags(['t1', 't2'])])
+    s_funcs = ch.prepare_functions(filter_functions=[t8.keep_tags(['t1', 't2'])])
 
     assert len(s_funcs) == 2
     assert set(s_funcs) == {func1, func2}
@@ -426,7 +426,7 @@ def test_filter_all(func1, func2):
 
     ch = t8.Ten8tChecker(check_functions=[func1, func2])
     ch.pre_collect()
-    ch.prepare(filter_functions=filters)
+    ch.prepare_functions(filter_functions=filters)
 
     results = ch.run_all()
     assert len(results) == 0
@@ -531,8 +531,8 @@ def attr_functions():
 def test_include_by_attribute(attr_functions, tags, levels, phases, ruids, expected_count, msg):
     ch = t8.Ten8tChecker(check_functions=attr_functions, auto_setup=True)
     ch.include_by_attribute(tags=tags, levels=levels, phases=phases, ruids=ruids)
-    assert len(ch.collected) == expected_count, msg
-    assert ch.collected[0].tag == 't1', msg
+    assert len(ch.check_func_list) == expected_count, msg
+    assert ch.check_func_list[0].tag == 't1', msg
 
 
 @pytest.mark.parametrize('tags,levels,phases,ruids,expected_count,msg', [
@@ -560,7 +560,7 @@ def test_include_by_attribute(attr_functions, tags, levels, phases, ruids, expec
 def test_exclude_by_attribute(attr_functions, tags, levels, phases, ruids, expected_count, msg):
     ch = t8.Ten8tChecker(check_functions=attr_functions, auto_setup=True)
     funcs = ch.exclude_by_attribute(tags=tags, levels=levels, phases=phases, ruids=ruids)
-    assert len(ch.collected) == expected_count, msg
+    assert len(ch.check_func_list) == expected_count, msg
 
 
 @pytest.mark.parametrize('params, expect, msg', [
@@ -775,7 +775,7 @@ def test_module_autothread2():
     ch = t8.Ten8tChecker(modules=[module1, module2], auto_setup=True)
 
     # Now we added two modules, each with auto threading on, so there should be 2 unique thread ids.
-    assert len(set(func.thread_id for func in ch.collected)) == 2
+    assert len(set(func.thread_id for func in ch.check_func_list)) == 2
 
     # Since there is no filtering of functions the pre-collect and collect counts should be the same
     assert ch.collected_count == ch.pre_collected_count

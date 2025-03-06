@@ -263,11 +263,14 @@ class Ten8tChecker:
         # If any exception occurs stop processing
         self.abort_on_exception = abort_on_exception
 
-        # All checker functions from packages, modules, and adhoc BEFORE filtering
+        # All checker functions from packages, modules, and adhoc  and of any type
+        # BEFORE filtering
         self.pre_collected: list[Ten8tFunction] = []
 
         # Filtered list of functions from packages, modules, and adhoc
-        self.collected: list[Ten8tFunction] = []
+        self.check_func_list: list[Ten8tFunction] = []
+        self.async_check_func_list: list[Ten8tFunction] = []
+        self.coroutine_check_func_list: list[Ten8tFunction] = []
 
         self.start_time = dt.datetime.now()
         self.end_time = dt.datetime.now()
@@ -284,7 +287,7 @@ class Ten8tChecker:
         # with prepare...
         if auto_setup:
             self.pre_collect()
-            self.prepare()
+            self.prepare_functions()
 
     @property
     def check_function_count(self) -> int:
@@ -301,7 +304,7 @@ class Ten8tChecker:
 
         This is the could AFTER filtering
         """
-        return len(self.collected) if self.collected else 0
+        return len(self.check_func_list) if self.check_func_list else 0
 
     @property
     def pre_collected_count(self) -> int:
@@ -309,6 +312,14 @@ class Ten8tChecker:
         This is the functions BEFORE filtering
         ..."""
         return len(self.pre_collected) if self.pre_collected else 0
+
+    @property
+    def async_count(self) -> int:
+        return len(self.async_check_func_list) if self.async_check_func_list else 0
+
+    @property
+    def coroutine_count(self) -> int:
+        return len(self.coroutine_check_func_list) if self.coroutine_check_func_list else 0
 
     @staticmethod
     def _make_immutable_env(env: dict) -> dict:
@@ -406,7 +417,7 @@ class Ten8tChecker:
         # List of all possible functions that could be run
         return self.pre_collected
 
-    def prepare(self, filter_functions=None):
+    def prepare_functions(self, filter_functions=None):
         """
         Prepare the collected functions for running checks.
 
@@ -424,15 +435,21 @@ class Ten8tChecker:
         # If no filter functions are provided then use a default one allows all functions
         filter_functions = filter_functions or [lambda _: True]
 
+        # If the user didn't provide ruids, generic ones will be created.
         self.auto_gen_ruids()
 
         # At this point we have all the functions in the packages, modules and functions
         # Now we need to filter out the ones that are not wanted. Filter functions return
         # True if the function should be kept
-        self.collected = []
+        self.check_func_list = []
         for ten8t_func in self.pre_collected:
             if all(f(ten8t_func) for f in filter_functions):
-                self.collected.append(ten8t_func)
+                if ten8t_func.is_asyncgen:
+                    self.async_check_func_list.append(ten8t_func)
+                elif ten8t_func.is_coroutine:
+                    self.coroutine_check_func_list.append(ten8t_func)
+                else:
+                    self.check_func_list.append(ten8t_func)
 
         # Now use the RC file.  Note that if you are running filter functions AND
         # an RC file this can be confusing.  Ideally you use one or the other. but
@@ -444,12 +461,12 @@ class Ten8tChecker:
 
         # If the user has provided valid ruids for all functions (or for none) then
         # we can proceed.  If not then we need to raise an exception and show the issues.
-        ruids = [f.ruid for f in self.collected]
+        ruids = [f.ruid for f in self.check_func_list]
 
         # If the user decided to set up ruids for every function OR if they didn't configure
         # any ruids then we can just run with the collected functions.
         if empty_ruids(ruids) or valid_ruids(ruids):
-            return self.collected
+            return self.check_func_list
 
         # Otherwise there is a problem.
         raise Ten8tException(
@@ -474,15 +491,15 @@ class Ten8tChecker:
         # By exiting early an NOT using the RC file we don't use
         # Sets as shown below.  Sets cause order to be nondeterministic
         if not self.rc:
-            return self.collected
+            return self.check_func_list
 
-        self.collected = [function for function in self.collected
-                          if self.rc.does_match(ruid=function.ruid,
+        self.check_func_list = [function for function in self.check_func_list
+                                if self.rc.does_match(ruid=function.ruid,
                                                 tag=function.tag,
                                                 phase=function.phase,
                                                 level=function.level)]
 
-        return self.collected
+        return self.check_func_list
 
     def exclude_by_attribute(self, tags: StrListOrNone = None,
                              ruids: StrListOrNone = None,
@@ -497,11 +514,11 @@ class Ten8tChecker:
         levels = _param_int_list(levels)
 
         # Exclude attributes that don't match
-        self.collected = [f for f in self.collected if f.tag not in tags and
-                          f.ruid not in ruids and
-                          f.level not in levels and
-                          f.phase not in phases]
-        return self.collected
+        self.check_func_list = [f for f in self.check_func_list if f.tag not in tags and
+                                f.ruid not in ruids and
+                                f.level not in levels and
+                                f.phase not in phases]
+        return self.check_func_list
 
     def include_by_attribute(self,
                              tags: StrListOrNone = None,
@@ -521,12 +538,12 @@ class Ten8tChecker:
         #    return self.collected
 
         # Only include the attributes that match
-        self.collected = [f for f in self.collected if (f.tag in tags_) or
-                          (f.ruid in ruids_) or
-                          (f.level in levels_) or
-                          (f.phase in phases_)]
+        self.check_func_list = [f for f in self.check_func_list if (f.tag in tags_) or
+                                (f.ruid in ruids_) or
+                                (f.level in levels_) or
+                                (f.phase in phases_)]
 
-        return self.collected
+        return self.check_func_list
 
     def load_environments(self):
         """
@@ -564,7 +581,7 @@ class Ten8tChecker:
         Returns:
             _type_: _description_
         """
-        r = sorted(set(f.ruid for f in self.collected))
+        r = sorted(set(f.ruid for f in self.check_func_list))
         return r
 
     @property
@@ -575,7 +592,7 @@ class Ten8tChecker:
         Returns:
             _type_: _description_
         """
-        return sorted(set(f.level for f in self.collected))
+        return sorted(set(f.level for f in self.check_func_list))
 
     @property
     def tags(self):
@@ -585,7 +602,7 @@ class Ten8tChecker:
         Returns:
             _type_: _description_
         """
-        return sorted(set(f.tag for f in self.collected))
+        return sorted(set(f.tag for f in self.check_func_list))
 
     @property
     def phases(self):
@@ -595,7 +612,7 @@ class Ten8tChecker:
         Returns:
             _type_: _description_
         """
-        return sorted(set(f.phase for f in self.collected))
+        return sorted(set(f.phase for f in self.check_func_list))
 
     class AbortYieldException(Exception):
         """Allow breaking out of multi level loop without state variables"""
@@ -621,7 +638,7 @@ class Ten8tChecker:
         self.progress_callback(count, self.function_count, "Start Rule Check")
         self.start_time = dt.datetime.now()
 
-        ten8t_logger.info("Checker start with %d functions", len(self.collected))
+        ten8t_logger.info("Checker start with %d functions", len(self.check_func_list))
         # Fixes linting issue
         function_ = None
         try:
@@ -632,7 +649,7 @@ class Ten8tChecker:
             env = self.load_environments()
 
             # Count here to enable progress bars
-            for count, function_ in enumerate(self.collected, start=1):
+            for count, function_ in enumerate(self.check_func_list, start=1):
 
                 # Lots of magic here
                 function_.env = env
@@ -781,7 +798,7 @@ class Ten8tChecker:
         Returns:
             int: The total number of collected functions.
         """
-        return len(self.collected)
+        return len(self.check_func_list)
 
     @property
     def module_count(self):

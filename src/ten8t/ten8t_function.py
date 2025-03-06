@@ -92,11 +92,11 @@ class Ten8tFunction:
         self.is_coroutine = inspect.iscoroutinefunction(function_)
         self.is_asyncgen = inspect.isasyncgenfunction(function_)
 
-        if self.is_coroutine:
-            raise Ten8tException(f"Coroutines are not YET supported for function {function_.__name__}")
+        # if self.is_coroutine:
+        #    raise Ten8tException(f"Coroutines are not YET supported for function {function_.__name__}")
 
-        if self.is_asyncgen:
-            raise Ten8tException(f"Async generators are not YET supported for function {function_.__name__}")
+        # if self.is_asyncgen:
+        #    raise Ten8tException(f"Async generators are not YET supported for function {function_.__name__}")
 
         self.function_name = function_.__name__
 

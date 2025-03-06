@@ -39,7 +39,7 @@ def test_index_in_modules(skip_pkg):
     """ Verify that packages read from modules have the check functions indexed correctly """
     ch = t8.Ten8tChecker(packages=[skip_pkg], auto_setup=True)
 
-    for count, func in enumerate(ch.collected, start=1):
+    for count, func in enumerate(ch.check_func_list, start=1):
         assert count == func.index
 
 

@@ -1,5 +1,6 @@
 import pytest
 
+from conftest import logger
 from ten8t import Ten8tChecker
 from ten8t import attributes, rule_ping_host_check, rule_ping_hosts_check
 
@@ -138,31 +139,116 @@ def test_non_string_urls(invalid_url):
             ""  # pragma no cover
 
 
+import statistics
+
+
+def get_stats(numbers: list[float]):
+    """
+    Calculate mean, min, max, and standard deviation of a list and return as a dictionary.
+
+    Args:
+        numbers (list): List of numbers.
+
+    Returns:
+        dict: Dictionary containing the statistics and the data itself.
+    """
+    # Handle edge case when the list is empty
+    if not numbers:
+        return {
+            "data": [],
+            "mean": 0,
+            "min": 0,
+            "max": 0,
+            "stdev": 0,
+            "status": "empty",
+            "count": 0
+        }
+
+    # Calculate statistics
+    stats = {
+        "mean": statistics.mean(numbers),
+        "min": f"{min(numbers):.06f}",
+        "max": f"{max(numbers):.06f}",
+        "stdev": f"{statistics.stdev(numbers):.06f}",
+        "status": "ok",
+        "count": len(numbers),
+        "data": list(f"{number:.06f}" for number in numbers),  # Use "data" instead of "list"
+    }
+    return stats
+
+
+def make_check(target, samples, workers):
+    """Create a check function with the right number of targets and workers"""
+
+    def check_pings():
+        yield from rule_ping_hosts_check([target] * samples, max_workers=workers)
+
+    # Returns a custom function
+    return check_pings
+
+
 def test_ping_threading():
-    # The ping code is threadable, which can significantly speed up performance for large lists
-    # of pings since they will happen concurrently.  For this test with the 15 workers I saw a 10x
-    # speed improvement.
+    """
+    The ping code is threadable, which can significantly speed up performance for large lists
+    of pings since they will happen concurrently.  For this test with the 15 workers I saw a 10x
+    speed improvement.
+
+    This test is flakey because network traffic and server loads are unpredictable, that is
+    why retries are built in.
+    """
+    import random
+
     test_samples = 15
+    num_tries = 3
+    # these are popular ping targets that are reliable
+    ping_targets = ["google.com", "1.1.1.1", "8.8.8.8", "cloudflare.com", "9.9.9.9"]
+    random.shuffle(ping_targets)
 
-    @attributes(tag="tag")
-    def check_rule_pings_threaded():
-        yield from rule_ping_hosts_check(["google.com"] * test_samples, max_workers=test_samples)
+    # Randomly pick num_tries (3) different targets
+    ping_targets = ping_targets[:num_tries]
 
-    def check_rule_pings_not_threaded():
-        yield from rule_ping_hosts_check(["google.com"] * test_samples, max_workers=1)
+    # Try from the list of targets
+    for try_number, ping_target in enumerate(ping_targets, start=1):
+        logger.info("Run %d- Testing ping on %s", try_number, ping_target)
+        # Note: Unthreaded implies 1 worker
+        check_rule_pings_threaded = make_check(ping_target, test_samples, workers=test_samples)
+        check_rule_pings_not_threaded = make_check(ping_target, test_samples, workers=1)
 
-    tcheck = Ten8tChecker(check_functions=[check_rule_pings_threaded], auto_setup=True)
-    ntcheck = Ten8tChecker(check_functions=[check_rule_pings_not_threaded], auto_setup=True)
+        tcheck = Ten8tChecker(check_functions=[check_rule_pings_threaded], auto_setup=True)
+        ntcheck = Ten8tChecker(check_functions=[check_rule_pings_not_threaded], auto_setup=True)
 
-    tcheck.run_all()
-    ntcheck.run_all()
+        tcheck.run_all()
+        ntcheck.run_all()
 
-    # NOTE: This is really running a ping against google and is depending on this "basically working consistantly"
-    #       This has all sorts of possible issues that can/will make this test flakey
+        # WARNING: This looks like I'm forcing the test to pass, HOWEVER in practice this
+        #          test is flakey and pings will have random delays.  This makes a crude
+        #          effort to run a good test.
+
+        logger.info("Threaded time = %0.3f Single Thread time = %0.3f",
+                    tcheck.duration_seconds,
+                    ntcheck.duration_seconds)
+
+        speedup = ntcheck.duration_seconds / tcheck.duration_seconds
+        # On M1 Mac I see ~8-12x speedup
+        logger.info(f"Speedup = {speedup:.02f}x")
+        t_data = get_stats([t.runtime_sec for t in tcheck.results])
+        nt_data = get_stats([t.runtime_sec for t in ntcheck.results])
+        logger.info("Threaded data = %s" % str(t_data))
+        logger.info("Single Thread data = %s" % str(nt_data))
+
+        # Check retry conditions, if met, then bail
+        if (tcheck.duration_seconds < ntcheck.duration_seconds and
+                tcheck.pre_collected and
+                ntcheck.perfect_run and
+                speedup > 4.0):  # This 4 is arbitrary
+            break
+
+    # Verify obvious stuff
     assert len(tcheck.results) == test_samples
     assert tcheck.perfect_run
     assert len(ntcheck.results) == test_samples
     assert ntcheck.perfect_run
+    assert speedup > 4.0
 
-    # For 15 pings I have seen between 4 and 11 times speed increase.
+    # This is very crude, but 15 pings, expect between 4 and 12 times speed increase.
     assert tcheck.duration_seconds < ntcheck.duration_seconds

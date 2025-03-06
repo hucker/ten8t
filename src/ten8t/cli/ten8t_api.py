@@ -29,7 +29,7 @@ def set_ten8t_checker(chk: ten8t_checker.Ten8tChecker) -> None:
 def prepare_ten8t():
     """Recalculate the initial conditions for ten8t"""
     __ten8t_checker.pre_collect()
-    __ten8t_checker.prepare()
+    __ten8t_checker.prepare_functions()
 
 
 def checker_ok():
@@ -68,7 +68,7 @@ def prep_rules():
        in high bandwidth situation this could be cached."""
     checker_ok()
     __ten8t_checker.pre_collect()
-    __ten8t_checker.prepare()
+    __ten8t_checker.prepare_functions()
 
 
 def run_matched(matched_funcs, var) -> dict:
@@ -80,7 +80,7 @@ def run_matched(matched_funcs, var) -> dict:
         raise_400(msg=f"No matched functions found for {var}")
 
     # WHen you run_all here the result is stored in the checker object.
-    __ten8t_checker.collected = matched_funcs
+    __ten8t_checker.check_func_list = matched_funcs
     __ten8t_checker.run_all()
 
     return __ten8t_checker.as_dict()
@@ -112,7 +112,7 @@ async def check_rule_id_regular_expression(rule_id: str):
     print(response.json())
     """
     prep_rules()
-    matched_funcs = [func for func in __ten8t_checker.collected if re.match(rule_id, func.ruid)]
+    matched_funcs = [func for func in __ten8t_checker.check_func_list if re.match(rule_id, func.ruid)]
     return run_matched(matched_funcs, f"{rule_id=}")
 
 
@@ -133,7 +133,7 @@ async def check_rule_ids(rule_ids: str) -> dict:
     """
     prep_rules()
     rule_ids = [rule_id.strip() for rule_id in rule_ids.replace(",", " ").split()]
-    matched_funcs = [func for func in __ten8t_checker.collected if func.ruid in rule_ids]
+    matched_funcs = [func for func in __ten8t_checker.check_func_list if func.ruid in rule_ids]
     return run_matched(matched_funcs, f"{rule_ids=}")
 
 
@@ -160,7 +160,7 @@ async def check_tags(tags: str) -> dict:
     """
     prep_rules()
     tags = [tag.strip() for tag in tags.replace(",", " ").split()]
-    matched_funcs = [func for func in __ten8t_checker.collected if func.tag in tags]
+    matched_funcs = [func for func in __ten8t_checker.check_func_list if func.tag in tags]
     return run_matched(matched_funcs, f"{tags=}")
 
 
@@ -199,7 +199,7 @@ async def check_level_range(
 
     low, high = low or -1000000, high or 1000000
     prep_rules()
-    matched_funcs = [func for func in __ten8t_checker.collected if low <= func.level <= high]
+    matched_funcs = [func for func in __ten8t_checker.check_func_list if low <= func.level <= high]
     return run_matched(matched_funcs, f"{low=} {high=}")
 
 
@@ -218,7 +218,7 @@ async def check_phase(phases: str) -> dict:
     """
     prep_rules()
     phases = [phase.strip() for phase in phases.replace(" ", "").split(",")]
-    matched_funcs = [func for func in __ten8t_checker.collected if func.phase in phases]
+    matched_funcs = [func for func in __ten8t_checker.check_func_list if func.phase in phases]
     return run_matched(matched_funcs, f"{phases=}")
 
 
