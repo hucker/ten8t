@@ -4,16 +4,20 @@ about the file system, file existing, age etc.
 """
 import datetime as dt
 import fnmatch
+import warnings
 from typing import Generator, Sequence
 
 import humanize
-from fs.base import FS
-from fs.errors import FSError
-from fs.osfs import OSFS
 
 from .ten8t_format import BM
 from .ten8t_result import TR
 
+# Suppress DeprecationWarning only during `fs` module import
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", DeprecationWarning)
+    from fs.base import FS
+    from fs.errors import FSError
+    from fs.osfs import OSFS
 
 def rule_fs_paths_exist(fs_obj: OSFS, paths: Sequence[str]) -> Generator[TR, None, None]:
     """

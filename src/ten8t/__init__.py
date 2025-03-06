@@ -35,6 +35,7 @@ from .ten8t_format import Ten8tBasicHTMLRenderer
 from .ten8t_format import Ten8tBasicMarkdown
 from .ten8t_format import Ten8tBasicRichRenderer
 from .ten8t_format import Ten8tBasicStreamlitRenderer
+from .ten8t_format import Ten8tBasicStreamlitRenderer
 from .ten8t_format import Ten8tMarkup
 from .ten8t_format import Ten8tRenderText
 # from .ten8t_exception import Ten8tTypeError  # noqa: F401
@@ -130,6 +131,13 @@ except ImportError:
     pass
 
 try:
+    import warnings
+
+    # Suppress DeprecationWarning only during `fs` module import
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        import fs  # Import the module without triggering the warning
+
     from .rule_fs import rule_fs_path_exists, rule_fs_paths_exist
     from .rule_fs import rule_fs_oldest_file_age, rule_fs_file_within_max_size
 except ImportError:
