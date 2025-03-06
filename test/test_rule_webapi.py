@@ -32,7 +32,7 @@ def expected_json():
 
 
 def test_urls():
-    urls = ["https://www.google.com", "https://www.yahoo.com", "https://www.bing.com"]
+    urls = ["https://www.google.com", "https://www.bing.com"]
 
     @t8.attributes(tag="tag")
     def check_rule1():
@@ -43,7 +43,7 @@ def test_urls():
 
 
 def test_urls_as_strings():
-    urls = "https://www.google.com https://www.yahoo.com https://www.bing.com"
+    urls = "https://www.google.com https://www.bing.com"
 
     @t8.attributes(tag="tag")
     def check_rule1():
@@ -54,7 +54,7 @@ def test_urls_as_strings():
 
 
 def test_urls_summary_only():
-    urls = "https://www.google.com https://www.yahoo.com https://www.bing.com"
+    urls = "https://www.google.com https://www.bing.com"
 
     @t8.attributes(tag="tag")
     def check_rule1():

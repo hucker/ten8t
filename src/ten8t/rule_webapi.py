@@ -52,14 +52,27 @@ def rule_url_200(urls: str | Sequence[str],
         Generator[TR, None, None]: A generator yielding results for each URL and
         an optional summary.
     """
-    y = Ten8tYield(summary_only=summary_only, summary_name=summary_name or "Rule 200 Check")
+    if summary_only:
+        y = Ten8tYield(show_summary=True,
+                       show_pass=False,
+                       show_fail=False,
+                       summary_name=summary_name or "Http Request Response=200 Check")
+    else:
+        y = Ten8tYield(show_summary=False,
+                       show_pass=True,
+                       show_fail=True)
+
 
     # Allow strings to be passed in
     if isinstance(urls, str):
         urls = urls.replace(",", " ").split()
 
+    # This covers the case BM.code(url) throws an exception
+    url_str = "URL Not Provided"
+
     for url in urls:
         try:
+            url_str = BM.code(url)
             response = requests.get(url, timeout=timeout_sec)
             url_str = BM.code(url)
             code_str = BM.code(response.status_code)
@@ -73,10 +86,9 @@ def rule_url_200(urls: str | Sequence[str],
                 )
 
         except RequestException as ex:
-            yield from y(status=False, msg=f"URL{BM.code(url)} exception.", except_=ex)
+            yield from y(status=False, msg=f"URL{url_str} exception.", except_=ex)
 
-    if summary_only:
-        yield from y.yield_summary()
+    yield from y.yield_summary()
 
 
 def is_mismatch(dict1, dict2):
@@ -139,7 +151,7 @@ def rule_web_api(url: str,
         each validation step. Each result indicates the validation status, associated messages,
         and key mismatches where applicable.
     """
-    y = Ten8tYield(summary_only=summary_only)
+    y = Ten8tYield(show_summary=summary_only)
     try:
 
         if isinstance(expected_response, int):
@@ -179,5 +191,4 @@ def rule_web_api(url: str,
     except (requests.exceptions.ReadTimeout, requests.exceptions.Timeout):  # pragma: no cover
         yield from y(status=timeout_expected, msg=f"URL {BM.code(url)} timed out.")
 
-    if summary_only:
-        yield from y.yield_summary(summary_name or "Rule 200 check")
+    yield from y.yield_summary(summary_name or "Rule 200 check")

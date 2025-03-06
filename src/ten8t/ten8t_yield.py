@@ -10,54 +10,89 @@ class Ten8tYield:
     This allows syntactic sugar to know how many times a generator
     has been fired and how many passes and fails have occurred.
 
+    There are many check functions that are called to handle
+    many things rather than just one.  Are all the files in this
+    folder smaller than 1kb, are all the modification times < 1hr
+    old. These situations raise the need to have counts, to
+    track pass/fail and to have (possibly only) summary messages.
+    There is a lot of messing around to track this "stuff".
+
+    This class allows you to create a yield object that
+    tracks every time you have yielded while tracking pass
+    fail counts.  You can have summary_only set to true so
+    that the intermediate results are not yielded allowing you
+    to have a single result rather than one for each constituent.
+
+    This class is tightly coupled to the Ten8tResult class because
+    I want it to look like a result (because that is what is passed
+    every time it is used)
+
     These internal counts allow top level code to NOT manage that
     state at the rule level.  Instead, you just report your passes
 
     and fails and ask at the end how it played out.
 
-    gen = BrickYield()
+    y = Ten8tYield()
 
     if cond:
-        yield from gen(BR(True,"Info...")
-    if not gen.yielded:
-        yield from gen(BR(False,"Nothing to do"))
+        yield from y(TR(True,"Info...")
+    if not y.yielded:
+        yield from y(TR(False,"Nothing to do"))
     if show_summary:
-        yield BR(status=self.fail_count==0,msg=f"{self.pass_count} passes "
+        yield TR(status=self.fail_count==0,msg=f"{self.pass_count} passes "
                  f"and {self.fail_count} fails")
 
     """
 
-    def __init__(self, summary_only=False, summary_name=""):
+    def __init__(self, show_pass=True, show_fail=True, show_summary=False, summary_name=""):
         """
         The ten8t yield class allows you to use the yield mechanism while also tracking
         pass fail status of the generator.  Using this class allows for a separation of
-        concerns so your top level code doesn't end up counting passes and fails.
+        concerns so your top level code doesn't end up tracking ALOT of state information
+        for every check that is performed.
 
-        When your test is complete you can query the yield object and report that
+        When your test is complete you can query the yield object and report tha
         statistics without a bunch of overhead.
 
-        If you set summary_only to true, no messages will be yielded, but you
-        can yield the summary message manually when you are done with the test.
+        If you set show_summary to true you will get a summary result that can be
+        very useful in the case that
 
         If you provide a name to this init then a generic summary message can be
         generated like this:
 
-        y = Ten8tYield("Generic Test")
+        y = Ten8tYield("Generic Test",show_summary=True)
         y(status=True,msg="Test1")
         y(status=True,msg="Test2")
         y(status=False,msg="Test3")
         y.yield_summary()
 
-        BR(status=False,msg="Generic Test had 2 pass and 1 fail results for 66.7%.")
+        TR(status=False,msg="Generic Test had 2 pass and 1 fail results for 66.7%.")
+
+        y = Ten8tYield("Generic Test",show_summary=False)
+        y(status=True,msg="Test1")
+        y(status=True,msg="Test2")
+        y(status=False,msg="Test3")
+        y.yield_summary()
+
+        TR(status=True,msg="Generic Test")
+        TR(status=True,msg="Generic Test")
+        TR(status=False,msg="Generic Test")
 
         Args:
-            summary_only(bool): Defaults to False
+            show_pass(bool): Yield pass results. Defaults to True
+            show_fail(bool): Yield faile results. Defaults to True
+            show_summary(bool): Show summary message. Defaults to False
             summary_name: Defaults to ""
         """
         self._count = 0
+        self._show_pass = show_pass
+        self._show_fail = show_fail
         self._fail_count = 0
-        self.summary_only = summary_only
+        self.show_summary = show_summary
         self.summary_name = summary_name
+
+        if not any([show_pass, show_fail, show_summary]):
+            raise Ten8tException("You must show a result or a summary.")
 
     @property
     def yielded(self):
@@ -110,7 +145,7 @@ class Ten8tYield:
             for result in results:
                 if isinstance(result, Ten8tResult):
                     self.increment_counter(result)
-                    if not self.summary_only:
+                    if not self.show_summary:
                         yield result
                 else:
                     raise Ten8tException(f"Unknown result type {type(results)}")
@@ -119,9 +154,14 @@ class Ten8tYield:
 
     def __call__(self, *args_, **kwargs_) -> Generator[Ten8tResult, None, None]:
         """
-        Syntactic sugar to make yielding look just like creating the BR object at each
+        Syntactic sugar to make yielding look just like creating the TR object at each
         invocation of yield.  The code mimics creating a Ten8tResult manually
         since the *args/**kwargs are passed through via a functools.wrapper.
+
+        Please note that this really tries to play along with what people might (reasonably?)
+        try to do, so if they pass in a list of results, the code will just yield them
+        away.
+
 
         y.results(BR(status=True,msg="Did it work?"))
 
@@ -140,7 +180,7 @@ class Ten8tYield:
         """
 
         @wraps(Ten8tResult.__init__)
-        def sr_wrapper(*args, **kwargs):
+        def tr_wrapper(*args, **kwargs):
             """
             Make the __call__ method have the same parameter list as the Ten8tResult.__init__
             method.
@@ -150,7 +190,7 @@ class Ten8tYield:
 
             or you can do
 
-            y(BR(status=True,msg="Did it work?")
+            y(TR(status=True,msg="Did it work?")
 
             Args:
                 *args:   Handle any function args
@@ -169,11 +209,14 @@ class Ten8tYield:
         elif len(args_) == 1 and len(kwargs_) == 0 and isinstance(args_[0], Generator):
             results = [x for x in args_[0]]
         else:
-            # package up the result information
-            results = [sr_wrapper(*args_, **kwargs_)]
+            # THIS branch of the if is what we should do 99% of the time since this has all
+            # the syntactic sugar to make yielding a result similar to constructing a TR.
+            # tr_wrapper is made with the @wraps so it looks just like a Ten8t initializer's
+            # args and kwargs and passes them into the Ten8tResult initializer.
+            results = [tr_wrapper(*args_, **kwargs_)]
         for result in results:
             self.increment_counter(result)
-            if not self.summary_only:
+            if (self._show_fail and not result.status) or (self._show_pass and result.status):
                 yield result
 
     def yield_summary(self, name="", msg="") -> Generator[Ten8tResult, None, None]:
@@ -186,6 +229,11 @@ class Ten8tYield:
         it is nice to have all summaries look the same with the pass and fail count.
 
         Since this is yielding a summary the summary_result flag is set to enable filtering.
+
+        Please note that the call looks like where you yield from
+
+        yield from y.yield_summary()
+
         Args:
             name:
             msg:
@@ -193,7 +241,7 @@ class Ten8tYield:
         Returns:
 
         """
-        name = name or self.summary_name or self.__call__.__name__
-        msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
-
-        yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)
+        if self.show_summary:
+            name = name or self.summary_name or self.__call__.__name__
+            msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
+            yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)

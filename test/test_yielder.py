@@ -1,3 +1,5 @@
+import pytest
+
 from src import ten8t as t8
 
 
@@ -147,6 +149,20 @@ def test_yielder_result():
         assert result.msg.startswith("Yield result the 'normal' way")
 
 
+def test_yielder_result():
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    def yield_a_result():
+        y = t8.Ten8tYield()
+        yield from y(t8.TR(status=True, msg="Yield result the 'normal' way."))
+
+    s_func = t8.Ten8tFunction(yield_a_result)
+
+    results = s_func()
+    for result in results:
+        assert result.status is True
+        assert result.msg.startswith("Yield result the 'normal' way")
+
+
 def test_yielder_summary():
     """
     This is tricky meta code again, only this test uses the __call__ method in
@@ -160,7 +176,7 @@ def test_yielder_summary():
 
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func1():
-        y = t8.Ten8tYield(summary_only=True, summary_name="Func1 Summary")
+        y = t8.Ten8tYield(show_summary=True, show_fail=False, show_pass=False, summary_name="Func1 Summary")
         yield from y(status=False, msg="Here's a fail")
         yield from y(status=True, msg="Here's a pass")
         yield from y(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
@@ -180,3 +196,68 @@ def test_yielder_summary():
     assert results[0].status is False
     assert results[0].msg == "Func1 Summary had 5 pass and 2 fail."
     assert results[0].summary_result is True
+
+
+@pytest.mark.parametrize(
+    "config, expected_results",
+    [
+        # Test Case 1: show_pass=True, show_fail=False, show_summary=False
+        (
+                {"show_pass": True, "show_fail": False, "show_summary": False},
+                {"pass_count": 2, "fail_count": 0, "summary_count": 0, "total_count": 2},
+        ),
+        # Test Case 2: show_pass=False, show_fail=True, show_summary=False
+        (
+                {"show_pass": False, "show_fail": True, "show_summary": False},
+                {"pass_count": 0, "fail_count": 3, "summary_count": 0, "total_count": 3},
+        ),
+        # Test Case 3: show_pass=True, show_fail=True, show_summary=True
+        (
+                {"show_pass": True, "show_fail": True, "show_summary": True},
+                {"pass_count": 2, "fail_count": 4, "summary_count": 1, "total_count": 6},
+        ),
+        # Test Case 4: show_pass=False, show_fail=True, show_summary=True
+        (
+                {"show_pass": False, "show_fail": True, "show_summary": True},
+                {"pass_count": 0, "fail_count": 4, "summary_count": 1, "total_count": 4},
+        ),
+
+    ],
+)
+def test_ten8t_yield(config, expected_results):
+    # Config is the paramters we pass to the Yield constructor
+    # results are the pass/fail/total/summary counts for each configuration.
+
+    # Common generator function with variable config
+    def generated_yield():
+        y = t8.Ten8tYield(**config)
+        yield from y(status=False, msg="Here's a fail")  # Fail 1
+        yield from y(status=False, msg="Here's a fail")  # Fail 2
+        yield from y(status=False, msg="Here's a fail")  # Fail 3
+        yield from y(status=True, msg="Here's a pass")  # Pass 1
+        yield from y(status=True, msg="Here's a pass")  # Pass 2
+        yield from y.yield_summary()  # Summary (if enabled)
+
+    # Process results
+    results = list(t8.Ten8tFunction(generated_yield)())
+
+    # Assertions
+    assert len(results) == expected_results["total_count"]
+    assert len([r for r in results if r.status]) == expected_results["pass_count"]
+    assert len([r for r in results if not r.status]) == expected_results["fail_count"]
+    assert sum(r.summary_result for r in results) == expected_results["summary_count"]
+
+
+def test_bad_yield_setup():
+    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
+    def yield_a_result():
+        # Should throw exception (don't need any more code after making yielder
+        _ = t8.Ten8tYield(show_summary=False, show_fail=False, show_pass=False, summary_name="Func1 Summary")
+
+    s_func = t8.Ten8tFunction(yield_a_result)
+    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    results = ch.run_all()
+    assert results[0].status is False
+    assert results[0].except_
+    assert results[0].traceback
+    assert "You must show a result or a summary" in results[0].msg

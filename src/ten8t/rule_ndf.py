@@ -64,7 +64,7 @@ def rule_validate_ndf_schema(df: FrameT,
 
     schema = df.dtypes
 
-    y = Ten8tYield(summary_name=summary_name, summary_only=summary_only)
+    y = Ten8tYield(summary_name=summary_name, show_summary=summary_only)
 
     int_types = "int8 int16 int32 int64 uint8 uint16 uint32 uint64".split()
     float_types = "float32 float64".split()
@@ -403,7 +403,11 @@ def rule_ndf_pf_columns(df: FrameT,
     if isinstance(enabled_col, str) and enabled_col.strip() == '':
         raise AttributeError("Invalid enable column name.")
 
-    summary_yield = Ten8tYield(summary_only=summary_only)
+    if summary_only:
+        y = Ten8tYield(show_summary=True, show_pass=False, show_fail=False)
+    else:
+        y = Ten8tYield()
+
 
     for row in df.iter_rows(named=True):
         if enabled_col and not extended_bool(row[enabled_col]):
@@ -415,7 +419,6 @@ def rule_ndf_pf_columns(df: FrameT,
                           f"{row_description} {BM.pass_('passed.')
                           if pass_status else BM.fail('failed.')}")
 
-        yield from summary_yield(ten8t_result)
+        yield from y(ten8t_result)
 
-    if summary_only:
-        yield from summary_yield.yield_summary(name=name)
+    yield from y.yield_summary(name=name)
