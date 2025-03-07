@@ -1,29 +1,43 @@
-# Ten8t: A `Linting` Framework For Infrastructure
+# Ten8t: A Framework for Observability and Monitoring of Filesystems, APIs, Databases and more.
 
-`Ten8t` (ten-eighty) lets you create `linting tools` or `design rule checkers` for any task by utilizing
-a declarative style similar to `pytest`. It isn't for code, it is for infrastructure, files, folders,
-databases, project tracking etc. If you track many files, folders, logs, databases, websites or the
-contents of spreadsheets, PDF, csv files, `ten8t` can simplify the task by letting you write
-`pytest` like rules.
+[![Python](https://img.shields.io/pypi/pyversions/ten8t)](https://pypi.org/project/ten8t/)
+&nbsp;&nbsp;
+[![Documentation Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://ten8t.readthedocs.io/en/latest/)
+&nbsp;&nbsp;
+![Ten8t Package Test Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
+&nbsp;&nbsp;
+![Downloads](https://img.shields.io/pypi/dm/ten8t)
+
+`Ten8t` (pronounced "ten-eighty") is a versatile framework for managing observability and rule-based checks across
+files, folders, APIs, spreadsheets, and entire projects. Drawing inspiration from tools like `pytest`, `Ten8t` makes
+simple tasks effortless while providing the flexibility to tackle more complex scenarios when needed. By allowing you
+to write reusable, declarative rules, `Ten8t` empowers you to monitor and validate systems with ease—whether it’s a
+quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
+
+`Ten8t` can be thought of as a "linter" for your infrastructure where you write the rules required.
+It enables you to define customized pass/fail checks and organize them using tags, attributes, and phases for
+fine-grained control. With support for lightweight setup and scalability, `Ten8t` excels in both small projects and
+large, complex systems. Its intuitive tooling ensures that basic tests are easy to write, while its extensibility
+and scoring options allow you to incorporate sophisticated validations as your needs grow.
+
+
 
 ## Overview
 
-`Ten8t` is a framework that offers a solution monitoring files, folders, projects etc. It works similar to how
-`pylint` finds problems in code. I envisioned a tool capable of extending this functionality
-across diverse workflows with minimal setup. With a few `check` functions you can easily automate checking
-and generate json data ready to be used as an API, incorporated into a streamlit dashboard or into your code.
+`Ten8t` is a flexible framework designed to simplify the process of monitoring and validating files, folders, projects,
+and systems. Inspired by tools like `pylint`, which identifies problems in code, `Ten8t` extends this concept to a
+broader range of workflows and infrastructure. It allows users to easily write and manage system checks in a
+declarative style, similar to `pytest`. By writing simple "check" functions, you can automate your testing
+suite to generate detailed results in formats such as JSON—ready for integration into APIs, dashboards, or other
+systems.
 
-The intention is NOT to be a `linter` by parsing the syntax of a programming language, it is meant to be a `linter`
-in the sense that some system has a large set of rules that must be met for the system to be in a good state. The
-more rules the system adheres to the 'better' it is.
+Unlike traditional linters that focus on syntax or structure in programming languages, `Ten8t` serves as a "linter"
+for your infrastructure. It ensures that complex systems comply with a set of rules by running granular pass/fail
+tests. Whether you are ensuring data integrity, monitoring file systems, or checking the state of various components,
+`Ten8t` provides an intuitive approach with powerful filtering, tagging, and scoring capabilities. It can scale from
+small projects with a handful of checks to large systems involving hundreds of rules, enabling fine-grained control
+over which checks are executed.
 
-After experimenting with various approaches, including straight application scripting and the extensive
-configuration files, I found that a `pytest`-like framework could offer the flexibility and ease of use
-I sought by offering a simple declarative style.
-
-For larger projects there are attributes that may be assigned to all of your check functions to allow you
-fine-grained control over running your checks. For small projects you don't even bother, for large projects
-the tags, levels, phases can all be very useful to running just the tests you care about.
 
 
 ## Why Not pytest, Great Expectations or other popular tools?
@@ -57,11 +71,11 @@ target audience.
 - **Scope**: Offers comprehensive linting and testing capabilities for any task or system focused on granular pass fail
   tests.
 - **Complexity**: Lightweight and straightforward, designed for end users needing detailed testing results and scoring.
-- **Audience**: Consumed by end users across various domains, facilitating rule-based testing with clear insights into
-  testing results. A typical go/no-go test has 100's of tests that are run almost exclusively as pass/fail
+- **Audience**: Consumed by end users across various domains, but created by coders.It facilitates code based testing
+  with clear insights into testing results.
 - **Visibility**: Concise list of passing and failing rules with extensive detail and filtering capabilities for
-  infrastructure,
-  data integrity, project management and general system status.
+  infrastructure, data integrity, project management and general system status. The output is JSON which may be
+  consumed by other tools like FastAPI, streamlit, rich for display.
 
 ## Getting Started with Ten8t
 
@@ -728,13 +742,21 @@ mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial te
 
 ## Status
 
+### Python Versions
+
+[![Python](https://img.shields.io/pypi/pyversions/ten8t)](https://pypi.org/project/ten8t/)
+
 ### Read The Docs
 
-[![Read The Docs Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://your-project.ten8t.io/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://ten8t.readthedocs.io/en/latest/)
 
 ### Package Test Coverage
 
 ![Ten8t Package Test Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
+
+### Download Per Month
+
+![Downloads](https://img.shields.io/pypi/dm/ten8t)
 
 ## TODO
 
