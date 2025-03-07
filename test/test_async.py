@@ -61,7 +61,8 @@ def test_function_collection(normal_count, coroutine_count, async_count, check_f
 
     The basic idea is that the fixture provides count for the number of function types for the
     test say 3, 2 1.  The idea is that 0, 1, and 2 are all sort of different in that it checks
-    none, single, more than 1 function.  This is probably massive overkill!
+    none, single, more than 1 function.  Definite overkill, but I want to be sure that it handles
+    the 0,1,2 cases 0, 1, more than 1.  The 3 is the overkill.
     """
 
     # Create lists of the appropriate functions
@@ -75,7 +76,7 @@ def test_function_collection(normal_count, coroutine_count, async_count, check_f
     # Initialize the Checker with these functions
     ch = ten8t_checker.Ten8tChecker(check_functions=all_funcs, auto_setup=True)
 
-    # Assertions
+    # Assertions that the counts all make sense.
     assert ch.async_count == async_count
     assert ch.coroutine_count == coroutine_count
     assert ch.collected_count == normal_count
