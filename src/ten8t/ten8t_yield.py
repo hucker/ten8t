@@ -1,3 +1,8 @@
+"""
+The yield class is used to track yield of TR result objects so pass/fail and summary
+statistics can easily be provided by users of the class.  Many rule functions uses
+yield objects to reliably track state.
+"""
 from functools import wraps
 from typing import Generator
 
@@ -80,7 +85,7 @@ class Ten8tYield:
 
         Args:
             show_pass(bool): Yield pass results. Defaults to True
-            show_fail(bool): Yield faile results. Defaults to True
+            show_fail(bool): Yield fail results. Defaults to True
             show_summary(bool): Show summary message. Defaults to False
             summary_name: Defaults to ""
         """
