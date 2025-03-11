@@ -738,7 +738,7 @@ mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial te
 
 ## TODO
 
-1. Add support for handling coroutines and async generators, so ten8t can support all function types.
+1. Add support for async.
 
 ## Latest changes
 
