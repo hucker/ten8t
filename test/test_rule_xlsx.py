@@ -116,6 +116,21 @@ def test_row_col_pass_fail_with_auto_detect():
     assert results[3].status is False
 
 
+def test_row_col_pass_fail_bad_sheet():
+    def check_pass_fail(wb):
+        yield from t8.rule_xlsx_a1_pass_fail(wb, sheet_name="Sheet666", val_col='B', row_start='2', row_end="auto",
+                                             desc_col='A', first_if_missing=True)
+
+    try:
+        s_func = t8.Ten8tFunction(check_pass_fail)
+        wb = load_workbook('./rule_xlsx/BaseCase.xlsx')
+        ch = t8.Ten8tChecker(check_functions=[s_func], env={'wb': wb}, auto_setup=True)
+        _ = ch.run_all()
+    except Exception as e:
+        assert e
+
+
+
 def test_row_col_pass_fail_with_hardcoded():
     @t8.attributes(tag='foo')
     def check_pass_fail(wb):

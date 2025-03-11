@@ -46,16 +46,17 @@ def _column_to_number(column: str) -> int:
     return number
 
 
-def _get_sheet(wb, sheet_name=None):
+def _get_sheet(wb, sheet_name=None, first_if_missing=True):
     """Ensure a valid sheet is selected based on sheet_name parameter"""
     if sheet_name is None:
         return wb["Sheet1"]
     if sheet_name in wb.sheetnames:
         return wb[sheet_name]
-    if len(wb.sheetnames) == 1:
+
+    # the sheet name is missing and the first_if_missing is set true then return that
+    if len(wb.sheetnames) >= 1 and first_if_missing:
         return wb[wb.sheetnames[0]]
-    if "Sheet1" in wb.sheetnames:
-        return wb["Sheet1"]
+
 
     raise Ten8tException('A sheet name was not specified and sheet1 could not be found.')
 
@@ -106,7 +107,8 @@ def rule_xlsx_a1_pass_fail(wb: openpyxl.workbook.Workbook,
                            desc_col='A',
                            val_col='B',
                            row_start='1',
-                           row_end=None):
+                           row_end=None,
+                           first_if_missing=True):
     """
     Processes an Excel sheet to evaluate rows and yield pass or fail results based on input values.
 
@@ -121,6 +123,7 @@ def rule_xlsx_a1_pass_fail(wb: openpyxl.workbook.Workbook,
         val_col (str, optional): The column identifier (e.g., 'B') for the boolean-like values. Defaults to 'B'.
         row_start (str, optional): The starting row number as a string. Defaults to '1'.
         row_end (str or None, optional): The ending row number as a string or None to infer the range automatically.
+        fist_if_missing(bool): If no sheet is found then use the first one
 
     Yields:
         TR: An object indicating pass (True) or fail (False) status for each row and an accompanying message.
@@ -128,7 +131,7 @@ def rule_xlsx_a1_pass_fail(wb: openpyxl.workbook.Workbook,
     Raises:
         Ten8tException: If a non-boolean-like value is encountered in the value column.
     """
-    sheet = _get_sheet(wb, sheet_name)
+    sheet = _get_sheet(wb, sheet_name, first_if_missing=first_if_missing)
 
     # Handle Nones.  Presumably this should not be required
     row_start = row_start or '1'
