@@ -126,21 +126,18 @@ def display_package_info(pkg, checker):
         checker: The checker setup for validating the package.
     """
 
-    st.title('Ten8t Demo')
-
     # Define the table headers
     table_headers = "| **Item** | **Value** |"
     table_separators = "|:----:|:----:|"
-
+    st.subheader(f"Package Info: {pkg.name}")
     # Define the data rows
     table_rows = [
-        f"| **Package** | {pkg.name} |",
         f"| **Module Count** | {pkg.module_count} |",
         f"| **Function Count** | {checker.function_count} |",
-        f"| **Tags** | {','.join(checker.tags)} |",
-        f"| **Rule IDs** | {','.join(checker.ruids)} |",
+        f"| **Tags** | {', '.join(checker.tags)} |",
+        f"| **Rule IDs** | {', '.join(checker.ruids)} |",
         f"| **Levels** | {checker.levels} |",
-        f"| **Phases** | {','.join(checker.phases)} |",
+        f"| **Phases** | {', '.join(checker.phases)} |",
     ]
 
     # Combine all parts to form the full table
@@ -202,40 +199,48 @@ def main():
         "Generic": "../examples/my_package"
     }
     info_mkdown = """
-    # Ten8t (pronounced ten-eighty) Checker Demonstrator
+    # Ten8t ("ten-eighty") Demonstrator
     
-    This demonstrates the way the `ten8t` package can work by having sample checks residing in a folder and
-    allowing those checks to be easily run with the json output displayed in a basic UI.
+    This demonstrates the way the `ten8t` package can work.  You can choose from multiple test 
+    suites stored in different folders. The UI is populated based on the contents of the selected
+    checks.
     """
 
     st.markdown(info_mkdown)
     package_name = st.selectbox("Select Package", options=list(packages_mapping.keys()), index=0)
     package_folder = packages_mapping[package_name]
-    st_renderer = t8.Ten8tBasicStreamlitRenderer()
+    st_renderer = t8.Ten8tBasicStreamlitRenderer()  # Nice color coding for streamlit
     package = t8.Ten8tPackage(folder=package_folder)
     checker = t8.Ten8tChecker(packages=[package], renderer=st_renderer, auto_setup=True)
 
     with st.container(border=True):
-        with st.container(border=True):
-            display_package_info(package, checker)
-        include_ui = st.checkbox("Select Functions to Run By Including Items", value=True)
 
-        if include_ui:
-            st.write(
-                "All of these options are ANDed together, if you select everything " \
-                "from 1 of the lists all functions will be run.")
-            tags = st.multiselect("Include These Tags", options=checker.tags, default=checker.tags)
-            ruids = st.multiselect("Include These Rule Ids", options=checker.ruids, default=[])
-            levels = st.multiselect('Include These Levels', options=checker.levels, default=[])
-            phases = st.multiselect('Include These Phases', options=checker.phases, default=[])
-        else:
-            st.write(
-                "All of these options are ANDed together, if you select everything from 1 of " \
-                "the lists no functions will be run.")
-            tags = st.multiselect("Exclude These Tags", options=checker.tags, default=None)
-            ruids = st.multiselect("Exclude These Rule Ids", options=checker.ruids, default=None)
-            levels = st.multiselect('Exclude These Levels', options=checker.levels, default=None)
-            phases = st.multiselect('Exclude These Phases', options=checker.phases, default=None)
+        info_col, setup_col = st.columns([4, 10], gap="large")
+        with info_col:
+            with st.container(border=False):
+                display_package_info(package, checker)
+        with setup_col:
+            st.subheader("Checker Setup")
+            include_ui = st.checkbox("Select Functions to Run By Including Items", value=True)
+            left_col, right_col = st.columns(2)
+
+            if include_ui:
+                st.write(
+                    "All of these options are ANDed together, if you select everything " \
+                    "from 1 of the lists all functions will be run.")
+                tags = left_col.multiselect("Include These Tags", options=checker.tags, default=checker.tags)
+                ruids = left_col.multiselect("Include These Rule Ids", options=checker.ruids, default=[])
+                levels = right_col.multiselect('Include These Levels', options=checker.levels, default=[])
+                phases = right_col.multiselect('Include These Phases', options=checker.phases, default=[])
+            else:
+
+                st.write(
+                    "All of these options are ANDed together, if you select everything from 1 of " \
+                    "the lists no functions will be run.")
+                tags = left_col.multiselect("Exclude These Tags", options=checker.tags, default=None)
+                ruids = left_col.multiselect("Exclude These Rule Ids", options=checker.ruids, default=None)
+                levels = right_col.multiselect('Exclude These Levels', options=checker.levels, default=None)
+                phases = right_col.multiselect('Exclude These Phases', options=checker.phases, default=None)
 
     if st.button("Run Ten8t"):
         if include_ui:
@@ -259,8 +264,8 @@ def main():
             with st.container(border=True):
                 display_results(results)
 
-            with st.container(border=True):
-                display_json_results(checker)
+    with st.container(border=True):
+        display_json_results(checker)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,8 @@
-# Ten8t: A Framework for Observability and Monitoring of Filesystems, APIs, Databases and more.
+# Ten8t: Monitoring framework for Filesystems, APIs, Databases, Documents and more.
 
+<!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
+![Ten8t Test Status](https://img.shields.io/badge/test-pass-brightgreen)
+&nbsp;&nbsp;
 [![Python](https://img.shields.io/pypi/pyversions/ten8t)](https://pypi.org/project/ten8t/)
 &nbsp;&nbsp;
 [![Documentation Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://ten8t.readthedocs.io/en/latest/)
@@ -8,28 +11,25 @@
 &nbsp;&nbsp;
 ![Downloads](https://img.shields.io/pypi/dm/ten8t)
 
-`Ten8t` (pronounced "ten-eighty") is a versatile framework for managing observability and rule-based checks across
-files, folders, APIs, spreadsheets, and entire projects. Drawing inspiration from tools like `pytest`, `Ten8t` makes
-simple tasks effortless while providing the flexibility to tackle more complex scenarios when needed. By allowing you
-to write reusable, declarative rules, `Ten8t` empowers you to monitor and validate systems with ease—whether it’s a
+`Ten8t` (pronounced "ten-eighty") is a framework for managing observability and rule-based checks across
+files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest`, `Ten8t` makes
+many simple tasks easy while providing the flexibility to tackle more complex scenarios when needed. By allowing you
+to write reusable, declarative rules, `Ten8t` lets you to monitor and validate systems with ease—whether it’s a
 quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
 
-`Ten8t` can be thought of as a "linter" for your infrastructure where you write the rules required.
-It enables you to define customized pass/fail checks and organize them using tags, attributes, and phases for
-fine-grained control. With support for lightweight setup and scalability, `Ten8t` excels in both small projects and
-large, complex systems. Its intuitive tooling ensures that basic tests are easy to write, while its extensibility
-and scoring options allow you to incorporate sophisticated validations as your needs grow.
-
+`Ten8t` can be thought of as a "linter" for your infrastructure many "standard" rules are available out of the box,
+but it is easy to write python code to verify anything you like. It enables you to define customized pass/fail checks
+and organize them using tags, attributes, and phases for fine-grained control. With support for lightweight setup
+and scalability, `Ten8t` excels in both small projects and large, complex systems. Its intuitive tooling
+ensures that basic tests are easy to write, while its extensibility and scoring options allow you to incorporate
+sophisticated validations as your needs grow.
 
 
 ## Overview
 
-`Ten8t` is a flexible framework designed to simplify the process of monitoring and validating files, folders, projects,
-and systems. Inspired by tools like `pylint`, which identifies problems in code, `Ten8t` extends this concept to a
-broader range of workflows and infrastructure. It allows users to easily write and manage system checks in a
-declarative style, similar to `pytest`. By writing simple "check" functions, you can automate your testing
-suite to generate detailed results in formats such as JSON—ready for integration into APIs, dashboards, or other
-systems.
+`Ten8t` is like `pytest` or `lint` for infrastructure, files systems, file contents and any code you would like to write
+to verify
+something of interest to you. It is VERY easy to get started but can scale to support very large sytems.
 
 Unlike traditional linters that focus on syntax or structure in programming languages, `Ten8t` serves as a "linter"
 for your infrastructure. It ensures that complex systems comply with a set of rules by running granular pass/fail
@@ -39,7 +39,6 @@ small projects with a handful of checks to large systems involving hundreds of r
 over which checks are executed.
 
 
-
 ## Why Not pytest, Great Expectations or other popular tools?
 
 The distinction between `Ten8t`, `pytest`, and Great Expectations and others lies in their scope, complexity, and
@@ -47,7 +46,7 @@ target audience.
 
 ### pytest:
 
-- **Scope**: Primarily focused on code testing within the Python ecosystem.
+- **Scope**: Focused on source code testing within the Python ecosystem.
 - **Complexity**: Comprehensive and feature-rich, tailored for developers and integrated into IDEs.
 - **Audience**: Consumed by developers, requiring a code-first approach.
 - **Visibility**: Limited to `assert True, msg='...'` while most messages are meant to be hidden.
@@ -68,14 +67,11 @@ target audience.
 
 ### Ten8t:
 
-- **Scope**: Offers comprehensive linting and testing capabilities for any task or system focused on granular pass fail
-  tests.
-- **Complexity**: Lightweight and straightforward, designed for end users needing detailed testing results and scoring.
-- **Audience**: Consumed by end users across various domains, but created by coders.It facilitates code based testing
-  with clear insights into testing results.
-- **Visibility**: Concise list of passing and failing rules with extensive detail and filtering capabilities for
-  infrastructure, data integrity, project management and general system status. The output is JSON which may be
-  consumed by other tools like FastAPI, streamlit, rich for display.
+- **Scope**: Focused on testing filesystem, file and generic python checks.
+- **Complexity**: Lightweight and straightforward, designed for developers to get check functions up quickly.
+- **Audience**: This tool is a framework for infrastructure developers needing a tool to be the backbone of your
+  observability. Since the output is directly available as JSON it is very easy to integrate.
+- **Visibility**: Sample apps are included that run Streamlit, FastAPI and typer.
 
 ## Getting Started with Ten8t
 
@@ -90,16 +86,17 @@ You can start with simple rules that don't even reference `ten8t` directly by re
 If you hava a module with a get_drive_space function the following would be some simple tests.
 
 ```python
-from drive_tool import get_drive_space
+
+import pathlib
 
 
 def check_boolean():
-    return get_drive_space('/foo') > 1_000_000_000
+   return pathlib.Path("./foo").exists()
 
 
 def check_yielded_values():
-    yield get_drive_space('/foo') > 1_000_000_000
-    yield get_drive_space('/fum') > 1_000_000_000
+   return pathlib.Path("./foo").exists()
+   return pathlib.Path("./fum").exists()
 ```
 
 As you might expect running this will provide 3 passing test results (assuming the drive space is available)
@@ -109,21 +106,22 @@ You can up your game and return status information by returning or yielding `Ten
 
 ```python
 from ten8t import TR
-from drive_tool import get_drive_space
+import pathlib
 
 
 #NOTE TR is an alias for Tent8tResult.  Since it is used very often it is useful to have a short version.
 
 def check_boolean():
-    return TR(status=get_drive_space('/foo') > 1_000_000_000, msg="Drive space check for foo")
+   return TR(status=pathlib.Path("./foo").exists(), msg="Folder foo exists")
 
 
 def check_yielded_values():
-    yield TR(status=get_drive_space('/foo') > 1_000_000_000, msg="Drive space check for foo")
-    yield TR(status=get_drive_space('/fum') > 1_000_000_000, msg="Drive space check for fum")
+   return TR(status=pathlib.Path("./foo").exists(), msg="Folder foo exists")
+   return TR(status=pathlib.Path("./fum").exists(), msg="Folder fum exists")
 ```
 
-As you might expect running this will also provide 3 passing test results with better messages.
+As you might expect running this will also provide 3 passing test results with richer data using the TR object which
+allows status for MANY things to be provided.
 
 Now we can add more complexity. Tag check functions with attributes to allow subsets of checks to be run. Below
 two functions are given different tags. When you make calls to run checks you can specify which tags
@@ -213,17 +211,32 @@ The rule functions that you write don't need to use generators. They can return 
 (e.g., Boolean, List of Boolean, `Ten8tResult`, List of `Ten8tResult`), or you can write a generator that yields
 results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant.
 
-Alternatively you can ignore the file and folder discovery mechanism provide list of rules as regular python
+Alternatively you can ignore the file and folder discovery mechanism and provide a list of rules as regular python
 functions and `Ten8t` will happily run them for you when you pass a list of check functions
 the make a `Ten8tChecker` object.
 
 ```python
 import ten8t as t8
-from rules import rule1, rule2, rule3, rule4, rule5
 
-sql_conn = make_sql_conn()
-checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4, rule5], auto_setup=True)
-results = checker.run_all(env={'db': sql_conn, 'cfg': 'cfg.json'})
+
+def rule1(cfg):
+   return 1 in cfg['data']
+
+
+def rule2(cfg):
+   return 2 in cfg['data']
+
+
+def rule3(cfg):
+   return 3 in cfg['data']
+
+
+def rule4(cfg):
+   return 4 in cfg['data']
+
+
+checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4], auto_setup=True, env={'data': [1, 2, 3, 4]})
+results = checker.run_all()
 ```
 
 This example shows a bunch of rules that are passed in some of which might need a single sql connection object.
@@ -234,15 +247,13 @@ To simplify getting started, there are included rules you can call to check file
 dataframes, Excel spreadsheets, PDF files and web APIs. These integrations make many common checks just a
 few lines of code.
 
-These generally take the form of you wrapping them in some way to provide the required inputs and any attributes
-required by your app as well as messages specific to your application.
+These generally take the form of you wrapping them up with data specific to your system.
 
 The rules shown below trigger errors if there are any log files > 100k in length and if they haven't been updated
 in the last 5 minutes.
 
 ```python
 import ten8t as t8
-
 
 @t8.attributes(tag="tag")
 def check_rule1():
@@ -262,6 +273,10 @@ def check_rule3(cfg):
     for folder in cfg['logging']['folders']:
         yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
 ```
+
+Currently, there are integrations for file access with pathlib, generic file system access with FS,
+database with SQLAchemy, data frames with narwhals and ping with ping3, requests with (duh) requests,
+pdf files with camelot and excel files with openpyxl.
 
 ## What is the output?
 
@@ -324,15 +339,16 @@ but it is in work creating scoring by function.
 In addition to the scoring, each function has a weight that is also applied to it after the scoring to all
 different rules to have higher weights.
 
-The utility of this is somewhat useless in smaller systems (< 100 rules) since we generally are aiming to
-have 100% pass.
+For most use-cases scoring is not needed, or just using the default by_result since we are most often using this
+in cases were we expect 100% "pass", however for very large rulesets scores becaomes more important because there
+is always something broken.
 
 ## What are @attributes?
 
 Each rule function can be assigned attributes that define metadata about the rule function. Attributes
 are at the heart of how `ten8t` allows you to filter, sort, select tests to run and view by adding
 decorators to your check functions. For large projects where subsets of rules need to be run and
-detailed setup information is required attributes provide a consistent way to tag check functions.
+detailed setup information is required attributes provide a consistent way to tag adorn functions with data.
 
 | Attribute        | Description                                                                                                                         |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------|
@@ -353,7 +369,7 @@ detailed setup information is required attributes provide a consistent way to ta
 Tags and phases are generic information that is only present for filtering. The values don't mean much to the inner
 workings of `ten8t`.  `RUID`s are different. The purpose of a `RUID` is to tag every rule function with a unique value
 that is, ideally, meaningful to the user. For very large rule sets this becomes prohibitive and ends up looking like
-integers with some leading text. The only rule to the code is that they are unique. If you tag a single
+integers with some leading text. The only rule about RUIDs is that they be unique. If you tag a single
 function with an RUID the system will expect you to put a unique ID on every function, or to set the `auto_ruid` flag
 to True when creating a `Ten8tChecker` object.
 
@@ -366,9 +382,9 @@ applied.
 
 RUIDS allow you to set function level granularity with "simple" config files.
 
-RUIDs can be anything hashable (but come on, they should be short strings). Smart-ish values like File-001, Fill-002, '
-smarter' or File-Required, File-Too-Old. Whatever makes sense on the project. As a general rule smart naming conventions
-aren't smart, so beware of the bed you make for yourself.
+RUIDs can be anything hashable (but come on, they should be short strings). Smart-ish values like File-001, Fill-002,
+or `File-Required`, `File-Too-Old`. Whatever makes sense on the project. As a general rule smart naming conventions
+aren't smart in the long run.
 
 ```python
 from ten8t import attributes, Ten8tResult
@@ -383,7 +399,7 @@ def check_file_age():
 
 @attributes(ruid="file_complex")
 def check_file_age():
-    f = pathlib.Path("/user/file2.txt")
+   f = pathlib.Path("/user/verybigfile.txt")
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
 ```
 
@@ -508,13 +524,17 @@ seconds you can put the units in the string ("30sec", "1day", ".5 hours")
 
 ```python
 from ten8t import attributes, Ten8tResult
-from kick_astro import make_black_hole_image
+
+
+def make_black_hole_image():
+   """Do stuff that takes a really long time."""
+   return True
 
 
 @attributes(ttl_minutes="1.0hr")
 def check_file_age():
-    pic = make_black_hole_image()
-    yield Ten8tResult(status=pic.black_hole_exists(), msg="Hourly cluster image generation check")
+   status = make_black_hole_image()
+   yield Ten8tResult(status=status, msg="Hourly cluster image generation check")
 ```
 
 ## How can these rules be organized?

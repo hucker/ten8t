@@ -20,6 +20,9 @@ class Ten8tResult:
     call, such as the status, module name, function name, message, additional info, warning message,
     docstring, runtime, exceptions, traceback, skip flag, tag, level, and count.
 
+    While normally I choose "reasonable" defaults, in this case there really are none that aren't
+    "zero" values except for weight and level, which default to 100% and 1 respectively.
+
     This data can be used for reporting purposes.
 
     Attributes:

@@ -59,10 +59,14 @@ extensions = [
     'myst_parser',  # Mark down
 ]
 
-# Allows hyperlinking to stdlibrary stuff like pathlib, os, sys
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
+    'python': ('https://docs.python.org/3', None),  # For the Python standard library
+    'sqlalchemy': ('https://docs.sqlalchemy.org/en/latest/', None),  # SQLAlchemy library
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "openpyxl": ("https://openpyxl.readthedocs.io/en/stable/", None),
+
 }
+
 
 # Configure MyST-Parser
 myst_enable_extensions = [
@@ -90,7 +94,7 @@ autodoc_type_aliases = {
 }
 
 html_theme = 'sphinx_book_theme'
-html_static_path = ['_static', '../img']
+html_static_path = ['_static']
 
 # Specify source file extensions
 source_suffix = {
@@ -98,9 +102,28 @@ source_suffix = {
     '.md': 'markdown',
 }
 
+suppress_warnings = ["epub.duplicate"]
+
+
 autosummary_generate = True
 
 nitpicky = True
+
+# Per stack overflow, type aliases are not handled by sphinx so you need to override.
+nitpick_ignore = [('py:class', 'type'),
+                  ('py:class', '_type_'),
+                  ('py:class', 'optional'),
+                  ('py:class', 'TR'),
+                  ('py:class', 'StrListOrNone'),
+                  ('py:class', 'StrOrNone'),
+                  ('py:class', 'callable'),
+                  ('py:class', 'defaultdict'),
+                  ('py:class', 'StrListOrNone'),
+                  ('py:class', 'Function'),
+                  ("py:class", "ten8t_score.ScoreByFunctionBinary.strategy_names"),
+                  ("py:func", "ten8t_score.ScoreByFunctionBinary.strategy_name")
+
+                  ]
 
 # Make sure Sphinx can find your library
 import os

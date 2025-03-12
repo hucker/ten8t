@@ -59,7 +59,7 @@ def rule_paths_exist(paths: list[str] | str,
             file paths to verify for existence.
         summary_only (bool): A flag indicating whether to only return a summary of the
             checks instead of individual results. Defaults to False.
-        summary_name (Optional[str]): A summary label or name to be included in the
+        summary_name (typing.Optional[str]): A summary label or name to be included in the
             summarized output. Defaults to None.
         name (str): A descriptive name or identifier for the verification process.
             Defaults to "Path Check".
@@ -217,7 +217,7 @@ def rule_large_files(folder: str,
 
     Args:
         folder (str): The directory to search for files.
-        pattern (str): The file search pattern to apply (e.g., "*.txt").
+        pattern (str): The file search pattern to apply (e.g., "\*.txt").
         max_size (float): The maximum allowed file size in bytes.
                           Files exceeding this size will be flagged.
         no_files_pass_status (bool): The status to use if no files matching

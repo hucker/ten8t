@@ -187,23 +187,23 @@ def rule_fs_oldest_file_age(filesys: FS, max_age_minutes: float = 0,
         filesys (FS): The filesystem to operate on. Must support typical file
             system operations like listing files, checking if a path is a file,
             and retrieving file metadata.
-        max_age_minutes (float, optional): Maximum allowable age for a file, in
+        max_age_minutes (float, Optional[float]): Maximum allowable age for a file, in
             minutes. Defaults to 0.
-        max_age_hours (float, optional): Maximum allowable age for a file, in
+        max_age_hours (float, Optional[float]): Maximum allowable age for a file, in
             hours. Defaults to 0.
-        max_age_days (float, optional): Maximum allowable age for a file, in days.
+        max_age_days (float, Optional[float]): Maximum allowable age for a file, in days.
             Defaults to 0.
-        max_age_seconds (float, optional): Maximum allowable age for a file, in
+        max_age_seconds (float, Optional[float]): Maximum allowable age for a file, in
             seconds. Defaults to 0.
-        patterns (list | str, optional): Filename patterns to filter files,
+        patterns (list | str, Optional[str]): Filename patterns to filter files,
             provided as a single string (comma-separated) or a list of strings.
             Defaults to ['*'], which matches all files.
-        no_files_stat (bool, optional): Status to yield when no files are found.
+        no_files_stat (bool, Optional[bool]): Status to yield when no files are found.
             True if this condition should be treated as a successful condition.
             Defaults to True.
-        no_files_skip (bool, optional): Indicates whether the check for file age
+        no_files_skip (bool, Optional[bool]): Indicates whether the check for file age
             should be skipped if no files are found. Defaults to True.
-        now__ (datetime.datetime | None, optional): A specific point in time to
+        now__ (datetime.datetime | None, Optional): A specific point in time to
             use as the current time for comparison. If None, the current system
             time is used. Defaults to None.
 

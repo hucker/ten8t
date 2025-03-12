@@ -69,28 +69,35 @@ class Ten8tEnvDict(dict):
     """
 
     def __init__(self, *args, **kwargs):
-        # super(Ten8tEnvDict, self).__init__(*args, **kwargs)
+        """Initialize the immutable dictionary."""
         super().__init__(*args, **kwargs)
 
     def __setitem__(self, key, value):
+        """Prevent item assignment in the dictionary."""
         raise Ten8tException("Environment dict does not support item assignment")
 
     def __delitem__(self, key):
+        """Prevent deletion of an item from the dictionary."""
         raise Ten8tException("Environment dict doesn't support item deletion")
 
     def pop(self, k, d=None):
+        """Disable the pop operation."""
         raise Ten8tException("Environment dict is immutable, pop is not supported")
 
     def popitem(self):
+        """Disable the popitem operation."""
         raise Ten8tException("Environment dict is immutable, popitem is not supported")
 
     def clear(self):
+        """Disallow clearing all items in the dictionary."""
         raise Ten8tException("Environment dict is immutable, clear is not supported")
 
     def update(self, other=(), **kwargs):
+        """Disable the update operation."""
         raise Ten8tException("Environment dict is immutable, update is not supported")
 
     def setdefault(self, key, default=None):
+        """Prevent setting default values for keys."""
         raise Ten8tException("Environment dict is immutable, setdefault is not supported")
 
 

@@ -165,6 +165,7 @@ def keep_phases(phases: list[str]):
 def debug_progress(_, msg: StrOrNone = None, result: Ten8tResult | None = None
                    ):  # pylint: disable=unused-argument
     """Print a debug message."""
+
     if msg:
         print(msg)
     if result:
@@ -175,7 +176,7 @@ class Ten8tChecker:
     """
     A checker object is what manages running rules against a system.
 
-    THe life cycle of a checker object is
+    The life cycle of a checker object is
 
     1) Load what ever packages/modules/functions are associated with a system as
        a collection of functions that could be run.
@@ -185,6 +186,7 @@ class Ten8tChecker:
        a user specified progress object.
     4) Score the results based on the scoring strategy.
     5) Return the result object as object data or json data.
+
     """
 
     def __init__(
@@ -363,7 +365,8 @@ class Ten8tChecker:
     @staticmethod
     def _process_check_funcs(check_functions: list[Ten8tFunction | Callable] | None) -> list[Ten8tFunction]:
         """ Load up an arbitrary list of ten8t functions.
-        These functions are tagged with adhoc for module"""
+        These functions are tagged with adhoc for module
+        """
         if isinstance(check_functions, list) and len(check_functions) >= 1:
             for count, f in enumerate(check_functions, start=1):
 
@@ -705,7 +708,6 @@ class Ten8tChecker:
     def run_all(self, env=None) -> list[Ten8tResult]:
         """
         List version of yield all.
-
         """
 
         # A deceptively important line of code

@@ -1,3 +1,4 @@
+import pathlib
 import sys
 
 import pytest
@@ -33,6 +34,24 @@ def pkg_2_modules():
 @pytest.fixture
 def skip_no_name_pkg():
     return t8.Ten8tPackage(folder="./skip")
+
+
+def test_defaults():
+    # This test case requires a folder named check with nothing in it.
+    pkg = t8.Ten8tPackage()
+
+    # The default folder is "check" and it is fully resolved in the constructor.
+    assert pkg.folder == pathlib.Path('check').resolve()
+
+    assert pkg.module_glob == "check_*.py"
+    assert pkg.function_prefix == "check_"
+    assert pkg.name is "check"
+    assert pkg.env == {}
+    assert pkg.auto_load is True
+
+    # The empty folder is a module...just an empty one
+    assert pkg.module_count == 1
+
 
 
 def test_index_in_modules(skip_pkg):

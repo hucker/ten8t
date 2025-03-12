@@ -119,7 +119,7 @@ class Ten8tModule:
 
         This method checks if the ``autothread`` property is enabled. If it is, it generates
         a new threading ID in the format "auto_thread_module_{module_name}_{threading_number}_@@".
-        Then, for each function in the ``check_functions`` list, if the function does not have
+        Then, for each function in the check_functions list, if the function does not have
         an existing ``thread_id``, it assigns the generated threading ID to it.
 
         Raises:

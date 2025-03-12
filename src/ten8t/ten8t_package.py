@@ -45,6 +45,7 @@ class Ten8tPackage:
         self.function_prefix: str = function_prefix
         self.env: dict = env or {}
         self.results: list[Ten8tResult] = []
+        self.auto_load: bool = auto_load
 
         if not name:
             self.name = self.folder.name
@@ -58,7 +59,7 @@ class Ten8tPackage:
 
         self._verify_dir()
 
-        if auto_load:
+        if self.auto_load:
             self.load_modules()
 
     def _verify_dir(self):
@@ -86,7 +87,7 @@ class Ten8tPackage:
     @property
     def module_count(self) -> int:
         """ Count the number of modules in a package. """
-        return 0 if not self.modules else len(self.modules)
+        return len(self.modules)
 
     def load_modules(self, glob=None) -> list[Ten8tModule]:
         """ Find all the files that match the pattern and load the modules. """

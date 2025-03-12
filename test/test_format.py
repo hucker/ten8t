@@ -15,7 +15,7 @@ def test_format_exc():
         _ = Ten8tMarkup(open_delim='<@>', close_delim='<@>')
 
 
-@pytest.mark.parametrize("tag,func,input,expected_output", [
+@pytest.mark.parametrize("tag,func,input_,expected_output", [
     (ten8t_format.TAG_BOLD, Ten8tMarkup().bold, "Hello, World!", "<<b>>Hello, World!<</b>>"),
     (ten8t_format.TAG_ITALIC, Ten8tMarkup().italic, "Hello, World!", "<<i>>Hello, World!<</i>>"),
     (ten8t_format.TAG_UNDERLINE, Ten8tMarkup().underline, "Hello, World!", "<<u>>Hello, World!<</u>>"),
@@ -36,11 +36,11 @@ def test_format_exc():
     (ten8t_format.TAG_BLACK, Ten8tMarkup().black, "Hello, World!", "<<black>>Hello, World!<</black>>"),
     (ten8t_format.TAG_WHITE, Ten8tMarkup().white, "Hello, World!", "<<white>>Hello, World!<</white>>"),
 ])
-def test_all_tags(tag, func, input, expected_output):
-    assert func(input) == expected_output
+def test_all_tags(tag, func, input_, expected_output):
+    assert func(input_) == expected_output
 
 
-@pytest.mark.parametrize("markup_func,input,expected_output", [
+@pytest.mark.parametrize("markup_func,input_,expected_output", [
     (Ten8tMarkup().bold, "Hello, World!", "Hello, World!"),
     (Ten8tMarkup().italic, "Hello, World!", "Hello, World!"),
     (Ten8tMarkup().underline, "Hello, World!", "Hello, World!"),
@@ -62,13 +62,13 @@ def test_all_tags(tag, func, input, expected_output):
     (Ten8tMarkup().black, "Hello, World!", "Hello, World!"),
     (Ten8tMarkup().white, "Hello, World!", "Hello, World!")
 ])
-def test_ten8t_render_text(markup_func, input, expected_output):
+def test_ten8t_render_text(markup_func, input_, expected_output):
     render_text = ten8t_format.Ten8tRenderText()
-    formatted_input = markup_func(input)
+    formatted_input = markup_func(input_)
     assert render_text.render(formatted_input) == expected_output
 
 
-@pytest.mark.parametrize("markup_func,input,expected_output", [
+@pytest.mark.parametrize("markup_func,input_,expected_output", [
     (Ten8tMarkup().bold, "Hello, World!", "**Hello, World!**"),
     (Ten8tMarkup().italic, "Hello, World!", "*Hello, World!*"),
 
@@ -92,14 +92,14 @@ def test_ten8t_render_text(markup_func, input, expected_output):
     (Ten8tMarkup().white, "Hello, World!", "Hello, World!"),
     (Ten8tMarkup().underline, "Hello, World!", "Hello, World!"),
 ])
-def test_ten8t_basic_markdown(markup_func, input, expected_output):
+def test_ten8t_basic_markdown(markup_func, input_, expected_output):
     markdown_render = ten8t_format.Ten8tBasicMarkdown()
-    formatted_input = markup_func(input)
+    formatted_input = markup_func(input_)
     output = markdown_render.render(formatted_input)
     assert output == expected_output
 
 
-@pytest.mark.parametrize("markup_func,input,expected_output", [
+@pytest.mark.parametrize("markup_func,input_,expected_output", [
     (Ten8tMarkup().bold, "Hello, World!", "[bold]Hello, World![/bold]"),
     (Ten8tMarkup().italic, "Hello, World!", "[italic]Hello, World![/italic]"),
     (Ten8tMarkup().underline, "Hello, World!", "[u]Hello, World![/u]"),
@@ -120,14 +120,14 @@ def test_ten8t_basic_markdown(markup_func, input, expected_output):
     (Ten8tMarkup().black, "Hello, World!", "[black]Hello, World![/black]"),
     (Ten8tMarkup().white, "Hello, World!", "[white]Hello, World![/white]"),
 ])
-def test_ten8t_basic_rich(markup_func, input, expected_output):
+def test_ten8t_basic_rich(markup_func, input_, expected_output):
     rich_render = ten8t_format.Ten8tBasicRichRenderer()
-    formatted_input = markup_func(input)
+    formatted_input = markup_func(input_)
     output = rich_render.render(formatted_input)
     assert output == expected_output
 
 
-@pytest.mark.parametrize("markup_func,input,expected_output", [
+@pytest.mark.parametrize("markup_func,input_,expected_output", [
     (Ten8tMarkup().bold, "Hello, World!", "<b>Hello, World!</b>"),
     (Ten8tMarkup().italic, "Hello, World!", "<i>Hello, World!</i>"),
     (Ten8tMarkup().underline, "Hello, World!", "<u>Hello, World!</u>"),
@@ -148,14 +148,14 @@ def test_ten8t_basic_rich(markup_func, input, expected_output):
     (Ten8tMarkup().black, "Hello, World!", '<span style="color:black">Hello, World!</span>'),
     (Ten8tMarkup().white, "Hello, World!", '<span style="color:white">Hello, World!</span>'),
 ])
-def test_ten8t_basic_html_renderer(markup_func, input, expected_output):
+def test_ten8t_basic_html_renderer(markup_func, input_, expected_output):
     html_renderer = ten8t_format.Ten8tBasicHTMLRenderer()
-    formatted_input = markup_func(input)
+    formatted_input = markup_func(input_)
     output = html_renderer.render(formatted_input)
     assert output == expected_output
 
 
-@pytest.mark.parametrize("markup_func, input, expected_output", [
+@pytest.mark.parametrize("markup_func, input_, expected_output", [
     (Ten8tMarkup().bold, "Hello, World!", "**Hello, World!**"),
     (Ten8tMarkup().italic, "Hello, World!", "*Hello, World!*"),
     (Ten8tMarkup().strikethrough, "Hello, World!", "Hello, World!"),
@@ -176,9 +176,9 @@ def test_ten8t_basic_html_renderer(markup_func, input, expected_output):
     (Ten8tMarkup().white, "Hello, World!", ":white[Hello, World!]"),
 
 ])
-def test_ten8t_basic_streamlit_renderer(markup_func, input, expected_output):
+def test_ten8t_basic_streamlit_renderer(markup_func, input_, expected_output):
     streamlit_renderer = ten8t_format.Ten8tBasicStreamlitRenderer()
-    formatted_input = markup_func(input)
+    formatted_input = markup_func(input_)
     output = streamlit_renderer.render(formatted_input)
     assert output == expected_output
 

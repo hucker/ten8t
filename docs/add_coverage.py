@@ -78,6 +78,20 @@ def create_shields_io_link(coverage):
     return f"![Ten8t Package Test Coverage]({badge_url})"
 
 
+def create_shields_io_test_link(status: bool):
+    """Generate a Markdown link using Shields.io for the test status badge.
+
+    Args:
+        coverage (float): The coverage percentage.
+
+    Returns:
+        str: A valid Markdown link for the Shields.io coverage badge.
+    """
+    status_link = "status-pass-brightgreen" if status else "status-fail-red"
+    msg = "Pass" if status else "Fail"
+    return f"![Pytest Status: {msg}](https://img.shields.io/badge/{status_link}"
+
+
 def update_readme_with_badge(readme_path, coverage):
     """Update the README file to replace the coverage badge link.
 

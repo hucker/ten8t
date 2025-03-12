@@ -7,14 +7,31 @@ from typing import Sequence
 # Note: the *OrNone are meant to be constructors that allow a None value to be passed
 #       that code will take care to convert to a [] or a ''
 StrOrNone = str | None
+"""Type alias for a string or None."""
+
 StrList = Sequence[str]
+"""Type alias for a list of strings."""
+
 StrListOrNone = StrList | StrOrNone
+"""Type alias for a list of strings or None."""
+
 IntOrNone = int | None
+"""Type alias for an integer or None."""
+
 IntList = Sequence[int]
+"""Type alias for a list of integers."""
+
 IntListOrNone = IntList | StrList | None
+"""Type alias for a list of integers or None."""
+
 FloatOrNone = float | None
+"""Type alias for a float or None."""
+
 FloatList = Sequence[float]
+"""Type alias for a list of floats."""
+
 FloatListOrNone = FloatList | FloatOrNone
+"""Type alias for a list of floats or None."""
 
 
 class NextIntValue:

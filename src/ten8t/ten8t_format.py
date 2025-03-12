@@ -51,7 +51,7 @@ class Ten8tMarkup:
     The idea of ten8t markup is a way to tag all result message with formatting
     information that may be used to provide the end user with a richer formatting
     experience targeting multiple output environments.  Since I use rich, markdown
-     and streamlit and a bit of HTML I needed it to work for those platforms.
+    and streamlit and a bit of HTML I needed it to work for those platforms.
     
     Ten8t messages can have embedded formatting information that indicates to
     higher level code how the text could be formatted.  Rendering class can choose

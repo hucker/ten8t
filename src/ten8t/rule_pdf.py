@@ -77,48 +77,46 @@ def rule_from_pdf_rule_ids(file_path: str,
                            max_results: int = 1,
                            pages="all") -> Generator[TR, None, None]:
     """
-        Yield matching rule ID results from tables contained in a specified PDF file.
+    Yield matching rule ID results from tables in a specified PDF file.
 
+    This function reads tables from a PDF and inspects each table for data that matches
+    the supplied ``rule_id``. For each match found, it extracts the corresponding
+    status, note, and skip values and yields these in a namedtuple. If no match is found
+    or multiple tables exist, the function continues execution without interruption.
 
-        The tables within the PDF file are expected to have the following columns structure
-        with these default names:
+    The PDF tables are expected to contain the following column structure:
 
-        Reads tables from a specified PDF file and inspects each table for data that matches
-        the supplied `rule_id`. For each match found, the function extracts the corresponding
-        status, note, and skip values, and yields these in a namedtuple. If multiple tables
-        exist or the `rule_id` does not match any table, the function continues execution.
+    Parameters
+    ----------
+    file_path : str
+        Path to the PDF file to extract tables from.
+    rule_id : str
+        Specific rule ID to search for within the tables.
+    default_msg : str, optional
+        Default message to return with the rule result. If provided, this value
+        overrides column name information. Defaults to None.
+    col_names : dict, optional
+        Dictionary for renaming column names. Defaults to None.
+    max_results : int, optional
+        Maximum number of results to yield. If this limit is exceeded,
+        the function raises a `Ten8tException`. Defaults to 1.
+    pages : str
+        Specific pages from the PDF file to be read. Defaults to 'all'.
 
-        Parameters:
-        ----------
-        file_path : str
-           Path to the PDF file to extract tables from.
-        rule_id : str
-           Specific rule ID to search for within the tables.
-        default_msg : str, optional
-           Default message to return with the rule result. If provided, it overrides
-           column name information.
-           Defaults to None.
-        col_names : dict, optional
-           Dictionary for renaming column names. Defaults to None.
-        max_results : int, optional
-           Maximum number of results to yield. The function raises an exception when
-           exceed this number. Defaults to 1.
-        pages : str
-           Specific pages from the PDF file to be read. Defaults to 'all'.
+    Yields
+    ------
+    namedtuple
+        A named tuple represented by ``TR`` with the following fields:
+            - ``status`` (bool): Indicates 'pass' if True and 'fail' if False.
+            - ``msg`` (str): Contains messages or notes associated with the rule.
+            - ``skipped`` (bool): Indicates if the rule was skipped. True if yes, False otherwise.
 
-        Yields:
-        -------
-        namedtuple
-           Namedtuple represented by TR where:
-           `status` (bool) : Indicates 'pass' if True and 'fail' if False.
-           `msg` (str) : Contains messages or notes associated with the rule.
-           `skipped` (bool) : Indicates if the rule was skipped. True if yes, False otherwise.
+    Raises
+    ------
+    Ten8tException
+        If the number of yielded results exceeds the maximum limit specified by ``max_results``.
+    """
 
-        Raises:
-        -------
-        Ten8tException
-           If the number of yielded results exceeds the maximum limit specified by `max_results`.
-        """
     col_names = DEFAULT_COL_NAMES | col_names if col_names else DEFAULT_COL_NAMES
     status_col = col_names['status_col']
     note_col = col_names['note_col']

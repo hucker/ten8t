@@ -2,3 +2,6 @@ sphinx                 # The core Sphinx documentation generator
 sphinx-rtd-theme       # The "Read the Docs" theme for HTML output
 sphinx-book-theme
 myst-parser            # Markdown support
+narwhals
+sqlalchemy
+openpyxl

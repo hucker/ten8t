@@ -11,14 +11,14 @@ The main functions in this module are:
   threading for improved performance with larger host lists.
 
 Functions:
-- `handle_empty_hosts`: Generates a result for scenarios where no hosts are available for
-  processing, based on `skip_on_none` and `pass_on_none` flags.
-- `rule_ping_host_check`: Sends a single ICMP ping request to the given host and evaluates the
+- handle_empty_hosts: Generates a result for scenarios where no hosts are available for
+  processing, based on skip_on_none and `pass_on_none` flags.
+- rule_ping_host_check: Sends a single ICMP ping request to the given host and evaluates the
   response.
-- `rule_ping_hosts_check`: Handles ping checks for multiple hosts, supports concurrent
+- rule_ping_hosts_check: Handles ping checks for multiple hosts, supports concurrent
   operations using a thread pool, and processes the results.
 
-This module relies on the `ping3` library for sending ICMP packets and measuring the latency
+This module relies on the ping3 library for sending ICMP packets and measuring the latency
 of responses.
 
 """
