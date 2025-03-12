@@ -7,35 +7,36 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 
-
-def copy_readme_to_docs(ignore_errors=True):
+def copy_readme_to_docs():
     """
-    Copies the README.md file from the root folder to the docs folder.
-
-    Parameters:
-        ignore_errors (bool): If True, ignores errors like file not found.
+    Copies the README.md file from the root folder to the docs folder
+    while adjusting image paths using a simple string replacement.
     """
-    source_path = None
+    import os
+
+    # Paths for the source and destination README.md files
+    source_path = os.path.abspath("../README.md")  # Root-level README.md
+    destination_path = os.path.abspath("README.md")  # Copy to the docs folder
+
     try:
-        import os
-        import shutil
+        # Read the original README.md content
+        with open(source_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
-        source_path = os.path.abspath("../README.md")  # The README.md in the root folder
-        destination_path = os.path.abspath("README.md")  # The README.md to be placed in the docs folder
+        # Replace the image paths (assuming specific paths need adjustment)
+        # Example: Change 'docs/_static/' to './_static/' for Sphinx.  This makes
+        # github and readthedocs work
+        adjusted_content = content.replace("docs/_static/", "./_static/")
 
-        # Copy the README.md file
-        shutil.copy(source_path, destination_path)
-        print(f"Copied {source_path} to {destination_path}")
-    except FileNotFoundError as e:
-        if not ignore_errors:
-            print(f"Error: Source file {source_path} not found.")
-        else:
-            print(f"Ignored error: {e}")
+        # Write the adjusted content to the docs/README.md file
+        with open(destination_path, "w", encoding="utf-8") as file:
+            file.write(adjusted_content)
+
+        print(f"Copied and adjusted README.md from {source_path} to {destination_path}")
+
     except Exception as e:
-        if not ignore_errors:
-            print(f"An unexpected error occurred: {e}")
-        else:
-            print(f"Ignored unexpected error: {e}")
+        print(f"An error occurred while copying README.md: {e}")
+
 
 
 # This really should be a symlink so it could be two way?

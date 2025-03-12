@@ -676,10 +676,10 @@ INFO:     127.0.0.1:64116 - "GET /openapi.json HTTP/1.1" 200 OK
 And going to `localhost:8000/docs` gets you this:
 
 FastAPI swagger interface:
-![FastAPI](docs/_static/fastapi2.png)
+![FastAPI](./_static/fastapi2.png)
 
 FastAPI example running some rules:
-![FastAPI](docs/_static/fastapi.png)
+![FastAPI](./_static/fastapi.png)
 
 ## Streamlit Demo
 
@@ -691,7 +691,7 @@ levels, ruids and generate colored tabular report.
 
 Here is the setup using a couple of modules in a package folder:
 
-![Streamlit](docs/_static/streamlit_allup.png)
+![Streamlit](./_static/streamlit_allup.png)
 
 ## TOX
 
