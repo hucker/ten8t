@@ -780,6 +780,16 @@ class Ten8tChecker:
         return len([r for r in self.results if not r.status and not r.skipped])
 
     @property
+    def summary_count(self):
+        """
+        Count the number of summary results that were not skipped.
+
+        Returns:
+            int: The number of summary results excluding skips.
+        """
+        return len([r for r in self.results if not r.summary_result and not r.skipped])
+
+    @property
     def result_count(self):
         """
         Get the total number of results available.

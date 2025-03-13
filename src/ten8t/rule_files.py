@@ -71,7 +71,7 @@ def rule_paths_exist(paths: list[str] | str,
         status for missing paths, or a summary of checks depending on the configuration.
 
     """
-    y = Ten8tYield(show_summary=summary_only, summary_name=summary_name)
+    y = Ten8tYield(yield_summary=summary_only, summary_name=summary_name)
 
     if isinstance(paths, str):
         paths = paths.split(" ")
@@ -186,7 +186,7 @@ def rule_stale_files(
         Generator[TR, None, None]: Provides results or a summary of the stale file evaluations,
             indicating whether files matched the criteria and detailing their respective status.
     """
-    y = Ten8tYield(show_summary=summary_only, summary_name=summary_name or "Rule_stale_files")
+    y = Ten8tYield(yield_summary=summary_only, summary_name=summary_name or "Rule_stale_files")
 
     current_time = time.time()
     for filepath in pathlib.Path(folder).rglob(str(pattern)):
@@ -228,7 +228,7 @@ def rule_large_files(folder: str,
                                               Default is None.
     """
 
-    y = Ten8tYield(show_summary=summary_only, summary_name=summary_name or "Rule_large_files")
+    y = Ten8tYield(yield_summary=summary_only, summary_name=summary_name or "Rule_large_files")
 
     if max_size <= 0:
         raise Ten8tException(f"Size for large file check should be > 0 not {max_size=}")
@@ -286,7 +286,7 @@ def rule_max_files(folders: list,
             The result of each folder's file count check or a summary if `summary_only` is True.
     """
 
-    y = Ten8tYield(show_summary=summary_only, summary_name=summary_name or "Rule_max_files")
+    y = Ten8tYield(yield_summary=summary_only, summary_name=summary_name or "Rule_max_files")
 
     if isinstance(folders, (str, pathlib.Path)):
         folders = [folders]

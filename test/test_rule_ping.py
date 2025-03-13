@@ -1,7 +1,7 @@
 import pytest
 
 from conftest import logger
-from ten8t import Ten8tChecker
+from ten8t import Ten8tChecker, ten8t_checker
 from ten8t import attributes, rule_ping_host_check, rule_ping_hosts_check
 
 
@@ -104,7 +104,7 @@ def test_rule_pings(urls):
 
     @attributes(tag="tag")
     def check_rule_pings():
-        yield from rule_ping_hosts_check(urls)
+        yield from rule_ping_hosts_check(urls, yield_summary=False)
 
     for count, result in enumerate(check_rule_pings()):
         assert result.status
@@ -252,3 +252,62 @@ def test_ping_threading():
 
     # This is very crude, but 15 pings, expect between 4 and 12 times speed increase.
     assert tcheck.duration_seconds < ntcheck.duration_seconds
+
+
+@pytest.mark.parametrize(
+    "urls, show_summary, show_pass, show_fail, expected_summary_count, expected_pass_count, expected_fail_count",
+    [
+        # Test case: Combination of summary and pass results
+        ("1.1.1.1 8.8.8.8", True, True, False, 1, 2, 0),
+
+        # Test case: Combination of summary and fail results
+        ("1.1.1.1 www.invalidurlthatdoesnotexist12345.com", True, False, True, 1, 0, 1),
+
+        # Test case: Show summary only
+        ("1.1.1.1 8.8.8.8", True, False, False, 1, 0, 0),
+
+        # Test case: Show passed results only
+        ("1.1.1.1 8.8.8.8", False, True, False, 0, 2, 0),
+
+        # Test case: Show failed results only
+        ("1.1.1.1 www.invalidurlthatdoesnotexist12345.com", False, False, True, 0, 0, 1),
+
+        # Test case: Combination of summary and pass results
+        ("1.1.1.1 8.8.8.8", True, True, False, 1, 2, 0),
+
+        # Add more as needed for edge cases
+    ]
+)
+def test_rule_ping_hosts_check(
+        urls, show_summary, show_pass, show_fail, expected_summary_count, expected_pass_count, expected_fail_count
+):
+    """
+    Parameterized test for rule_ping_hosts_check to ensure combinations of show_summary, show_pass, and show_fail
+    result in correct output handling with direct validation against expected counts.
+    """
+
+    @attributes(tag="tag")
+    def check_ping_rule():
+        yield from rule_ping_hosts_check(
+            urls, yield_summary=show_summary, yield_pass=show_pass, yield_fail=show_fail
+        )
+
+    logger.info(f"Running check_ping_rule with URLs: {urls}")
+    ch = ten8t_checker.Ten8tChecker(check_functions=[check_ping_rule], auto_setup=True)
+    results = ch.run_all()
+
+    # Count results for each type
+    summary_count = sum(1 for result in results if result.summary_result)
+    pass_count = sum(1 for result in results if not result.summary_result and result.status is True)
+    fail_count = sum(1 for result in results if not result.summary_result and result.status is False)
+
+    # Directly compare actual counts with expected counts
+    assert summary_count == expected_summary_count, f"Expected {expected_summary_count} summary results, got {summary_count}"
+    assert pass_count == expected_pass_count, f"Expected {expected_pass_count} pass results, got {pass_count}"
+    assert fail_count == expected_fail_count, f"Expected {expected_fail_count} fail results, got {fail_count}"
+
+    # Verify the total result count matches the total expected count
+    total_expected_results = expected_summary_count + expected_pass_count + expected_fail_count
+    assert len(results) == total_expected_results, (
+        f"Expected {total_expected_results} total results (summary + pass + fail), got {len(results)}"
+    )

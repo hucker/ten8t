@@ -149,19 +149,6 @@ def test_yielder_result():
         assert result.msg.startswith("Yield result the 'normal' way")
 
 
-def test_yielder_result():
-    @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
-    def yield_a_result():
-        y = t8.Ten8tYield()
-        yield from y(t8.TR(status=True, msg="Yield result the 'normal' way."))
-
-    s_func = t8.Ten8tFunction(yield_a_result)
-
-    results = s_func()
-    for result in results:
-        assert result.status is True
-        assert result.msg.startswith("Yield result the 'normal' way")
-
 
 def test_yielder_summary():
     """
@@ -176,7 +163,7 @@ def test_yielder_summary():
 
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func1():
-        y = t8.Ten8tYield(show_summary=True, show_fail=False, show_pass=False, summary_name="Func1 Summary")
+        y = t8.Ten8tYield(yield_summary=True, yield_fail=False, yield_pass=False, summary_name="Func1 Summary")
         yield from y(status=False, msg="Here's a fail")
         yield from y(status=True, msg="Here's a pass")
         yield from y(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
@@ -201,31 +188,31 @@ def test_yielder_summary():
 @pytest.mark.parametrize(
     "config, expected_results",
     [
-        # Test Case 1: show_pass=True, show_fail=False, show_summary=False
+        # Test Case 1: yield_pass=True, yield_fail=False, yield_summary=False
         (
-                {"show_pass": True, "show_fail": False, "show_summary": False},
+                {"yield_pass": True, "yield_fail": False, "yield_summary": False},
                 {"pass_count": 2, "fail_count": 0, "summary_count": 0, "total_count": 2},
         ),
-        # Test Case 2: show_pass=False, show_fail=True, show_summary=False
+        # Test Case 2: yield_pass=False, show_fail=True, yield_summary=False
         (
-                {"show_pass": False, "show_fail": True, "show_summary": False},
+                {"yield_pass": False, "yield_fail": True, "yield_summary": False},
                 {"pass_count": 0, "fail_count": 3, "summary_count": 0, "total_count": 3},
         ),
-        # Test Case 3: show_pass=True, show_fail=True, show_summary=True
+        # Test Case 3: yield_pass=True, show_fail=True, yield_summary=True
         (
-                {"show_pass": True, "show_fail": True, "show_summary": True},
+                {"yield_pass": True, "yield_fail": True, "yield_summary": True},
                 {"pass_count": 2, "fail_count": 4, "summary_count": 1, "total_count": 6},
         ),
-        # Test Case 4: show_pass=False, show_fail=True, show_summary=True
+        # Test Case 4: yield_pass=False, show_fail=True, yield_summary=True
         (
-                {"show_pass": False, "show_fail": True, "show_summary": True},
+                {"yield_pass": False, "yield_fail": True, "yield_summary": True},
                 {"pass_count": 0, "fail_count": 4, "summary_count": 1, "total_count": 4},
         ),
 
     ],
 )
 def test_ten8t_yield(config, expected_results):
-    # Config is the paramters we pass to the Yield constructor
+    # Config is the parameters we pass to the Yield constructor
     # results are the pass/fail/total/summary counts for each configuration.
 
     # Common generator function with variable config
@@ -252,7 +239,7 @@ def test_bad_yield_setup():
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def yield_a_result():
         # Should throw exception (don't need any more code after making yielder
-        _ = t8.Ten8tYield(show_summary=False, show_fail=False, show_pass=False, summary_name="Func1 Summary")
+        _ = t8.Ten8tYield(yield_summary=False, yield_fail=False, yield_pass=False, summary_name="Func1 Summary")
 
     s_func = t8.Ten8tFunction(yield_a_result)
     ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
@@ -261,3 +248,32 @@ def test_bad_yield_setup():
     assert results[0].except_
     assert results[0].traceback
     assert "You must show a result or a summary" in results[0].msg
+
+
+@pytest.mark.parametrize("yield_class, expected_length, expected_summary", [
+    # Each tuple is a parameterized test case
+    (t8.Ten8tYieldAll, 3, True),
+    (t8.Ten8tYieldPassOnly, 1, False),
+    (t8.Ten8tYieldFailOnly, 1, False),
+    (t8.Ten8tYieldSummaryOnly, 1, True),
+    (t8.Ten8tYieldPassFail, 2, False),
+])
+def test_yield_classes(yield_class, expected_length, expected_summary):
+    """Test different Ten8tYield classes using parameterization."""
+
+    def yield_result():
+        """THis has a pass, fail and summary """
+        y = yield_class()
+        yield from y(t8.TR(status=True, msg="Yield pass."))
+        yield from y(t8.TR(status=False, msg="Yield fail."))
+        yield from y.yield_summary()
+
+    # Run the checker
+    ch = t8.Ten8tChecker(check_functions=[yield_result], auto_setup=True)
+    results = ch.run_all()
+
+    # Verify the number of results
+    assert len(results) == expected_length
+
+    if expected_summary:
+        assert any(result.summary_result for result in results)
