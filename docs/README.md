@@ -1,42 +1,28 @@
-# Ten8t: Monitoring framework for Filesystems, APIs, Databases, Documents and more.
+## Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
-![Ten8t Test Status](https://img.shields.io/badge/test-pass-brightgreen)
+![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-865/865-brightgreen.svg)
+&nbsp;&nbsp;
+![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
 &nbsp;&nbsp;
 [![Python](https://img.shields.io/pypi/pyversions/ten8t)](https://pypi.org/project/ten8t/)
 &nbsp;&nbsp;
 [![Documentation Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://ten8t.readthedocs.io/en/latest/)
 &nbsp;&nbsp;
-![Ten8t Package Test Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
-&nbsp;&nbsp;
 ![Downloads](https://img.shields.io/pypi/dm/ten8t)
 
 `Ten8t` (pronounced "ten-eighty") is a framework for managing observability and rule-based checks across
-files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest`, `Ten8t` makes
-many simple tasks easy while providing the flexibility to tackle more complex scenarios when needed. By allowing you
-to write reusable, declarative rules, `Ten8t` lets you to monitor and validate systems with ease—whether it’s a
+files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest` and `pylint`, `Ten8t`
+makes simple tasks easy while providing the flexibility to tackle more complex scenarios as needed. By allowing you
+to write reusable, declarative rules, `Ten8t` lets you monitor and validate information systems. Whether it’s a
 quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
 
 `Ten8t` can be thought of as a "linter" for your infrastructure many "standard" rules are available out of the box,
 but it is easy to write python code to verify anything you like. It enables you to define customized pass/fail checks
 and organize them using tags, attributes, and phases for fine-grained control. With support for lightweight setup
-and scalability, `Ten8t` excels in both small projects and large, complex systems. Its intuitive tooling
-ensures that basic tests are easy to write, while its extensibility and scoring options allow you to incorporate
-sophisticated validations as your needs grow.
-
-
-## Overview
-
-`Ten8t` is like `pytest` or `lint` for infrastructure, files systems, file contents and any code you would like to write
-to verify
-something of interest to you. It is VERY easy to get started but can scale to support very large sytems.
-
-Unlike traditional linters that focus on syntax or structure in programming languages, `Ten8t` serves as a "linter"
-for your infrastructure. It ensures that complex systems comply with a set of rules by running granular pass/fail
-tests. Whether you are ensuring data integrity, monitoring file systems, or checking the state of various components,
-`Ten8t` provides an intuitive approach with powerful filtering, tagging, and scoring capabilities. It can scale from
-small projects with a handful of checks to large systems involving hundreds of rules, enabling fine-grained control
-over which checks are executed.
+and scalability, `Ten8t` works for small projects and large, complex systems. Its intuitive tooling
+ensures that basic tests are easy to write, while its extensibility with standard Python code within reach of
+your coding ability.
 
 
 ## Why Not pytest, Great Expectations or other popular tools?
@@ -82,47 +68,49 @@ also available through environments. Rule may be tagged with attributes to allow
 
 ### Simple Rules
 
-You can start with simple rules that don't even reference `ten8t` directly by returning or yielding a boolean value.
-If you hava a module with a get_drive_space function the following would be some simple tests.
+You can start with simple rules that don't even reference `ten8t` directly by returning or yielding boolean values.
+Here are some simple check functions.
 
 ```python
 
-import pathlib  
+import pathlib
+
 
 def check_boolean():
     return pathlib.Path("./foo").exists()
 
 
 def check_yielded_values():
-    return pathlib.Path("./foo").exists()
-    return pathlib.Path("./fum").exists()
+    return [pathlib.Path("./foo").exists(), pathlib.Path("./fum").exists()]
 ```
 
-As you might expect running this will provide 3 passing test results (assuming the drive space is available)
-but with very limited feedback.
+As you might expect, a framwork could discover these tests provide 3 passing test results if the files all exist.
 
 You can up your game and return status information by returning or yielding `Ten8tResults`.
 
 ```python
-from ten8t import TR
+from ten8t import TR, attributes
 import pathlib
-
 
 #NOTE TR is an alias for Tent8tResult.  Since it is used very often it is useful to have a short version.
 
+@attributes(tag="foo")
 def check_boolean():
-    return TR(status=pathlib.Path("./foo").exists(), msg="Folder foo exists")
+    yield TR(status=pathlib.Path("./foo").exists(), msg="Folder foo exists")
 
 
+@attributes(tag="fum")
 def check_yielded_values():
-    return TR(status=pathlib.Path("./foo").exists(), msg="Folder foo exists")
-    return TR(status=pathlib.Path("./fum").exists(), msg="Folder fum exists")
+    yield TR(status=pathlib.Path("./fum").exists(), msg="Folder foo exists")
+    yield TR(status=pathlib.Path("./fum").exists(), msg="Folder fum exists")
 ```
 
-As you might expect running this will also provide 3 passing test results with richer data using the TR object which
-allows status for MANY things to be provided.
+As you might expect running this will also provide 3 passing test results with richer data using the TR object also note
+that these functions yield results rather than return them and some tags have been added, forshadowing that you
+will be able to run the "foo" tests or the "fum" tests.
 
-Now we can add more complexity. Tag check functions with attributes to allow subsets of checks to be run. Below
+Now we can add more complexity running more complex code. Tag check functions with attributes to allow subsets of checks
+to be run. Below
 two functions are given different tags. When you make calls to run checks you can specify which tags
 you want to allow to run.
 
@@ -136,7 +124,7 @@ import pathlib
 def check_file_exists():
     """ Verify this that my_file exists """
     status = pathlib.Path("my_file.csv").exists()
-    return TR(status=status, msg="Verify daily CSV file exists")
+    yield TR(status=status, msg="Verify daily CSV file exists")
 
 
 @attributes(tag="file_age")
@@ -147,9 +135,9 @@ def check_file_age():
     file_age_in_seconds = current_time - modification_time
     file_age_in_hours = file_age_in_seconds / 3600
     if file_age_in_hours < 24:
-        return TR(status=True, msg="The file age is OK {file_age_in_hours}")
+        yield TR(status=True, msg="The file age is OK {file_age_in_hours}")
     else:
-        return TR(status=False, msg="The file is stale")
+        yield TR(status=False, msg="The file is stale")
 ```
 
 And even a bit more complexity pass values to these functions using environments, which are similar to `pytest`
@@ -274,8 +262,8 @@ def check_rule3(cfg):
 ```
 
 Currently, there are integrations for file access with pathlib, generic file system access with FS,
-database with SQLAchemy, data frames with narwhals and ping with ping3, requests with (duh) requests,
-pdf files with camelot and excel files with openpyxl.
+database with SQLAlchemy, data frames with narwhals and ping with ping3, requests with (duh) requests,
+pdf files with camelot and Excel files with openpyxl.
 
 ## What is the output?
 
@@ -339,7 +327,7 @@ In addition to the scoring, each function has a weight that is also applied to i
 different rules to have higher weights.
 
 For most use-cases scoring is not needed, or just using the default by_result since we are most often using this
-in cases were we expect 100% "pass", however for very large rulesets scores becaomes more important because there
+in cases were we expect 100% "pass", however for very large rulesets scores becomes more important because there
 is always something broken.
 
 ## What are @attributes?
@@ -398,13 +386,13 @@ def check_file_age():
 
 @attributes(ruid="file_complex")
 def check_file_age():
-    f = pathlib.Path("/user/verybigfile.txt")
+    f = pathlib.Path("/user/very_big_file.txt")
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
 ```
 
 ## Threading  (PROVISIONAL MAY CHANGE)
 
-It is possible to assign a thread ID to anny `Ten8t` function using the standard attribute mechanism. For larger
+It is possible to assign a thread ID to any `Ten8t` function using the standard attribute mechanism. For larger
 rulesets this can speed things up, the current implementations has you pass a checker object to the thead runner
 which manages putting all the functions in their own thread and collecting results. At this time the code
 supports threading using so IO bound code should work better. This is not a silver bullet, you still need to
@@ -744,6 +732,16 @@ The preferred way for using `ten8t` in code is to write:
 
 ```python
 import ten8t as t8
+
+t8.ten8t_logger.info("Hello")
+```
+
+or
+
+```python
+from ten8t import ten8t_logger
+
+ten8t_logger("Hello")
 ```
 
 Please pronounce the `t8` as `tee eight` (as in an early prototype for
