@@ -159,7 +159,7 @@ def sec_format(seconds):
 
     # Seconds are special case. For small seconds we report to
     # extra precision since we assume that we are dealing with
-    # times on a human scale rather than on micro scales.
+    # times on a human scale rather than on small scales.
     if seconds >= 2:
         return f"{sign}{seconds:.1f} seconds"
 

@@ -123,7 +123,7 @@ def rule_xlsx_a1_pass_fail(wb: openpyxl.workbook.Workbook,
         val_col (str, optional): The column identifier (e.g., 'B') for the boolean-like values. Defaults to 'B'.
         row_start (str, optional): The starting row number as a string. Defaults to '1'.
         row_end (str or None, optional): The ending row number as a string or None to infer the range automatically.
-        fist_if_missing(bool): If no sheet is found then use the first one
+        first_if_missing(bool): If no sheet is found then use the first one
 
     Yields:
         TR: An object indicating pass (True) or fail (False) status for each row and an accompanying message.

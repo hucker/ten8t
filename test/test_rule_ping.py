@@ -255,7 +255,7 @@ def test_ping_threading():
 
 
 @pytest.mark.parametrize(
-    "urls, show_summary, show_pass, show_fail, expected_summary_count, expected_pass_count, expected_fail_count",
+    "urls, yield_summary, yield_pass, yield_fail, expected_summary_count, expected_pass_count, expected_fail_count",
     [
         # Test case: Combination of summary and pass results
         ("1.1.1.1 8.8.8.8", True, True, False, 1, 2, 0),
@@ -279,17 +279,17 @@ def test_ping_threading():
     ]
 )
 def test_rule_ping_hosts_check(
-        urls, show_summary, show_pass, show_fail, expected_summary_count, expected_pass_count, expected_fail_count
+        urls, yield_summary, yield_pass, yield_fail, expected_summary_count, expected_pass_count, expected_fail_count
 ):
     """
-    Parameterized test for rule_ping_hosts_check to ensure combinations of show_summary, show_pass, and show_fail
+    Parameterized test for rule_ping_hosts_check to ensure combinations of yield_summary, yield_pass, and yield_fail
     result in correct output handling with direct validation against expected counts.
     """
 
     @attributes(tag="tag")
     def check_ping_rule():
         yield from rule_ping_hosts_check(
-            urls, yield_summary=show_summary, yield_pass=show_pass, yield_fail=show_fail
+            urls, yield_summary=yield_summary, yield_pass=yield_pass, yield_fail=yield_fail
         )
 
     logger.info(f"Running check_ping_rule with URLs: {urls}")

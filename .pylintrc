@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable=too-many-arguments,no-else-return,R0917,R0913
+disable=too-many-arguments,no-else-return,R0917,R0913,fixme
 max-locals=20
 max-args=12
 max-attributes=15
@@ -8,3 +8,5 @@ max-attributes=15
 max-line-length = 120
 
 
+[MASTER]
+ignore=src/ten8t/cli,src/ten8t/examples,src/ten8t/st_ten8t

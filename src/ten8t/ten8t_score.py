@@ -130,7 +130,7 @@ class ScoreByResult(ScoreStrategy):
         If no results are provided or all results are skipped, returns a default score of 0.0.
 
         The weight of each result contributes to the calculation: for passed results, their
-        weight values are summed up. The final score is computed as the percentage of passed
+        weight values are summed up. Compute the final score as the percentage of passed
         weighted sum over the total weighted sum of all considered results.
 
         Args:

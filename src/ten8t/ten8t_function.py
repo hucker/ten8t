@@ -380,7 +380,8 @@ class Ten8tFunction:
 
         return result
 
-    def make_default_message(self, func, status=None, message=""):
+    @staticmethod
+    def make_default_message(func, status=bool | None, message=""):
         """
         Returns the first line of the docstring if it exists,
         or a default message in the format 'Pass/Fail from function {func}'.
@@ -391,6 +392,7 @@ class Ten8tFunction:
 
         Args:
             func (callable): The function whose docstring to use.
+            status: Message status
             message (str): A default message to override the fallback.
 
         Returns:

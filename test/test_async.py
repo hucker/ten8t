@@ -6,6 +6,12 @@ import ten8t.ten8t_checker as ten8t_checker
 import ten8t.ten8t_result as ten8t_result
 
 
+### NOTE
+###
+###  Async is currently NOT supported.  This is  preliminary work that the system can detect
+###  async functions, but they cannot be checked.
+###
+
 @pytest.fixture
 def check_func():
     def check_func():

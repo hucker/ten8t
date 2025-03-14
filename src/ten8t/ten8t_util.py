@@ -37,7 +37,7 @@ FloatListOrNone = FloatList | FloatOrNone
 class NextIntValue:
     """
     I had to create this class in order to make mypy happy.
-    Mypy does not knowhow to handle dynamic functions and  playing
+    Mypy does not know how to handle dynamic functions and  playing
     games
     """
 

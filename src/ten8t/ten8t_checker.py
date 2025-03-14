@@ -317,10 +317,12 @@ class Ten8tChecker:
 
     @property
     def async_count(self) -> int:
+        """Return the number of async functions"""
         return len(self.async_check_func_list) if self.async_check_func_list else 0
 
     @property
     def coroutine_count(self) -> int:
+        """Return the number of coroutine functions"""
         return len(self.coroutine_check_func_list) if self.coroutine_check_func_list else 0
 
     @staticmethod
@@ -498,9 +500,9 @@ class Ten8tChecker:
 
         self.check_func_list = [function for function in self.check_func_list
                                 if self.rc.does_match(ruid=function.ruid,
-                                                tag=function.tag,
-                                                phase=function.phase,
-                                                level=function.level)]
+                                                      tag=function.tag,
+                                                      phase=function.phase,
+                                                      level=function.level)]
 
         return self.check_func_list
 
@@ -642,10 +644,18 @@ class Ten8tChecker:
         self.start_time = dt.datetime.now()
 
         ten8t_logger.info("Checker start with %d functions", len(self.check_func_list))
+
+        if self.async_count:
+            ten8t_logger.info("Checker has %d async functions that will be ignored.",
+                              self.async_count)
+        if self.coroutine_count:
+            ten8t_logger.info("Checker has %d coroutine functions that will be ignored.",
+                              self.coroutine_count)
+
         # Fixes linting issue
         function_ = None
         try:
-            # Magic happens here.  Each module is checked for any functions that start with 
+            # Magic happens here.  Each module is checked for any functions that start with
             # env_ (which is configurable).  Env is a dictionary that has values that may be
             # used as function parameters to check functions (very similar to pytest).  At this
             # time environments are global, hence there could be collisions on larger projects.
@@ -662,8 +672,8 @@ class Ten8tChecker:
                                        f"Func Start {function_.function_name}")
                 for result in function_():
 
-                    # Render the message if needed.  The render happens right before it is yielded so it "knows" as 
-                    # much as possible at this point.
+                    # Render the message if needed.  The render happens right before it is yielded so it "knows"
+                    # as much as possible at this point.
                     result.msg_rendered = result.msg if not self.renderer else self.renderer.render(result.msg)
 
                     ten8t_logger.debug("%s:%s:%s", result.func_name, result.status, result.msg)

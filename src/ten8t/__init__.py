@@ -3,11 +3,6 @@ Public API for the Ten8t project.
 """
 from importlib.metadata import PackageNotFoundError, version
 
-try:
-    __version__ = version("ten8t")  # Replace with the actual package name in pyproject.toml
-except PackageNotFoundError:
-    __version__ = "unknown"  # Fallback if version can't be found
-
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
 # exporting these rules.
@@ -35,11 +30,8 @@ from .ten8t_format import Ten8tBasicHTMLRenderer
 from .ten8t_format import Ten8tBasicMarkdown
 from .ten8t_format import Ten8tBasicRichRenderer
 from .ten8t_format import Ten8tBasicStreamlitRenderer
-from .ten8t_format import Ten8tBasicStreamlitRenderer
 from .ten8t_format import Ten8tMarkup
 from .ten8t_format import Ten8tRenderText
-# from .ten8t_exception import Ten8tTypeError  # noqa: F401
-# from .ten8t_exception import Ten8tValueError  # noqa: F401
 from .ten8t_function import Ten8tFunction  # noqa: F401
 from .ten8t_immutable import Ten8tEnvDict  # noqa: F401
 from .ten8t_immutable import Ten8tEnvList  # noqa: F401
@@ -78,12 +70,11 @@ from .ten8t_util import any_to_int_list  # noqa: F401
 from .ten8t_util import any_to_str_list  # noqa: F401
 from .ten8t_util import next_int_value  # noqa: F401
 from .ten8t_util import str_to_bool  # noqa: F401
-
 from .ten8t_yield import Ten8tYield  # noqa: F401
-from .ten8t_yield import Ten8tYieldPassOnly  # noqa: F401
+from .ten8t_yield import Ten8tYieldAll  # noqa: F401
 from .ten8t_yield import Ten8tYieldFailOnly  # noqa: F401
 from .ten8t_yield import Ten8tYieldPassFail  # noqa: F401
-from .ten8t_yield import Ten8tYieldAll  # noqa: F401
+from .ten8t_yield import Ten8tYieldPassOnly  # noqa: F401
 from .ten8t_yield import Ten8tYieldSummaryOnly  # noqa: F401
 
 try:
@@ -148,3 +139,8 @@ try:
     from .rule_fs import rule_fs_oldest_file_age, rule_fs_file_within_max_size
 except ImportError:
     pass
+
+try:
+    __version__ = version("ten8t")  # Replace with the actual package name in pyproject.toml
+except PackageNotFoundError:
+    __version__ = "unknown"  # Fallback if version can't be found

@@ -1,5 +1,5 @@
 """
-Classues to support progress tracking.
+Classes to support progress tracking.
 """
 
 from abc import ABC, abstractmethod

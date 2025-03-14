@@ -110,7 +110,7 @@ def rule_ping_host_check(host: str,
         # We carry on here since we do not want to crash the app
         emsg = f"An error occurred while processing {host=}: {str(e)}"
         ten8t_logger.error(emsg)
-        return TR(status=False, msg=emsg, except_=str(e))
+        return TR(status=False, msg=emsg, except_=e)
 
 
 def rule_ping_hosts_check(

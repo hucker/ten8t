@@ -127,7 +127,7 @@ def rule_ndf_columns_check(name: str, df: FrameT, expected_cols_: str | list[str
     Args:
         name: The name of the dataframe, used for reporting
         df: The dataframe to check
-        expected_cols: A list or space separated string of column names that are expected
+        expected_cols_: A list or space separated string of column names that are expected
                        in the dataframe
         exact: If true, the dataframe must have exactly the expected columns. 
                If false, the dataframe can have additional columns.

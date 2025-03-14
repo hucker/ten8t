@@ -12,11 +12,11 @@ from .ten8t_result import Ten8tResult
 
 class Ten8tYield:
     """
-    This object allows you to write code that looks like it is yeilding
+    This object allows you to write code that looks like it is yielding
     all passes, fails, exceptions and summary results. The code looks
     like it is yielding as it goes.  What happens under the covers is
-    the object looks at its configuation and only yields what it was
-    told to yield and it tracks a summary.  The benefit of this is that
+    the object looks at its configuration and only yields what it was
+    told to yield, and it tracks a summary.  The benefit of this is that
     all code ONLY looks like the sunny day case and not top level
     code is ever required to do all the checks and accounting.  This
     allows all rules that process lists of "stuff" to work the same
@@ -110,31 +110,31 @@ class Ten8tYield:
             raise Ten8tException("You must show a result or a summary.")
 
     @property
-    def yielded(self):
+    def yielded(self) -> bool:
         """ Have we yielded once?"""
         return self._count > 0
 
     @property
-    def count(self):
+    def count(self) -> int:
         """How many times have we yielded?"""
         return self._count
 
     @property
-    def fail_count(self):
+    def fail_count(self) -> int:
         """How many fails have there been"""
         return self._fail_count
 
     @property
-    def pass_count(self):
+    def pass_count(self) -> int:
         """How many passes have there been"""
         return self.count - self._fail_count
 
     @property
-    def counts(self):
+    def counts(self) -> tuple[int, int, int]:
         """Return pass/fail/total yield counts"""
         return self.pass_count, self.fail_count, self.count
 
-    def increment_counter(self, result: Ten8tResult) -> None:
+    def increment_counter(self, result: Ten8tResult) -> int:
         """Increment counters based on result status."""
         self._count += 1
         if not result.status:
@@ -145,6 +145,8 @@ class Ten8tYield:
         # of where this came from
         if not self.original_func_name:
             self.original_func_name = result.func_name
+
+        return self._count
 
     def results(self,
                 results: Ten8tResult | list[Ten8tResult]) -> Generator[Ten8tResult, None, None]:
@@ -228,7 +230,7 @@ class Ten8tYield:
 
         # This is when we get a generator
         elif len(args_) == 1 and len(kwargs_) == 0 and isinstance(args_[0], Generator):
-            results = [x for x in args_[0]]
+            results = list(args_[0])
         else:
             # THIS branch of the if is what we should do 99% of the time since this has all
             # the syntactic sugar to make yielding a result similar to constructing a TR.
@@ -257,7 +259,7 @@ class Ten8tYield:
         yield from y.yield_summary()
 
         Args:
-            name: Provide a name for the yield summary to overide the one at init time.
+            name: Provide a name for the yield summary to override the one at init time.
             msg: Provide a completely custom message
 
         Returns:
@@ -267,10 +269,6 @@ class Ten8tYield:
             name = name or self.summary_name or self.original_func_name
             msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
             yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)
-
-
-#
-
 
 # These are useful subclasses that may be passed as the yield object inside of rule functions.
 
@@ -309,8 +307,8 @@ class Ten8tYieldSummaryOnly(Ten8tYield):
 
     This case could be considered swapping out the pass/fail machinery for the summary thus
     making the summary an actual test...and no longer being the summary since it is the only record
-    of the test.  For now I'll leave this but I think this case should have the lower level
-    yield object detet that both pass/fails are turned off.
+    of the test.  For now, I'll leave this, but I think this case should have the lower level
+    yield object detect that both pass/fails are turned off.
     """
 
     def __init__(self, summary_name: str = ""):

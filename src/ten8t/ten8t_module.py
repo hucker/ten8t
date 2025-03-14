@@ -125,12 +125,6 @@ class Ten8tModule:
         Raises:
             No explicit exceptions are raised by this method.
 
-        Attributes:
-            autothread (bool): Indicates whether the automatic threading is enabled.
-            module_name (str): Name of the module for generating the threading ID.
-            check_functions (List[Function]): List of function instances to be checked
-                for threading.
-
         """
         if not self.auto_thread:
             return

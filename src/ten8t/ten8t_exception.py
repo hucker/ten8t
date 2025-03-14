@@ -2,7 +2,7 @@
 
 
 class Ten8tTypeError(TypeError):
-    """Type errors associated with setting up test8t
+    """Type errors associated with setting up ten8t
 
     When bad types are sent to ten8t, this exception will be raised and should
     not be confused the TypeError that (should) indicate an unexpected lower
@@ -12,7 +12,7 @@ class Ten8tTypeError(TypeError):
 
 
 class Ten8tValueError(ValueError):
-    """ Value Error associated with setting up test8t
+    """ Value Error associated with setting up ten8t
 
     These exceptions will occur when setting up parameters on ten8t attributes and
     basic setup.  For example a negative weight.

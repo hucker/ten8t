@@ -1,13 +1,13 @@
 """
 Logging support for Ten8t.
 
-The purpose of this module is to setup package logging in a general way that integrates
+The purpose of this module is to set up package logging in a general way that integrates
 with other packages and loggers.
 
 The key feature is that you can call ten8t_setup_logging AFTER you have configured
 other packages' loggers' and it will just work along with them.
 
-If the only logging in the system is setup with this tool then you can still
+If the only logging in the system is set up with this tool then you can still
 use this and provide a target stream (e.g., stdout) and a file name.
 
 This method is set up to manage a single global logger object named ten8t_logger

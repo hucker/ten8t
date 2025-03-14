@@ -11,12 +11,11 @@ def test_rule_file_exist():
 
     @t8.attributes(tag="tag")
     def check_rule1():
-        for result_ in t8.rule_path_exists(path_="./rule_files_/my_file.txt"):
-            yield result_
+        yield t8.rule_path_exists(path_="./rule_files_/my_file.txt")
 
     @t8.attributes(tag="tag")
     def check_rule2():
-        yield from t8.rule_path_exists(path_="./rule_files_/my_file.dummy")
+        yield t8.rule_path_exists(path_="./rule_files_/my_file.dummy")
 
     for result in t8.Ten8tFunction(check_rule1, '')():
         assert result.status
@@ -290,3 +289,13 @@ def test_max_file_summary():
 
     for result in check_rule():
         assert result.status is True
+
+
+def test_custom_yield():
+    @t8.attributes(tag="tag")
+    def check_rule():
+        y = t8.Ten8tYield()
+        for i in [1, 2, 3]:
+            yield from y.results(t8.Ten8tResult(status=False, msg=f"Msg {i}"))
+        if not y.yielded:
+            yield from y.results(t8.Ten8tResult(status=True, msg="Nothing was to be done"))

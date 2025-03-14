@@ -24,6 +24,8 @@ class Ten8tTomlRC(Ten8tRC):
 
     def __init__(self, cfg: str, section: str):
         section_data = self._load_config(cfg, section)
+        self.cfg = cfg
+        self.section = section
         self.expand_attributes(section_data)
 
     def _load_config(self, cfg: str, section: str) -> dict:
