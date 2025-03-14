@@ -1,7 +1,7 @@
 #  keyring get PyPiUser hucker233
 [project]
 name = "ten8t"
-version = "0.0.18"
+version = "0.0.19"
 authors = [
     { name = "Chuck Bass", email = "chuck@arcocad.net" },
 ]
