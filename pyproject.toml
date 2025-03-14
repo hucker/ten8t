@@ -1,7 +1,7 @@
 #  keyring get PyPiUser hucker233
 [project]
 name = "ten8t"
-version = "0.0.17"
+version = "0.0.18"
 authors = [
     { name = "Chuck Bass", email = "chuck@arcocad.net" },
 ]
@@ -25,7 +25,8 @@ packages = [
     { include = "ten8t", from = "src" },
     { include = "cli", from = "src" },
     { include = "st_ten8t", from = "src" },
-    { include = "examples", from = "src" }
+    { include = "examples", from = "src" },
+    { include = "rich", from = "src" }
 ]
 
 dependencies = [
@@ -69,7 +70,8 @@ omit = [
     "test/*", # This has quite high coverage numbers.
     "src/ten8t/cli",
     "src/ten8t/examples",
-    "src/ten8t/st_ten8t"
+    "src/ten8t/st_ten8t",
+    "src/ten8t/rich"
 ]
 
 [tool.poetry]
@@ -107,6 +109,7 @@ fs = ["fs", "humanize"]
 requests = ["requests"]
 xl = ["openpyxl"]
 sql = ["SQLAlchemy"]
+rich = ["rich"]
 
 [testenv]
 installer = "uv"

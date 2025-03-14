@@ -50,7 +50,7 @@ class Ten8tMarkup:
     
     The idea of ten8t markup is a way to tag all result message with formatting
     information that may be used to provide the end user with a richer formatting
-    experience targeting multiple output environments.  Since I use rich, markdown
+    experience targeting multiple output environments.  Since I use rich_ten8t, markdown
     and streamlit and a bit of HTML I needed it to work for those platforms.
     
     Ten8t messages can have embedded formatting information that indicates to
@@ -75,7 +75,7 @@ class Ten8tMarkup:
     
     Hello world!
     
-    A rich formatter might replace those tags with:
+    A rich_ten8t formatter might replace those tags with:
     
     "Hello [red]world![/red]"
     
@@ -285,7 +285,7 @@ class Ten8tBasicRichRenderer(Ten8tRenderText):
     """Rich render class"""
 
     def render(self, msg):
-        """Basic markdown render method that converts tags to rich formatted code"""
+        """Basic markdown render method that converts tags to rich_ten8t formatted code"""
         fmt = Ten8tMarkup()
         replacements = {TAG_BOLD: ('[bold]', '[/bold]'),
                         TAG_ITALIC: ('[italic]', '[/italic]'),

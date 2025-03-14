@@ -207,19 +207,19 @@ import ten8t as t8
 
 
 def rule1(cfg):
-    return 1 in cfg['data']
+   return 1 in cfg['data']
 
 
 def rule2(cfg):
-    return 2 in cfg['data']
+   return 2 in cfg['data']
 
 
 def rule3(cfg):
-    return 3 in cfg['data']
+   return 3 in cfg['data']
 
 
 def rule4(cfg):
-    return 4 in cfg['data']
+   return 4 in cfg['data']
 
 
 checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4], auto_setup=True, env={'data': [1, 2, 3, 4]})
@@ -514,14 +514,14 @@ from ten8t import attributes, Ten8tResult
 
 
 def make_black_hole_image():
-    """Do stuff that takes a really long time."""
-    return True
+   """Do stuff that takes a really long time."""
+   return True
 
 
 @attributes(ttl_minutes="1.0hr")
 def check_file_age():
-    status = make_black_hole_image()
-    yield Ten8tResult(status=status, msg="Hourly cluster image generation check")
+   status = make_black_hole_image()
+   yield Ten8tResult(status=status, msg="Hourly cluster image generation check")
 ```
 
 ## How can these rules be organized?
@@ -618,7 +618,7 @@ from sys import stderr
 t8.ten8t_setup_logging(level=logging.DEBUG, stream_=stderr, propagate=False)
 ```
 
-## Typer Command Line Demo App For `ten8t_cli`:
+## Typer Command Line Demo App (`ten8t/cli`)
 
 Included is a light weight `typer` app that allows to point `ten8t` at a file or folder and check the rules via the
 command
@@ -653,7 +653,7 @@ To run it against a folder and start a FastAPI endpoint do:
 
 ```
 
-## FastAPI Interface Demo
+## FastAPI Interface Demo (`ten8t/cli`)
 
 To integrate your rule checking results with a web API using `FastAPI`, you can refer to the `ten8t_cli.py` file for a
 straightforward approach to creating a `FastAPI` app from your existing code. No changes are required in your code to
@@ -688,7 +688,7 @@ FastAPI swagger interface:
 FastAPI example running some rules:
 ![FastAPI](./_static/fastapi.png)
 
-## Streamlit Demo
+## Streamlit Demo  (`ten8t/st_ten8t/st_demo.py`)
 
 Integration with `streamlit` was important, so I made the way you interact with `ten8t` work well with the
 tools that `streamlit` exposes. Integrating with the goodness of `streamlit` is a breeze.
@@ -699,6 +699,28 @@ levels, ruids and generate colored tabular report.
 Here is the setup using a couple of modules in a package folder:
 
 ![Streamlit](./_static/streamlit_allup.png)
+
+## Rich Demo (`ten8t/rich_ten8t`)
+
+Here is a simple example of connecting `ten8t` up to the rich package using the progress bar object to
+move a progress bar, and the rich table and emojis to make a tabular output.
+
+```text
+(ten8t) rich> python rich_demo.py 
+
+Processing Checks ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4/4
+                      Test Results                       
+┏━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Tag  ┃ RUID  ┃ Function Name ┃ Status ┃ Message       ┃
+┡━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ tag1 │ ruid1 │ check1        │   ✅   │ Test 1 passed │
+│ tag2 │ ruid2 │ check2        │   ❌   │ Test 2 failed │
+│ tag3 │ ruid3 │ check3        │   ✅   │ Test 3 passed │
+│ tag3 │ ruid3 │ check3        │   ✅   │ Test 4 passed │
+│ tag3 │ ruid4 │ check4        │   ✅   │ Test 5 passed │
+│ tag3 │ ruid4 │ check4        │   ✅   │ Test 6 passed │
+└──────┴───────┴───────────────┴────────┴───────────────┘
+```
 
 ## TOX
 
@@ -761,6 +783,7 @@ mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial te
 ## TODO
 
 1. Add support for handling coroutines and async generators, so ten8t can support all function types.
+2. Progress bars for using multithreading is broken.
 
 ## Latest changes
 
