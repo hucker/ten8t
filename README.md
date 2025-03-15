@@ -10,6 +10,14 @@
 [![Documentation Status](https://readthedocs.org/projects/ten8t/badge/?version=latest)](https://ten8t.readthedocs.io/en/latest/)
 &nbsp;&nbsp;
 ![Downloads](https://img.shields.io/pypi/dm/ten8t)
+<br>
+![Stars](https://img.shields.io/github/stars/hucker/ten8t)
+&nbsp;&nbsp;
+![Last Release](https://img.shields.io/github/commits-since/hucker/ten8t/latest?include_prereleases)
+&nbsp;&nbsp;
+![GitHub Release Date](https://img.shields.io/github/release-date-pre/hucker/ten8t)
+&nbsp;&nbsp;
+![GitHub Release](https://img.shields.io/github/v/release/hucker/ten8t?include_prereleases)
 
 `Ten8t` (pronounced "ten-eighty") is a framework for managing observability and rule-based checks across
 files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest` and `pylint`, `Ten8t`
@@ -720,6 +728,7 @@ Processing Checks ━━━━━━━━━━━━━━━━━━━━�
 │ tag3 │ ruid4 │ check4        │   ✅   │ Test 5 passed │
 │ tag3 │ ruid4 │ check4        │   ✅   │ Test 6 passed │
 └──────┴───────┴───────────────┴────────┴───────────────┘
+Score=83.3%
 ```
 
 ## TOX

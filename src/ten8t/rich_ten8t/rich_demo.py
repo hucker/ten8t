@@ -97,3 +97,4 @@ if results:
         )
 
     console.print(table)
+    console.print(f"Score={ch.score:0.1f}%")
