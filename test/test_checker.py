@@ -72,7 +72,7 @@ def test_no_attrs():
 
     sfunc = t8.Ten8tFunction(func)
 
-    ch = t8.Ten8tChecker(check_functions=[sfunc], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[sfunc])
 
     assert ch.check_func_list[0].function == func
     assert ch.check_func_list[0] == sfunc
@@ -80,13 +80,13 @@ def test_no_attrs():
 
 def test_checker_indexing(func1, func2, func3, func4):
     """Verify that the checker indexes the functions based on the load order"""
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3, func4], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3, func4])
 
     for count, func in enumerate(ch.check_functions, start=1):
         assert count == func.index
         assert 'adhoc' == func.module
 
-    ch = t8.Ten8tChecker(check_functions=[func4, func3, func2, func1], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func4, func3, func2, func1])
 
     for count, func in enumerate(ch.check_functions, start=1):
         assert count == func.index
@@ -94,7 +94,7 @@ def test_checker_indexing(func1, func2, func3, func4):
 
 
 def test_attr_lists(func1, func2, func3):
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3])
     assert ch.phases == ['p1', 'p2', 'p3']
     assert ch.tags == ['t1', 't2', 't3']
     assert ch.ruids == ['suid_1', 'suid_2', 'suid_3']
@@ -104,12 +104,12 @@ def test_attr_lists(func1, func2, func3):
 def test_bad_ruids(func3, func3_dup):
     """ force an exception to occur with duplicate ruids.   """
     with pytest.raises(t8.Ten8tException):
-        _ = t8.Ten8tChecker(check_functions=[func3, func3_dup], auto_setup=True)
+        _ = t8.Ten8tChecker(check_functions=[func3, func3_dup])
 
 
 def test_finish_on_fail(func4):
     """ Because func4 has finish_on_fail is set, this function will only yield 3 results rather then 4"""
-    ch = t8.Ten8tChecker(check_functions=[func4], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func4])
     results = ch.run_all()
     assert len(results) == 3
     assert results[0].status is True
@@ -129,13 +129,13 @@ def test_abort_on_fail(func4, func3):
     # When we run the first case where the same function with finish on fail is called
     # twice, this should return 3 results for each run, since the func is configured to
     # return after the first false.  6 total results.
-    ch = t8.Ten8tChecker(check_functions=[func3, func4], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func3, func4])
     results = ch.run_all()
     assert len(results) == 3 + 1
 
     # Now we'll set it up again with the abort on fail set to true.  This will fail out
     # immediately on the whole test when the first fail occurs.
-    ch = t8.Ten8tChecker(check_functions=[func4, func3], auto_setup=True, abort_on_fail=True)
+    ch = t8.Ten8tChecker(check_functions=[func4, func3], abort_on_fail=True)
     results = ch.run_all()
 
     # NOTE: we don't know the order that these functions are run we just know that it will stop early
@@ -147,7 +147,7 @@ def test_abort_on_exception(func1, func2, func_exc):
     """ The system has a mechanism to bail out of a run if any uncaught exception occurs.  In general
         ten8t functions should always work and have all exceptions handled.  It is usually an error,
         and we need to bail out of the run...but YMMV"""
-    ch = t8.Ten8tChecker(check_functions=[func_exc, func1, func2], auto_setup=True, abort_on_fail=False)
+    ch = t8.Ten8tChecker(check_functions=[func_exc, func1, func2], abort_on_fail=False)
 
     # Abort on exception set to false so all 3 run with the first one failing with exception
     results = ch.run_all()
@@ -161,7 +161,7 @@ def test_abort_on_exception(func1, func2, func_exc):
 
     # This run has abort_on_except set to True and since the exception function is the first one
     # it aborts immediately
-    ch = t8.Ten8tChecker(check_functions=[func_exc, func1, func2], auto_setup=True, abort_on_exception=True)
+    ch = t8.Ten8tChecker(check_functions=[func_exc, func1, func2], abort_on_exception=True)
     results: list[t8.Ten8tResult] = ch.run_all()
     assert len(results) == 1
     assert results[0].status is False
@@ -170,7 +170,7 @@ def test_abort_on_exception(func1, func2, func_exc):
     assert not ch.perfect_run
 
     # This has the exception in the second spot
-    ch = t8.Ten8tChecker(check_functions=[func1, func_exc, func2], auto_setup=True, abort_on_exception=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func_exc, func2], abort_on_exception=True)
     results: list[t8.Ten8tResult] = ch.run_all()
     assert len(results) == 2
     assert results[1].status is False
@@ -180,7 +180,7 @@ def test_abort_on_exception(func1, func2, func_exc):
     assert not ch.clean_run
 
     # Stick a perfect run in here with abort_on_ex enabled
-    ch = t8.Ten8tChecker(check_functions=[func1, func2], auto_setup=True, abort_on_exception=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2], abort_on_exception=True)
     results: list[t8.Ten8tResult] = ch.run_all()
     assert len(results) == 2
     assert results[0].status
@@ -192,7 +192,7 @@ def test_abort_on_exception(func1, func2, func_exc):
 
 def test_check_counts(func1, func2, func3):
     """ Because func4 has finish_on_fail is set, this function will only yield 3 results rather then 4"""
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3])
     assert ch.function_count == 3
     assert ch.collected_count == 3
     assert ch.pre_collected_count == 3
@@ -205,7 +205,7 @@ def test_function_list(func1, func2):
 
     funcs = [func1, func2]
 
-    ch = t8.Ten8tChecker(check_functions=funcs, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=funcs)
     results = ch.run_all()
 
     assert len(results) == 2
@@ -248,7 +248,7 @@ def test_checker_overview(func1, func2, func3):
     """Verify we can order tests by lambda over ruids"""
 
     funcs = [func3, func1, func2]
-    ch = t8.Ten8tChecker(check_functions=funcs, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=funcs)
     results = ch.run_all()
     over = t8.overview(results)
     assert over == 'Total: 3, Passed: 3, Failed: 0, Errors: 0, Skipped: 0, Warned: 0'
@@ -257,7 +257,7 @@ def test_checker_overview(func1, func2, func3):
 
 def test_checker_result_dict(func3):
     funcs = [func3]
-    ch = t8.Ten8tChecker(check_functions=funcs, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=funcs)
     results = ch.run_all()
     rd = t8.ten8t_result.results_as_dict(results)
     # We can do a lot more testing here
@@ -397,7 +397,7 @@ def test_null_check():
     with pytest.raises(t8.Ten8tException):
         funcs = []
 
-        ch = t8.Ten8tChecker(check_functions=funcs, auto_setup=True)
+        ch = t8.Ten8tChecker(check_functions=funcs)
 
 
 def test_null_checker_types():
@@ -433,7 +433,7 @@ def test_filter_all(func1, func2):
 
 
 def test_as_dict(func1, func2):
-    ch = t8.Ten8tChecker(check_functions=[func1, func2], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2])
     _ = ch.run_all()
     d = ch.as_dict()
     assert isinstance(d, dict)
@@ -463,7 +463,7 @@ def test_as_dict(func1, func2):
 
 def test_progress(capsys, func1, func2):
     funcs = [func1, func2]
-    ch = t8.Ten8tChecker(check_functions=funcs, progress_object=t8.Ten8tDebugProgress(), auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=funcs, progress_object=t8.Ten8tDebugProgress())
     _ = ch.run_all()
     captured = capsys.readouterr()
     assert captured[
@@ -529,7 +529,7 @@ def attr_functions():
     (['t1'], 2, 'p4', 'ruid_1', 3, "Single function array, with level, phase and 'ruid_1'."),
 ])
 def test_include_by_attribute(attr_functions, tags, levels, phases, ruids, expected_count, msg):
-    ch = t8.Ten8tChecker(check_functions=attr_functions, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=attr_functions)
     ch.include_by_attribute(tags=tags, levels=levels, phases=phases, ruids=ruids)
     assert len(ch.check_func_list) == expected_count, msg
     assert ch.check_func_list[0].tag == 't1', msg
@@ -558,7 +558,7 @@ def test_include_by_attribute(attr_functions, tags, levels, phases, ruids, expec
     (['t1'], 2, 'p1', ['ruid_3'], 1, "Tag level phase with redundant tag/phase leave 1"),
 ])
 def test_exclude_by_attribute(attr_functions, tags, levels, phases, ruids, expected_count, msg):
-    ch = t8.Ten8tChecker(check_functions=attr_functions, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=attr_functions)
     funcs = ch.exclude_by_attribute(tags=tags, levels=levels, phases=phases, ruids=ruids)
     assert len(ch.check_func_list) == expected_count, msg
 
@@ -637,7 +637,7 @@ def test__bad_int_list(params, msg):
 def test_env_nulls(func1, func2, func3):
     """ Verify that we detect None values in env variables.  This will be important in the future."""
 
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], env={'foo': 1, 'fum': None}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], env={'foo': 1, 'fum': None})
     _ = ch.run_all()
     header = ch.get_header()
     assert header['env_nulls'] == ['fum']
@@ -658,13 +658,13 @@ def test_auto_ruids():
 
     sfunc1 = t8.Ten8tFunction(ar_func1)
     sfunc2 = t8.Ten8tFunction(ar_func2)
-    ch = t8.Ten8tChecker(check_functions=[sfunc1, sfunc2], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[sfunc1, sfunc2])
     results = ch.run_all()
 
     for result in results:
         assert result.ruid == ''
 
-    ch = t8.Ten8tChecker(check_functions=[sfunc1, sfunc2], auto_setup=True, auto_ruid=True)
+    ch = t8.Ten8tChecker(check_functions=[sfunc1, sfunc2], auto_ruid=True)
     results = ch.run_all()
 
     # NOTE: Order tests are run is not the parameter order in check_functions.
@@ -695,7 +695,7 @@ def test_check_render_p(renderer, expected):
         yield t8.Ten8tResult(status=True, msg=f"It works1 {BM.code('hello')}")
 
     rfunc1 = t8.Ten8tFunction(render_func1)
-    ch = t8.Ten8tChecker(check_functions=[rfunc1], auto_setup=True, renderer=renderer)
+    ch = t8.Ten8tChecker(check_functions=[rfunc1], renderer=renderer)
     results = ch.run_all()
 
     assert len(results) == 1
@@ -718,7 +718,7 @@ def test_check_render_color(renderer, expected):
         yield t8.Ten8tResult(status=True, msg=f"It works1 {BM.red('hello')}")
 
     rfunc1 = t8.Ten8tFunction(render_func1)
-    ch = t8.Ten8tChecker(check_functions=[rfunc1], auto_setup=True, renderer=renderer)
+    ch = t8.Ten8tChecker(check_functions=[rfunc1], renderer=renderer)
     results = ch.run_all()
 
     assert len(results) == 1
@@ -754,7 +754,7 @@ def test_auto_ten8t_funct(bare_func1, bare_func2):
     def bare_func3():
         return t8.TR(status=True, msg="Hello world.")
 
-    ch = t8.Ten8tChecker(check_functions=[bare_func1, bare_func2, bare_func3], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[bare_func1, bare_func2, bare_func3])
     results = ch.run_all()
     assert len(results) == 3
     assert results[0].status is True
@@ -764,7 +764,7 @@ def test_auto_ten8t_funct(bare_func1, bare_func2):
 
 
 def test_pre_hooks(bare_func1):
-    ch = t8.Ten8tChecker(check_functions=[bare_func1], auto_setup=True, )
+    ch = t8.Ten8tChecker(check_functions=[bare_func1], )
 
 
 def test_module_autothread2():
@@ -772,7 +772,7 @@ def test_module_autothread2():
     module1 = t8.Ten8tModule(module_name="check_suid1_a", module_file='./ruid/check_suid1_a.py', auto_thread=True)
     module2 = t8.Ten8tModule(module_name="check_suid2_a", module_file='./ruid/check_suid2_a.py', auto_thread=True)
 
-    ch = t8.Ten8tChecker(modules=[module1, module2], auto_setup=True)
+    ch = t8.Ten8tChecker(modules=[module1, module2])
 
     # Now we added two modules, each with auto threading on, so there should be 2 unique thread ids.
     assert len(set(func.thread_id for func in ch.check_func_list)) == 2

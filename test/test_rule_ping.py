@@ -214,8 +214,8 @@ def test_ping_threading():
         check_rule_pings_threaded = make_check(ping_target, test_samples, workers=test_samples)
         check_rule_pings_not_threaded = make_check(ping_target, test_samples, workers=1)
 
-        tcheck = Ten8tChecker(check_functions=[check_rule_pings_threaded], auto_setup=True)
-        ntcheck = Ten8tChecker(check_functions=[check_rule_pings_not_threaded], auto_setup=True)
+        tcheck = Ten8tChecker(check_functions=[check_rule_pings_threaded])
+        ntcheck = Ten8tChecker(check_functions=[check_rule_pings_not_threaded])
 
         tcheck.run_all()
         ntcheck.run_all()
@@ -293,7 +293,7 @@ def test_rule_ping_hosts_check(
         )
 
     logger.info(f"Running check_ping_rule with URLs: {urls}")
-    ch = ten8t_checker.Ten8tChecker(check_functions=[check_ping_rule], auto_setup=True)
+    ch = ten8t_checker.Ten8tChecker(check_functions=[check_ping_rule])
     results = ch.run_all()
 
     # Count results for each type

@@ -179,7 +179,7 @@ def func_set():
 def test_ten8t_function_writing_to_env_dict(func_dict):
     env = {'env_list': [1, 2, 3], 'env_dict': {'a': 10, 'b': 11}, 'env_set': {1, 2, 3}}
 
-    ch = t8.Ten8tChecker(check_functions=[func_dict], env=env, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func_dict], env=env)
     results = ch.run_all()
     assert len(results) == 1
     assert results[0].except_
@@ -187,7 +187,7 @@ def test_ten8t_function_writing_to_env_dict(func_dict):
 
 def test_ten8t_function_writing_to_env_list(func_list):
     env = {'env_list': [1, 2, 3], 'env_dict': {'a': 10, 'b': 11}, 'env_set': {1, 2, 3}}
-    ch = t8.Ten8tChecker(check_functions=[func_list], env=env, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func_list], env=env)
     results = ch.run_all()
     assert len(results) == 1
     assert results[0].except_
@@ -195,7 +195,7 @@ def test_ten8t_function_writing_to_env_list(func_list):
 
 def test_ten8t_function_writing_to_env_set(func_set):
     env = {'env_list': [1, 2, 3], 'env_dict': {'a': 10, 'b': 11}, 'env_set': {1, 2, 3}}
-    ch = t8.Ten8tChecker(check_functions=[func_set], env=env, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func_set], env=env)
     results = ch.run_all()
     assert len(results) == 1
     assert results[0].except_

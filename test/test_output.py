@@ -25,7 +25,7 @@ def simple2():
 
 def test_json(simple1, simple2):
     """Test that the as_dict method serializes  nicely"""
-    ch = t8.Ten8tChecker(check_functions=[simple1, simple2], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[simple1, simple2])
     _ = ch.run_all()
     d = ch.as_dict()
     assert d['function_count'] == 2

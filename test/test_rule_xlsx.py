@@ -55,7 +55,7 @@ def test_row_col_pass_fail_with_sheet(sheet, desc_col, val_col, row_start, expec
                                              desc_col=desc_col)
 
     s_func = t8.Ten8tFunction(check_pass_fail)
-    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func])
     results = ch.run_all()
 
     # Verify that we got the status correct and that the messages are correct
@@ -71,7 +71,7 @@ def test_row_col_pass_fail_with_no_sheet(sheet, desc_col, val_col, row_start, ex
         yield from t8.rule_xlsx_a1_pass_fail(wb, val_col=val_col, row_start=str(row_start), desc_col=desc_col)
 
     s_func = t8.Ten8tFunction(check_pass_fail)
-    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func])
     results = ch.run_all()
 
     # Verify that we got the status correct and that the messages are correct
@@ -106,7 +106,7 @@ def test_row_col_pass_fail_with_auto_detect():
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     wb = load_workbook('./rule_xlsx/BaseCase.xlsx')
-    ch = t8.Ten8tChecker(check_functions=[s_func], env={'wb': wb}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], env={'wb': wb})
     results = ch.run_all()
 
     assert len(results) == 4
@@ -124,7 +124,7 @@ def test_row_col_pass_fail_bad_sheet():
     try:
         s_func = t8.Ten8tFunction(check_pass_fail)
         wb = load_workbook('./rule_xlsx/BaseCase.xlsx')
-        ch = t8.Ten8tChecker(check_functions=[s_func], env={'wb': wb}, auto_setup=True)
+        ch = t8.Ten8tChecker(check_functions=[s_func], env={'wb': wb})
         _ = ch.run_all()
     except Exception as e:
         assert e
@@ -139,7 +139,7 @@ def test_row_col_pass_fail_with_hardcoded():
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     wb = load_workbook('./rule_xlsx/BaseCase.xlsx')
-    ch = t8.Ten8tChecker(check_functions=[s_func], env={'wb': wb}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], env={'wb': wb})
     results = ch.run_all()
 
     assert len(results) == 4
@@ -156,7 +156,7 @@ def test_row_col_df():
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     df = pd.read_excel('./rule_xlsx/BaseCase.xlsx', sheet_name='Sheet1')
-    ch = t8.Ten8tChecker(check_functions=[s_func], env={'df': df}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], env={'df': df})
     results = ch.run_all()
 
     assert len(results) == 4
@@ -174,7 +174,7 @@ def test_bad_skip_on_null_df():
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     df = pd.read_excel('./rule_xlsx/BadCase.xlsx', sheet_name='Sheet1')
-    ch = t8.Ten8tChecker(check_functions=[s_func], env={'df': df}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], env={'df': df})
     results = ch.run_all()
 
     assert len(results) == 8
@@ -188,7 +188,7 @@ def test_bad_fail_on_null_df():
 
     s_func = t8.Ten8tFunction(check_pass_fail)
     df = pd.read_excel('./rule_xlsx/BadCase.xlsx', sheet_name='Sheet1')
-    ch = t8.Ten8tChecker(check_functions=[s_func], env={'df': df}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], env={'df': df})
     results = ch.run_all()
 
     assert len(results) == 8

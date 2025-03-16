@@ -201,7 +201,7 @@ class Ten8tChecker:
             renderer: Ten8tAbstractRender = None,
             abort_on_fail=False,
             abort_on_exception=False,
-            auto_setup: bool = False,
+            auto_setup: bool = True,
             auto_ruid: bool = False,
     ):
         """

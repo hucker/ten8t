@@ -65,7 +65,7 @@ def two_sec_func():
 
 def test_verify_no_threads():
     with pytest.raises(t8.Ten8tException) as e_info:
-        ch = t8.Ten8tChecker(check_functions=[], auto_setup=True)
+        ch = t8.Ten8tChecker(check_functions=[])
         # This code could be omitted, but it is nice to show that it doesn't get here
         assert False  # pragma no cover
         tcheck = t8.Ten8tThread(ch)  # pragma no cover
@@ -78,12 +78,12 @@ def test_repr(func1, func2, func3):
     # thread.  Here we just run the same function 3 times.
 
     # This guy should report 1 thread1 since func1 runs 3 times in the same thread
-    ch = t8.Ten8tChecker(check_functions=[func1, func1, func1], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func1, func1])
     tcheck = t8.Ten8tThread(ch)
     assert str(tcheck) == "<Ten8tThread(expected_threads=1, checker=Ten8tChecker)>"
 
     # This guy should report 3 threads since each func runs in a different thread
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3])
     tcheck = t8.Ten8tThread(ch)
     assert str(tcheck) == "<Ten8tThread(expected_threads=3, checker=Ten8tChecker)>"
 
@@ -91,7 +91,7 @@ def test_repr(func1, func2, func3):
 def test_verify_single_thread(func1):
     # This test verifies that we just run through the code path that runs in a single
     # thread.  Here we just run the same function 3 times.
-    ch = t8.Ten8tChecker(check_functions=[func1, func1, func1], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func1, func1])
     tcheck = t8.Ten8tThread(ch)
     results = tcheck.run_all()
 
@@ -106,7 +106,7 @@ def test_verify_single_thread(func1):
 
 
 def test_simple_threads(func1, func2, func3):
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3])
     tcheck = t8.Ten8tThread(ch)
     results = tcheck.run_all()
 
@@ -130,7 +130,7 @@ def test_sorted_threads(funcs_permutation, func1, func2, func3):
     selected_funcs = [funcs[i - 1] for i in list(funcs_permutation)]  # Permute based on the fixture list
 
     # Feature to verify sorting by thread_id
-    ch = t8.Ten8tChecker(check_functions=selected_funcs, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=selected_funcs)
     tcheck = t8.Ten8tThread(ch)
     results = tcheck.run_all()
 
@@ -143,7 +143,7 @@ def test_sorted_threads(funcs_permutation, func1, func2, func3):
 
 
 def test_timed_threads(one_sec_func, two_sec_func):
-    ch = t8.Ten8tChecker(check_functions=[one_sec_func, one_sec_func, two_sec_func, two_sec_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[one_sec_func, one_sec_func, two_sec_func, two_sec_func])
     tcheck = t8.Ten8tThread(ch)
     start_time = time()
     _ = tcheck.run_all()
@@ -187,7 +187,7 @@ def test_many_threads():
         return t8.Ten8tFunction(custom_thread_func)
 
     functions = [make_t8_function(f"thread{i:02d}", 1) for i in range(100)]
-    ch = t8.Ten8tChecker(check_functions=functions, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=functions)
     tcheck = t8.Ten8tThread(ch)
     start_time = time()
     _ = tcheck.run_all(max_workers=100)
@@ -243,7 +243,7 @@ def test_thread_execution(max_workers):
     thread_functions = [make_t8_function(f"thread_{i:03}", sleep_time) for i in range(num_tests)]
 
     # Run all the thread functions using the specified max_workers
-    ch = t8.Ten8tChecker(check_functions=thread_functions, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=thread_functions)
     tcheck = t8.Ten8tThread(ch)
     start_time = time()
     results = tcheck.run_all(max_workers=max_workers)

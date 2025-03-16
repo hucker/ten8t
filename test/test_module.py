@@ -27,7 +27,7 @@ def test_multimodule():
     assert module1.check_function_count == 2
     assert module2.check_function_count == 2
 
-    ch = Ten8tChecker(modules=[module1, module2], auto_setup=True)
+    ch = Ten8tChecker(modules=[module1, module2])
 
     assert ch.collected_count == module1.check_function_count + module2.check_function_count
 

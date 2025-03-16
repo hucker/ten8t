@@ -11,7 +11,7 @@ def para_env():
 def test_inline_env_func(para_env):
     assert len(para_env.env_functions) == 1
 
-    ch = t8.Ten8tChecker(modules=[para_env], env={"global_env": "hello"}, auto_setup=True)
+    ch = t8.Ten8tChecker(modules=[para_env], env={"global_env": "hello"})
     results = ch.run_all()
     assert len(results) == 15
     assert all((result.status for result in results))
@@ -20,7 +20,7 @@ def test_inline_env_func(para_env):
 def test_module_not_in_list(para_env):
     assert len(para_env.env_functions) == 1
 
-    ch = t8.Ten8tChecker(modules=para_env, env={"global_env": "hello"}, auto_setup=True)
+    ch = t8.Ten8tChecker(modules=para_env, env={"global_env": "hello"})
     results = ch.run_all()
     assert len(results) == 15
     assert all((result.status for result in results))
@@ -33,7 +33,7 @@ def test_fail_on_none():
         yield t8.TR(status=True, msg=f"This will pass if it ever gets here. {var=}")
 
     s_func = t8.Ten8tFunction(function_=env_test_function)
-    ch = t8.Ten8tChecker(check_functions=[s_func], env={'var': None}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], env={'var': None})
     results = ch.run_all()
 
     assert len(results) == 1
@@ -48,7 +48,7 @@ def test_skip_on_none():
         yield t8.TR(status=True, msg="This will pass if it ever gets here.")
 
     s_func = t8.Ten8tFunction(function_=env_test_function)
-    ch = t8.Ten8tChecker(check_functions=[s_func], env={'var': None}, auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func], env={'var': None})
     results = ch.run_all()
 
     assert len(results) == 1

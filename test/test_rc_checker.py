@@ -34,7 +34,7 @@ def func3():  # pragma no cover
 
 
 def test_nothing_rc_file(func1, func2, func3):
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3])
     assert ch.phases == ['p1', 'p2', 'p3']
     assert ch.tags == ['t1', 't2', 't3']
     assert ch.ruids == ['ruid_1', 'ruid_2', 'ruid_3']
@@ -42,7 +42,7 @@ def test_nothing_rc_file(func1, func2, func3):
 
     # Same assertions since we are giving an RC file with nothing in it
     rc = t8.Ten8tRC()
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True, rc=rc)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], rc=rc)
     assert ch.phases == ['p1', 'p2', 'p3']
     assert ch.tags == ['t1', 't2', 't3']
     assert ch.ruids == ['ruid_1', 'ruid_2', 'ruid_3']
@@ -51,21 +51,21 @@ def test_nothing_rc_file(func1, func2, func3):
 
 def test_check_with_rc(func1, func2, func3):
     rc = t8.Ten8tRC(rc_d={'tags': 't1'})
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True, rc=rc)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], rc=rc)
     assert ch.tags == ['t1']
 
     rc = t8.Ten8tRC(rc_d={'phases': ['p1']})
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True, rc=rc)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], rc=rc)
     assert ch.phases == ['p1']
 
     rc = t8.Ten8tRC(rc_d={'ruids': ['ruid_1']})
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True, rc=rc)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], rc=rc)
     assert ch.ruids == ['ruid_1']
 
     # TODO Fix this.  Levels should be ints not string 
     #  of ints.
     # rc = t8.Ten8tRC(display_name='rc',levels=[1])
-    # ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True,rc=rc)
+    # ch = t8.Ten8tChecker(check_functions=[func1, func2, func3],rc=rc)
     # assert ch.levels == ['1']
 
 
@@ -86,5 +86,5 @@ def test_simple_check_regex1(func1, func2, func3, rc_d, expected):
     expressions.
     """
     rc = t8.Ten8tRC(rc_d=rc_d)
-    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], auto_setup=True, rc=rc)
+    ch = t8.Ten8tChecker(check_functions=[func1, func2, func3], rc=rc)
     assert ch.function_count == expected

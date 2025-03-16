@@ -14,7 +14,7 @@ def test_yielder_do_something():
 
     s_func = t8.Ten8tFunction(func1)
 
-    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func])
     results = ch.run_all()
 
     assert len(results) == 3
@@ -113,7 +113,7 @@ def test_yielder_do_nothing():
 
     s_func = t8.Ten8tFunction(func)
 
-    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func])
     results = ch.run_all()
 
     assert len(results) == 1
@@ -242,7 +242,7 @@ def test_bad_yield_setup():
         _ = t8.Ten8tYield(yield_summary=False, yield_fail=False, yield_pass=False, summary_name="Func1 Summary")
 
     s_func = t8.Ten8tFunction(yield_a_result)
-    ch = t8.Ten8tChecker(check_functions=[s_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[s_func])
     results = ch.run_all()
     assert results[0].status is False
     assert results[0].except_
@@ -269,7 +269,7 @@ def test_yield_classes(yield_class, expected_length, expected_summary):
         yield from y.yield_summary()
 
     # Run the checker
-    ch = t8.Ten8tChecker(check_functions=[yield_result], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[yield_result])
     results = ch.run_all()
 
     # Verify the number of results

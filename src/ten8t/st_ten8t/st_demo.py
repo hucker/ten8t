@@ -211,7 +211,7 @@ def main():
     package_folder = packages_mapping[package_name]
     st_renderer = t8.Ten8tBasicStreamlitRenderer()  # Nice color coding for streamlit
     package = t8.Ten8tPackage(folder=package_folder)
-    checker = t8.Ten8tChecker(packages=[package], renderer=st_renderer, auto_setup=True)
+    checker = t8.Ten8tChecker(packages=[package], renderer=st_renderer)
 
     with st.container(border=True):
 

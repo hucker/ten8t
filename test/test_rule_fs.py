@@ -91,7 +91,7 @@ def test_fs_fixture_exists(temp_fs: FS):
         yield t8.TR(status=filesys.exists('test.txt'), msg="Check if file exists")
 
     sfunc = t8.Ten8tFunction(check_temp_file)
-    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
+    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs})
     for result in chk.run_all():
         assert result.status
         assert result.msg == 'Check if file exists'
@@ -103,7 +103,7 @@ def test_fs_rule_exists(temp_fs: FS):
         yield from rule_fs.rule_fs_path_exists(filesys, 'test1.txt')  # Should fail
 
     sfunc = t8.Ten8tFunction(check_temp_file)
-    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
+    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs})
     results = chk.run_all()
     assert results[0].status is True
     assert results[1].status is False
@@ -114,7 +114,7 @@ def test_fs_rule_files_exist(temp_fs: FS):
         yield from rule_fs.rule_fs_paths_exist(filesys, ['test.txt', 'test1.txt'])  # Should pass
 
     sfunc = t8.Ten8tFunction(check_temp_files)
-    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs}, auto_setup=True)
+    chk = t8.Ten8tChecker(check_functions=[sfunc], env={'filesys': temp_fs})
     results = chk.run_all()
     assert results[0].status is True
     assert results[1].status is False

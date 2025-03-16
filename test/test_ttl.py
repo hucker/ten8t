@@ -43,7 +43,7 @@ def test_ttl_func(tmp_path):
 
     ten8t_func = t8.Ten8tFunction(func, "")
 
-    ch = t8.Ten8tChecker(check_functions=[ten8t_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[ten8t_func])
     results = ch.run_all()
 
     # All 3 different messages and all pass
@@ -89,7 +89,7 @@ def test_ttl_func_boolean_return(tmp_path):
 
     ten8t_func = t8.Ten8tFunction(func, "")
 
-    ch = t8.Ten8tChecker(check_functions=[ten8t_func], auto_setup=True)
+    ch = t8.Ten8tChecker(check_functions=[ten8t_func])
     results = ch.run_all()
 
     # All 3 different messages and all pass

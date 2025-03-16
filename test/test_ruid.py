@@ -71,7 +71,7 @@ def test_ruids1_module2():
 def test_run_ruid_1():
     """Normal case all RUIDS are unique"""
     pkg = t8.Ten8tPackage(folder="./ruid", name="ruid")
-    ch = t8.Ten8tChecker(packages=pkg, auto_setup=True)
+    ch = t8.Ten8tChecker(packages=pkg)
 
     _ = ch.run_all()
 
@@ -86,7 +86,7 @@ def test_run_ruid_1():
 def test_run_package_in_list():
     """This is a check to verify that packages can be passed in a list"""
     pkg = t8.Ten8tPackage(folder="./ruid", name="ruid")
-    ch = t8.Ten8tChecker(packages=[pkg], auto_setup=True)
+    ch = t8.Ten8tChecker(packages=[pkg])
 
     _ = ch.run_all()
 

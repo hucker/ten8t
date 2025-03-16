@@ -92,7 +92,7 @@ def run_checks(
 
         # If they supply 1 or both, run all since the checker handles arbitrary combinations
         if mod or pkg:
-            ch = t8.Ten8tChecker(modules=mod, packages=pkg, auto_setup=True)
+            ch = t8.Ten8tChecker(modules=mod, packages=pkg)
             if api:
                 ten8t_api.set_ten8t_checker(ch)
                 uvicorn.run(ten8t_api.app, host='localhost', port=port)

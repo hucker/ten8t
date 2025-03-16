@@ -80,7 +80,7 @@ def test_function_collection(normal_count, coroutine_count, async_count, check_f
     all_funcs = normal_funcs + coroutine_funcs + async_funcs
 
     # Initialize the Checker with these functions
-    ch = ten8t_checker.Ten8tChecker(check_functions=all_funcs, auto_setup=True)
+    ch = ten8t_checker.Ten8tChecker(check_functions=all_funcs)
 
     # Assertions that the counts all make sense.
     assert ch.async_count == async_count

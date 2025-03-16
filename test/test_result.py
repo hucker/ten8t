@@ -8,7 +8,7 @@ from ten8t import Ten8tChecker, Ten8tMarkup
 @pytest.fixture(scope="module")
 def results():
     pkg = ten8t.Ten8tPackage(folder="./pkg_result")
-    chk = ten8t.Ten8tChecker(packages=pkg, auto_setup=True)
+    chk = ten8t.Ten8tChecker(packages=pkg)
     return chk.run_all()
 
 
@@ -137,7 +137,7 @@ def test_bad_generator_type(caplog) -> None:
         # This won't run!
         yield ten8t.Ten8tResult(status=True, msg="Yield OK")  # pragma no cover
 
-    ch = Ten8tChecker(check_functions=[check_func1], auto_setup=True, abort_on_exception=False)
+    ch = Ten8tChecker(check_functions=[check_func1], abort_on_exception=False)
     results = ch.run_all()
     assert len(results) == 1
     assert results[0].except_
@@ -149,7 +149,7 @@ def test_bad_generator_type(caplog) -> None:
         # This won't run
         yield ten8t.Ten8tResult(status=True, msg="Yield OK")  # pragma no cover
 
-    ch = Ten8tChecker(check_functions=[check_func2], auto_setup=True, abort_on_exception=False)
+    ch = Ten8tChecker(check_functions=[check_func2], abort_on_exception=False)
     results = ch.run_all()
     assert len(results) == 2
     assert results[1].except_
@@ -160,7 +160,7 @@ def test_bad_generator_type(caplog) -> None:
         yield ten8t.Ten8tResult(status=True, msg="Yield OK")
         yield 123
 
-    ch = Ten8tChecker(check_functions=[check_func3], auto_setup=True, abort_on_exception=False)
+    ch = Ten8tChecker(check_functions=[check_func3], abort_on_exception=False)
     results = ch.run_all()
     assert len(results) == 3
     assert results[2].except_
