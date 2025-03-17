@@ -19,6 +19,7 @@ with warnings.catch_warnings():
     from fs.errors import FSError
     from fs.osfs import OSFS
 
+
 def rule_fs_paths_exist(fs_obj: OSFS, paths: Sequence[str]) -> Generator[TR, None, None]:
     """
     Checks the existence of multiple file system paths and yields results.

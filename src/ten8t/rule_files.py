@@ -151,10 +151,11 @@ def rule_stale_file(
             result = TR(status=True, msg=f"Not stale file {BM.code(filepath)}")
     except (FileNotFoundError, PermissionError, IOError) as exc:
         result = TR(status=False,
-                 msg="Exception occurred while checking for the path {SM.code(path_str)}",
-                 except_=exc)
+                    msg="Exception occurred while checking for the path {SM.code(path_str)}",
+                    except_=exc)
 
     return result
+
 
 def rule_stale_files(
         folder: str | pathlib.Path,

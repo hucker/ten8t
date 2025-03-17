@@ -38,6 +38,7 @@ NO_HOSTS_MSG = "No hosts provided for ping."
 MIN_LATENCY_MS = 0.0001
 ALLOWED_PING_WORKERS = 100
 
+
 def handle_empty_hosts(skip_on_none: bool, pass_on_none: bool) -> TR:
     """
     Handles cases where there are no hosts available for processing.

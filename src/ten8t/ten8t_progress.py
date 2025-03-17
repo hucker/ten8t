@@ -55,7 +55,6 @@ class Ten8tProgress(ABC):
         """
 
 
-
 # pylint: disable=R0903
 class Ten8tNoProgress(Ten8tProgress):
     """
@@ -77,6 +76,7 @@ class Ten8tNoProgress(Ten8tProgress):
     def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
                    result: Ten8tResult | None = None):
         """ Do Nothing"""
+
 
 # pylint: disable=R0903
 class Ten8tDebugProgress(Ten8tProgress):

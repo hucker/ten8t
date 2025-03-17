@@ -62,7 +62,6 @@ def rule_url_200(urls: str | Sequence[str],
                        yield_pass=True,
                        yield_fail=True)
 
-
     # Allow strings to be passed in
     if isinstance(urls, str):
         urls = urls.replace(",", " ").split()

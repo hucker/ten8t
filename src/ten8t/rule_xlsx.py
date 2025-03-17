@@ -57,7 +57,6 @@ def _get_sheet(wb, sheet_name=None, first_if_missing=True):
     if len(wb.sheetnames) >= 1 and first_if_missing:
         return wb[wb.sheetnames[0]]
 
-
     raise Ten8tException('A sheet name was not specified and sheet1 could not be found.')
 
 

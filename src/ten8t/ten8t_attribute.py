@@ -92,7 +92,7 @@ def attributes(
         weight: float = DEFAULT_WEIGHT,
         skip: bool = DEFAULT_SKIP,
         ruid: str = DEFAULT_RUID,
-        ttl_minutes: str = DEFAULT_TTL_MIN,
+        ttl_minutes: str | int | float = DEFAULT_TTL_MIN,
         finish_on_fail: bool = DEFAULT_FINISH_ON_FAIL,
         skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
         fail_on_none: bool = DEFAULT_FAIL_ON_NONE,

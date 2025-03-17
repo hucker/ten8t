@@ -110,9 +110,6 @@ class Ten8tResult:
 TR = Ten8tResult
 
 
-
-
-
 # Result transformers do one of three things, nothing and pass the result on, modify the result
 # or return None to indicate that the result should be dropped.  What follows are some
 # common result transformers.

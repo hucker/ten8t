@@ -54,7 +54,6 @@ def sanitize_results(func):
     return wrapper
 
 
-
 class ScoreStrategy(abc.ABC):
     """
     Represents an abstract base class for scoring strategies in the application.
@@ -216,7 +215,6 @@ class ScoreByFunctionMean(ScoreStrategy):
     def score(self, results: list[Ten8tResult] | None = None) -> float:
         """Find the average of the results from each function."""
 
-
         function_results: dict[str, Any] = {}
 
         # Remove any skipped results
@@ -266,7 +264,6 @@ class ScoreBinaryFail(ScoreStrategy):
 
     @sanitize_results
     def score(self, results: list[Ten8tResult] | None) -> float:
-
         if any(not result.status for result in results if not result.skipped):
             return 0.0
         return 100.0
@@ -291,7 +288,6 @@ class ScoreBinaryPass(ScoreStrategy):
 
     @sanitize_results
     def score(self, results: list[Ten8tResult] | None) -> float:
-
         if any(result.status for result in results if not result.skipped):
             return 100.0
         return 0.0

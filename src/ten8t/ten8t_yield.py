@@ -270,6 +270,7 @@ class Ten8tYield:
             msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
             yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)
 
+
 # These are useful subclasses that may be passed as the yield object inside of rule functions.
 
 

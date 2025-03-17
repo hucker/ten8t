@@ -84,13 +84,13 @@ def test_checker_indexing(func1, func2, func3, func4):
 
     for count, func in enumerate(ch.check_functions, start=1):
         assert count == func.index
-        assert 'adhoc' == func.module
+        assert t8.ten8t_checker.ADHOC_MODULE_NAME == func.module
 
     ch = t8.Ten8tChecker(check_functions=[func4, func3, func2, func1])
 
     for count, func in enumerate(ch.check_functions, start=1):
         assert count == func.index
-        assert 'adhoc' == func.module
+        assert t8.ten8t_checker.ADHOC_MODULE_NAME == func.module
 
 
 def test_attr_lists(func1, func2, func3):

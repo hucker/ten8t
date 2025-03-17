@@ -408,7 +408,6 @@ def rule_ndf_pf_columns(df: FrameT,
     else:
         y = Ten8tYield()
 
-
     for row in df.iter_rows(named=True):
         if enabled_col and not extended_bool(row[enabled_col]):
             continue

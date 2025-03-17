@@ -19,6 +19,9 @@ from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
 from .ten8t_score import ScoreByResult, ScoreStrategy
 from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone, StrOrNone
 
+ADHOC_MODULE_NAME = 'adhoc'
+"""Name of the adhoc module"""
+
 
 def _param_str_list(params: StrListOrNone,
                     disallowed=' ,!@#$%^&*(){}[]<>~`-+=\t\n\'"') -> StrList:
@@ -395,7 +398,7 @@ class Ten8tChecker:
                 # Since we are building up a module from nothing we give it a generic name and
                 # remember the load order.
                 f.index = count
-                f.module = "adhoc"
+                f.module = ADHOC_MODULE_NAME
             return check_functions
 
         if not check_functions:

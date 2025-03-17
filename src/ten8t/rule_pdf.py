@@ -137,7 +137,7 @@ def rule_from_pdf_rule_ids(file_path: str,
                 yield TR(status=status, msg=msg, skipped=skip)
                 count += 1
                 if count > max_results:
-                    raise Ten8tException(f"Maximum number of results ({max_results}) " 
+                    raise Ten8tException(f"Maximum number of results ({max_results}) "
                                          f"exceeded for {file_path}")
     if count == 0:
         yield TR(status=None, skipped=True, msg=f"No results found in {file_path}")
