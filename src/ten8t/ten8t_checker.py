@@ -12,7 +12,7 @@ from .ten8t_immutable import Ten8tEnvDict, Ten8tEnvList, Ten8tEnvSet
 from .ten8t_logging import ten8t_logger
 from .ten8t_module import Ten8tModule
 from .ten8t_package import Ten8tPackage
-from .ten8t_progress import Ten8tNoProgress, Ten8tProgress
+from .ten8t_progress import Ten8tMultiProgress, Ten8tNoProgress, Ten8tProgress
 from .ten8t_rc import Ten8tRC
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
@@ -194,7 +194,7 @@ class Ten8tChecker:
             packages: list[Ten8tPackage] | None = None,
             modules: list[Ten8tModule] | None = None,
             check_functions: list[Ten8tFunction | Callable] | None = None,
-            progress_object: Ten8tProgress | None = None,
+            progress_object: Ten8tProgress | list[Ten8tProgress] | None = None,
             score_strategy: ScoreStrategy | None = None,
             rc: Ten8tRC | None = None,
             env: dict[str, Any] | None = None,
@@ -213,7 +213,8 @@ class Ten8tChecker:
             modules: A list of Ten8tModule objs to check. 
                      If not provided, default = [].
             check_functions: A list of Ten8tFunction objs to check. If not provided, default = [].
-            progress_object: A Ten8tProgress objs for tracking progress. 
+            progress_object: A Ten8tProgress objs for tracking progress. Multiple objects may be
+                             provided.
                              If not provided, def = Ten8tNoProgress.
             score_strategy: A ScoreStrategy objs for scoring the results. 
                             If not provided, def = ScoreByResult.
@@ -256,8 +257,16 @@ class Ten8tChecker:
         self.env_nulls: dict[str, Any] = {}
 
         # Connect the progress output to the checker object.  The NoProgress
-        # class is a dummy class that does no progress reporting.
-        self.progress_callback: Ten8tProgress = progress_object or Ten8tNoProgress()
+        # class is a dummy class that does no progress reporting.  This supports
+        # a list of progress objects allowing you to send progress to a log file
+        # and a UI and perhaps the terminal.  A bit overkill but it works nicely
+        # if you need it with very little cost.
+        if isinstance(progress_object, list):
+            progress_object = Ten8tMultiProgress(progress_list=progress_object)
+        elif progress_object is None:
+            progress_object = Ten8tNoProgress()
+
+        self.progress_object: Ten8tProgress = progress_object
 
         # If any fail result occurs stop processing.
         self.abort_on_fail = abort_on_fail
@@ -640,7 +649,7 @@ class Ten8tChecker:
         # that the filter functions have filtered out all the
         # functions.
         count = 0
-        self.progress_callback(count, self.function_count, "Start Rule Check")
+        self.progress_object.message("Start Rule Check")
         self.start_time = dt.datetime.now()
 
         ten8t_logger.info("Checker start with %d functions", len(self.check_func_list))
@@ -667,9 +676,7 @@ class Ten8tChecker:
                 # Lots of magic here
                 function_.env = env
 
-                self.progress_callback(count,
-                                       self.function_count,
-                                       f"Func Start {function_.function_name}")
+                self.progress_object.message(f"Function Start {function_.function_name}")
                 for result in function_():
 
                     # Render the message if needed.  The render happens right before it is yielded so it "knows"
@@ -691,28 +698,21 @@ class Ten8tChecker:
 
                     # Stop yielding from a function
                     if function_.finish_on_fail and result.status is False:
-                        self.progress_callback(count, self.function_count,
-                                               f"Early exit. {function_.function_name} failed.")
+                        self.progress_object.message(f"Early exit. {function_.function_name} failed.")
                         break
-                    self.progress_callback(count, self.function_count, "", result)
-                self.progress_callback(count, self.function_count, "Func done.")
+                    self.progress_object.result_msg(count, self.function_count, result=result)
+                self.progress_object.message(f"Function {function_.function_name} done.")
 
         except self.AbortYieldException:
             name = function_.function_name if function_ is not None else "???"
 
             if self.abort_on_fail:
-                self.progress_callback(count,
-                                       self.function_count,
-                                       f"Abort on fail: {name}")
+                self.progress_object.message(f"Abort on fail: {name}")
             if self.abort_on_exception:
-                self.progress_callback(count,
-                                       self.function_count,
-                                       f"Abort on exception: {name}")
+                self.progress_object.message(f"Abort on exception: {name}")
 
         self.end_time = dt.datetime.now()
-        self.progress_callback(count,
-                               self.function_count,
-                               "Rule Check Complete.")
+        self.progress_object.message("Rule Check Complete.")
         ten8t_logger.info("Checker complete ran %s check functions", self.function_count)
 
     def run_all(self, env=None) -> list[Ten8tResult]:
@@ -724,9 +724,7 @@ class Ten8tChecker:
         self.results = list(self.yield_all(env=env))
 
         self.score = self.score_strategy(self.results)
-        self.progress_callback(self.function_count,
-                               self.function_count,
-                               f"Score = {self.score:.1f}")
+        self.progress_object.message(f"Score = {self.score:.1f}")
         return self.results
 
     @property

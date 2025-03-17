@@ -253,7 +253,7 @@ def main():
             prog_bar = st.progress(0, text=f"Rule checking status 0 of {checker.function_count}")
 
             # Install progress bar that is nice for ten8t.
-            checker.progress_callback = Ten8tStreamlitProgressBar(prog_bar)
+            checker.progress_object = Ten8tStreamlitProgressBar(prog_bar)
 
             # Magic happens here
             results: list[t8.Ten8tResult] = checker.run_all()

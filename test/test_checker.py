@@ -467,7 +467,7 @@ def test_progress(capsys, func1, func2):
     _ = ch.run_all()
     captured = capsys.readouterr()
     assert captured[
-               0] == 'Start Rule Check\nFunc Start func1\n+Func done.\nFunc Start func2\n+Func done.\nRule Check Complete.\nScore = 100.0\n'
+               0] == 'Start Rule Check\nFunction Start func1\n+Function func1 done.\nFunction Start func2\n+Function func2 done.\nRule Check Complete.\nScore = 100.0\n'
 
 
 @pytest.fixture()

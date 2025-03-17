@@ -43,6 +43,8 @@ from .ten8t_logging import ten8t_setup_logging  # noqa: F401
 from .ten8t_module import Ten8tModule  # noqa: F401
 from .ten8t_package import Ten8tPackage  # noqa: F401
 from .ten8t_progress import Ten8tDebugProgress  # noqa: F401
+from .ten8t_progress import Ten8tLogProgress  # noqa: F401
+from .ten8t_progress import Ten8tMultiProgress  # noqa: F401
 from .ten8t_progress import Ten8tNoProgress  # noqa: F401
 from .ten8t_progress import Ten8tProgress  # noqa: F401
 from .ten8t_rc import Ten8tRC  # noqa: F401
