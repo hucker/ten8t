@@ -92,7 +92,7 @@ def check_yielded_values():
     return [pathlib.Path("./foo").exists(), pathlib.Path("./fum").exists()]
 ```
 
-As you might expect, a framwork could discover these tests provide 3 passing test results if the files all exist.
+As you might expect, a framework could discover these tests provide 3 passing test results if the files all exist.
 
 You can up your game and return status information by returning or yielding `Ten8tResults`.
 
@@ -113,8 +113,8 @@ def check_yielded_values():
     yield TR(status=pathlib.Path("./fum").exists(), msg="Folder fum exists")
 ```
 
-As you might expect running this will also provide 3 passing test results with richer data using the TR object also note
-that these functions yield results rather than return them and some tags have been added, forshadowing that you
+As you might expect running this will also provide 3 passing test results with richer data using the TR object. Note
+that these functions yield results rather than return them and some tags have been added, foreshadowing that you
 will be able to run the "foo" tests or the "fum" tests.
 
 Now we can add more complexity running more complex code. Tag check functions with attributes to allow subsets of checks
@@ -151,7 +151,9 @@ def check_file_age():
 And even a bit more complexity pass values to these functions using environments, which are similar to `pytest`
 fixtures. Ten8t detects functions that start with "env_" and calls them prior to running the check functions.
 It builds an environment that can be used to pass parameters to check functions. Typically, things like database
-connections, filenames, config files are passed around with this mechanism.
+connections, filenames, config files are passed around with this mechanism. Note that in multi threading checking
+some variables may not be shared across threads. File names, lists of strings and integers (and anything hashable)
+work fine, but sharing a SQL connection across threads won't work.
 
 ```python
 import datetime as dt
@@ -184,11 +186,11 @@ def check_file_age(csv_file):
 
 ## How is Ten8t Used?
 
-Well, once you have your check functions written you need to set up a `Ten8tChecker` object to run them
-for you. Essentially you need to pass the checker all of your check functions so they can be run.
+Once you have your check functions written you need to set up a `Ten8tChecker` object to run them.
+Essentially you need to pass the checker all of your check functions so they can be run.
 
 A common use case is to have check-functions saved in python source files that `ten8t` can discover via
-the import mechanism allowing files to be more or less, automatically detected.
+the import mechanism allowing check-functions in files to be auto-detected like `pytest`.
 
 Ten8t uses the following hierarchy:
 
@@ -230,7 +232,7 @@ def rule4(cfg):
    return 4 in cfg['data']
 
 
-checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4], auto_setup=True, env={'data': [1, 2, 3, 4]})
+checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4], env={'data': [1, 2, 3, 4]})
 results = checker.run_all()
 ```
 
@@ -436,7 +438,7 @@ def function3():
     return Ten8tResult(status=f.exists(), msg=f"File {f.name}")
 
 
-checker = Ten8tChecker(check_functions=[function1, function2, function3], auto_setup=True)
+checker = Ten8tChecker(check_functions=[function1, function2, function3])
 tcheck = Ten8tThread(checker)  # take checker object and put functions in their own threads
 results = tcheck.run_all(max_workers=4)  # now using the thread runner object.
 ```
@@ -450,8 +452,8 @@ RC files allow you to set up matching expressions for tags, phases, ruids and le
 are allowed, so there is a lot of power available to make rules that are hard to read. The website https://regex101.com
 is recommended for testing your regular expressions.
 
-Give a list of each of the attributes. Any item that starts with a dash is an exclusion rule. Anything that doesn't
-start with a dash is an inclusion rule.
+Give a list of each of the tag/phase/level/ruid attributes. Any item that starts with a dash is an exclusion rule.
+Anything that doesn't start with a dash is an inclusion rule.
 
 __If there are no inclusion rules then EVERYTHING is included__
 __If there are no exclusion rules then NOTHING is excluded__
@@ -460,7 +462,7 @@ There are several common patterns:
 
 1) Do nothing (empty rc file or dictionary) to run EVERYTHING.
 2) Only list exclusions. Useful in cases where you are testing several things that are mostly similar.
-3) Use tags, phases and selectors to run subsets of your tests.
+3) Use tags, phases and levels to run subsets of your tests.
 4) You can completely punt and ONLY use ruids and regular expressions. Super powerful, but you need to plan well.
 
 ```text
@@ -518,19 +520,53 @@ NOTE: `ttl_minutes` is assumed to be in minutes, should you provide a number wit
 seconds you can put the units in the string ("30sec", "1day", ".5 hours")
 
 ```python
-from ten8t import attributes, Ten8tResult
+import pathlib
+import time
+from ten8t import attributes, Ten8tResult,Ten8tChecker
 
 
-def make_black_hole_image():
+def make_black_hole_image(file_name):
    """Do stuff that takes a really long time."""
    return True
+def super_nova_status(file_name):
+   """Do stuff that takes a really long time."""
+   return False
 
 
 @attributes(ttl_minutes="1.0hr")
-def check_file_age():
-   status = make_black_hole_image()
+def check_file_currency():
+   status = make_black_hole_image("bh.png")
    yield Ten8tResult(status=status, msg="Hourly cluster image generation check")
+
+@attributes(ttl_minutes="1.0hr")
+def check_super_nova():
+   status = super_nova_status("bh.png")
+   yield Ten8tResult(status=status, msg=f"Super nova was {'' if status else 'NOT'} detected.")
+   
+def check_file_exists():
+   status = pathlib.Path("bh.png").exists()
+   yield Ten8tResult(status=status, msg=f"Image File does {'' if status else 'NOT'} exist.")
+   
+def run_tests():
+    ch = Ten8tChecker(check_functions=[check_file_exists,check_file_currency])
+    while 1:
+        time.sleep(60)
+        results = ch.run_all()
+
 ```
+
+In this highly contrived example, there is an expensive to calculate image and some code that verifies that it is
+there. We want the to run all the checks once a minute since "stuff" in the system makes sense to review on that
+timescale, but some of the image processing only makes sense on a 1hr timescale. The ttl_minutes attribute allows
+you to limit expensive operations. In this case the file existing is always checked but the creation and check
+of the file is only checked hourly.
+
+Please note that this TTL caching is stored in the checker object NOT an external database, so in this example the
+`ch` object has the cached results. If you create a new checker object inside the while loop, everything will be
+recalculated. Persistent, caching using something like sqlite is a welcome PR.
+
+It should also be noted that generally, ten8t is just observing systems and not updating them. That's not to say
+you can't, but that isn't the focus and why there are no real features for the system to have checks take actions.
 
 ## How can these rules be organized?
 
@@ -544,7 +580,7 @@ Lots of ways.
 ## How are environments used?
 
 Environments in `ten8t` are analogous to fixtures in `pytest` but the use-case is different.
-The machinations of supporting all the scopes is not necessary in this case. You provide
+The machinations of supporting all the scopes is not necessary in this case (hopefully). You provide
 a set of named environment variables, and they are used as parameters to any functions that need them.
 
 Ten8t makes all lists, dictionaries, dataframes and sets that are passed as part of an environment
@@ -597,7 +633,7 @@ provided that lets you write to your own log and/or propagate to system level lo
 import logging
 import ten8t as t8
 
-# Setup t8 logging to log messages along with whatever the application is doing
+# Setup t8 logging to log messages along with whatever the application is doing for logging
 t8.ten8t_setup_logging(level=logging.DEBUG)
 ```
 
@@ -710,8 +746,8 @@ Here is the setup using a couple of modules in a package folder:
 
 ## Rich Demo (`ten8t/rich_ten8t`)
 
-Here is a simple example of connecting `ten8t` up to the rich package using the progress bar object to
-move a progress bar, and the rich table and emojis to make a tabular output.
+Here is a example of connecting `ten8t` up to the rich package using the progress bar object to
+move a progress bar, and the rich table and some emojis to make a tabular output.
 
 ```text
 (ten8t) rich> python rich_demo.py 

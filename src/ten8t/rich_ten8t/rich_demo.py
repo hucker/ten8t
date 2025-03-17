@@ -68,7 +68,9 @@ class Ten8tRichProgressBar(t8.Ten8tProgress):
 def main():
     # Set up and run checks as usual
 
-    # You could filter the functions to run here.  This rc file is allowing all ruids through
+    # This gives a very simple example of using an RC 'file'.  In this case
+    # it is filtering for ruids and the regex lets everything through, you could
+    # make this more complex or use a config file.
     rc = t8.ten8t_rc_factory({'ruids': 'ruid.*'})  # Configure with regex pattern
 
     # An example or running multiple loggers
@@ -79,7 +81,6 @@ def main():
 
     ch = t8.Ten8tChecker(
         check_functions=[check1, check2, check3, check4],
-        auto_setup=True,
         rc=rc,
         progress_object=[cli_progress, log_progress],  # some magic here, two progress objects
         auto_ruid=True,

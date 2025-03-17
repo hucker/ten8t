@@ -33,13 +33,11 @@ class Ten8tProgress(ABC):
     def __init__(self):
         pass
 
-    # @abstractmethod
-    # def __call__(self,
-    #              current_iteration: int,
-    #              max_iterations,
-    #              text: str,
-    #              result=None):  # pragma: no cover
-    #     pass
+    def __str__(self):
+        return "Ten8tProgress base class for tracking progress"
+
+    def __repr__(self):
+        return "<Ten8tProgress>"
 
     def message(self, msg: str):
         """
@@ -47,16 +45,15 @@ class Ten8tProgress(ABC):
 
         This can be things like starting, stopping, exceptions.  Anything not tied to a result.
         """
-        pass
 
-    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone,
+    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
                    result: Ten8tResult | None = None):
         """
         Report a result.
         This should report progress with the results of a check function.  Note that
         check functions can return multiple results since they are generators.
         """
-        pass
+
 
 
 # pylint: disable=R0903
@@ -68,15 +65,16 @@ class Ten8tNoProgress(Ten8tProgress):
 
     """
 
-    # def __call__(self, current_iteration: int,
-    #              max_iterations,
-    #              text: str, result=None):
-    #     """Don't do anything for progress.  This is useful for testing."""
+    def __str__(self):
+        return "Ten8tNoProgress - No progress tracking (used primarily for testing)"
+
+    def __repr__(self):
+        return "<Ten8tNoProgress>"
 
     def message(self, msg: str):
         """ Do Nothing"""
 
-    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone,
+    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
                    result: Ten8tResult | None = None):
         """ Do Nothing"""
 
@@ -95,17 +93,17 @@ class Ten8tDebugProgress(Ten8tProgress):
         No specific attributes are defined for this subclass.
     """
 
-    # def __call__(self, current_iteration: int, max_iteration: int, msg: str,
-    #              result=None):  # pylint: disable=unused-argument
-    #     """Print a debug message."""
-    #     self.message(msg)
-    #     self.result_msg(current_iteration, max_iteration, msg, result)
+    def __str__(self):
+        return "Ten8tDebugProgress - Debug progress tracker displaying messages in stdout"
+
+    def __repr__(self):
+        return "<Ten8tDebugProgress>"
 
     def message(self, msg: str):
         if msg:
             print(msg)
 
-    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone,
+    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
                    result: Ten8tResult | None = None):
         if result:
             print("+" if result.status else "-", end="")
@@ -136,35 +134,32 @@ class Ten8tLogProgress(Ten8tProgress):
         if msg_level is not None and not self._is_valid_log_level(msg_level):
             raise Ten8tException(f"Invalid logging level provided for msg_level: {msg_level}")
 
-        self.logger = logger
-        self.result_level = result_level
-        self.msg_level = msg_level
+        if not isinstance(logger, logging.Logger):
+            raise Ten8tException(f"Invalid logger type passed to Ten8tLogProgress.")
+
+        self.logger: logging.Logger = logger
+        self.result_level: int = result_level
+        self.msg_level: int = msg_level
         super().__init__()
 
-    # def __call__(self, current_iteration: int, max_iteration: int, msg: StrOrNone,
-    #              result: Ten8tResult | None = None):
-    #     """
-    #     Logs progress messages or results to the configured logger.
-    #
-    #     Args:
-    #         current_iteration (int): The current iteration index of the process.
-    #         max_iteration (int): The maximum number of iterations.
-    #         msg (str): A custom log message to send.
-    #         result (Ten8tResult): An optional result object containing log details.
-    #
-    #     """
-    #     if not self.logger:
-    #         return
-    #
-    #     self.message(msg)
-    #     self.result_msg(current_iteration, max_iteration, result)
+    def __str__(self):
+        return (
+            f"Ten8tLogProgress - Logs progress to logger '{self.logger.name}'"
+            f" with result_level={self.result_level} and msg_level={self.msg_level}"
+        )
 
-    def message(self, msg):
+    def __repr__(self):
+        return (
+            f"<Ten8tLogProgress(logger={self.logger.name}, "
+            f"result_level={self.result_level}, msg_level={self.msg_level})>"
+        )
+
+    def message(self, msg: str):
         # Log the custom message if available and level is set
         if msg and self.msg_level is not None:
             self.logger.log(self.msg_level, msg)
 
-    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone,
+    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = None,
                    result: Ten8tResult | None = None):
 
         # Log the result object if available and level is set
@@ -173,7 +168,7 @@ class Ten8tLogProgress(Ten8tProgress):
             level_str = f" level=[{result.level}] " if result.level else ''
             phase_str = f" phase=[{result.phase}] " if result.phase else ''
             status_str = self._get_status_str(result)
-            msg_str = msg + ' ' or ''
+            msg_str = msg + ' ' if msg else ''
 
             self.logger.log(
                 self.result_level,
@@ -248,19 +243,21 @@ class Ten8tMultiProgress(Ten8tProgress):
 
         self.progress_list = progress_list
 
-    # def __call__(self, current_iteration: int, max_iteration: int, msg: StrOrNone,
-    #              result: Ten8tResult | None = None):
-    #     """
-    #     Support the legacy call interface
-    #     """
-    #     self.message(msg)
-    #     self.result_msg(current_iteration, max_iteration, msg, result)
+    def __str__(self):
+        return (
+            f"Ten8tMultiProgress - Manages Progress for {len(self.progress_list)} Sub-progress Handlers"
+        )
+
+    def __repr__(self):
+        return (
+            f"<Ten8tMultiProgress(progress_list={len(self.progress_list)} handlers)>"
+        )
 
     def message(self, msg):
         for progress in self.progress_list:
             progress.message(msg)
 
-    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone,
+    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = None,
                    result: Ten8tResult | None = None):
         for progress in self.progress_list:
             progress.result_msg(current_iteration, max_iteration, msg=msg, result=result)

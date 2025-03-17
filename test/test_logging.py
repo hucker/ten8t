@@ -1,9 +1,10 @@
 import io
 import logging
+import pathlib
 
 import pytest
 
-from ten8t import ten8t_logger, ten8t_reset_logging, ten8t_setup_logging
+from ten8t import TR, Ten8tLogProgress, ten8t_logger, ten8t_reset_logging, ten8t_setup_logging
 
 
 @pytest.fixture
@@ -98,3 +99,27 @@ def test_stream_logger_installed():
     # Verify that the StreamHandler uses the provided stream
     stream_handler = handlers[0]
     assert stream_handler.stream == test_stream, "StreamHandler does not use the correct stream."
+
+
+def test_log_progress(reset_logger, tmp_path):
+    # Create a temporary file for logging
+    log_file = tmp_path / "test_log_file.log"
+
+    # Configure the logger with the file_name
+    ten8t_setup_logging(
+        level=logging.INFO,
+        file_name=str(log_file)  # Convert to string for file path
+    )
+
+    prog = Ten8tLogProgress()
+
+    prog.message("Hello")
+    prog.result_msg(1, 2, result=TR(status=True, msg="Test Passed"))
+
+    assert pathlib.Path(log_file).exists()
+    assert pathlib.Path(log_file).stat().st_size > 0
+
+    # Verify the file contains the expected messages
+    content = log_file.read_text()
+    assert "Hello" in content, "'Hello' not found in log file"
+    assert "Test Passed" in content, "'Test Passed' not found in log file"
