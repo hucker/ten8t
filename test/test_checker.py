@@ -405,18 +405,22 @@ def test_null_checker_types():
     bad_value_type = 1
 
     with pytest.raises(t8.Ten8tException):
-        _ = t8.Ten8tChecker(check_functions=bad_value_type)
-    with pytest.raises(t8.Ten8tException):
-        _ = t8.Ten8tChecker(modules=bad_value_type)
-    with pytest.raises(t8.Ten8tException):
-        _ = t8.Ten8tChecker(packages=bad_value_type)
+        _ = t8.Ten8tChecker(check_functions=bad_value_type)  # type: ignore
 
     with pytest.raises(t8.Ten8tException):
-        _ = t8.Ten8tChecker(check_functions=bad_list_type)
+        _ = t8.Ten8tChecker(modules=bad_value_type)  # type: ignore
+
     with pytest.raises(t8.Ten8tException):
-        _ = t8.Ten8tChecker(modules=bad_list_type)
+        _ = t8.Ten8tChecker(packages=bad_value_type)  # type: ignore
+
     with pytest.raises(t8.Ten8tException):
-        _ = t8.Ten8tChecker(packages=bad_list_type)
+        _ = t8.Ten8tChecker(check_functions=bad_list_type)  # type: ignore
+
+    with pytest.raises(t8.Ten8tException):
+        _ = t8.Ten8tChecker(modules=bad_list_type)  # type: ignore
+
+    with pytest.raises(t8.Ten8tException):
+        _ = t8.Ten8tChecker(packages=bad_list_type)  # type: ignore
 
 
 def test_filter_all(func1, func2):
@@ -559,7 +563,7 @@ def test_include_by_attribute(attr_functions, tags, levels, phases, ruids, expec
 ])
 def test_exclude_by_attribute(attr_functions, tags, levels, phases, ruids, expected_count, msg):
     ch = t8.Ten8tChecker(check_functions=attr_functions)
-    funcs = ch.exclude_by_attribute(tags=tags, levels=levels, phases=phases, ruids=ruids)
+    _ = ch.exclude_by_attribute(tags=tags, levels=levels, phases=phases, ruids=ruids)
     assert len(ch.check_func_list) == expected_count, msg
 
 
@@ -761,10 +765,6 @@ def test_auto_ten8t_funct(bare_func1, bare_func2):
     assert results[1].status is False
     assert results[2].status is True
     assert results[2].msg == "Hello world."
-
-
-def test_pre_hooks(bare_func1):
-    ch = t8.Ten8tChecker(check_functions=[bare_func1], )
 
 
 def test_module_autothread2():

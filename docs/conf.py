@@ -50,6 +50,7 @@ author = 'Chuck Bass'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 
+
 extensions = [
     'sphinx.ext.autodoc',  # For generating API documentation from docstrings
     'sphinx.ext.autosummary',  # Creates module/function/class summaries
@@ -72,6 +73,11 @@ intersphinx_mapping = {
 myst_enable_extensions = [
     "colon_fence",  # Optional: Allows ::: fence for better Markdown support
 ]
+myst_suppress_warnings = ["myst.header"]
+myst_config = {
+    "suppress_warnings": ["myst.header"]
+}
+
 
 templates_path = ['_templates']
 exclude_patterns = ['_build',

@@ -1,3 +1,7 @@
+"""
+Sample app for running ten8t with rich
+"""
+
 import logging
 import time
 
@@ -13,18 +17,21 @@ console = Console(force_terminal=True, color_system="256")
 # Define your checks with attributes
 @t8.attributes(tag='tag1', ruid='ruid1')
 def check1():
+    """Demo check function 1"""
     time.sleep(.5)
     yield t8.TR(status=True, msg="Test 1 passed")
 
 
 @t8.attributes(tag='tag2', ruid='ruid2')
 def check2():
+    """Demo check function 2"""
     time.sleep(.5)
     yield t8.TR(status=False, msg="Test 2 failed")
 
 
 @t8.attributes(tag='tag3', ruid='ruid3')
 def check3():
+    """Demo check function 3"""
     time.sleep(.5)
     yield t8.TR(status=True, msg="Test 3 passed")
     yield t8.TR(status=True, msg="Test 4 passed")
@@ -32,6 +39,7 @@ def check3():
 
 @t8.attributes(tag='tag3', ruid='ruid4')
 def check4():
+    """Demo check function 4"""
     time.sleep(.5)
     yield t8.TR(status=True, msg="Test 5 passed")
     yield t8.TR(status=True, msg="Test 6 passed")
@@ -39,6 +47,7 @@ def check4():
 
 # Custom CLI Progress class using Rich
 class Ten8tRichProgressBar(t8.Ten8tProgress):
+    """Progress bar to integrate with rich's progress bar."""
     def __init__(self):
         # Create a rich_ten8t friendly progress bar.
         self.progress = Progress(

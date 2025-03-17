@@ -159,7 +159,7 @@ class Ten8tLogProgress(Ten8tProgress):
         if msg and self.msg_level is not None:
             self.logger.log(self.msg_level, msg)
 
-    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = None,
+    def result_msg(self, current_iter: int, max_iter: int, msg: StrOrNone = None,
                    result: Ten8tResult | None = None):
 
         # Log the result object if available and level is set
@@ -172,7 +172,7 @@ class Ten8tLogProgress(Ten8tProgress):
 
             self.logger.log(
                 self.result_level,
-                f"[{current_iteration}/{max_iteration}] {status_str}{msg_str}{tag_str}{level_str}{phase_str} - {result.msg}",
+                f"[{current_iter}/{max_iter}] {status_str}{msg_str}{tag_str}{level_str}{phase_str} - {result.msg}",
             )
 
     @staticmethod

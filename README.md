@@ -1,4 +1,4 @@
-## Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
+# Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
 ![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-865/865-brightgreen.svg)
@@ -25,12 +25,12 @@ makes simple tasks easy while providing the flexibility to tackle more complex s
 to write reusable, declarative rules, `Ten8t` lets you monitor and validate information systems. Whether it’s a
 quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
 
-`Ten8t` can be thought of as a "linter" for your infrastructure many "standard" rules are available out of the box,
-but it is easy to write python code to verify anything you like. It enables you to define customized pass/fail checks
-and organize them using tags, attributes, and phases for fine-grained control. With support for lightweight setup
-and scalability, `Ten8t` works for small projects and large, complex systems. Its intuitive tooling
-ensures that basic tests are easy to write, while its extensibility with standard Python code within reach of
-your coding ability.
+`Ten8t` can be thought of as a "linter" for your infrastructure or file systems where you create the linting
+rules. Many "standard" rules are available out of the box, but it is easy to write python code to verify
+anything you like. It enables you to define customized pass/fail checks and organize them using tags,
+attributes, and phases for fine-grained control. With support for lightweight setup and scalability, `Ten8t`
+works for small projects and large, complex systems. Its intuitive tooling ensures that basic tests are
+easy to write, while its extensibility with standard Python code within reach of your coding ability.
 
 
 ## Why Not pytest, Great Expectations or other popular tools?
@@ -525,11 +525,13 @@ import time
 from ten8t import attributes, Ten8tResult,Ten8tChecker
 
 
-def make_black_hole_image(file_name):
-   """Do stuff that takes a really long time."""
+def make_black_hole_image():
+    """Do stuff that takes a really long time, that you want throttled"""
    return True
-def super_nova_status(file_name):
-   """Do stuff that takes a really long time."""
+
+
+def super_nova_status():
+    """Do stuff that could by dynamically changing"""
    return False
 
 
@@ -538,7 +540,8 @@ def check_file_currency():
    status = make_black_hole_image("bh.png")
    yield Ten8tResult(status=status, msg="Hourly cluster image generation check")
 
-@attributes(ttl_minutes="1.0hr")
+
+@attributes(ttl_minutes="1 min")
 def check_super_nova():
    status = super_nova_status("bh.png")
    yield Ten8tResult(status=status, msg=f"Super nova was {'' if status else 'NOT'} detected.")
@@ -551,7 +554,9 @@ def run_tests():
     ch = Ten8tChecker(check_functions=[check_file_exists,check_file_currency])
     while 1:
         time.sleep(60)
+        # Because we are running the same checker object ttl caching works as expected.
         results = ch.run_all()
+        #display_results(results)
 
 ```
 
@@ -735,10 +740,10 @@ FastAPI example running some rules:
 ## Streamlit Demo  (`ten8t/st_ten8t/st_demo.py`)
 
 Integration with `streamlit` was important, so I made the way you interact with `ten8t` work well with the
-tools that `streamlit` exposes. Integrating with the goodness of `streamlit` is a breeze.
-Here is a non-trivial example showing many of the features of `ten8t` in a `streamlit` app.  
-in 200 lines of code you can select from packages folders, have a full streamlit UI to select the package, tags,
-levels, ruids and generate colored tabular report.
+tools that `streamlit` exposes. Integrating with the goodness of `streamlit` is a breeze. Here is a non-trivial
+example showing many of the features of `ten8t` in a `streamlit` app. In 200 lines of code you can select from
+packages folders, have a full streamlit UI to select the package, tags,levels, ruids and generate colored
+tabular report.
 
 Here is the setup using a couple of modules in a package folder:
 
