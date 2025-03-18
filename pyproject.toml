@@ -1,7 +1,7 @@
 #  keyring get PyPiUser hucker233
 [project]
 name = "ten8t"
-version = "0.0.20"
+version = "0.0.21"
 authors = [
     { name = "Chuck Bass", email = "chuck@arcocad.net" },
 ]
@@ -44,19 +44,13 @@ dependencies = [
     "openpyxl",
     "pypdf==5.3.1",
     "fastapi==0.115.11",
-    "uv==0.6.5",
     "nh3==0.2.21",
-    "ruff==0.9.10",
-    "pkginfo==1.12.1.2",
-    "setuptools==75.8.2",
     "pydantic-core==2.29.0",
     "pydantic==2.11.0a2",
-    "isort==6.0.1",
     "cryptography==44.0.2",
     "jinja2==3.1.6",
     "starlette>=0.46.0",
     "websockets>=15.0.1",
-    "pytest==8.3.5",
     "tzlocal>=5.3.1",
     "virtualenv>=20.29.3",
 ]

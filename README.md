@@ -1,7 +1,7 @@
 # Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
-![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-897/897-brightgreen.svg)
+![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-865/865-brightgreen.svg)
 &nbsp;&nbsp;
 ![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
 &nbsp;&nbsp;
@@ -969,7 +969,8 @@ __Complexity__
 
 ## TODO
 
-1. Add support for handling coroutines and async generators, so ten8t can support all function types.
+1. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
+2. Add support for handling coroutines and async generators, so ten8t can support all function types.
 2. Progress bars for using multithreading is broken.
 
 ## Latest changes
