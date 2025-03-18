@@ -5,6 +5,7 @@ Sample app for running ten8t with rich
 import logging
 import time
 
+from rich import print as rprint
 from rich.console import Console
 from rich.progress import BarColumn, Progress, TextColumn
 from rich.table import Table
@@ -114,9 +115,10 @@ def main():
                 ":white_check_mark:" if result.status else ":x:",
                 result.msg
             )
-
         console.print(table)
         console.print(f"Score={ch.score:0.1f}%")
+        console.print(f"Raw Results")
+        rprint(ch.as_dict())
 
 
 if __name__ == "__main__":

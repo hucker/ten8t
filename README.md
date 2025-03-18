@@ -18,6 +18,8 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date-pre/hucker/ten8t)
 &nbsp;&nbsp;
 ![GitHub Release](https://img.shields.io/github/v/release/hucker/ten8t?include_prereleases)
+&nbsp;&nbsp;
+![Radon Complexity](https://img.shields.io/badge/Complexity-3.3-brightgreen.svg)
 
 `Ten8t` (pronounced "ten-eighty") is a framework for managing observability and rule-based checks across
 files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest` and `pylint`, `Ten8t`
@@ -732,9 +734,11 @@ INFO:     127.0.0.1:64116 - "GET /openapi.json HTTP/1.1" 200 OK
 And going to `localhost:8000/docs` gets you this:
 
 FastAPI swagger interface:
+
 ![FastAPI](docs/_static/fastapi2.png)
 
 FastAPI example running some rules:
+
 ![FastAPI](docs/_static/fastapi.png)
 
 ## Streamlit Demo  (`ten8t/st_ten8t/st_demo.py`)
@@ -777,13 +781,14 @@ Score=83.3%
 Python 3.10, 3.11, 3.12 and 3.13.
 
 ```text
-.pkg: _exit> python /Users/chuck/Projects/ten8t/.venv1/lib/python3.12/site-packages/pyproject_api/_backend.py True poetry.core.masonry.api
-  py310: OK (14.53=setup[3.64]+cmd[10.89] seconds)
-  py311: OK (13.90=setup[3.25]+cmd[10.65] seconds)
-  py312: OK (12.57=setup[1.91]+cmd[10.67] seconds)
-  py313: OK (14.83=setup[3.97]+cmd[10.86] seconds)
-  lint: OK (12.68=setup[1.88]+cmd[10.81] seconds)
-  congratulations :) (68.54 seconds)
+2025-03-17 14:48:54 [INFO] pytest_logger: Global pytest logger initialized.
+.pkg: _exit> python /Users/chuck/Projects/ten8t/.venv/lib/python3.13/site-packages/pyproject_api/_backend.py True poetry.core.masonry.api
+  py313: OK (16.88=setup[5.55]+cmd[11.33] seconds)
+  py310: OK (16.59=setup[3.94]+cmd[12.65] seconds)
+  py311: OK (14.60=setup[3.04]+cmd[11.56] seconds)
+  py312: OK (17.77=setup[4.81]+cmd[12.95] seconds)
+  lint: OK (14.19=setup[2.91]+cmd[11.29] seconds)
+  congratulations :) (80.06 seconds)
 ```
 
 ## Lint
@@ -827,7 +832,141 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 This project is a piece of code that is useful to me, and it serves as non-trivial piece of code where
 I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
 advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
-mypy, pypi, tox, pytest, coverage and readthedocs. It's a useful, non-trivial test bed.
+mypy, pypi, tox, pytest, coverage, code metrics and readthedocs. It's a useful, non-trivial test bed.
+
+## Code Metrics (from radon)
+
+The code metrics section contains the output from running the python tool [Radon](https://github.com/rubik/radon)
+against all the files in the ten8t package folder. The metrics all come with a rank (except Halstead, which I googled
+for
+reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
+`ten8t_checker` and `ten8t_function` have issues as these are the most complex code where lots of "magic"
+happens getting everything to work flexibly for end users.
+
+Interestingly the radon grading system for maintainability gave everything an A (as of 0.0.20). The checker
+and function modules had the lowest scores, while the other metrics hit pretty hard and gave C's
+and F's. My preference is the Halstead metrics as those appear to be far more sensitive...and those are the ones
+I needed to Google/ChatGPT for thresholds. The bugs and time columns seem to be the most sensitive. I think it
+is reasonable to target bad code with these tools, it isn't perfect, but I know that `ten8t_function.py` and
+`ten8t_checker.py` are the most complicated and neglected classes given that many small and not so small
+features have been bolted on over time while most of the other class are the leafs in the project that are easier
+to apply "separation of concerns" to.
+
+PR's for classes and files with low scores are welcomed.
+
+__Halstead__
+<!--csv_table radon_hal.csv-->
+
+| File                | Bugs | Difficulty | Effort  | Time   | Bugs_Grade  | Difficulty_Grade | Effort_Grade | Time_Grade  |
+|---------------------|------|------------|---------|--------|-------------|------------------|--------------|-------------|
+| ten8t_attribute.py  | 0.08 | 6.00       | 1483.05 | 82.39  | B           | A                | B            | B           |
+| ten8t_checker.py    | 0.47 | 6.51       | 9095.28 | 505.29 | -> **F** <- | A                | -> **D** <-  | -> **F** <- |
+| ten8t_exception.py  | 0.00 | 0.00       | 0.00    | 0.00   | A           | A                | A            | A           |
+| ten8t_filter.py     | 0.03 | 2.00       | 159.45  | 8.86   | A           | A                | A            | A           |
+| ten8t_format.py     | 0.00 | 0.50       | 2.38    | 0.13   | A           | A                | A            | A           |
+| ten8t_function.py   | 0.18 | 6.68       | 3660.46 | 203.36 | C           | A                | C            | -> **D** <- |
+| ten8t_immutable.py  | 0.00 | 0.00       | 0.00    | 0.00   | A           | A                | A            | A           |
+| ten8t_inirc.py      | 0.00 | 0.50       | 1.00    | 0.06   | A           | A                | A            | A           |
+| ten8t_jsonrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A           | A                | A            | A           |
+| ten8t_logging.py    | 0.00 | 0.50       | 1.00    | 0.06   | A           | A                | A            | A           |
+| ten8t_module.py     | 0.06 | 4.84       | 828.85  | 46.05  | B           | A                | A            | A           |
+| ten8t_package.py    | 0.03 | 1.64       | 124.60  | 6.92   | A           | A                | A            | A           |
+| ten8t_progress.py   | 0.07 | 3.12       | 633.74  | 35.21  | B           | A                | A            | A           |
+| ten8t_rc.py         | 0.02 | 1.65       | 122.11  | 6.78   | A           | A                | A            | A           |
+| ten8t_rc_factory.py | 0.01 | 1.88       | 42.11   | 2.34   | A           | A                | A            | A           |
+| ten8t_result.py     | 0.03 | 2.71       | 232.47  | 12.92  | A           | A                | A            | A           |
+| ten8t_ruid.py       | 0.03 | 3.75       | 378.84  | 21.05  | A           | A                | A            | A           |
+| ten8t_score.py      | 0.11 | 4.68       | 1483.88 | 82.44  | C           | A                | B            | B           |
+| ten8t_thread.py     | 0.01 | 1.00       | 15.51   | 0.86   | A           | A                | A            | A           |
+| ten8t_tomlrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A           | A                | A            | A           |
+| ten8t_util.py       | 0.07 | 3.82       | 770.92  | 42.83  | B           | A                | A            | A           |
+| ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A           | A                | A            | A           |
+| ten8t_yield.py      | 0.12 | 3.85       | 1432.81 | 79.60  | C           | A                | B            | B           |
+
+<!--csv_table end-->
+
+
+
+__Maintainability__
+<!--csv_table radon_mi.csv-->
+
+| File                | Maint. Index | Rank |
+|---------------------|--------------|------|
+| ten8t_attribute.py  | 70.20        | A    |
+| ten8t_checker.py    | 27.90        | A    |
+| ten8t_exception.py  | 100.00       | A    |
+| ten8t_filter.py     | 68.20        | A    |
+| ten8t_format.py     | 70.50        | A    |
+| ten8t_function.py   | 51.80        | A    |
+| ten8t_immutable.py  | 100.00       | A    |
+| ten8t_inirc.py      | 95.20        | A    |
+| ten8t_jsonrc.py     | 100.00       | A    |
+| ten8t_logging.py    | 89.50        | A    |
+| ten8t_module.py     | 65.70        | A    |
+| ten8t_package.py    | 71.50        | A    |
+| ten8t_progress.py   | 62.30        | A    |
+| ten8t_rc.py         | 70.20        | A    |
+| ten8t_rc_factory.py | 77.00        | A    |
+| ten8t_result.py     | 64.50        | A    |
+| ten8t_ruid.py       | 78.20        | A    |
+| ten8t_score.py      | 57.80        | A    |
+| ten8t_thread.py     | 63.90        | A    |
+| ten8t_tomlrc.py     | 100.00       | A    |
+| ten8t_util.py       | 70.70        | A    |
+| ten8t_xmlrc.py      | 85.80        | A    |
+| ten8t_yield.py      | 45.90        | A    |
+
+<!--csv_table end-->
+
+__Complexity__
+<!--csv_table radon_cc.csv-->
+
+| File               | Name                        | Rank | Complexity |
+|--------------------|-----------------------------|------|------------|
+| ten8t_checker.py   | Ten8tChecker                | A    | 5.00       |
+| ten8t_exception.py | Ten8tTypeError              | A    | 1.00       |
+| ten8t_exception.py | Ten8tValueError             | A    | 1.00       |
+| ten8t_exception.py | Ten8tException              | A    | 1.00       |
+| ten8t_format.py    | Ten8tAbstractRender         | A    | 3.00       |
+| ten8t_format.py    | Ten8tBasicMarkdown          | A    | 3.00       |
+| ten8t_format.py    | Ten8tBasicRichRenderer      | A    | 3.00       |
+| ten8t_format.py    | Ten8tBasicStreamlitRenderer | A    | 3.00       |
+| ten8t_format.py    | Ten8tBasicHTMLRenderer      | A    | 3.00       |
+| ten8t_format.py    | Ten8tMarkup                 | A    | 2.00       |
+| ten8t_format.py    | Ten8tRenderText             | A    | 2.00       |
+| ten8t_function.py  | Ten8tFunction               | B    | 7.00       |
+| ten8t_immutable.py | Ten8tEnvList                | A    | 2.00       |
+| ten8t_immutable.py | Ten8tEnvDict                | A    | 2.00       |
+| ten8t_immutable.py | Ten8tEnvSet                 | A    | 1.00       |
+| ten8t_inirc.py     | Ten8tIniRC                  | A    | 3.00       |
+| ten8t_jsonrc.py    | Ten8tJsonRC                 | A    | 3.00       |
+| ten8t_module.py    | Ten8tModule                 | A    | 4.00       |
+| ten8t_package.py   | Ten8tPackage                | A    | 3.00       |
+| ten8t_progress.py  | Ten8tLogProgress            | A    | 4.00       |
+| ten8t_progress.py  | Ten8tDebugProgress          | A    | 3.00       |
+| ten8t_progress.py  | Ten8tProgress               | A    | 2.00       |
+| ten8t_progress.py  | Ten8tNoProgress             | A    | 2.00       |
+| ten8t_progress.py  | Ten8tMultiProgress          | A    | 2.00       |
+| ten8t_rc.py        | Ten8tRC                     | B    | 6.00       |
+| ten8t_result.py    | Ten8tResult                 | A    | 3.00       |
+| ten8t_score.py     | ScoreByFunctionBinary       | B    | 10.00      |
+| ten8t_score.py     | ScoreByFunctionMean         | B    | 10.00      |
+| ten8t_score.py     | ScoreBinaryFail             | A    | 5.00       |
+| ten8t_score.py     | ScoreBinaryPass             | A    | 5.00       |
+| ten8t_score.py     | ScoreByResult               | A    | 4.00       |
+| ten8t_score.py     | ScoreStrategy               | A    | 3.00       |
+| ten8t_thread.py    | Ten8tThread                 | A    | 3.00       |
+| ten8t_tomlrc.py    | Ten8tTomlRC                 | A    | 3.00       |
+| ten8t_util.py      | NextIntValue                | A    | 2.00       |
+| ten8t_xmlrc.py     | Ten8tXMLRC                  | A    | 5.00       |
+| ten8t_yield.py     | Ten8tYield                  | A    | 4.00       |
+| ten8t_yield.py     | Ten8tYieldPassOnly          | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldFailOnly          | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldPassFail          | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldAll               | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldSummaryOnly       | A    | 2.00       |
+
+<!--csv_table end-->
 
 
 ## TODO

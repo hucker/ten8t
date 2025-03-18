@@ -17,7 +17,7 @@ from .ten8t_rc import Ten8tRC
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
 from .ten8t_score import ScoreByResult, ScoreStrategy
-from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone, StrOrNone
+from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
 
 ADHOC_MODULE_NAME = 'adhoc'
 """Name of the adhoc module"""
@@ -93,86 +93,8 @@ def _param_int_list(params: IntListOrNone) -> IntList:
     return [int(param) for param in params]
 
 
-def exclude_ruids(ruids: list[str]):
-    """Return a filter function that will exclude the ruids from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.ruid not in ruids
-
-    return filter_func
 
 
-def exclude_tags(tags: list[str]):
-    """Return a filter function that will exclude the tags from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.tag not in tags
-
-    return filter_func
-
-
-def exclude_levels(levels: list[int]):
-    """Return a filter function that will exclude the levels from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.level not in levels
-
-    return filter_func
-
-
-def exclude_phases(phases: list[str]):
-    """Return a filter function that will exclude the phases from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.phase not in phases
-
-    return filter_func
-
-
-def keep_ruids(ruids: list[str]):
-    """Return a filter function that will keep the ruids from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.ruid in ruids
-
-    return filter_func
-
-
-def keep_tags(tags: list[str]):
-    """Return a filter function that will keep the tags from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.tag in tags
-
-    return filter_func
-
-
-def keep_levels(levels: list[int]):
-    """Return a filter function that will keep the levels from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.level in levels
-
-    return filter_func
-
-
-def keep_phases(phases: list[str]):
-    """Return a filter function that will keep the phases from the list."""
-
-    def filter_func(s_func: Ten8tFunction):
-        return s_func.phase in phases
-
-    return filter_func
-
-
-def debug_progress(_, msg: StrOrNone = None, result: Ten8tResult | None = None
-                   ):  # pylint: disable=unused-argument
-    """Print a debug message."""
-
-    if msg:
-        print(msg)
-    if result:
-        print("+" if result.status else "-", end="")
 
 
 class Ten8tChecker:
@@ -378,33 +300,32 @@ class Ten8tChecker:
 
     @staticmethod
     def _process_check_funcs(check_functions: list[Ten8tFunction | Callable] | None) -> list[Ten8tFunction]:
-        """ Load up an arbitrary list of ten8t functions.
-        These functions are tagged with adhoc for module
+        """Load up an arbitrary list of Ten8t functions.
+        These functions are tagged 'adhoc' for module reference.
         """
         if isinstance(check_functions, list) and len(check_functions) >= 1:
-            for count, f in enumerate(check_functions, start=1):
+            processed_functions = []
 
-                # It is arguable if this is a good idea or not.  This allows you to pass regular old
-                # python functions to ten8t.  This code will automatically covert those callables to
-                # Ten8tFunctions so they can be used by the system.  This is mostly useful for testing
-                # and for easy demos
+            for count, f in enumerate(check_functions, start=1):
                 if not isinstance(f, Ten8tFunction) and callable(f):
                     f = Ten8tFunction(f)
 
                 if not isinstance(f, Ten8tFunction):
                     raise Ten8tException(
-                        "Functions must be a list of Ten8tFunction objects."
+                        "Functions must be a list of Ten8tFunction objects or callable objects."
                     )
-                # Since we are building up a module from nothing we give it a generic name and
-                # remember the load order.
+
+                # Set the index and module appropriately
                 f.index = count
                 f.module = ADHOC_MODULE_NAME
-            return check_functions
+
+                # Add to new list
+                processed_functions.append(f)
+
+            return processed_functions
 
         if not check_functions:
             return []
-
-        raise Ten8tException("Functions must be a list of Ten8tFunction objects.")
 
     def pre_collect(self) -> list[Ten8tFunction]:
         """

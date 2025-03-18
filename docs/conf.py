@@ -68,7 +68,6 @@ intersphinx_mapping = {
 
 }
 
-
 # Configure MyST-Parser
 myst_enable_extensions = [
     "colon_fence",  # Optional: Allows ::: fence for better Markdown support

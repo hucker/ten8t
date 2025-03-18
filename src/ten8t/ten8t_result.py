@@ -102,6 +102,8 @@ class Ten8tResult:
     def as_dict(self):
         """Convert the Ten8tResult instance to a dictionary."""
         d = asdict(self)
+
+        # We want this to be hashable so we make this a string.
         d['except_'] = str(d['except_'])
         return d
 

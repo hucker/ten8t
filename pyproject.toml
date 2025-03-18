@@ -95,6 +95,7 @@ tox = "^4.24.0"
 mypi = "^0.0.3"
 ruff = "^0.9.7"
 uv = "^0.6.2"
+radon = "^6.0.0"
 
 
 [build-system]

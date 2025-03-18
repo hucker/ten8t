@@ -348,11 +348,11 @@ class Ten8tFunction:
         """
         # Use getattr to avoid repeating the same pattern of checking if self.module exists
         result.pkg_name = getattr(self.module, "__package__", "")
-        result.module_name = getattr(self.module, "__name__", "")
+        result.module_name = getattr(self.module, "__name__", "") or self.module
+        result.func_name = self.function_name
 
         # Assign the rest of the attributes directly
         result.ruid = self.ruid
-        result.func_name = self.function_name
         result.doc = self.doc
         result.tag = self.tag
         result.level = self.level
@@ -361,7 +361,6 @@ class Ten8tFunction:
         result.ttl_minutes = self.ttl_minutes
         result.count = count
         result.thread_id = self.thread_id
-
         result.fail_on_none = self.fail_on_none
         result.skip_on_none = self.skip_on_none
 
