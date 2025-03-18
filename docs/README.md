@@ -1,7 +1,7 @@
 # Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
-![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-865/865-brightgreen.svg)
+![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-897/897-brightgreen.svg)
 &nbsp;&nbsp;
 ![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
 &nbsp;&nbsp;
@@ -18,8 +18,6 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date-pre/hucker/ten8t)
 &nbsp;&nbsp;
 ![GitHub Release](https://img.shields.io/github/v/release/hucker/ten8t?include_prereleases)
-&nbsp;&nbsp;
-![Radon Complexity](https://img.shields.io/badge/Complexity-3.3-brightgreen.svg)
 
 `Ten8t` (pronounced "ten-eighty") is a framework for managing observability and rule-based checks across
 files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest` and `pylint`, `Ten8t`
