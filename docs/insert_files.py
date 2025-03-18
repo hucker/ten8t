@@ -2,13 +2,14 @@ import csv
 import re
 
 
-def csv_to_markdown(file_name: str, bold_vals: list = None) -> str:
+def csv_to_markdown(file_name: str, bold_vals: list = None, auto_break=True) -> str:
     """
     Convert the contents of a CSV file into a Markdown table.
 
     Args:
         file_name (str): The path to the CSV file.
         bold_vals (list): List of values that should be bold.
+        auto_break(bool): Should headers have automatic line breaks to control col width
 
     Returns:
         str: A string representing the Markdown table.
@@ -28,6 +29,11 @@ def csv_to_markdown(file_name: str, bold_vals: list = None) -> str:
 
             # Prepare the Markdown table header
             header = rows[0]
+
+            # Insert line breaks
+            if auto_break:
+                header = [h.replace(" ", "<br>").replace("_", "<br>") for h in header]
+
             markdown = "| " + " | ".join(header) + " |\n"
             markdown += "| " + " | ".join(["---"] * len(header)) + " |\n"
 

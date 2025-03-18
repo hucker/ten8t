@@ -181,7 +181,7 @@ def hal_to_table(input_file="radon_hal.json", output_file="radon_hal.csv"):
 
         with open(output_file, "w") as of:
             columns = ["file", "bugs", "difficulty", "effort", "time"]
-            grade_columns = [f"{col}_grade" for col in columns if col != "file"]
+            grade_columns = [f"{col}_rank" for col in columns if col != "file"]
             all_cols = [col.title() for col in columns + grade_columns]
             of.write(",".join(all_cols) + "\n")
 
