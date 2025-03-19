@@ -328,8 +328,7 @@ class Ten8tChecker:
 
             return processed_functions
 
-        if not check_functions:
-            return []
+        return []
 
     def pre_collect(self) -> list[Ten8tFunction]:
         """

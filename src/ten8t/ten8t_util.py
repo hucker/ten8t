@@ -1,37 +1,38 @@
 """
 This is the sad place for lonely functions that don't have a place
 """
-from typing import Sequence
+from typing import Sequence, TypeAlias
 
 # Type aliases.
 # Note: the *OrNone are meant to be constructors that allow a None value to be passed
 #       that code will take care to convert to a [] or a ''
-StrOrNone = str | None
+StrOrNone: TypeAlias = str | None
 """Type alias for a string or None."""
 
-StrList = Sequence[str]
-"""Type alias for a list of strings."""
+StrList: TypeAlias = Sequence[str]
+"""Type alias for a sequence of strings."""
 
-StrListOrNone = StrList | StrOrNone
-"""Type alias for a list of strings or None."""
+StrListOrNone: TypeAlias = StrList | StrOrNone
+"""Type alias for a sequence of strings or None."""
 
-IntOrNone = int | None
+IntOrNone: TypeAlias = int | None
 """Type alias for an integer or None."""
 
-IntList = Sequence[int]
-"""Type alias for a list of integers."""
+IntList: TypeAlias = Sequence[int]
+"""Type alias for a sequence of integers."""
 
-IntListOrNone = IntList | StrList | None
-"""Type alias for a list of integers or None."""
+IntListOrNone: TypeAlias = IntList | IntOrNone
+"""Type alias for a sequence of integers or None."""
 
-FloatOrNone = float | None
+FloatOrNone: TypeAlias = float | None
 """Type alias for a float or None."""
 
-FloatList = Sequence[float]
-"""Type alias for a list of floats."""
+FloatList: TypeAlias = Sequence[float]
+"""Type alias for a sequence of floats."""
 
-FloatListOrNone = FloatList | FloatOrNone
-"""Type alias for a list of floats or None."""
+FloatListOrNone: TypeAlias = FloatList | FloatOrNone
+"""Type alias for a sequence of floats or None."""
+
 
 
 class NextIntValue:
