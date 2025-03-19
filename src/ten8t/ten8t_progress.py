@@ -135,7 +135,7 @@ class Ten8tLogProgress(Ten8tProgress):
             raise Ten8tException(f"Invalid logging level provided for msg_level: {msg_level}")
 
         if not isinstance(logger, logging.Logger):
-            raise Ten8tException(f"Invalid logger type passed to Ten8tLogProgress.")
+            raise Ten8tException("Invalid logger type passed to Ten8tLogProgress.")
 
         self.logger: logging.Logger = logger
         self.result_level: int = result_level
@@ -159,8 +159,13 @@ class Ten8tLogProgress(Ten8tProgress):
         if msg and self.msg_level is not None:
             self.logger.log(self.msg_level, msg)
 
-    def result_msg(self, current_iter: int, max_iter: int, msg: StrOrNone = None,
-                   result: Ten8tResult | None = None):
+    def result_msg(
+        self,
+        current_iter: int,
+        max_iter: int,
+        msg: StrOrNone = "",
+        result: Ten8tResult | None = None,
+    ):
 
         # Log the result object if available and level is set
         if result and self.result_level is not None:
@@ -258,7 +263,7 @@ class Ten8tMultiProgress(Ten8tProgress):
             for progress in self.progress_list:
                 progress.message(msg)
 
-    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = None,
+    def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
                    result: Ten8tResult | None = None):
         for progress in self.progress_list:
             progress.result_msg(current_iteration, max_iteration, msg=msg, result=result)

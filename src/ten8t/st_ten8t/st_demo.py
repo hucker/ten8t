@@ -16,6 +16,7 @@ to use most of the major feature groups including:
 import streamlit as st
 
 import ten8t as t8
+from ten8t import StrOrNone, Ten8tResult
 
 st.set_page_config(layout='wide')
 
@@ -165,8 +166,16 @@ class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
     def __init__(self, progress_bar: st.progress):
         """ Store streamlit progress bar in global state"""
         self.progress_bar = progress_bar
+        self.last_percent = 0.0
 
-    def __call__(self, current_count: int, max_count: int, msg: str, result=None):
+    def message(self,msg:str):
+        """Just overwrite the old message. """
+        self.progress_bar.progress(self.last_percent, msg)
+
+    def result_msg(self, current_count: int,
+                   max_count: int,
+                   msg:StrOrNone='',
+                   result: Ten8tResult | None = None):
         """
         Display a status message/progress update.  The progress bar goes from 0 to full
         scale as a percentage of the number of function that have run, that is why
@@ -176,8 +185,8 @@ class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
         """
         max_count = max(max_count, 1)
         current_count = min(current_count, max_count)
-        percent = min(max(0, current_count / float(max_count)), 1.0)
-        self.progress_bar.rich_progress(percent, msg)
+        self.last_percent = min(max(0, current_count / float(max_count)), 1.0)
+        self.progress_bar.progress(self.last_percent, msg)
 
 
 def main():
