@@ -6,11 +6,6 @@ from importlib.metadata import PackageNotFoundError, version
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
 # exporting these rules.
-from .rule_files import rule_large_files  # noqa: F401
-from .rule_files import rule_max_files  # noqa: F401
-from .rule_files import rule_path_exists  # noqa: F401
-from .rule_files import rule_paths_exist  # noqa: F401
-from .rule_files import rule_stale_files  # noqa: F401
 from .ten8t_attribute import DEFAULT_THREAD_ID
 from .ten8t_attribute import attributes  # noqa: F401
 from .ten8t_attribute import get_attribute  # noqa: F401
@@ -84,13 +79,52 @@ from .ten8t_yield import Ten8tYieldPassFail  # noqa: F401
 from .ten8t_yield import Ten8tYieldPassOnly  # noqa: F401
 from .ten8t_yield import Ten8tYieldSummaryOnly  # noqa: F401
 
+# Dictionary of standard package installs
+TEN8T_PACKAGES = {}
+
+
+def _install(name: str, installed: bool = True) -> None:
+    if installed:
+        TEN8T_PACKAGES[name] = "Installed"
+    else:
+        TEN8T_PACKAGES[name] = "Not Installed"
+
+
+def is_installed(name: str) -> bool:
+    """Is a given package installed...based on random strings shown below."""
+    return name in TEN8T_PACKAGES
+
+
+def whats_installed(sep: str = ",") -> str:
+    """Generate a printable list of installed packages."""
+    return sep.join(sorted(TEN8T_PACKAGES.keys()))
+
+
+try:
+    import pathlib
+
+    _install("pathlib")
+    from .rule_files import rule_large_files  # noqa: F401
+    from .rule_files import rule_max_files  # noqa: F401
+    from .rule_files import rule_path_exists  # noqa: F401
+    from .rule_files import rule_paths_exist  # noqa: F401
+    from .rule_files import rule_stale_files  # noqa: F401
+
+    _install("pathlib")
+except ImportError:
+    _install("pathlib", installed=False)
+    pass
+
+
 try:
     import narwhals as nw
     from .rule_ndf import rule_validate_ndf_schema  # noqa: F401
     from .rule_ndf import rule_validate_ndf_values_by_col  # noqa: F401
     from .rule_ndf import rule_ndf_columns_check  # noqa: F401
     from .rule_ndf import extended_bool  # noqa: F401
+    _install("narwhals")
 except ImportError:
+    _install("narwhals",installed=False)
     pass
 
 # webapi using requests
@@ -98,15 +132,20 @@ try:
     import requests
     from .rule_webapi import rule_url_200  # noqa: F401
     from .rule_webapi import rule_web_api  # noqa: F401
+    _install("requests")
 except ImportError:
+    _install("requests", installed=False)
     pass
+
 
 # ping rules
 try:
     import ping3
     from .rule_ping import rule_ping_host_check  # noqa: F401
     from .rule_ping import rule_ping_hosts_check  # noqa: F401
+    _install("ping")
 except ImportError:
+    _install("ping", installed=False)
     pass
 
 # xlsx rules
@@ -114,7 +153,9 @@ try:
     import openpyxl
     from .rule_xlsx import rule_xlsx_a1_pass_fail
     from .rule_xlsx import rule_xlsx_df_pass_fail
+    _install("openpyxl")
 except ImportError:
+    _install("openpyxl", installed=False)
     pass
 
 # pdf rules
@@ -123,7 +164,9 @@ try:
     import pandas as pd  # pylint: disable=ungrouped-imports
     from .rule_pdf import extract_tables_from_pdf  # noqa: F401
     from .rule_pdf import rule_from_pdf_rule_ids  # noqa: F401
+    _install("pdf")
 except ImportError:
+    _install("pdf", installed=False)
     pass
 
 # sql alchemy support
@@ -131,7 +174,9 @@ try:
     import sqlalchemy
     from .rule_sqlachemy import rule_sql_table_col_name_schema
     from .rule_sqlachemy import rule_sql_table_schema
+    _install("sqlalchemy")
 except ImportError:
+    _install("sqlalchemy", installed=False)
     pass
 
 try:
@@ -144,7 +189,10 @@ try:
 
     from .rule_fs import rule_fs_path_exists, rule_fs_paths_exist
     from .rule_fs import rule_fs_oldest_file_age, rule_fs_file_within_max_size
+
+    _install("fs")
 except ImportError:
+    _install("fs", installed=False)
     pass
 
 try:

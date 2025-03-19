@@ -55,7 +55,7 @@ class Ten8tResult:
     info_msg: str = ""
     warn_msg: str = ""
 
-    msg_rendered = ""
+    msg_rendered: str = ""
 
     # Function Info
     doc: str = ""

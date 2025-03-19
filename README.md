@@ -247,7 +247,7 @@ few lines of code.
 These generally take the form of you wrapping them up with data specific to your system.
 
 The rules shown below trigger errors if there are any log files > 100k in length and if they haven't been updated
-in the last 5 minutes.
+in the last 5 minutes using rules from based on the `pathlib` packages
 
 ```python
 import ten8t as t8
@@ -271,9 +271,38 @@ def check_rule3(cfg):
         yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
 ```
 
-Currently, there are integrations for file access with pathlib, generic file system access with FS,
-database with SQLAlchemy, data frames with narwhals and ping with ping3, requests with (duh) requests,
-pdf files with camelot and Excel files with openpyxl.
+There are a handful of useful packages built into `ten8t`. You don't need to do anything special to use them
+beyond pip installing their dependencies. They will detect what you have installed on your system and the rules
+will be made available. So if you have `ping3` installed, then the rules in for ping will be available.
+
+This package uses `narwhals` to handle data frames. If you have pandas or polars installed the rules
+for dataframes should work for you (e.g., `ten8t` is dependent on narwhals not pandas/polars)
+
+If you want to make your own rules that are "standardized" against a package, PR's are welcomed. Please
+look at `rule_files.py` for a canonical form of how to make a general purpose rule that handles one of
+something, and a sequence of something. You just need to pay attention to the `yielder`. If you have
+rules that would work well to run multithreaded, look in `rule_ping.py` for an example of a threaded
+rule.
+
+| Package Name | GitHub Repository Link                                                               |
+|--------------|--------------------------------------------------------------------------------------|
+| pathlib      | Python `pathlib` package                                                             |
+| fs           | [GitHub - PyFilesystem/pyfilesystem2](https://github.com/PyFilesystem/pyfilesystem2) |
+| narwhals     | [GitHub - thousandoaks/narwhals](https://github.com/thousandoaks/narwhals)           |
+| camelot      | [GitHub - camelot-dev/camelot](https://github.com/camelot-dev/camelot)               |
+| ping         | [GitHub - kyan001/ping3](https://github.com/kyan001/ping3)                           |
+| requests     | [GitHub - psf/requests](https://github.com/psf/requests)                             |
+| sqlalchemy   | [GitHub - sqlalchemy/sqlalchemy](https://github.com/sqlalchemy/sqlalchemy)           |
+
+If you aren't sure what has been detected when loading `ten8t` run this code in the REPL.
+
+```text
+>>> import ten8t
+>>> ten8t.__version__
+'0.0.21'
+>>> ten8t.whats_installed()
+'fs,narwhals,openpyxl,pathlib,pdf,ping,requests,sqlalchemy'
+```
 
 ## What is the output?
 

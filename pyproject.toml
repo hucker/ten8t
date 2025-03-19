@@ -32,8 +32,8 @@ packages = [
 dependencies = [
     "requests",
     "toml",
-    "narwhals==1.29.1",
-    "SQLAlchemy",
+    "narwhals==1.31.0",
+    "sqlalchemy==2.0.39",
     "fs",
     "click",
     "typer==0.15.2",
@@ -42,7 +42,7 @@ dependencies = [
     "streamlit==1.43.0",
     "uvicorn",
     "openpyxl",
-    "pypdf==5.3.1",
+    "pypdf==5.4.0",
     "fastapi==0.115.11",
     "nh3==0.2.21",
     "pydantic-core==2.29.0",
@@ -53,6 +53,15 @@ dependencies = [
     "websockets>=15.0.1",
     "tzlocal>=5.3.1",
     "virtualenv>=20.29.3",
+    "coverage==7.7.0",
+    "filelock==3.18.0",
+    "iniconfig==2.1.0",
+    "attrs==25.3.0",
+    "mando==0.8.2",
+    "numpy==2.2.4",
+    "pandas-stubs==2.2.3.250308",
+    "types-requests==2.32.0.20250306",
+
 ]
 
 [project.urls]

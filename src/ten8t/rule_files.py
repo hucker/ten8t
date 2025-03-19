@@ -17,6 +17,8 @@ from .ten8t_result import TR
 from .ten8t_util import StrListOrNone, any_to_str_list
 from .ten8t_yield import Ten8tYield
 
+EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)
+"""Expected reasonable exceptions for these tests."""
 
 def rule_path_exists(path_: str) -> TR:
     """
@@ -37,12 +39,15 @@ def rule_path_exists(path_: str) -> TR:
         boolean indicating the result of the existence check, and the `msg`
         attribute provides a formatted string message describing the result.
     """
-    path_str = BM.code(path_)
-    if pathlib.Path(path_).exists():
-        return TR(status=True, msg=f"The path {BM.code(path_str)} does exist.")
-    else:
-        return TR(status=False, msg=f"The path  {BM.code(path_str)} does {BM.bold('NOT')} exist.")
-
+    try:
+        path_str = BM.code(path_)
+        if pathlib.Path(path_).exists():
+            return TR(status=True, msg=f"The path {path_str} does exist.")
+        else:
+            return TR(status=False, msg=f"The path  {path_str} does {BM.bold('NOT')} exist.")
+    except EXPECTED_FILE_EXCEPTIONS as exc:
+        return TR(status=False,
+                  msg=f"Exception occurred while checking for the path {path_str}",except_=exc)
 
 def rule_paths_exist(paths: StrListOrNone,
                      summary_only=False,
@@ -126,6 +131,7 @@ def rule_stale_file(
         raise Ten8tException(f"Age for stale file check {BM.code(age_in_seconds)} should be > 0")
 
     try:
+        code = BM.code
         file_mod_time = filepath.stat().st_mtime
         file_age_in_seconds = current_time - file_mod_time
 
@@ -146,12 +152,12 @@ def rule_stale_file(
                 file_age = file_age_in_seconds
 
             age_msg = f"age = {file_age:.2f} {unit} {age_in_seconds=}"
-            result = TR(status=False, msg=f"Stale file {BM.code(filepath)} {BM.code(age_msg)}")
+            result = TR(status=False, msg=f"Stale file {code(filepath)} {code(age_msg)}")
         else:
-            result = TR(status=True, msg=f"Not stale file {BM.code(filepath)}")
-    except (FileNotFoundError, PermissionError, IOError) as exc:
+            result = TR(status=True, msg=f"Not stale file {code(filepath)}")
+    except EXPECTED_FILE_EXCEPTIONS as exc:
         result = TR(status=False,
-                    msg="Exception occurred while checking for the path {SM.code(path_str)}",
+                    msg=f"Exception occurred while checking for the path {BM.code(filepath)}",
                     except_=exc)
 
     return result
@@ -198,7 +204,7 @@ def rule_stale_files(
     """
     y = yielder if yielder else Ten8tYield(yield_summary=summary_only,
                                            summary_name=summary_name or "Rule_stale_files")
-
+    code = BM.code
     current_time = time.time()
     for filepath in pathlib.Path(folder).rglob(str(pattern)):
         yield from y.results(rule_stale_file(filepath=filepath,
@@ -210,8 +216,7 @@ def rule_stale_files(
 
     if y.count == 0:
         yield from y(status=no_files_pass_status,
-                     msg=f"No files were found in {BM.code(folder)} matching pattern " \
-                         f"{BM.code(folder)}")
+                     msg=f"No files were found in {code(folder)} matching pattern {code(pattern)}")
 
     yield from y.yield_summary()
 
@@ -222,7 +227,7 @@ def rule_large_files(folder: str,
                      no_files_pass_status: bool = True,
                      summary_only=False,
                      summary_name=None,
-                     yielder: Ten8tYield = None):
+                     yielder: Ten8tYield = None) -> Generator[TR, None, None]:
     """
     Checks for any large files exceeding the specified maximum size in a folder
     matching a given pattern and generates corresponding status messages.
@@ -246,6 +251,7 @@ def rule_large_files(folder: str,
         raise Ten8tException(f"Size for large file check should be > 0 not {max_size=}")
 
     code = BM.code
+    bold = BM.bold
     for filepath in pathlib.Path(folder).rglob(pattern):
         size_bytes = filepath.stat().st_size
         if size_bytes > max_size:
@@ -256,7 +262,7 @@ def rule_large_files(folder: str,
             )
     if y.count == 0:
         yield from y(status=no_files_pass_status,
-                     msg=f"No files found matching {code(pattern)} in {code(folder)}.")
+                     msg=f"{bold('NO')} files found matching {code(pattern)} in {code(folder)}.")
 
     yield from y.yield_summary()
 
@@ -266,7 +272,7 @@ def rule_max_files(folders: list,
                    pattern: str = '*',
                    summary_only=False,
                    summary_name=None,
-                   yielder: Ten8tYield = None):
+                   yielder: Ten8tYield = None) -> Generator[TR, None, None]:
     """
     Checks if the number of files in specified folders is within the provided maximum limit,
     based on a pattern.
@@ -300,6 +306,7 @@ def rule_max_files(folders: list,
         Ten8tYield:
             The result of each folder's file count check or a summary if `summary_only` is True.
     """
+    code = BM.code
 
     y = yielder if yielder else Ten8tYield(yield_summary=summary_only,
                                            summary_name=summary_name or "Rule_max_files")
@@ -311,19 +318,24 @@ def rule_max_files(folders: list,
     if len(folders) != len(max_files):
         raise Ten8tException(f"Number of folders and max_files {max_files} must be the same.")
 
-    for folder, max_file in zip(folders, max_files):
-        count = 0
-        # don't materialize the list, just count
-        for count, _ in enumerate(pathlib.Path(folder).rglob(pattern), start=1):
-            pass
+    # Possible undefined variable in case of exception
+    count =0
 
-        if count <= max_file:
-            yield from y(status=True,
-                         msg=f"Folder {BM.code(folder)} contains less than or equal to " \
-                             f"{BM.code(max_file)} files.")
-        else:
-            yield from y(status=False,
-                         msg=f"Folder {BM.code(folder)} contains greater than " \
-                             f"{BM.code(max_file)} files.")
+    # Note that we perform an early exit to prevent us from walking entire file systems
+    # at the cost of not returning the full count.  This could take a very long time
+    # if you abused rglob
+    for folder, max_file in zip(folders, max_files):
+        try:
+            for count, _ in enumerate(pathlib.Path(folder).rglob(pattern), start=1):
+                if count > max_file:
+                    yield from y(status=False,
+                                 msg=f"Folder {code(folder)} contains > than {code(max_file)} files.")
+                    break
+            # A RARE CASE WHERE AN else AFTER  for LOOP MAKE SENSE
+            else:
+                yield from y(status=True,
+                             msg=f"Folder {code(folder)} contains {count} files <= to {code(max_file)} files.")
+        except EXPECTED_FILE_EXCEPTIONS as e:
+            yield from y(status=False, msg=f"Error checking folder {code(folder)}: {str(e)}",except_=e)
 
     yield from y.yield_summary()
