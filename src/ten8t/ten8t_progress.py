@@ -254,8 +254,9 @@ class Ten8tMultiProgress(Ten8tProgress):
         )
 
     def message(self, msg):
-        for progress in self.progress_list:
-            progress.message(msg)
+        if msg:
+            for progress in self.progress_list:
+                progress.message(msg)
 
     def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = None,
                    result: Ten8tResult | None = None):

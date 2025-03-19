@@ -181,17 +181,8 @@ class Ten8tChecker:
         # THis dict has the environment values that are NULL
         self.env_nulls: dict[str, Any] = {}
 
-        # Connect the progress output to the checker object.  The NoProgress
-        # class is a dummy class that does no progress reporting.  This supports
-        # a list of progress objects allowing you to send progress to a log file
-        # and a UI and perhaps the terminal.  A bit overkill but it works nicely
-        # if you need it with very little cost.
-        if isinstance(progress_object, list):
-            progress_object = Ten8tMultiProgress(progress_list=progress_object)
-        elif progress_object is None:
-            progress_object = Ten8tNoProgress()
-
-        self.progress_object: Ten8tProgress = progress_object
+        # If they have a progress object then set it up.
+        self.set_progress(progress_object)
 
         # If any fail result occurs stop processing.
         self.abort_on_fail = abort_on_fail
@@ -224,6 +215,19 @@ class Ten8tChecker:
         if auto_setup:
             self.pre_collect()
             self.prepare_functions()
+
+    def set_progress(self, progress_object: Ten8tProgress | list[Ten8tProgress]):
+        # Connect the progress output to the checker object.  The NoProgress
+        # class is a dummy class that does no progress reporting.  This supports
+        # a list of progress objects allowing you to send progress to a log file
+        # and a UI and perhaps the terminal.  A bit overkill but it works nicely
+        # if you need it with very little cost.
+        if isinstance(progress_object, list):
+            progress_object = Ten8tMultiProgress(progress_list=progress_object)
+        elif progress_object is None:
+            progress_object = Ten8tNoProgress()
+
+        self.progress_object: Ten8tProgress = progress_object
 
     @property
     def check_function_count(self) -> int:

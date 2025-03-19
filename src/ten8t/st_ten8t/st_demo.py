@@ -177,7 +177,7 @@ class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
         max_count = max(max_count, 1)
         current_count = min(current_count, max_count)
         percent = min(max(0, current_count / float(max_count)), 1.0)
-        self.progress_bar.progress(percent, msg)
+        self.progress_bar.rich_progress(percent, msg)
 
 
 def main():
