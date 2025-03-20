@@ -2,11 +2,19 @@
 
 import json
 import logging
+import os
 import pathlib
 import sys
 
+# Set terminal width environment variables at the very beginning
+os.environ["COLUMNS"] = "100"  # This affects Click/Typer formatting
+
+
 import typer
 import uvicorn
+
+
+
 
 import ten8t as t8
 import ten8t_api
@@ -59,6 +67,7 @@ def run_checks(
         verbose: bool = typer.Option(False, '-v', '--verbose', help='Enable verbose output.'),
 ):
     """Run Ten8t checks on a given package or module from command line."""
+
 
     if verbose:
         t8.ten8t_setup_logging(level=logging.DEBUG, file_name="ten8t_cli.log")

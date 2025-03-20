@@ -142,7 +142,6 @@ def show_raw_data(checker: t8.Ten8tChecker) -> None:
         checker (Ten8tChecker): The Ten8tChecker instance containing results.
     """
     console.print("[bold red]Press Enter For Raw Data[/bold red]")
-    input()
     rprint(checker.as_dict())
 
 

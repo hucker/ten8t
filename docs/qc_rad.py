@@ -85,7 +85,7 @@ def load_json(file):
 def mi_to_table(file="radon_mi.json"):
     with open("radon_mi.json", 'r') as f:
         jd = json.load(f)
-        with open("radon_mi.csv", "w") as of:
+        with open("snippets/radon_mi.csv", "w") as of:
             of.write("File,Maint. Index,Rank")
             for k, v in jd.items():
                 k = k.split("/")[-1]
@@ -105,7 +105,7 @@ def cc_to_table(file="radon_cc.json"):
     """
     with open(file, 'r') as f:
         jd = json.load(f)
-        with open('radon_cc.csv', "w") as of:
+        with open('snippets/radon_cc.csv', "w") as of:
             of.write("File,Name,Rank,Complexity\n")
             for k, v in jd.items():
 

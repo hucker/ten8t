@@ -315,6 +315,7 @@ documentation for your rules that is exposed all the way up result stack. For ex
 include information useful providing detailed information and greatly simplify displaying metadata in UI elements
 like tooltips as well as detailed error information with the traceback and exception data.
 
+<!--file snippets/result.json-->
 ```json
 {
   "result": {
@@ -342,6 +343,8 @@ like tooltips as well as detailed error information with the traceback and excep
   }
 }
 ```
+
+<!--file end -->
 
 ## What are scores?
 
@@ -710,26 +713,8 @@ To run it against a folder and start a FastAPI endpoint do:
 
 `python -m ten8t_cli.py --pkg path/to/package_folder --api --port 8000`
 
-```shell
->>>python ten8t_cli.py --help 
-                                                                                                                                                                                                                                                                                              
- Usage: ten8t_cli.py [OPTIONS]                                                                                                                                                                                                                                                                  
-                                                                                                                                                                                                                                                                                              
- Run Ten8t checks on a given package or module from command line.                                                                                                                                                                                                                             
- 
-╭─ Options ──────────────────────────────────────────────────────────────────────────────╮
-│ --mod      -m      TEXT     The module to run rules against. [default: None]           │
-│ --pkg              TEXT     The package to run rules against. [default: None]          │
-│ --json     -j      TEXT     The JSON file to write results to. [default: None]         │
-│ --flat     -f               Should the output be flat or a hierarchy.                  │
-│ --score    -s               Print the score of the rules.                              │
-│ --api      -a               Start FastAPI.                                             │
-│ --port     -p      INTEGER  FastAPI Port [default: 8000]                               │
-│ --verbose  -v               Enable verbose output.                                     │
-│ --help                      Show this message and exit.                                │
-╰────────────────────────────────────────────────────────────────────────────────────────╯
-
-```
+<!--file snippets/help.txt-->
+<!--file end-->
 
 ## FastAPI Interface Demo (`ten8t/cli`)
 
@@ -785,6 +770,7 @@ Here is the setup using a couple of modules in a package folder:
 Here is a example of connecting `ten8t` up to the rich package using the progress bar object to
 move a progress bar, and the rich table and some emojis to make a tabular output.
 
+<!--file snippets/rich_demo.txt-->
 ```text
 (ten8t) rich> python rich_demo.py 
 
@@ -802,6 +788,8 @@ Processing Checks ━━━━━━━━━━━━━━━━━━━━�
 └──────┴───────┴───────────────┴────────┴───────────────┘
 Score=83.3%
 ```
+
+<!--file end-->
 
 ## TOX
 
@@ -882,7 +870,7 @@ to apply "separation of concerns" to.
 PR's for classes and files with low scores are welcomed.
 
 __Halstead__
-<!--csv_table radon_hal.csv-->
+<!--file snippets/radon_hal.csv-->
 
 | File                | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |---------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
@@ -910,12 +898,12 @@ __Halstead__
 | ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
 | ten8t_yield.py      | 0.12 | 3.85       | 1432.81 | 79.60  | C            | A                  | B              | B            |
 
-<!--csv_table end-->
+<!--file end-->
 
 
 
 __Maintainability__
-<!--csv_table radon_mi.csv-->
+<!--file snippets/radon_mi.csv-->
 
 | File                | Maint.<br>Index | Rank |
 |---------------------|-----------------|------|
@@ -943,10 +931,10 @@ __Maintainability__
 | ten8t_xmlrc.py      | 85.80           | A    |
 | ten8t_yield.py      | 45.90           | A    |
 
-<!--csv_table end-->
+<!--file end-->
 
 __Complexity__
-<!--csv_table radon_cc.csv-->
+<!--file snippets/radon_cc.csv-->
 
 | File               | Name                        | Rank | Complexity |
 |--------------------|-----------------------------|------|------------|
@@ -993,7 +981,7 @@ __Complexity__
 | ten8t_yield.py     | Ten8tYieldAll               | A    | 2.00       |
 | ten8t_yield.py     | Ten8tYieldSummaryOnly       | A    | 2.00       |
 
-<!--csv_table end-->
+<!--file end-->
 
 
 ## TODO
