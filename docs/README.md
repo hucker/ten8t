@@ -1,7 +1,7 @@
 # Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
-![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-897/897-brightgreen.svg)
+![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-899/899-brightgreen.svg)
 &nbsp;&nbsp;
 ![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
 &nbsp;&nbsp;
@@ -247,7 +247,7 @@ few lines of code.
 These generally take the form of you wrapping them up with data specific to your system.
 
 The rules shown below trigger errors if there are any log files > 100k in length and if they haven't been updated
-in the last 5 minutes.
+in the last 5 minutes using rules from based on the `pathlib` packages
 
 ```python
 import ten8t as t8
@@ -271,9 +271,38 @@ def check_rule3(cfg):
         yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
 ```
 
-Currently, there are integrations for file access with pathlib, generic file system access with FS,
-database with SQLAlchemy, data frames with narwhals and ping with ping3, requests with (duh) requests,
-pdf files with camelot and Excel files with openpyxl.
+There are a handful of useful packages built into `ten8t`. You don't need to do anything special to use them
+beyond pip installing their dependencies. They will detect what you have installed on your system and the rules
+will be made available. So if you have `ping3` installed, then the rules in for ping will be available.
+
+This package uses `narwhals` to handle data frames. If you have pandas or polars installed the rules
+for dataframes should work for you (e.g., `ten8t` is dependent on narwhals not pandas/polars)
+
+If you want to make your own rules that are "standardized" against a package, PR's are welcomed. Please
+look at `rule_files.py` for a canonical form of how to make a general purpose rule that handles one of
+something, and a sequence of something. You just need to pay attention to the `yielder`. If you have
+rules that would work well to run multithreaded, look in `rule_ping.py` for an example of a threaded
+rule.
+
+| Package Name | GitHub Repository Link                                                               |
+|--------------|--------------------------------------------------------------------------------------|
+| pathlib      | Python `pathlib` package                                                             |
+| fs           | [GitHub - PyFilesystem/pyfilesystem2](https://github.com/PyFilesystem/pyfilesystem2) |
+| narwhals     | [GitHub - thousandoaks/narwhals](https://github.com/thousandoaks/narwhals)           |
+| camelot      | [GitHub - camelot-dev/camelot](https://github.com/camelot-dev/camelot)               |
+| ping         | [GitHub - kyan001/ping3](https://github.com/kyan001/ping3)                           |
+| requests     | [GitHub - psf/requests](https://github.com/psf/requests)                             |
+| sqlalchemy   | [GitHub - sqlalchemy/sqlalchemy](https://github.com/sqlalchemy/sqlalchemy)           |
+
+If you aren't sure what has been detected when loading `ten8t` run this code in the REPL.
+
+```text
+>>> import ten8t
+>>> ten8t.__version__
+'0.0.21'
+>>> ten8t.whats_installed()
+'fs,narwhals,openpyxl,pathlib,pdf,ping,requests,sqlalchemy'
+```
 
 ## What is the output?
 
@@ -858,7 +887,7 @@ __Halstead__
 | File                | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |---------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
 | ten8t_attribute.py  | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
-| ten8t_checker.py    | 0.47 | 6.51       | 9095.28 | 505.29 | -> **F** <-  | A                  | -> **D** <-    | -> **F** <-  |
+| ten8t_checker.py    | 0.46 | 6.51       | 8995.58 | 499.75 | -> **F** <-  | A                  | -> **D** <-    | -> **D** <-  |
 | ten8t_exception.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_filter.py     | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
 | ten8t_format.py     | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
@@ -877,7 +906,7 @@ __Halstead__
 | ten8t_score.py      | 0.11 | 4.68       | 1483.88 | 82.44  | C            | A                  | B              | B            |
 | ten8t_thread.py     | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
 | ten8t_tomlrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_util.py       | 0.07 | 3.82       | 770.92  | 42.83  | B            | A                  | A              | A            |
+| ten8t_util.py       | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
 | ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
 | ten8t_yield.py      | 0.12 | 3.85       | 1432.81 | 79.60  | C            | A                  | B              | B            |
 
@@ -902,15 +931,15 @@ __Maintainability__
 | ten8t_logging.py    | 89.50           | A    |
 | ten8t_module.py     | 65.70           | A    |
 | ten8t_package.py    | 71.50           | A    |
-| ten8t_progress.py   | 62.30           | A    |
+| ten8t_progress.py   | 62.40           | A    |
 | ten8t_rc.py         | 70.20           | A    |
 | ten8t_rc_factory.py | 77.00           | A    |
-| ten8t_result.py     | 64.50           | A    |
+| ten8t_result.py     | 64.40           | A    |
 | ten8t_ruid.py       | 78.20           | A    |
 | ten8t_score.py      | 57.80           | A    |
 | ten8t_thread.py     | 63.90           | A    |
 | ten8t_tomlrc.py     | 100.00          | A    |
-| ten8t_util.py       | 70.70           | A    |
+| ten8t_util.py       | 69.70           | A    |
 | ten8t_xmlrc.py      | 85.80           | A    |
 | ten8t_yield.py      | 45.90           | A    |
 
@@ -921,7 +950,7 @@ __Complexity__
 
 | File               | Name                        | Rank | Complexity |
 |--------------------|-----------------------------|------|------------|
-| ten8t_checker.py   | Ten8tChecker                | A    | 5.00       |
+| ten8t_checker.py   | Ten8tChecker                | A    | 4.00       |
 | ten8t_exception.py | Ten8tTypeError              | A    | 1.00       |
 | ten8t_exception.py | Ten8tValueError             | A    | 1.00       |
 | ten8t_exception.py | Ten8tException              | A    | 1.00       |
@@ -942,9 +971,9 @@ __Complexity__
 | ten8t_package.py   | Ten8tPackage                | A    | 3.00       |
 | ten8t_progress.py  | Ten8tLogProgress            | A    | 4.00       |
 | ten8t_progress.py  | Ten8tDebugProgress          | A    | 3.00       |
+| ten8t_progress.py  | Ten8tMultiProgress          | A    | 3.00       |
 | ten8t_progress.py  | Ten8tProgress               | A    | 2.00       |
 | ten8t_progress.py  | Ten8tNoProgress             | A    | 2.00       |
-| ten8t_progress.py  | Ten8tMultiProgress          | A    | 2.00       |
 | ten8t_rc.py        | Ten8tRC                     | B    | 6.00       |
 | ten8t_result.py    | Ten8tResult                 | A    | 3.00       |
 | ten8t_score.py     | ScoreByFunctionBinary       | B    | 10.00      |
@@ -969,7 +998,8 @@ __Complexity__
 
 ## TODO
 
-1. Add support for handling coroutines and async generators, so ten8t can support all function types.
+1. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
+2. Add support for handling coroutines and async generators, so ten8t can support all function types.
 2. Progress bars for using multithreading is broken.
 
 ## Latest changes

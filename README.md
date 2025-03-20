@@ -1,7 +1,7 @@
 # Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
-![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-865/865-brightgreen.svg)
+![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-899/899-brightgreen.svg)
 &nbsp;&nbsp;
 ![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
 &nbsp;&nbsp;
@@ -887,7 +887,7 @@ __Halstead__
 | File                | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |---------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
 | ten8t_attribute.py  | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
-| ten8t_checker.py    | 0.47 | 6.51       | 9095.28 | 505.29 | -> **F** <-  | A                  | -> **D** <-    | -> **F** <-  |
+| ten8t_checker.py    | 0.46 | 6.51       | 8995.58 | 499.75 | -> **F** <-  | A                  | -> **D** <-    | -> **D** <-  |
 | ten8t_exception.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_filter.py     | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
 | ten8t_format.py     | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
@@ -906,7 +906,7 @@ __Halstead__
 | ten8t_score.py      | 0.11 | 4.68       | 1483.88 | 82.44  | C            | A                  | B              | B            |
 | ten8t_thread.py     | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
 | ten8t_tomlrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_util.py       | 0.07 | 3.82       | 770.92  | 42.83  | B            | A                  | A              | A            |
+| ten8t_util.py       | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
 | ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
 | ten8t_yield.py      | 0.12 | 3.85       | 1432.81 | 79.60  | C            | A                  | B              | B            |
 
@@ -931,15 +931,15 @@ __Maintainability__
 | ten8t_logging.py    | 89.50           | A    |
 | ten8t_module.py     | 65.70           | A    |
 | ten8t_package.py    | 71.50           | A    |
-| ten8t_progress.py   | 62.30           | A    |
+| ten8t_progress.py   | 62.40           | A    |
 | ten8t_rc.py         | 70.20           | A    |
 | ten8t_rc_factory.py | 77.00           | A    |
-| ten8t_result.py     | 64.50           | A    |
+| ten8t_result.py     | 64.40           | A    |
 | ten8t_ruid.py       | 78.20           | A    |
 | ten8t_score.py      | 57.80           | A    |
 | ten8t_thread.py     | 63.90           | A    |
 | ten8t_tomlrc.py     | 100.00          | A    |
-| ten8t_util.py       | 70.70           | A    |
+| ten8t_util.py       | 69.70           | A    |
 | ten8t_xmlrc.py      | 85.80           | A    |
 | ten8t_yield.py      | 45.90           | A    |
 
@@ -950,7 +950,7 @@ __Complexity__
 
 | File               | Name                        | Rank | Complexity |
 |--------------------|-----------------------------|------|------------|
-| ten8t_checker.py   | Ten8tChecker                | A    | 5.00       |
+| ten8t_checker.py   | Ten8tChecker                | A    | 4.00       |
 | ten8t_exception.py | Ten8tTypeError              | A    | 1.00       |
 | ten8t_exception.py | Ten8tValueError             | A    | 1.00       |
 | ten8t_exception.py | Ten8tException              | A    | 1.00       |
@@ -971,9 +971,9 @@ __Complexity__
 | ten8t_package.py   | Ten8tPackage                | A    | 3.00       |
 | ten8t_progress.py  | Ten8tLogProgress            | A    | 4.00       |
 | ten8t_progress.py  | Ten8tDebugProgress          | A    | 3.00       |
+| ten8t_progress.py  | Ten8tMultiProgress          | A    | 3.00       |
 | ten8t_progress.py  | Ten8tProgress               | A    | 2.00       |
 | ten8t_progress.py  | Ten8tNoProgress             | A    | 2.00       |
-| ten8t_progress.py  | Ten8tMultiProgress          | A    | 2.00       |
 | ten8t_rc.py        | Ten8tRC                     | B    | 6.00       |
 | ten8t_result.py    | Ten8tResult                 | A    | 3.00       |
 | ten8t_score.py     | ScoreByFunctionBinary       | B    | 10.00      |
