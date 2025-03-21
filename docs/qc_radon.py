@@ -82,17 +82,19 @@ def load_json(file):
     return json_data
 
 
-def mi_to_table(file="radon_mi.json"):
-    with open("radon_mi.json", 'r') as f:
+def mi_to_table(
+    input_file="snippets/radon_mi.json", output_file="snippets/radon_mi.csv"
+):
+    with open(input_file, "r") as f:
         jd = json.load(f)
-        with open("snippets/radon_mi.csv", "w") as of:
+        with open(output_file, "w") as of:
             of.write("File,Maint. Index,Rank")
             for k, v in jd.items():
                 k = k.split("/")[-1]
                 of.write(f"\n{k},{v['mi']:.1f},{v['rank']}")
 
 
-def cc_to_table(file="radon_cc.json"):
+def cc_to_table(input_file="snippets/radon_cc.json",output_file="snippets/radon_cc.csv"):
     """
     The complexity json is
     1) List of filename key|array
@@ -103,9 +105,9 @@ def cc_to_table(file="radon_cc.json"):
           "complexity
 
     """
-    with open(file, 'r') as f:
+    with open(input_file, 'r') as f:
         jd = json.load(f)
-        with open('snippets/radon_cc.csv', "w") as of:
+        with open(output_file, "w") as of:
             of.write("File,Name,Rank,Complexity\n")
             for k, v in jd.items():
 
@@ -171,7 +173,7 @@ def time_thresh(value: float) -> str:
         return 'F'
 
 
-def hal_to_table(input_file="radon_hal.json", output_file="radon_hal.csv"):
+def hal_to_table(input_file="snippets/radon_hal.json", output_file="snippets/radon_hal.csv"):
     """
     Process Halstead metrics and include grades in CSV output.
     """
@@ -201,6 +203,6 @@ def hal_to_table(input_file="radon_hal.json", output_file="radon_hal.csv"):
         print(f"Error processing HAL metrics: {e}")
 
 
-cc_to_table()
-hal_to_table()
-mi_to_table()
+cc_to_table(input_file='snippets/radon_cc.json')
+hal_to_table(input_file='snippets/radon_hal.json')
+mi_to_table(input_file='snippets/radon_mi.json')

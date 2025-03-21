@@ -60,7 +60,6 @@ def run_checks(
         module: str = typer.Option(None, '-m', '--mod', help='Module to run rules against.'),
         pkg: str = typer.Option(None, '--pkg', help='Package to run rules against.'),
         json_file: str = typer.Option(None, '-j', '--json', help='JSON file to write results to.'),
-        flat: bool = typer.Option(False, '-f', '--flat', help='Flat or hierarchical output.'),
         score: bool = typer.Option(False, '-s', '--score', help='Print the score of the rules.'),
         api: bool = typer.Option(False, '-a', '--api', help='Start FastAPI.'),
         port: int = typer.Option(8000, '-p', '--port', help='FastAPI Port'),
@@ -77,7 +76,6 @@ def run_checks(
     t8.ten8t_logger.debug("Module=%s", module)
     t8.ten8t_logger.debug("pkg=%s", pkg)
     t8.ten8t_logger.debug("json_file=%s", json_file)
-    t8.ten8t_logger.debug("flat=%s", flat)
     t8.ten8t_logger.debug("score=%s", score)
     t8.ten8t_logger.debug("api=%s", api)
     t8.ten8t_logger.debug("port=%s", port)
@@ -119,26 +117,20 @@ def run_checks(
             typer.echo('There were no results.')
             return
 
-        if not flat:
-            # Show the results in a hierarchy rather than the flat version the data is stored as.
-            results = t8.group_by(results, ['pkg_name', 'module_name', 'func_name'])
-            pretty_data = pretty_print_json(results)
-            typer.echo(pretty_data)
-            return
+        if score:
+            test_score = t8.ScoreByResult()
+            typer.echo(f'Score: {test_score(results):.1f}')
+
+        if json_file:
+            d = ch.as_dict()
+            with open(json_file, 'w', encoding='utf-8') as f:
+                json.dump(d, f, indent=2,default=str)
 
         if verbose:
             dump_results(results)
         else:
             typer.echo(t8.overview(results))
 
-        if score:
-            test_score = t8.ScoreByResult()
-            typer.echo(f'Score: {test_score(results):.1f}')
-
-        if json_file:
-            d = t8.ten8t_result.results_as_dict(results)
-            with open(json_file, 'w', encoding='utf-8') as f:
-                json.dump(d, f, indent=2)
 
     except t8.Ten8tException as e:
         typer.echo(f'Ten8tException: {e}')

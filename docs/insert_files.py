@@ -24,13 +24,16 @@ class ToMarkdown(ABC):
         error_str (str): Error message if file loading fails
         date_stamp (bool): Whether to include timestamp in the output
     """
-    def __init__(self, file_name: str,date_stamp:bool=False,cfg:dict|None=None):
-        self.file_name:str = file_name
-        self.text:str = self.load_file()
-        self.markdown:str=''
-        self.error_str:str = ''
-        self.date_stamp:str = date_stamp
-        self.cfg:dict = cfg or {}
+
+    def __init__(self, file_name: str, date_stamp: bool = False, **kwargs):
+        self.file_name: str = file_name
+        self.text: str = self.load_file()
+        self.markdown: str = ""
+        self.error_str: str = ""
+        self.date_stamp: bool = date_stamp
+        # Store remaining kwargs if needed
+        self.kwargs = kwargs
+
 
     def file_time_stamp_md(self,
                            file_path:str=None,
@@ -50,8 +53,10 @@ class ToMarkdown(ABC):
             '<small>data.csv &nbsp;&nbsp; 14:32:05 2023-08-21</small>'
         """
         file_path = file_path or self.file_name
-        otag = f"<{tag}>" if tag  else ''
-        ctag = f"</{tag}>" if tag  else ''
+
+        # Note that these tags ove opening and closing backticks to make fixed pitch small font
+        open_tag = f"<{tag}>" if tag  else ''
+        close_tag = f"</{tag}>" if tag  else ''
         # Create Path object
         path = pathlib.Path(file_path)
 
@@ -60,22 +65,22 @@ class ToMarkdown(ABC):
             # Get file's modification time
             ts = dt.datetime.fromtimestamp(path.stat().st_mtime)
 
-            # Markdown using default  small tag, but can be overwridden
-            markdown = f"{otag}{path.name} &nbsp;&nbsp;" \
-                       f" { ts.strftime(tfmt)} {ts.strftime(dfmt)}{ctag}"
+            # This inserts the text in small text
+            markdown = f"{open_tag}{path.name} &nbsp;&nbsp;" \
+                       f" { ts.strftime(tfmt)} {ts.strftime(dfmt)}{close_tag}"
 
             return markdown
         except FileNotFoundError:
             # File doesn't exist
-            return f"{otag}{path.name} &nbsp;&nbsp; WARNING:(file not found){ctag}"
+            return f"{open_tag}{path.name} WARNING:(file not found){close_tag}"
 
         except PermissionError:
             # No permission to access the file
-            return f"{otag}{path.name} &nbsp;&nbsp; WARNING:(permission denied){ctag}"
+            return f"{open_tag}{path.name} WARNING:(permission denied){close_tag}"
 
         except OSError as e:
             # Other OS-related errors
-            return f"{otag}{path.name} &nbsp;&nbsp; (WARNING: {str(e)}){ctag}"
+            return f"{open_tag}{path.name} (WARNING: {str(e)}){close_tag}"
 
     def load_file(self,file_name:str=None):
         file_name = file_name or self.file_name
@@ -109,27 +114,35 @@ class ToMarkdown(ABC):
 
 
 class TextToMarkdown(ToMarkdown):
+    def __init__(self, file_name: str,date_stamp:bool, **kwargs):
+        super().__init__(file_name,date_stamp, **kwargs)
+
     def to_markdown(self):
         return f"```\n{self.text}\n```"
 
 class PyToMarkdown(ToMarkdown):
+    def __init__(self, file_name: str,date_stamp:bool, **kwargs):
+        super().__init__(file_name,date_stamp, **kwargs)
     def to_markdown(self):
         return f"```python\n{self.text}\n```"
 
 class JsonToMarkdown(ToMarkdown):
+    def __init__(self, file_name: str,date_stamp:bool, **kwargs):
+        super().__init__(file_name,date_stamp, **kwargs)
+
     def to_markdown(self):
-        self.text = json.dumps(json.loads(self.text), indent=4)
-        return f"```json\n{self.text}\n```"
+        formatted_json = json.dumps(json.loads(self.text), indent=4)
+        return f"```json\n{formatted_json}\n```"
 
 class CsvToMarkdown(ToMarkdown):
-    def __init__(self, file_name,date_stamp,cfg:dict|None=None):
-        super().__init__(file_name,date_stamp,cfg)
-        self.load_cfg()
+    def __init__(self, file_name: str,date_stamp:bool, **kwargs):
+        # Extract CSV-specific parameters before calling super()
+        self.auto_break = kwargs.pop('auto_break', True)
+        self.bold_vals = kwargs.pop('bold_vals', [])
 
-    def load_cfg(self,cfg:dict|None=None):
-        self.cfg = cfg or self.cfg
-        self.auto_break = self.cfg.get("auto_break",True)
-        self.bold_vals = self.cfg.get("bold_vals",[])
+        # Pass remaining kwargs to super
+        super().__init__(file_name,date_stamp, **kwargs)
+
 
     def to_markdown(self):
         try:
@@ -179,17 +192,42 @@ class CsvToMarkdown(ToMarkdown):
             return f"Error: An error occurred while processing the file: {e}"
 
 
-def markdown_factory(filename:str,date_stamp=False):
+def markdown_factory(filename:str,date_time:bool, **kwargs):
+    """
+    Creates the appropriate markdown converter based on file extension.
+
+    This factory function examines the provided filename's extension and instantiates
+    the corresponding converter class. All keyword arguments are passed through to
+    the converter's constructor, allowing each converter to use parameters relevant
+    to its functionality.
+
+    Args:
+        filename (str): Path to the file that needs conversion to markdown.
+        date_time (bool): Whether to include timestamp in the output.
+        **kwargs: Additional keyword arguments that will be passed to the converter.
+            CSV-specific parameters:
+                auto_break (bool): Whether to insert line breaks in CSV headers.
+                bold_vals (list): List of values to be bolded in CSV tables.
+
+    Returns:
+        ToMarkdown: An instance of the appropriate converter subclass:
+            - TextToMarkdown: For .md files or unrecognized file types
+            - PyToMarkdown: For .py files
+            - JsonToMarkdown: For .json files
+            - CsvToMarkdown: For .csv files
+
+    """
+
     if filename.endswith(".md"):
-        return TextToMarkdown(filename,date_stamp=date_stamp)
+        return TextToMarkdown(filename,date_time,**kwargs)
     elif filename.endswith(".py"):
-        return PyToMarkdown(filename,date_stamp=date_stamp)
+        return PyToMarkdown(filename,date_time,**kwargs)
     elif filename.endswith(".json"):
-        return JsonToMarkdown(filename,date_stamp=date_stamp)
+        return JsonToMarkdown(filename,date_time,**kwargs)
     elif filename.endswith(".csv"):
-        return CsvToMarkdown(filename,date_stamp=date_stamp)
+        return CsvToMarkdown(filename,date_time,**kwargs)
     else:
-        return TextToMarkdown(filename,date_stamp=date_stamp)
+        return TextToMarkdown(filename,date_time,**kwargs)
 
 
 
@@ -216,12 +254,14 @@ def update_markdown_file(md_file: str, bold:bool, date_stamp:bool, auto_break:bo
 
         # Process file insertions
         for match in file_matches:
+
+            kwargs = {
+                'bold_vals':bold.split(",") if bold else [],
+                'auto_break':auto_break,
+            }
+
             file_name = match.group(1).strip()  # Extract the CSV file name
-            md_gen = markdown_factory(file_name, date_stamp=date_stamp)
-
-            if isinstance(md_gen,CsvToMarkdown):
-                md_gen.load_cfg(cfg={'bold':bold,'auto_break':auto_break})
-
+            md_gen = markdown_factory(file_name,date_stamp, **kwargs)
             markdown_text =md_gen.to_full_markdown()
 
             # Replace the block with the Markdown table
@@ -253,16 +293,16 @@ def convert(
         None, "--bold", "-b", help="Comma-separated values to make bold (for CSV files)"
     ),
     date_stamp: Optional[bool] = typer.Option(
-        True, "--date/--no-date", "-d", help="Add datetime stamp to file output"
+        True, "--date-stamp/--no-date-stamp", "-d", help="Add datetime stamp to file output"
     ),
-    autobreak: Optional[bool] = typer.Option(
-        False, "--autobreak/--no-autobreak", help="Disable automatic line breaks in CSV headers"
+    auto_break: Optional[bool] = typer.Option(
+        True, "--auto-break/--no-auto-break", help="Disable automatic line breaks in CSV headers"
     ),
 ):
     """Convert a file to Markdown based on its extension."""
     try:
 
-        markdown_text = update_markdown_file(file_name,bold_values,date_stamp,autobreak)
+        markdown_text = update_markdown_file(file_name,bold=bold_values,date_stamp=date_stamp,auto_break=auto_break)
 
         if output:
             with open(output, "w") as file:
