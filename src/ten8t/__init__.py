@@ -3,6 +3,8 @@ Public API for the Ten8t project.
 """
 from importlib.metadata import PackageNotFoundError, version
 
+# Import and re-export everything from serialization
+from .serialize import (Ten8tDump, Ten8tDumpCSV, Ten8tDumpConfig, Ten8tDumpMarkdown, ten8t_save_csv, ten8t_save_md)
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
 # exporting these rules.
@@ -52,7 +54,6 @@ from .ten8t_ruid import module_ruids  # noqa: F401
 from .ten8t_ruid import package_ruids  # noqa: F401
 from .ten8t_ruid import ruid_issues  # noqa: F401
 from .ten8t_ruid import valid_ruids  # noqa: F401
-# from .ten8t_serialize import Ten8tDumpMarkdown # noqa: F401
 from .ten8t_score import ScoreBinaryFail  # noqa: F401
 from .ten8t_score import ScoreBinaryPass  # noqa: F401
 from .ten8t_score import ScoreByFunctionBinary  # noqa: F401
@@ -61,12 +62,6 @@ from .ten8t_score import ScoreByResult  # noqa: F401
 from .ten8t_score import ScoreStrategy  # noqa: F401
 from .ten8t_score import register_score_class  # noqa: F401
 from .ten8t_score import reset_score_strategy_registry
-from .ten8t_serialize import Ten8tDump  # noqa: F401
-from .ten8t_serialize import Ten8tDumpCSV  # noqa: F401
-from .ten8t_serialize import Ten8tDumpConfig  # noqa: F401
-from .ten8t_serialize import Ten8tDumpMarkdown  # noqa: F401
-from .ten8t_serialize import ten8t_save_csv  # noqa: F401
-from .ten8t_serialize import ten8t_save_md  # noqa: F401
 from .ten8t_thread import Ten8tThread  # noqa: F401
 from .ten8t_tomlrc import Ten8tTomlRC  # noqa: F401
 from .ten8t_util import IntList  # noqa: F401
