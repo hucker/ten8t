@@ -9,8 +9,8 @@ Methods or classes in this module can be extended or combined for more specific 
 import openpyxl
 import pandas as pd
 
+from .render import BM
 from .ten8t_exception import Ten8tException
-from .ten8t_format import BM
 from .ten8t_result import TR
 from .ten8t_util import StrOrNone, str_to_bool
 

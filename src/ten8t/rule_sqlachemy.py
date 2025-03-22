@@ -9,7 +9,7 @@ from typing import Generator, Sequence
 from sqlalchemy import Engine, MetaData, Table
 from sqlalchemy.sql.type_api import TypeEngine
 
-from .ten8t_format import BM
+from .render import BM
 from .ten8t_result import TR
 
 

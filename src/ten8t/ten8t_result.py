@@ -7,8 +7,8 @@ from dataclasses import asdict, dataclass, field
 from operator import attrgetter
 from typing import Any, Sequence
 
+from .render import Ten8tMarkup
 from .ten8t_exception import Ten8tException
-from .ten8t_format import Ten8tMarkup
 
 
 @dataclass

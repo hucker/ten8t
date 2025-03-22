@@ -3,7 +3,11 @@ Public API for the Ten8t project.
 """
 from importlib.metadata import PackageNotFoundError, version
 
-# Import and re-export everything from serialization
+from .render import (BM, TAG_ACTUAL, TAG_BLACK, TAG_BLUE, TAG_BOLD, TAG_CODE, TAG_DATA, TAG_EXPECTED, TAG_FAIL,
+                     TAG_GREEN, TAG_ITALIC, TAG_ORANGE, TAG_PASS, TAG_PURPLE, TAG_RED, TAG_SKIP, TAG_STRIKETHROUGH,
+                     TAG_UNDERLINE, TAG_WARN, TAG_WHITE, TAG_YELLOW, Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer,
+                     Ten8tBasicRichRenderer, Ten8tBasicStreamlitRenderer, Ten8tMarkup, Ten8tTextRenderer)
+# Import and re-export symbols from sub packages
 from .serialize import (Ten8tDump, Ten8tDumpCSV, Ten8tDumpConfig, Ten8tDumpMarkdown, ten8t_save_csv, ten8t_save_md)
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
@@ -21,13 +25,6 @@ from .ten8t_filter import keep_levels  # noqa: F401
 from .ten8t_filter import keep_phases  # noqa: F401
 from .ten8t_filter import keep_ruids  # noqa: F401
 from .ten8t_filter import keep_tags  # noqa: F401
-from .ten8t_format import BM
-from .ten8t_format import Ten8tBasicHTMLRenderer
-from .ten8t_format import Ten8tBasicMarkdown
-from .ten8t_format import Ten8tBasicRichRenderer
-from .ten8t_format import Ten8tBasicStreamlitRenderer
-from .ten8t_format import Ten8tMarkup
-from .ten8t_format import Ten8tRenderText
 from .ten8t_function import Ten8tFunction  # noqa: F401
 from .ten8t_immutable import Ten8tEnvDict  # noqa: F401
 from .ten8t_immutable import Ten8tEnvList  # noqa: F401

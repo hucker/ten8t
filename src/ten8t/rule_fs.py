@@ -9,7 +9,7 @@ from typing import Generator, Sequence
 
 import humanize
 
-from .ten8t_format import BM
+from .render import BM
 from .ten8t_result import TR
 
 # Suppress DeprecationWarning only during `fs` module import

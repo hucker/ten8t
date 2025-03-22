@@ -678,14 +678,17 @@ def test_auto_ruids():
     assert {results[0].ruid, results[1].ruid} == {'__ruid__0001', '__ruid__0002'}
 
 
-@pytest.mark.parametrize("renderer,expected", [
-    (None, "It works1 hello"),
-    (t8.Ten8tBasicMarkdown(), "It works1 `hello`"),
-    (t8.Ten8tRenderText(), "It works1 hello"),
-    (t8.Ten8tBasicStreamlitRenderer(), "It works1 `hello`"),
-    (t8.Ten8tBasicRichRenderer(), "It works1 hello"),
-    (t8.Ten8tBasicHTMLRenderer(), "It works1 <code>hello</code>"),
-])
+@pytest.mark.parametrize(
+    "renderer,expected",
+    [
+        (None, "It works1 hello"),
+        (t8.Ten8tBasicMarkdownRenderer(), "It works1 `hello`"),
+        (t8.Ten8tTextRenderer(), "It works1 hello"),
+        (t8.Ten8tBasicStreamlitRenderer(), "It works1 `hello`"),
+        (t8.Ten8tBasicRichRenderer(), "It works1 hello"),
+        (t8.Ten8tBasicHTMLRenderer(), "It works1 <code>hello</code>"),
+    ],
+)
 def test_check_render_p(renderer, expected):
     """
     Check that the rendering works as expected for each type at the system level.
@@ -710,8 +713,8 @@ def test_check_render_p(renderer, expected):
 
 @pytest.mark.parametrize("renderer,expected", [
     (None, "It works1 hello"),
-    (t8.Ten8tRenderText(), "It works1 hello"),
-    (t8.Ten8tBasicMarkdown(), "It works1 hello"),
+    (t8.Ten8tTextRenderer(), "It works1 hello"),
+    (t8.Ten8tBasicMarkdownRenderer(), "It works1 hello"),
     (t8.Ten8tBasicStreamlitRenderer(), "It works1 :red[hello]"),
     (t8.Ten8tBasicRichRenderer(), "It works1 [red]hello[/red]"),
     (t8.Ten8tBasicHTMLRenderer(), """It works1 <span style="color:red">hello</span>"""),

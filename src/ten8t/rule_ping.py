@@ -29,7 +29,7 @@ from typing import Generator
 import ping3  # type: ignore
 
 import ten8t
-from .ten8t_format import BM
+from .render import BM
 from .ten8t_logging import ten8t_logger
 from .ten8t_result import TR
 from .ten8t_util import StrListOrNone, any_to_str_list
