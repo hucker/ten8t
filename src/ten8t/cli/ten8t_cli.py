@@ -6,6 +6,7 @@ import os
 import pathlib
 import sys
 
+
 # Set terminal width environment variables at the very beginning
 os.environ["COLUMNS"] = "100"  # This affects Click/Typer formatting
 
@@ -60,6 +61,10 @@ def run_checks(
         module: str = typer.Option(None, '-m', '--mod', help='Module to run rules against.'),
         pkg: str = typer.Option(None, '--pkg', help='Package to run rules against.'),
         json_file: str = typer.Option(None, '-j', '--json', help='JSON file to write results to.'),
+        csv_file: str = typer.Option(None, '-c', '--csv', help='CSV file to write results to.'),
+        md_file: str = typer.Option(None, '-M', '--md', help='MD file to write results to.'),
+        sum_cols: str = typer.Option(None,  '-u','--sum_cols', help='Summary columns.(use "all" or col names)'),
+        res_cols: str = typer.Option(None,  '-r','--res_cols', help='Result columns.(use "all" or col names)'),
         score: bool = typer.Option(False, '-s', '--score', help='Print the score of the rules.'),
         api: bool = typer.Option(False, '-a', '--api', help='Start FastAPI.'),
         port: int = typer.Option(8000, '-p', '--port', help='FastAPI Port'),
@@ -116,6 +121,32 @@ def run_checks(
         if not results:
             typer.echo('There were no results.')
             return
+
+        if csv_file:
+            try:
+                csv_cfg = t8.Ten8tDumpConfig.csv_default(
+                    result_columns=res_cols or "all",
+                    output_file=csv_file
+                )
+
+                t8.ten8t_save_csv(ch,csv_cfg)
+            except Exception as e:
+                typer.echo(str(e),err=True)
+                return
+
+        if  md_file:
+
+            try:
+                md_cfg = t8.Ten8tDumpConfig.markdown_default(
+                    summary_columns=sum_cols or "all",
+                    result_columns=res_cols or "all",
+                    output_file=md_file,
+                )
+
+                t8.ten8t_save_md(ch,config=md_cfg)
+            except Exception as e:
+                typer.echo(str(e),err=True)
+                return
 
         if score:
             test_score = t8.ScoreByResult()
