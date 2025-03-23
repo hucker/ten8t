@@ -101,7 +101,7 @@ def test_verify_single_thread(func1):
     # is random.  So here we verify that the thread id in the result matches the thread_id message.
     for i in range(3):
         assert results[i].status == True
-        assert results[i].msg == f"It works thread1"
+        assert results[i].msg == "It works thread1"
         assert results[i].thread_id == 'thread1'
 
 
@@ -252,7 +252,7 @@ def test_thread_execution(max_workers):
 
     # The runtime must land between the ideal time and the ideal + overhead
     assert execution_time <= expected_time, f"Execution was too slow: {execution_time}s"
-    assert execution_time > ideal_time, f"There must be some overhead!!!"
+    assert execution_time > ideal_time, "There must be some overhead!!!"
 
     # Check some things that better be true
     assert all(result.status for result in results), "Not all threads completed successfully"

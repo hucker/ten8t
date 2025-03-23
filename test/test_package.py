@@ -45,7 +45,7 @@ def test_defaults():
 
     assert pkg.module_glob == "check_*.py"
     assert pkg.function_prefix == "check_"
-    assert pkg.name is "check"
+    assert pkg.name == "check"
     assert pkg.env == {}
     assert pkg.auto_load is True
 

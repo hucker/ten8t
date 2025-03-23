@@ -2,8 +2,8 @@ import sys
 from abc import ABC, abstractmethod
 from typing import List, TextIO
 
-from .config import Ten8tDumpConfig
 from ..ten8t_checker import Ten8tChecker
+from .config import Ten8tDumpConfig
 
 
 class Ten8tDump(ABC):
@@ -48,7 +48,7 @@ class Ten8tDump(ABC):
 
         return columns if isinstance(columns, list) else [columns]
 
-    def get_output_file(self) -> TextIO:
+    def get_output_file(self, encoding="utf8") -> TextIO:
         """
         Get file handle for output based on config.
 
@@ -57,7 +57,7 @@ class Ten8tDump(ABC):
         """
         filename = self.config.output_file
         if filename:
-            return open(filename, "w", newline="")
+            return open(filename, "w", newline="",encoding=encoding)
         return sys.stdout
 
     def dump(self, checker: Ten8tChecker) -> None:
@@ -68,6 +68,7 @@ class Ten8tDump(ABC):
             checker: Ten8tChecker instance containing results to dump
 
         Raises:
+            
             Ten8tException: If serialization fails
         """
         output_file = self.get_output_file()

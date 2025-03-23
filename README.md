@@ -32,7 +32,6 @@ attributes, and phases for fine-grained control. With support for lightweight se
 works for small projects and large, complex systems. Its intuitive tooling ensures that basic tests are
 easy to write, while its extensibility with standard Python code within reach of your coding ability.
 
-
 ## Why Not pytest, Great Expectations or other popular tools?
 
 The distinction between `Ten8t`, `pytest`, and Great Expectations and others lies in their scope, complexity, and
@@ -313,6 +312,7 @@ include information useful providing detailed information and greatly simplify d
 like tooltips as well as detailed error information with the traceback and exception data.
 
 <!--file snippets/result.json-->
+
 ```json
 {
   "package_count": 1,
@@ -1021,7 +1021,6 @@ __Complexity__
 <small>radon_cc.csv &nbsp;&nbsp; 07:09:46 2025-03-21</small>
 
 <!--file end-->
-
 
 ## TODO
 

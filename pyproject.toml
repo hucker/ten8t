@@ -61,7 +61,6 @@ dependencies = [
     "numpy==2.2.4",
     "pandas-stubs==2.2.3.250308",
     "types-requests==2.32.0.20250306",
-
 ]
 
 [project.urls]

@@ -28,7 +28,7 @@ def test_default_values() -> None:
     assert r.count == 0
     assert r.skipped is False
     assert r.except_ is None
-    assert r.traceback is ""
+    assert r.traceback == ""
     assert r.runtime_sec == 0.0
     assert r.warn_msg == ""
     assert r.info_msg == ""

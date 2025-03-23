@@ -1,4 +1,10 @@
+"""
+All render objects must match this protocol.
+
+NOTE: Test case for using protocols instead of inheritance.
+"""
 from typing import Protocol, runtime_checkable
+
 
 @runtime_checkable
 class Ten8tRendererProtocol(Protocol):
@@ -34,7 +40,7 @@ class Ten8tRendererProtocol(Protocol):
         Returns:
             The rendered text in the appropriate format
         """
-        ...
+
 
     def cleanup(self) -> None:
         """
@@ -43,4 +49,4 @@ class Ten8tRendererProtocol(Protocol):
         This might include closing file handles, releasing resources,
         or resetting internal state.
         """
-        ...
+

@@ -1,7 +1,12 @@
-from .config import Ten8tDumpConfig
-from .csv import Ten8tDumpCSV
-from .markdown import Ten8tDumpMarkdown
+"""
+The functions in this module used to be hand coded, they not use the serialazation classes.
+"""
+
+from ten8t.serialize.concrete.csv import Ten8tDumpCSV
+from ten8t.serialize.concrete.markdown import Ten8tDumpMarkdown
+
 from ..ten8t_checker import Ten8tChecker
+from .config import Ten8tDumpConfig
 
 
 # Backward compatibility functions
@@ -30,10 +35,8 @@ def ten8t_save_md(ch: Ten8tChecker,
 
     Args:
         ch: Ten8tChecker instance containing results
-        csv_cols: Columns to include in CSV (None for default)
-        csv_file: Output CSV filename (None for stdout)
+        config: Configuration object for the dump process (None for default)
     """
     config = config or Ten8tDumpConfig.markdown_default()
     dumper = Ten8tDumpMarkdown(config)
     dumper.dump(ch)
-

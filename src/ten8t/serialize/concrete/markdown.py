@@ -1,8 +1,12 @@
+"""
+Markdown serialization implementation for Ten8t test results.
+"""
+
 from typing import Any, TextIO
 
-from .base import Ten8tDump
-from .config import Ten8tDumpConfig
-from ..ten8t_checker import Ten8tChecker
+from ten8t.serialize.base import Ten8tDump
+from ten8t.serialize.config import Ten8tDumpConfig
+from ten8t.ten8t_checker import Ten8tChecker
 
 
 class Ten8tDumpMarkdown(Ten8tDump):
@@ -80,9 +84,9 @@ class Ten8tDumpMarkdown(Ten8tDump):
                 elif col =='skip':
                     summary_values.append(checker.skip_count)
                 elif col == 'perfect_run':
-                     summary_values.append(checker.perfect_run)
+                    summary_values.append(checker.perfect_run)
                 elif col =='warn':
-                     summary_values.append(checker.warn_count)
+                    summary_values.append(checker.warn_count)
                 elif col == 'duration_seconds':
                     summary_values.append(f'{float(checker.duration_seconds):.03f}')
                 elif col == 'end_time':

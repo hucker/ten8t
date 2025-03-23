@@ -99,11 +99,12 @@ class Ten8tResult:
         if self.except_ is not None and not self.traceback:
             self.traceback = traceback.format_exc()
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         """Convert the Ten8tResult instance to a dictionary."""
         d = asdict(self)
 
-        # We want this to be hashable so we make this a string.
+        # We want this dict to be hashable so we make this a string.
+        # Place any other unhashable things here (including deleting them).
         d['except_'] = str(d['except_'])
         return d
 

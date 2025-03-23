@@ -1,13 +1,22 @@
+"""
+This module privdes support for creating a singleton object that manages the available renderers.
+
+Because of difficulties in using isinstance to detect inherited classes (because of import naming issues)
+this module detects valid renderers using the RendererProtocol.
+
+"""
+
 from typing import Type
 
-from .github_markdown import Ten8tGitHubMarkdownRenderer
-from .html import Ten8TBasicBasicHTMLRenderer
-from .markdown import Ten8TBasicBasicMarkdownRenderer
-from .protocol import Ten8tRendererProtocol
-from .rich import Ten8TBasicBasicRichRenderer
-from .streamlit import Ten8TBasicBasicStreamlitRenderer
-from .text import Ten8tBasicTextRenderer
+from ten8t.render.concrete.github_markdown import Ten8tGitHubMarkdownRenderer
+from ten8t.render.concrete.html import Ten8TBasicBasicHTMLRenderer
+from ten8t.render.concrete.markdown import Ten8TBasicBasicMarkdownRenderer
+from ten8t.render.concrete.rich import Ten8TBasicBasicRichRenderer
+from ten8t.render.concrete.streamlit import Ten8TBasicBasicStreamlitRenderer
+from ten8t.render.concrete.text import Ten8tBasicTextRenderer
+
 from ..ten8t_exception import Ten8tException, Ten8tValueError
+from .protocol import Ten8tRendererProtocol
 
 
 class Ten8tRendererFactory:

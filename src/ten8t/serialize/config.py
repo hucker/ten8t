@@ -86,4 +86,3 @@ class Ten8tDumpConfig:
                 f"Invalid {param_name} specified: {invalid_cols}. "
                 f"Valid columns are: {valid_columns}"
             )
-
