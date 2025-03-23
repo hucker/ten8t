@@ -12,7 +12,6 @@ def ten8t_save_csv(ch: Ten8tChecker, config: Ten8tDumpConfig = None):
     Args:
         ch: Ten8tChecker instance containing results
         config: Configuration object for the dump process (None for default)
-        quoting: CSV quoting style (if None, determined by config.quoted_strings)
     """
     # Use default config if none provided
     config = config or Ten8tDumpConfig.csv_default()
@@ -33,7 +32,6 @@ def ten8t_save_md(ch: Ten8tChecker,
         ch: Ten8tChecker instance containing results
         csv_cols: Columns to include in CSV (None for default)
         csv_file: Output CSV filename (None for stdout)
-        quoting: CSV quoting style
     """
     config = config or Ten8tDumpConfig.markdown_default()
     dumper = Ten8tDumpMarkdown(config)

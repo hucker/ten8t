@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List, TextIO
 
 from .config import Ten8tDumpConfig
+from ..ten8t_checker import Ten8tChecker
 
 
 class Ten8tDump(ABC):
@@ -59,7 +60,7 @@ class Ten8tDump(ABC):
             return open(filename, "w", newline="")
         return sys.stdout
 
-    def dump(self, checker: 'Ten8tChecker') -> None:
+    def dump(self, checker: Ten8tChecker) -> None:
         """
         Dump checker results to the specified format.
 
@@ -80,7 +81,7 @@ class Ten8tDump(ABC):
                 output_file.close()
 
     @abstractmethod
-    def _dump_implementation(self, checker: 'Ten8tChecker', output_file: TextIO) -> None:
+    def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO) -> None:
         """
         Implementation-specific dumping logic to be overridden by subclasses.
 

@@ -11,13 +11,13 @@ from ten8t import render
 
 
 @pytest.fixture
-def mock_renderer():
+def mock_renderer() -> render.Ten8tRendererProtocol:
     """
     A pytest fixture that returns a mock implementation of RenderProtocol to allow
     testing of registring and running new renderers.
     """
 
-    class MockRenderer:
+    class MockRenderer(render.Ten8tRendererProtocol):
         @property
         def renderer_name(self) -> str:
             return "mock"
@@ -32,7 +32,7 @@ def mock_renderer():
         def cleanup(self) -> None:
             pass
 
-    # Return  the mock class
+    # Return  the mock CLASS not instance
     return MockRenderer
 
 

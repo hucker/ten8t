@@ -3,6 +3,7 @@ from typing import Any, TextIO
 
 from .base import Ten8tDump
 from .config import Ten8tDumpConfig
+from ..ten8t_checker import Ten8tChecker
 
 
 class Ten8tDumpCSV(Ten8tDump):
@@ -46,7 +47,7 @@ class Ten8tDumpCSV(Ten8tDump):
             # Get attribute directly
             return getattr(result, col)
 
-    def _dump_implementation(self, checker: 'Ten8tChecker', output_file: TextIO) -> None:
+    def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO) -> None:
         """
         Implement CSV-specific dumping logic.
 

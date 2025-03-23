@@ -107,10 +107,11 @@ def display_results(results: list[t8.Ten8tResult]):
 
         # Append each row directly to the table, note that I'm using the "rendered" view
         table.append(
-            f"| {count} | {c_f(r.status)} | {orange(yes_or_none(r.warn_msg))} | " \
-            f"{violet(yes_or_none(r.skipped))}| {blue(r.tag)} | {r.level} | {r.phase} " \
-            f"| {r.ruid} | {c_f(r.module_name)} | {c_f(r.func_name)} " \
-            f"|{c_f(r.msg_rendered)} |")
+            f"| {count} | {c_f(r.status)} | {orange(yes_or_none(r.warn_msg))} | "
+            f"{violet(yes_or_none(r.skipped))}| {blue(r.tag)} | {r.level} | {r.phase} "
+            f"| {r.ruid} | {c_f(r.module_name)} | {c_f(r.func_name)} "
+            f"|{c_f(r.msg_rendered)} |"
+        )
 
         # Convert the list of rows into a single string with line breaks
     markdown_table = "\n".join(table)
@@ -237,7 +238,7 @@ def main():
 
             if include_ui:
                 st.write(
-                    "All of these options are ANDed together, if you select everything " \
+                    "All of these options are ANDed together, if you select everything " 
                     "from 1 of the lists all functions will be run.")
                 tags = left_col.multiselect("Include These Tags", options=checker.tags, default=checker.tags)
                 ruids = left_col.multiselect("Include These Rule Ids", options=checker.ruids, default=[])
@@ -246,7 +247,7 @@ def main():
             else:
 
                 st.write(
-                    "All of these options are ANDed together, if you select everything from 1 of " \
+                    "All of these options are ANDed together, if you select everything from 1 of " 
                     "the lists no functions will be run.")
                 tags = left_col.multiselect("Exclude These Tags", options=checker.tags, default=None)
                 ruids = left_col.multiselect("Exclude These Rule Ids", options=checker.ruids, default=None)
