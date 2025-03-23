@@ -218,7 +218,9 @@ def main():
     st.markdown(info_mkdown)
     package_name = st.selectbox("Select Package", options=list(packages_mapping.keys()), index=0)
     package_folder = packages_mapping[package_name]
-    st_renderer = t8.Ten8tBasicStreamlitRenderer()  # Nice color coding for streamlit
+    st_renderer = (
+        t8.Ten8TBasicBasicStreamlitRenderer()
+    )  # Nice color coding for streamlit
     package = t8.Ten8tPackage(folder=package_folder)
     checker = t8.Ten8tChecker(packages=[package], renderer=st_renderer)
 

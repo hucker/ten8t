@@ -5,8 +5,9 @@ from importlib.metadata import PackageNotFoundError, version
 
 from .render import (BM, TAG_ACTUAL, TAG_BLACK, TAG_BLUE, TAG_BOLD, TAG_CODE, TAG_DATA, TAG_EXPECTED, TAG_FAIL,
                      TAG_GREEN, TAG_ITALIC, TAG_ORANGE, TAG_PASS, TAG_PURPLE, TAG_RED, TAG_SKIP, TAG_STRIKETHROUGH,
-                     TAG_UNDERLINE, TAG_WARN, TAG_WHITE, TAG_YELLOW, Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer,
-                     Ten8tBasicRichRenderer, Ten8tBasicStreamlitRenderer, Ten8tMarkup, Ten8tTextRenderer)
+                     TAG_UNDERLINE, TAG_WARN, TAG_WHITE, TAG_YELLOW, Ten8TBasicBasicHTMLRenderer,
+                     Ten8TBasicBasicMarkdownRenderer, Ten8TBasicBasicRichRenderer, Ten8TBasicBasicStreamlitRenderer,
+                     Ten8tBasicTextRenderer, Ten8tMarkup)
 # Import and re-export symbols from sub packages
 from .serialize import (Ten8tDump, Ten8tDumpCSV, Ten8tDumpConfig, Ten8tDumpMarkdown, ten8t_save_csv, ten8t_save_md)
 # This depends on pathlib which should always be there so
