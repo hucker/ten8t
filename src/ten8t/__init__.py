@@ -12,6 +12,9 @@ from .render import BM, Ten8tAbstractRenderer, Ten8tBasicHTMLRenderer, Ten8tBasi
 # Built in render engines
 from .render import Ten8tAbstractRenderer, Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, Ten8tBasicRichRenderer, \
     Ten8tBasicStreamlitRenderer, Ten8tGitHubMarkdownRenderer, Ten8tRendererFactory, Ten8tTextRenderer
+from .score import (ScoreBinaryFail, ScoreBinaryPass, ScoreByFunctionBinary, ScoreByFunctionMean, ScoreByResult,
+                    ScoreStrategy, get_registered_strategies, get_strategy_class, register_score_class,
+                    reset_score_strategy_registry)  # noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401
 # Import and re-export symbols from sub packages
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
@@ -67,15 +70,6 @@ from .ten8t_ruid import (
     package_ruids,  # noqa: F401
     ruid_issues,  # noqa: F401
     valid_ruids,  # noqa: F401
-)
-from .ten8t_score import (
-    ScoreBinaryFail,  # noqa: F401
-    ScoreBinaryPass,  # noqa: F401
-    ScoreByFunctionBinary,  # noqa: F401
-    ScoreByFunctionMean,  # noqa: F401
-    ScoreByResult,  # noqa: F401
-    ScoreStrategy,  # noqa: F401
-    register_score_class,  # noqa: F401
 )
 from .ten8t_thread import Ten8tThread  # noqa: F401
 from .ten8t_tomlrc import Ten8tTomlRC  # noqa: F401

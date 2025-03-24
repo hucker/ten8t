@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from .render import Ten8tAbstractRenderer
 from .render import Ten8tTextRenderer
+from .score import ScoreByResult, ScoreStrategy
 from .ten8t_exception import Ten8tException
 from .ten8t_function import Ten8tFunction
 from .ten8t_immutable import Ten8tEnvDict, Ten8tEnvList, Ten8tEnvSet
@@ -17,7 +18,6 @@ from .ten8t_progress import Ten8tMultiProgress, Ten8tNoProgress, Ten8tProgress
 from .ten8t_rc import Ten8tRC
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
-from .ten8t_score import ScoreByResult, ScoreStrategy
 from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
 
 ADHOC_MODULE_NAME = 'adhoc'

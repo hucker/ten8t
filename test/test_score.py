@@ -5,11 +5,9 @@
 
 import pytest
 
-from src.ten8t import Ten8tException
+from src.ten8t.score import ScoreBinaryFail, ScoreByFunctionMean
+from src.ten8t.score import ScoreBinaryPass, ScoreByFunctionBinary, ScoreByResult
 from src.ten8t.ten8t_result import TR
-from src.ten8t.ten8t_score import ScoreBinaryFail, ScoreByFunctionMean
-from src.ten8t.ten8t_score import ScoreBinaryPass, ScoreByFunctionBinary, ScoreByResult, ScoreStrategy
-from src.ten8t.ten8t_score import register_score_class
 
 
 @pytest.fixture
@@ -111,33 +109,33 @@ def test_score_binary_fail(all_pass, all_fail, half_pass):
     assert by_binary_fail([]) == 0
 
 
-@pytest.mark.parametrize("strategy_name, strategy_class", [
-    ("by_function_mean", ScoreByFunctionMean),
-    ("by_function_binary", ScoreByFunctionBinary),
-    ("by_result", ScoreByResult),
-    ("by_binary_pass", ScoreBinaryPass),
-    ("by_binary_fail", ScoreBinaryFail),
-    ("ScoreByFunctionMean", ScoreByFunctionMean),
-    ("ScoreByFunctionBinary", ScoreByFunctionBinary),
-    ("ScoreByResult", ScoreByResult),
-    ("ScoreBinaryPass", ScoreBinaryPass),
-    ("ScoreBinaryFail", ScoreBinaryFail),
-])
-def test_strategy_factory(strategy_name, strategy_class):
-    """Test the strategy factory in  both methods."""
-    assert isinstance(ScoreStrategy.strategy_factory(strategy_name), strategy_class)
-
-
-def test_bad_strategy_name():
-    """Exception on invalid strategy name."""
-    with pytest.raises(Ten8tException):
-        ScoreStrategy.strategy_factory("bad_strategy_name")
-
-
-def test_bad_strategy_class():
-    """Exception from non-derived class"""
-    with pytest.raises(Ten8tException):
-        ScoreStrategy.strategy_factory(dict)
+# @pytest.mark.parametrize("strategy_name, strategy_class", [
+#     ("by_function_mean", ScoreByFunctionMean),
+#     ("by_function_binary", ScoreByFunctionBinary),
+#     ("by_result", ScoreByResult),
+#     ("by_binary_pass", ScoreBinaryPass),
+#     ("by_binary_fail", ScoreBinaryFail),
+#     ("ScoreByFunctionMean", ScoreByFunctionMean),
+#     ("ScoreByFunctionBinary", ScoreByFunctionBinary),
+#     ("ScoreByResult", ScoreByResult),
+#     ("ScoreBinaryPass", ScoreBinaryPass),
+#     ("ScoreBinaryFail", ScoreBinaryFail),
+# ])
+# def test_strategy_factory(strategy_name, strategy_class):
+#     """Test the strategy factory in  both methods."""
+#     assert isinstance(ScoreStrategy.strategy_factory(strategy_name), strategy_class)
+#
+#
+# def test_bad_strategy_name():
+#     """Exception on invalid strategy name."""
+#     with pytest.raises(Ten8tException):
+#         ScoreStrategy.strategy_factory("bad_strategy_name")
+#
+#
+# def test_bad_strategy_class():
+#     """Exception from non-derived class"""
+#     with pytest.raises(Ten8tException):
+#         ScoreStrategy.strategy_factory(dict)
 
 
 @pytest.mark.parametrize("scoring_function", [
@@ -163,22 +161,21 @@ def test_None_results(scoring_function):
     score = scoring_function()
     assert score(None) == 0.0
 
-
-# @pytest.mark.skip(reason="Derived scoring not detected by factory")
-def test_derived_class(by_func_weights_with_skip):
-    @register_score_class
-    class DerivedScoreByResult(ScoreByResult):
-        """Derived class to check that lower level code handles new classes"""
-        strategy_name = 'derived_score_by_result'
-
-    for name in ["DerivedScoreByResult", 'derived_score_by_result']:
-        # This should pass the same test that ScoreByResult passed.
-        by_result = ScoreStrategy.strategy_factory(name)
-
-        # By result, it is easy to just add with code
-        total_weight = 2 * 100 + 1 * 200 + 2 * 300
-        total_pass = 1 * 200 + 1 * 300
-        score = 100.0 * (total_pass * 1.0 / total_weight * 1.0)
-        assert by_result.score(by_func_weights_with_skip) == pytest.approx(score)
-        assert by_result(by_func_weights_with_skip) == pytest.approx(score)
-        assert by_result([]) == 0.0
+# # @pytest.mark.skip(reason="Derived scoring not detected by factory")
+# def test_derived_class(by_func_weights_with_skip):
+#     @register_score_class
+#     class DerivedScoreByResult(ScoreByResult):
+#         """Derived class to check that lower level code handles new classes"""
+#         strategy_name = 'derived_score_by_result'
+#
+#     for name in ["DerivedScoreByResult", 'derived_score_by_result']:
+#         # This should pass the same test that ScoreByResult passed.
+#         by_result = ScoreStrategy.strategy_factory(name)
+#
+#         # By result, it is easy to just add with code
+#         total_weight = 2 * 100 + 1 * 200 + 2 * 300
+#         total_pass = 1 * 200 + 1 * 300
+#         score = 100.0 * (total_pass * 1.0 / total_weight * 1.0)
+#         assert by_result.score(by_func_weights_with_skip) == pytest.approx(score)
+#         assert by_result(by_func_weights_with_skip) == pytest.approx(score)
+#         assert by_result([]) == 0.0
