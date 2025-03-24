@@ -8,6 +8,7 @@ from typing import List
 import pytest
 
 from ten8t import render
+from ten8t.ten8t_exception import Ten8tValueError
 
 
 @pytest.fixture
@@ -40,8 +41,9 @@ def mock_renderer() -> render.Ten8tRendererProtocol:
 
 
 def test_format_exc():
-    with pytest.raises(ValueError):
-        _ = render.Ten8tMarkup(open_delim='<@>', close_delim='<@>')
+    with pytest.raises(Ten8tValueError) as e:
+        # The same patterns are not allowed.
+        _ = render.Ten8tMarkup(open_pattern='<{}>', close_pattern='<{}>')
 
 
 @pytest.mark.parametrize("tag,func,input_,expected_output", [
@@ -92,7 +94,7 @@ def test_all_tags(tag, func, input_, expected_output):
     (render.Ten8tMarkup().white, "Hello, World!", "Hello, World!")
 ])
 def test_ten8t_render_text(markup_func, input_, expected_output):
-    render_text = render.Ten8tBasicTextRenderer()
+    render_text = render.Ten8tTextRenderer()
     formatted_input = markup_func(input_)
     assert render_text.render(formatted_input) == expected_output
 
@@ -122,7 +124,7 @@ def test_ten8t_render_text(markup_func, input_, expected_output):
     (render.Ten8tMarkup().white, "Hello, World!", "Hello, World!"),
 ])
 def test_ten8t_basic_markdown(markup_func, input_, expected_output):
-    markdown_render = render.Ten8TBasicBasicMarkdownRenderer()
+    markdown_render = render.Ten8tBasicMarkdownRenderer()
     formatted_input = markup_func(input_)
     output = markdown_render.render(formatted_input)
     assert output == expected_output
@@ -150,7 +152,7 @@ def test_ten8t_basic_markdown(markup_func, input_, expected_output):
     (render.Ten8tMarkup().white, "Hello, World!", "[white]Hello, World![/white]"),
 ])
 def test_ten8t_basic_rich(markup_func, input_, expected_output):
-    rich_render = render.Ten8TBasicBasicRichRenderer()
+    rich_render = render.Ten8tBasicRichRenderer()
     formatted_input = markup_func(input_)
     output = rich_render.render(formatted_input)
     assert output == expected_output
@@ -178,7 +180,7 @@ def test_ten8t_basic_rich(markup_func, input_, expected_output):
     (render.Ten8tMarkup().white, "Hello, World!", '<span style="color:white">Hello, World!</span>'),
 ])
 def test_ten8t_basic_html_renderer(markup_func, input_, expected_output):
-    html_renderer = render.Ten8TBasicBasicHTMLRenderer()
+    html_renderer = render.Ten8tBasicHTMLRenderer()
     formatted_input = markup_func(input_)
     output = html_renderer.render(formatted_input)
     assert output == expected_output
@@ -206,7 +208,7 @@ def test_ten8t_basic_html_renderer(markup_func, input_, expected_output):
 
 ])
 def test_ten8t_basic_streamlit_renderer(markup_func, input_, expected_output):
-    streamlit_renderer = render.Ten8TBasicBasicStreamlitRenderer()
+    streamlit_renderer = render.Ten8tBasicStreamlitRenderer()
     formatted_input = markup_func(input_)
     output = streamlit_renderer.render(formatted_input)
     assert output == expected_output
@@ -264,7 +266,7 @@ def test_github_markdown_renderer(markup_func, input_, expected_output):
 ])
 def test_ten8t_render_text_with_empty_string(markup_func):
     """All markups with null inputs should map to null outputs."""
-    render_text = render.Ten8tBasicTextRenderer()
+    render_text = render.Ten8tTextRenderer()
     input = ""
     expected_output = ""
     formatted_input = markup_func(input)
@@ -275,11 +277,11 @@ def test_ten8t_render_text_with_empty_string(markup_func):
 
 @pytest.mark.parametrize("renderer_class, expected_name, expected_extensions, expected_default", [
     (render.Ten8tGitHubMarkdownRenderer, "github_markdown", [".md", ".markdown", ".gfm"], ".gfm"),
-    (render.Ten8tBasicTextRenderer, "text", [".txt"], ".txt"),
-    (render.Ten8TBasicBasicRichRenderer, "rich", [], ""),
-    (render.Ten8TBasicBasicMarkdownRenderer, "basic_markdown", [".md", ".markdown"], ".md"),
-    (render.Ten8TBasicBasicStreamlitRenderer, "streamlit", [], ""),
-    (render.Ten8TBasicBasicHTMLRenderer, "basic_html", [".html", ".htm"], ".html"),
+    (render.Ten8tTextRenderer, "text", [".txt"], ".txt"),
+    (render.Ten8tBasicRichRenderer, "rich", [], ""),
+    (render.Ten8tBasicMarkdownRenderer, "markdown", [".md", ".markdown"], ".md"),
+    (render.Ten8tBasicStreamlitRenderer, "streamlit", [], ""),
+    (render.Ten8tBasicHTMLRenderer, "html", [".html", ".htm"], ".html"),
 ])
 def test_renderer_attributes(renderer_class, expected_name, expected_extensions, expected_default):
     renderer = renderer_class()
@@ -333,8 +335,8 @@ def test_list_available_renderers():
     renderers = factory.list_available_renderers()
 
     # Check that essential renderers (e.g., markdown, html, text) exist
-    assert "basic_markdown" in renderers
-    assert "basic_html" in renderers
+    assert "markdown" in renderers
+    assert "html" in renderers
     assert "text" in renderers
 
 
@@ -342,8 +344,8 @@ def test_get_renderer():
     """Test retrieving a renderer by its name."""
     factory = render.Ten8tRendererFactory()
 
-    markdown_renderer = factory.get_renderer("basic_markdown")
-    assert markdown_renderer.renderer_name == "basic_markdown"
+    markdown_renderer = factory.get_renderer("markdown")
+    assert markdown_renderer.renderer_name == "markdown"
 
     # Invalid renderer name should raise a ValueError
     with pytest.raises(Exception) as excinfo:
@@ -361,7 +363,7 @@ def test_get_renderer_for_extension():
 
     # Without dot
     html_renderer = factory.get_renderer_for_extension("html")
-    assert html_renderer.renderer_name == "basic_html"
+    assert html_renderer.renderer_name == "html"
 
     # Invalid extension
     with pytest.raises(Exception) as excinfo:
@@ -376,11 +378,11 @@ def test_get_supported_extensions():
     extensions = factory.get_supported_extensions()
 
     # Verify the expected extensions
-    assert "basic_markdown" in extensions
-    assert ".md" in extensions["basic_markdown"]
+    assert "markdown" in extensions
+    assert ".md" in extensions["markdown"]
 
-    assert "basic_html" in extensions
-    assert ".html" in extensions["basic_html"]
+    assert "html" in extensions
+    assert ".html" in extensions["html"]
 
     assert "text" in extensions
     assert ".txt" in extensions["text"]

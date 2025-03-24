@@ -8,15 +8,14 @@ this module detects valid renderers using the RendererProtocol.
 
 from typing import Type
 
-from ten8t.render.concrete.github_markdown import Ten8tGitHubMarkdownRenderer
-from ten8t.render.concrete.html import Ten8TBasicBasicHTMLRenderer
-from ten8t.render.concrete.markdown import Ten8TBasicBasicMarkdownRenderer
-from ten8t.render.concrete.rich import Ten8TBasicBasicRichRenderer
-from ten8t.render.concrete.streamlit import Ten8TBasicBasicStreamlitRenderer
-from ten8t.render.concrete.text import Ten8tBasicTextRenderer
-
-from ..ten8t_exception import Ten8tException, Ten8tValueError
+from .concrete.github_markdown import Ten8tGitHubMarkdownRenderer
+from .concrete.html import Ten8tBasicHTMLRenderer
+from .concrete.markdown import Ten8tBasicMarkdownRenderer
+from .concrete.rich import Ten8tBasicRichRenderer
+from .concrete.streamlit import Ten8tBasicStreamlitRenderer
+from .concrete.text import Ten8tTextRenderer
 from .protocol import Ten8tRendererProtocol
+from ..ten8t_exception import Ten8tException, Ten8tValueError
 
 
 class Ten8tRendererFactory:
@@ -51,7 +50,7 @@ class Ten8tRendererFactory:
             renderer_class: A class that implements Ten8tRendererProtocol
         """
         if not isinstance(renderer_class, type):
-            raise Ten8tValueError(f"Expected a class, got {type(renderer_class).__name__}")
+            raise Ten8tValueError(f"Expected a Renderer class, got {type(renderer_class).__name__}")
 
         # Create a temporary instance to access the name attribute
         instance = renderer_class()
@@ -69,11 +68,11 @@ class Ten8tRendererFactory:
         # Return the list of default renderers
         return [
             Ten8tGitHubMarkdownRenderer,
-            Ten8tBasicTextRenderer,
-            Ten8TBasicBasicRichRenderer,
-            Ten8TBasicBasicStreamlitRenderer,
-            Ten8TBasicBasicHTMLRenderer,
-            Ten8TBasicBasicMarkdownRenderer
+            Ten8tBasicHTMLRenderer,
+            Ten8tBasicRichRenderer,
+            Ten8tBasicStreamlitRenderer,
+            Ten8tTextRenderer,
+            Ten8tBasicMarkdownRenderer,
         ]
 
     def initialize_renderers(self) -> None:

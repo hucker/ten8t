@@ -5,7 +5,8 @@ There is also support for low level progress for functions/classes.
 import datetime as dt
 from typing import Any, Callable
 
-from .render import Ten8tAbstractRenderer, Ten8tBasicTextRenderer
+from .render import Ten8tAbstractRenderer
+from .render import Ten8tTextRenderer
 from .ten8t_exception import Ten8tException
 from .ten8t_function import Ten8tFunction
 from .ten8t_immutable import Ten8tEnvDict, Ten8tEnvList, Ten8tEnvSet
@@ -168,7 +169,7 @@ class Ten8tChecker:
 
         # In order to support rendered output a render object must be provided
         # if none are provided we create one
-        self.renderer = renderer or Ten8tBasicTextRenderer()
+        self.renderer = renderer or Ten8tTextRenderer()
 
         # If we are provided with an environment we save it off but first wrap it in
         # a class that guards reasonably against writes to the underlying environment

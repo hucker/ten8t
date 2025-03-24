@@ -22,7 +22,7 @@ class Ten8tGitHubMarkdownRenderer(Ten8tAbstractRenderer):
         self.default_extension = ".gfm"
 
         # Override and extend tag mappings with GitHub Markdown features
-        self.tag_mappings.update({
+        self.tag_mappings = {
             TAG_BOLD: ('**', '**'),
             TAG_ITALIC: ('*', '*'),
             TAG_STRIKETHROUGH: ('~~', '~~'),
@@ -51,4 +51,4 @@ class Ten8tGitHubMarkdownRenderer(Ten8tAbstractRenderer):
             # Better code formatting using GitHub syntax highlighting
             TAG_CODE: ('<code>', '</code>'),  #('```python\n', '\n```'),
             TAG_DATA: ('<code>', '</code>'),
-        })
+        }

@@ -682,11 +682,11 @@ def test_auto_ruids():
     "renderer,expected",
     [
         (None, "It works1 hello"),
-        (t8.Ten8TBasicBasicMarkdownRenderer(), "It works1 `hello`"),
-        (t8.Ten8tBasicTextRenderer(), "It works1 hello"),
-        (t8.Ten8TBasicBasicStreamlitRenderer(), "It works1 `hello`"),
-        (t8.Ten8TBasicBasicRichRenderer(), "It works1 hello"),
-        (t8.Ten8TBasicBasicHTMLRenderer(), "It works1 <code>hello</code>"),
+        (t8.Ten8tBasicMarkdownRenderer(), "It works1 `hello`"),
+        (t8.Ten8tTextRenderer(), "It works1 hello"),
+        (t8.Ten8tBasicStreamlitRenderer(), "It works1 `hello`"),
+        (t8.Ten8tBasicRichRenderer(), "It works1 hello"),
+        (t8.Ten8tBasicHTMLRenderer(), "It works1 <code>hello</code>"),
     ],
 )
 def test_check_render_p(renderer, expected):
@@ -713,11 +713,11 @@ def test_check_render_p(renderer, expected):
 
 @pytest.mark.parametrize("renderer,expected", [
     (None, "It works1 hello"),
-    (t8.Ten8tBasicTextRenderer(), "It works1 hello"),
-    (t8.Ten8TBasicBasicMarkdownRenderer(), "It works1 hello"),
-    (t8.Ten8TBasicBasicStreamlitRenderer(), "It works1 :red[hello]"),
-    (t8.Ten8TBasicBasicRichRenderer(), "It works1 [red]hello[/red]"),
-    (t8.Ten8TBasicBasicHTMLRenderer(), """It works1 <span style="color:red">hello</span>"""),
+    (t8.Ten8tTextRenderer(), "It works1 hello"),
+    (t8.Ten8tBasicMarkdownRenderer(), "It works1 hello"),
+    (t8.Ten8tBasicStreamlitRenderer(), "It works1 :red[hello]"),
+    (t8.Ten8tBasicRichRenderer(), "It works1 [red]hello[/red]"),
+    (t8.Ten8tBasicHTMLRenderer(), """It works1 <span style="color:red">hello</span>"""),
 ])
 def test_check_render_color(renderer, expected):
     @t8.attributes(tag="t1", level=1, phase='p1')
