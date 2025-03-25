@@ -1,6 +1,7 @@
 import pytest
 
 from src import ten8t as t8
+from ten8t import Ten8tResult
 
 
 def test_yielder_do_something():
@@ -270,7 +271,7 @@ def test_yield_classes(yield_class, expected_length, expected_summary):
 
     # Run the checker
     ch = t8.Ten8tChecker(check_functions=[yield_result])
-    results = ch.run_all()
+    results: list(Ten8tResult) = ch.run_all()
 
     # Verify the number of results
     assert len(results) == expected_length

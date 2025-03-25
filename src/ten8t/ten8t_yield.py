@@ -99,8 +99,8 @@ class Ten8tYield:
             summary_name: Defaults to ""
         """
         self._count = 0
-        self._show_pass = yield_pass
-        self._show_fail = yield_fail
+        self.yield_pass = yield_pass
+        self.yield_fail = yield_fail
         self._fail_count = 0
         self.show_summary = yield_summary
         self.summary_name = summary_name
@@ -168,7 +168,7 @@ class Ten8tYield:
             for result in results:
                 if isinstance(result, Ten8tResult):
                     self.increment_counter(result)
-                    if not self.show_summary:
+                    if self.yield_pass and result.status or self.yield_fail and not result.status:
                         yield result
                 else:
                     raise Ten8tException(f"Unknown result type {type(results)}")
@@ -240,7 +240,7 @@ class Ten8tYield:
         for result in results:
 
             self.increment_counter(result)
-            if (self._show_fail and not result.status) or (self._show_pass and result.status):
+            if (self.yield_fail and not result.status) or (self.yield_pass and result.status):
                 yield result
 
     def yield_summary(self, name="", msg="") -> Generator[Ten8tResult, None, None]:
