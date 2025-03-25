@@ -77,7 +77,6 @@ pylint>=3.3.4
 pypdf>=5.0.0
 PyPDF2==3.0.1
 pypdfium2==5.0.0b1
-pytest-xdist==3.6.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-multipart==0.0.20

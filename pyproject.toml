@@ -102,7 +102,7 @@ mypi = "^0.0.3"
 ruff = "^0.9.7"
 uv = "^0.6.2"
 radon = "^6.0.0"
-
+pytest-xdist = "^3.6.1"
 
 [build-system]
 requires = ["poetry-core"]
