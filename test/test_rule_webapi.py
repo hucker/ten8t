@@ -1,4 +1,5 @@
 import pytest
+import tenacity
 
 from src import ten8t as t8
 from src.ten8t.rule_webapi import is_mismatch
@@ -102,19 +103,31 @@ def test_wrong_response(expected_json):
 
 
 def test_web_api(expected_json):
-    @t8.attributes(tag="tag")
-    def check_rule1():
-        yield from t8.rule_web_api(url='https://httpbin.org/json',
-                                   json_d=expected_json,
-                                   timeout_sec=TIME_OUT_SEC)
+    """This test can be a little flakey.  Occasionally it will fail for odd reasons."""
 
-    for result in check_rule1():
-        assert result.status
+    @tenacity.retry(
+        reraise=True,
+        stop=tenacity.stop_after_attempt(3),
+        wait=tenacity.wait_fixed(2),
+        retry=tenacity.retry_if_exception_type((ConnectionError, TimeoutError))
+    )
+    def run_web_api_test():
+        @t8.attributes(tag="tag")
+        def check_rule1():
+            yield from t8.rule_web_api(url='https://httpbin.org/json',
+                                       json_d=expected_json,
+                                       timeout_sec=TIME_OUT_SEC)
 
-    # Now make it fail
-    expected_json["slideshow"]["author"] = "Chuck"
-    for result in check_rule1():
-        assert not result.status
+        results = list(check_rule1())
+        assert all(result.status for result in results)
+
+        # Now make it fail
+        expected_json["slideshow"]["author"] = "Chuck"
+        results = list(check_rule1())
+        assert not any(result.status for result in results)
+
+    run_web_api_test()
+
 
 
 def convert_integers_to_strings(d):

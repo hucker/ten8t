@@ -3,6 +3,7 @@ This class manages running the checker against a list of functions.
 There is also support for low level progress for functions/classes.
 """
 import datetime as dt
+from importlib.metadata import version
 from typing import Any, Callable
 
 from .render import Ten8tAbstractRenderer
@@ -799,6 +800,7 @@ class Ten8tChecker:
             "ruids": self.ruids,
             "score": self.score,
             "env_nulls": self.env_nulls,
+            "__version__": version("ten8t"),
         }
         return header
 
@@ -809,6 +811,7 @@ class Ten8tChecker:
         h = self.get_header()
 
         r = {
+            # This is the less important header stuff.
             "start_time": self.start_time,
             "end_time": self.end_time,
             "duration_seconds": self.duration_seconds,
@@ -818,17 +821,13 @@ class Ten8tChecker:
             "failed_count": self.fail_count,
             "skip_count": self.skip_count,
             "total_count": self.result_count,
-            "package_count": self.package_count,
-            "module_count": self.module_count,
             "check_count": self.function_count,
             "result_count": self.result_count,
             "clean_run": self.clean_run,
             "perfect_run": self.perfect_run,
             "abort_on_fail": self.abort_on_fail,
             "abort_on_exception": self.abort_on_exception,
-            "phases": self.phases,
-            "levels": self.levels,
-            "tags": self.tags,
+
             # the meat of the output lives here
             "results": [r.as_dict() for r in self.results],
         }

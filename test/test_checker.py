@@ -1,3 +1,5 @@
+import re
+
 import pytest
 
 from src import ten8t as t8
@@ -486,6 +488,7 @@ def attr_functions():
 
     def func_b():
         """Not called because we are only checking attributes"""
+
         @t8.attributes(tag="t2", level=2, phase='p2', ruid="ruid_2")
         def func():  # pragma no cover
             yield t8.Ten8tResult(status=True, msg="It works2")
@@ -494,6 +497,7 @@ def attr_functions():
 
     def func_c():
         """Not called because we are only checking attributes"""
+
         @t8.attributes(tag="t3", level=3, phase='p3', ruid="ruid_3")
         def func():  # pragma no cover
             yield t8.Ten8tResult(status=True, msg="It works3")
@@ -502,6 +506,7 @@ def attr_functions():
 
     def func_d():
         """Not called because we are only checking attributes"""
+
         @t8.attributes(tag="t4", level=4, phase='p4', ruid="ruid_4")
         def func():  # pragma no cover
             yield t8.Ten8tResult(status=True, msg="It works4")
@@ -647,6 +652,29 @@ def test_env_nulls(func1, func2, func3):
     assert header['env_nulls'] == ['fum']
     assert header['levels'] == [1, 2, 3]
     assert header['function_count'] == 3
+
+
+def test_verify_version(func1):
+    ch = t8.Ten8tChecker(check_functions=[func1])
+    _ = ch.run_all()
+    header = ch.get_header()
+
+    ver = t8.version("ten8t")
+
+    # This is a it circular, but it is important that the version makes it into the output data stream
+    # and that it is not unknown.   Note that is not verifying that the version number is correct, just
+    # that it exists and isn't unkown.
+    assert header['__version__'] == ver
+    assert ver.lower() != 'unknown'
+
+    # Should match versions like 1.22.23.  All numbers are required and they must be 0-99
+    # Strictly speaking this is not a real test, the version can be anything, but at this time
+    # this is the pattern I expect.
+    pattern = r'^\d{1,2}\.\d{1,2}\.\d{1,2}$'
+
+    # The version should match the patter.
+    match = re.match(pattern, ver)
+    assert match, "Version did not match xx.yy.zz version number pattern."
 
 
 def test_auto_ruids():
