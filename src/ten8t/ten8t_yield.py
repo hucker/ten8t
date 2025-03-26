@@ -3,11 +3,34 @@ The yield class is used to track yield of TR result objects so pass/fail and sum
 statistics can easily be provided by users of the class.  Many rule functions uses
 yield objects to reliably track state.
 """
+from enum import Enum
 from functools import wraps
 from typing import Generator
 
 from .ten8t_exception import Ten8tException
 from .ten8t_result import Ten8tResult
+
+
+class Ten8tNoResultSummary(Enum):
+    """
+    Controls how having NO results impacts summaries creating summaries.
+
+    """
+    SummaryPassOnNone = "SummaryPassOnNone"  # Emit a passing summary that says "no results"
+    SummaryFailOnNone = "SummaryFailOnNone"  # Emit a failing summary that says "no results"
+
+    # Note these two cases elevate a summary result to a regular result.  This is nice because it
+    # can make it so you always have atlease one record for every test.
+    ResultFailOnNone = "ResultFailOnNone"  # Emit a failing RESULT if there are no results
+    ResultPassOnNone = "ResultPassOnNone"  # Emit a passing RESULT if there are no results
+
+    SkipOnNone = "SkipOnNone"  # If there is nothing then skip it!
+
+
+DEFAULT_NO_RESULT = Ten8tNoResultSummary.SummaryPassOnNone
+
+
+# For now we default to reporting a passing summary record if they ask for one and there is no data.
 
 
 class Ten8tYield:
@@ -50,13 +73,18 @@ class Ten8tYield:
         yield from y(TR(True,"Info...")
     if not y.yielded:
         yield from y(TR(False,"Nothing to do"))
-    if show_summary:
+    if emit_summary:
         yield TR(status=self.fail_count==0,msg=f"{self.pass_count} passes "
                  f"and {self.fail_count} fails")
 
     """
 
-    def __init__(self, *, yield_pass=True, yield_fail=True, yield_summary=False, summary_name=""):
+    def __init__(self, *,
+                 emit_pass: bool = True,
+                 emit_fail: bool = True,
+                 emit_summary: bool = False,
+                 summary_name: str = "",
+                 no_results: Ten8tNoResultSummary = DEFAULT_NO_RESULT):
         """
         The ten8t yield class allows you to use the yield mechanism while also tracking
         pass fail status of the generator.  Using this class allows for a separation of
@@ -66,25 +94,25 @@ class Ten8tYield:
         When your test is complete you can query the yield object and report the
         statistics with minimal overhead.
 
-        If you set show_summary to true you will get a summary result that can be
+        If you set emit_summary to true you will get a summary result that can be
         very useful in the case that
 
         If you provide a name to this init then a generic summary message can be
         generated like this:
 
-        y = Ten8tYield(summary_name="Generic Test",show_summary=True)
+        y = Ten8tYield(summary_name="Generic Test",emit_summary=True)
         y(status=True,msg="Test1")
         y(status=True,msg="Test2")
         y(status=False,msg="Test3")
-        y.yield_summary()
+        y.emit_summary()
 
         TR(status=False,msg="Generic Test had 2 pass and 1 fail results for 66.7%.")
 
-        y = Ten8tYield(summary_name="Generic Test",show_summary=False)
+        y = Ten8tYield(summary_name="Generic Test",emit_summary=False)
         y(status=True,msg="Test1")
         y(status=True,msg="Test2")
         y(status=False,msg="Test3")
-        y.yield_summary()
+        y.emit_summary()
 
         TR(status=True,msg="Generic Test")
         TR(status=True,msg="Generic Test")
@@ -93,20 +121,21 @@ class Ten8tYield:
         Note: All arguments MUST be passed as keyword arguments.
 
         Args:
-            yield_pass(bool): Yield pass results. Defaults to True
-            yield_fail(bool): Yield fail results. Defaults to True
-            yield_summary(bool): Show summary message. Defaults to False
+            emit_pass(bool): Yield pass results. Defaults to True
+            emit_fail(bool): Yield fail results. Defaults to True
+            emit_summary(bool): Show summary message. Defaults to False
             summary_name: Defaults to ""
         """
         self._count = 0
-        self.yield_pass = yield_pass
-        self.yield_fail = yield_fail
+        self.emit_pass = emit_pass
+        self.emit_fail = emit_fail
         self._fail_count = 0
-        self.show_summary = yield_summary
+        self.emit_summary = emit_summary
         self.summary_name = summary_name
         self.original_func_name = ''
+        self.no_results = no_results
 
-        if not any([yield_pass, yield_fail, yield_summary]):
+        if not any([emit_pass, emit_fail, emit_summary]):
             raise Ten8tException("You must show a result or a summary.")
 
     @property
@@ -168,7 +197,7 @@ class Ten8tYield:
             for result in results:
                 if isinstance(result, Ten8tResult):
                     self.increment_counter(result)
-                    if self.yield_pass and result.status or self.yield_fail and not result.status:
+                    if self.emit_pass and result.status or self.emit_fail and not result.status:
                         yield result
                 else:
                     raise Ten8tException(f"Unknown result type {type(results)}")
@@ -240,7 +269,7 @@ class Ten8tYield:
         for result in results:
 
             self.increment_counter(result)
-            if (self.yield_fail and not result.status) or (self.yield_pass and result.status):
+            if (self.emit_fail and not result.status) or (self.emit_pass and result.status):
                 yield result
 
     def yield_summary(self, name="", msg="") -> Generator[Ten8tResult, None, None]:
@@ -256,7 +285,7 @@ class Ten8tYield:
 
         Please note that the call looks like where you yield from
 
-        yield from y.yield_summary()
+        yield from y.emit_summary()
 
         Args:
             name: Provide a name for the yield summary to override the one at init time.
@@ -265,10 +294,28 @@ class Ten8tYield:
         Returns:
 
         """
-        if self.show_summary:
+        if self.emit_summary:
             name = name or self.summary_name or self.original_func_name
             msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
-            yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)
+
+            if self.yielded:
+                yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)
+            else:
+
+                # This handles all the ways you might want to handle summary results
+                # when there are no results.
+                if self.no_results.name == Ten8tNoResultSummary.SummaryFailOnNone.name:
+                    yield Ten8tResult(status=False, msg=msg, summary_result=True)
+                elif self.no_results.name == Ten8tNoResultSummary.SummaryPassOnNone.name:
+                    yield Ten8tResult(status=True, msg=msg, summary_result=True)
+                elif self.no_results.name == Ten8tNoResultSummary.ResultPassOnNone.name:
+                    yield Ten8tResult(status=True, msg=msg, summary_result=False)
+                elif self.no_results.name == Ten8tNoResultSummary.ResultFailOnNone.name:
+                    yield Ten8tResult(status=False, msg=msg, summary_result=False)
+                elif self.no_results.name == Ten8tNoResultSummary.SkipOnNone.name:
+                    yield Ten8tResult(status=None, msg=msg, skipped=True)
+                else:
+                    raise Ten8tException("Unknown no_results value %s", self.no_results)
 
 
 # These are useful subclasses that may be passed as the yield object inside of rule functions.
@@ -278,28 +325,28 @@ class Ten8tYieldPassOnly(Ten8tYield):
     """ Only yield pass results from a rule function."""
 
     def __init__(self, summary_name: str = "Yield Pass Results"):
-        super().__init__(yield_summary=False, yield_pass=True, yield_fail=False, summary_name=summary_name)
+        super().__init__(emit_summary=False, emit_pass=True, emit_fail=False, summary_name=summary_name)
 
 
 class Ten8tYieldFailOnly(Ten8tYield):
     """ Only yield fail results from a rule function."""
 
     def __init__(self, summary_name: str = "Yield Fail Results"):
-        super().__init__(yield_summary=False, yield_pass=False, yield_fail=True, summary_name=summary_name)
+        super().__init__(emit_summary=False, emit_pass=False, emit_fail=True, summary_name=summary_name)
 
 
 class Ten8tYieldPassFail(Ten8tYield):
     """ Only yield pass and fail results from a rule function."""
 
     def __init__(self, summary_name: str = "Yield Pass/Fail Results"):
-        super().__init__(yield_summary=False, yield_pass=True, yield_fail=True, summary_name=summary_name)
+        super().__init__(emit_summary=False, emit_pass=True, emit_fail=True, summary_name=summary_name)
 
 
 class Ten8tYieldAll(Ten8tYield):
     """ Yield everything. """
 
     def __init__(self, summary_name: str = "Yield All Results"):
-        super().__init__(yield_summary=True, yield_pass=True, yield_fail=True, summary_name=summary_name)
+        super().__init__(emit_summary=True, emit_pass=True, emit_fail=True, summary_name=summary_name)
 
 
 class Ten8tYieldSummaryOnly(Ten8tYield):
@@ -313,4 +360,4 @@ class Ten8tYieldSummaryOnly(Ten8tYield):
     """
 
     def __init__(self, summary_name: str = ""):
-        super().__init__(yield_summary=True, yield_pass=False, yield_fail=False, summary_name=summary_name)
+        super().__init__(emit_summary=True, emit_pass=False, emit_fail=False, summary_name=summary_name)

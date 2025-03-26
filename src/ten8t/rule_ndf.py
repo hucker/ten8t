@@ -64,7 +64,7 @@ def rule_validate_ndf_schema(df: FrameT,
 
     schema = df.dtypes
 
-    y = Ten8tYield(summary_name=summary_name, yield_summary=summary_only)
+    y = Ten8tYield(summary_name=summary_name, emit_summary=summary_only)
 
     int_types = "int8 int16 int32 int64 uint8 uint16 uint32 uint64".split()
     float_types = "float32 float64".split()
@@ -404,7 +404,7 @@ def rule_ndf_pf_columns(df: FrameT,
         raise AttributeError("Invalid enable column name.")
 
     if summary_only:
-        y = Ten8tYield(yield_summary=True, yield_pass=False, yield_fail=False)
+        y = Ten8tYield(emit_summary=True, emit_pass=False, emit_fail=False)
     else:
         y = Ten8tYield()
 

@@ -180,7 +180,7 @@ class Ten8tDumpExcel(Ten8tDump):
         workbook.remove(workbook.active)  # Remove default sheet
 
         # Format sheets - using configuration settings
-        if self.config.show_summary:
+        if self.config.emit_summary:
             summary_data = checker.get_header()
             summary_sheet_name = self.config.summary_sheet_name or "Summary"
             self._format_header_sheet(workbook, summary_data, summary_sheet_name)

@@ -80,7 +80,7 @@ def rule_paths_exist(paths: StrListOrNone,
 
     """
 
-    y = yielder if yielder else Ten8tYield(yield_summary=summary_only, summary_name=summary_name)
+    y = yielder if yielder else Ten8tYield(emit_summary=summary_only, summary_name=summary_name)
 
     paths = any_to_str_list(paths)
 
@@ -202,7 +202,7 @@ def rule_stale_files(
         Generator[TR, None, None]: Provides results or a summary of the stale file evaluations,
             indicating whether files matched the criteria and detailing their respective status.
     """
-    y = yielder if yielder else Ten8tYield(yield_summary=summary_only,
+    y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_stale_files")
     code = BM.code
     current_time = time.time()
@@ -244,7 +244,7 @@ def rule_large_files(folder: str,
         summary_name (str or None, optional): The name to assign to the summary.
                                               Default is None.
     """
-    y = yielder if yielder else Ten8tYield(yield_summary=summary_only,
+    y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_large_files")
 
     if max_size <= 0:
@@ -308,7 +308,7 @@ def rule_max_files(folders: list,
     """
     code = BM.code
 
-    y = yielder if yielder else Ten8tYield(yield_summary=summary_only,
+    y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_max_files")
     if isinstance(folders, (str, pathlib.Path)):
         folders = [folders]

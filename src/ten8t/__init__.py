@@ -84,14 +84,9 @@ from .ten8t_util import (
     next_int_value,  # noqa: F401
     str_to_bool,  # noqa: F401
 )
-from .ten8t_yield import (
-    Ten8tYield,  # noqa: F401
-    Ten8tYieldAll,  # noqa: F401
-    Ten8tYieldFailOnly,  # noqa: F401
-    Ten8tYieldPassFail,  # noqa: F401
-    Ten8tYieldPassOnly,  # noqa: F401
-    Ten8tYieldSummaryOnly,  # noqa: F401
-)
+from .ten8t_yield import (Ten8tNoResultSummary, Ten8tYield, Ten8tYieldAll, Ten8tYieldFailOnly, Ten8tYieldPassFail,
+                          Ten8tYieldPassOnly,
+                          Ten8tYieldSummaryOnly)  # noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401
 
 # Dictionary of standard package installs
 TEN8T_PACKAGES = {}

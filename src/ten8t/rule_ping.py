@@ -120,9 +120,9 @@ def rule_ping_hosts_check(
         skip_on_none: bool = False,
         pass_on_none: bool = False,
         max_workers: int = 1,
-        yield_summary: bool = False,
-        yield_pass: bool = True,
-        yield_fail: bool = True,
+        emit_summary: bool = False,
+        emit_pass: bool = True,
+        emit_fail: bool = True,
         yielder: ten8t.Ten8tYield = None,
 ) -> Generator[TR, None, None]:
     """
@@ -135,9 +135,9 @@ def rule_ping_hosts_check(
         skip_on_none (bool): If True, skip execution if no hosts are provided.
         pass_on_none (bool): If True, consider an empty host list a successful test.
         max_workers (int): Maximum number of allowed workers.
-        yield_summary (bool): Yield the summary result
-        yield_pass (bool): Yield pass results if True.
-        yield_fail (bool): Yield fail results if True
+        emit_summary (bool): Yield the summary result
+        emit_pass (bool): Yield pass results if True.
+        emit_fail (bool): Yield fail results if True
         yielder (Ten8tYield): Yield class.
 
     Yields:
@@ -163,9 +163,9 @@ def rule_ping_hosts_check(
     if yielder:
         y = yielder
     else:
-        y = ten8t.Ten8tYield(yield_summary=yield_summary,
-                             yield_pass=yield_pass,
-                             yield_fail=yield_fail,
+        y = ten8t.Ten8tYield(emit_summary=emit_summary,
+                             emit_pass=emit_pass,
+                             emit_fail=emit_fail,
                              summary_name="Ping Check")
 
     # Normalize the input (convert string of hosts to a list)

@@ -53,14 +53,14 @@ def rule_url_200(urls: str | Sequence[str],
         an optional summary.
     """
     if summary_only:
-        y = Ten8tYield(yield_summary=True,
-                       yield_pass=False,
-                       yield_fail=False,
+        y = Ten8tYield(emit_summary=True,
+                       emit_pass=False,
+                       emit_fail=False,
                        summary_name=summary_name or "Http Request Response=200 Check")
     else:
-        y = Ten8tYield(yield_summary=False,
-                       yield_pass=True,
-                       yield_fail=True)
+        y = Ten8tYield(emit_summary=False,
+                       emit_pass=True,
+                       emit_fail=True)
 
     # Allow strings to be passed in
     if isinstance(urls, str):
@@ -150,7 +150,7 @@ def rule_web_api(url: str,
         each validation step. Each result indicates the validation status, associated messages,
         and key mismatches where applicable.
     """
-    y = Ten8tYield(yield_summary=summary_only)
+    y = Ten8tYield(emit_summary=summary_only)
     try:
 
         if isinstance(expected_response, int):

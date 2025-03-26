@@ -164,7 +164,7 @@ def test_yielder_summary():
 
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def func1():
-        y = t8.Ten8tYield(yield_summary=True, yield_fail=False, yield_pass=False, summary_name="Func1 Summary")
+        y = t8.Ten8tYield(emit_summary=True, emit_fail=False, emit_pass=False, summary_name="Func1 Summary")
         yield from y(status=False, msg="Here's a fail")
         yield from y(status=True, msg="Here's a pass")
         yield from y(y.fail_count == 1 and y.pass_count == 1 and y.count == 2,
@@ -189,24 +189,24 @@ def test_yielder_summary():
 @pytest.mark.parametrize(
     "config, expected_results",
     [
-        # Test Case 1: yield_pass=True, yield_fail=False, yield_summary=False
+        # Test Case 1: emit_pass=True, emit_fail=False, emit_summary=False
         (
-                {"yield_pass": True, "yield_fail": False, "yield_summary": False},
+                {"emit_pass": True, "emit_fail": False, "emit_summary": False},
                 {"pass_count": 2, "fail_count": 0, "summary_count": 0, "total_count": 2},
         ),
-        # Test Case 2: yield_pass=False, show_fail=True, yield_summary=False
+        # Test Case 2: emit_pass=False, show_fail=True, emit_summary=False
         (
-                {"yield_pass": False, "yield_fail": True, "yield_summary": False},
+                {"emit_pass": False, "emit_fail": True, "emit_summary": False},
                 {"pass_count": 0, "fail_count": 3, "summary_count": 0, "total_count": 3},
         ),
-        # Test Case 3: yield_pass=True, show_fail=True, yield_summary=True
+        # Test Case 3: emit_pass=True, show_fail=True, emit_summary=True
         (
-                {"yield_pass": True, "yield_fail": True, "yield_summary": True},
+                {"emit_pass": True, "emit_fail": True, "emit_summary": True},
                 {"pass_count": 2, "fail_count": 4, "summary_count": 1, "total_count": 6},
         ),
-        # Test Case 4: yield_pass=False, show_fail=True, yield_summary=True
+        # Test Case 4: emit_pass=False, show_fail=True, emit_summary=True
         (
-                {"yield_pass": False, "yield_fail": True, "yield_summary": True},
+                {"emit_pass": False, "emit_fail": True, "emit_summary": True},
                 {"pass_count": 0, "fail_count": 4, "summary_count": 1, "total_count": 4},
         ),
 
@@ -240,7 +240,7 @@ def test_bad_yield_setup():
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def yield_a_result():
         # Should throw exception (don't need any more code after making yielder
-        _ = t8.Ten8tYield(yield_summary=False, yield_fail=False, yield_pass=False, summary_name="Func1 Summary")
+        _ = t8.Ten8tYield(emit_summary=False, emit_fail=False, emit_pass=False, summary_name="Func1 Summary")
 
     s_func = t8.Ten8tFunction(yield_a_result)
     ch = t8.Ten8tChecker(check_functions=[s_func])
@@ -278,3 +278,60 @@ def test_yield_classes(yield_class, expected_length, expected_summary):
 
     if expected_summary:
         assert any(result.summary_result for result in results)
+
+
+@pytest.mark.parametrize("no_result_behavior, expected_status, expected_summary_result, expected_skipped", [
+    (t8.Ten8tNoResultSummary.SummaryFailOnNone, False, True, False),
+    (t8.Ten8tNoResultSummary.SummaryPassOnNone, True, True, False),
+    (t8.Ten8tNoResultSummary.ResultPassOnNone, True, False, False),
+    (t8.Ten8tNoResultSummary.ResultFailOnNone, False, False, False),
+    (t8.Ten8tNoResultSummary.SkipOnNone, None, False, True),
+])
+def test_no_result_behaviors(no_result_behavior, expected_status, expected_summary_result, expected_skipped):
+    """Test all NoResult summary behaviors to ensure they produce the expected results."""
+
+    def check_no_result():
+        y = t8.Ten8tYield(no_results=no_result_behavior,
+                          emit_pass=True,
+                          emit_fail=True,
+                          emit_summary=True)
+        yield from y.yield_summary()
+
+    s_func = t8.Ten8tFunction(check_no_result)
+    ch = t8.Ten8tChecker(check_functions=[s_func])
+    results = ch.run_all()
+
+    # Verify the results match expectations for this behavior
+    assert results[0].status is expected_status, f"Expected status {expected_status} for {no_result_behavior.name}"
+    assert results[
+               0].summary_result is expected_summary_result, f"Expected summary_result {expected_summary_result} for {no_result_behavior.name}"
+    assert results[0].skipped is expected_skipped, f"Expected skipped {expected_skipped} for {no_result_behavior.name}"
+
+
+def test_yield_summary_unknown_no_results():
+    """Test that using an undefined NoResult summary behavior raises a Ten8tException."""
+
+    # Create a mock object that appears to be an enum but isn't actually
+    # part of the Ten8tNoResultSummary enumeration
+    class MockEnum:
+        name = "InvalidBehavior"
+
+    invalid_behavior = MockEnum()
+
+    def check_invalid_no_result():
+        y = t8.Ten8tYield(no_results=invalid_behavior,
+                          emit_pass=True,
+                          emit_fail=True,
+                          emit_summary=True)
+        yield from y.yield_summary()
+
+    s_func = t8.Ten8tFunction(check_invalid_no_result)
+    ch = t8.Ten8tChecker(check_functions=[s_func])
+
+    # Verify that the appropriate exception is raised
+    results = ch.run_all()
+
+    assert len(results) == 1
+    assert results[0].status is False
+    assert results[0].except_
+    assert results[0].traceback
