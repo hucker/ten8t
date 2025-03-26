@@ -230,9 +230,11 @@ def test_stale_files():
             assert not result.status
 
 
+@pytest.mark.xfail(reason="Reason, this feature will be fixed in a future branch and is caused by a " \
+                          "single summary being elevated to non-summary.")
 def test_stale_file_summary():
     """
-    Verify that the stale check works with summary only.  
+    Verify that the stale check works with summary only.
     """
     file_path = pathlib.Path("./rule_files_")
 

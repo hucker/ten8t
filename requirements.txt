@@ -28,7 +28,7 @@ filelock>=3.16.1
 fs==2.4.16
 gitdb>=4.0.0
 gitdb2>=3.0.0
-GitPython==3.1.44
+GitPython>=3.1.40
 h11<0.13.0
 httpcore<0.14.0
 httptools==0.6.4

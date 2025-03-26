@@ -311,6 +311,7 @@ documentation for your rules that is exposed all the way up result stack. For ex
 include information useful providing detailed information and greatly simplify displaying metadata in UI elements
 like tooltips as well as detailed error information with the traceback and exception data.
 
+
 <!--file snippets/result.json-->
 
 ```json
@@ -529,6 +530,11 @@ like tooltips as well as detailed error information with the traceback and excep
 <small>result.json &nbsp;&nbsp; 06:54:17 2025-03-21</small>
 
 <!--file end-->
+
+In addition to the json output, which has all data a set of serialization tools are included that allow for output
+in CSV, markdown and Excel formats. These tools are "easily" extended or modified by looking at the code in the
+`serialize` sub package. Do note that `render` is used for formatting single lines of result data, while serialization
+is used for exporting the entire results of a generated when running `checker.run_all()`.
 
 ## FastAPI Interface Demo (`ten8t/cli`)
 
@@ -1031,3 +1037,4 @@ __Complexity__
 ## Latest changes
 
 1. Added explicit error messages for async check functions
+2. Added support for csv/markdown/excel output from the checker.

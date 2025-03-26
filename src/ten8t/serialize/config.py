@@ -6,17 +6,43 @@ from ..ten8t_util import StrListOrNone, StrOrNone
 
 @dataclass
 class Ten8tDumpConfig:
+    """
+    Configuration class for managing output settings for summary and result data.
+
+    This class is used to configure how data summaries and results are presented
+    or saved. It allows control over visibility, formatting, and the inclusion of
+    specific attributes for summary and result datasets. It also provides several
+    preset configurations for common output formats like CSV, Markdown, and Excel.
+
+    At this time having a single config file support all output formats works since
+    there is so much overlap, however, eventually we will need to split these up.
+
+    Attributes:
+        show_summary (bool): Whether to show the summary data.
+        show_results (bool): Whether to show the result data.
+        summary_columns (StrListOrNone): Columns to include in the summary output. Default is 'all'.
+        result_columns (StrListOrNone): Columns to include in the result output. Default is 'all'.
+        output_file (StrOrNone): File path to save the output. Defaults to stdout.
+        quoted_strings (bool): Whether strings should be quoted in the output.
+        result_sheet_name (str): The sheet name for results in Excel format.
+        summary_sheet_name (str): The sheet name for summaries in Excel format.
+        summary_title (str): Title for the summary section in certain output formats.
+        result_title (str): Title for the result section in certain output formats.
+        autobreak_headers (bool): Enables forced line breaks for multiword column headers.
+        VALID_SUMMARY_COLUMNS (List[str]): Defines valid column names for summary data.
+        VALID_RESULT_COLUMNS (List[str]): Defines valid column names for result data.
+    """
     show_summary: bool = True
     show_results: bool = True
     summary_columns: StrListOrNone = 'all'
     result_columns: StrListOrNone = 'all'
     output_file: StrOrNone = None  # None will default to stdout
-    quoted_strings:bool=False # Should strings be quoted
-    result_sheet_name:str=None
-    summary_sheet_name:str=None
+    quoted_strings: bool = False  # Should strings be quoted.  CSV only?
+    result_sheet_name: str = None  # Excel only?
+    summary_sheet_name: str = None  # Excel only?
     summary_title:str=None
     result_title:str=None
-    autobreak_headers:bool=True # for multiword columns this forces a break.
+    autobreak_headers: bool = True  # for multiword columns this forces a break to keep columns narrow
 
     # Define valid columns
     VALID_SUMMARY_COLUMNS = ["pass", "fail", "skip",
@@ -25,8 +51,9 @@ class Ten8tDumpConfig:
 
     VALID_RESULT_COLUMNS = [
         "status", "msg_rendered", "ruid", "tag", "level", "phase",
-        "skipped", "count", "func_name", "thread_id", "runtime_sec",
-        "summary_result", "msg"
+        "skipped", "count", "thread_id", "runtime_sec", "ttl_minutes",
+        "summary_result", "msg", "func_name", "module_name", "pkg_name", "doc",
+        "skip_on_none", "fail_on_none", "mit_msg", "owner_list"
     ]
 
     @classmethod

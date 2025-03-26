@@ -1,12 +1,10 @@
 """Versioning tests """
 import re
 
-import pytest
-
 from src import ten8t as t8
 
 
-@pytest.mark.run(order=-1)
+# @pytest.mark.run(order=-1)
 def test_import_packages():
     """Crude test to verify that the built in rules are imported by default"""
     installstring=t8.whats_installed()

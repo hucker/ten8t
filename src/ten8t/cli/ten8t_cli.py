@@ -6,16 +6,11 @@ import os
 import pathlib
 import sys
 
-
 # Set terminal width environment variables at the very beginning
 os.environ["COLUMNS"] = "100"  # This affects Click/Typer formatting
 
-
 import typer
 import uvicorn
-
-
-
 
 import ten8t as t8
 import ten8t_api
@@ -63,15 +58,15 @@ def run_checks(
         json_file: str = typer.Option(None, '-j', '--json', help='JSON file to write results to.'),
         csv_file: str = typer.Option(None, '-c', '--csv', help='CSV file to write results to.'),
         md_file: str = typer.Option(None, '-M', '--md', help='MD file to write results to.'),
-        sum_cols: str = typer.Option(None,  '-u','--sum_cols', help='Summary columns.(use "all" or col names)'),
-        res_cols: str = typer.Option(None,  '-r','--res_cols', help='Result columns.(use "all" or col names)'),
+        xl_file: str = typer.Option(None, '-x', '--xlsx', help='XLSX (excel) file to write results to.'),
+        sum_cols: str = typer.Option(None, '-u', '--sum_cols', help='Summary columns.(use "all" or col names)'),
+        res_cols: str = typer.Option(None, '-r', '--res_cols', help='Result columns.(use "all" or col names)'),
         score: bool = typer.Option(False, '-s', '--score', help='Print the score of the rules.'),
         api: bool = typer.Option(False, '-a', '--api', help='Start FastAPI.'),
         port: int = typer.Option(8000, '-p', '--port', help='FastAPI Port'),
         verbose: bool = typer.Option(False, '-v', '--verbose', help='Enable verbose output.'),
 ):
     """Run Ten8t checks on a given package or module from command line."""
-
 
     if verbose:
         t8.ten8t_setup_logging(level=logging.DEBUG, file_name="ten8t_cli.log")
@@ -124,18 +119,19 @@ def run_checks(
 
         if csv_file:
             try:
+                t8.ten8t_logger.debug("csv_file=%s", csv_file)
                 csv_cfg = t8.Ten8tDumpConfig.csv_default(
                     result_columns=res_cols or "all",
                     output_file=csv_file
                 )
 
-                t8.ten8t_save_csv(ch,csv_cfg)
+                t8.ten8t_save_csv(ch, csv_cfg)
             except Exception as e:
-                typer.echo(str(e),err=True)
+                typer.echo(str(e), err=True)
                 return
 
-        if  md_file:
-
+        if md_file:
+            t8.ten8t_logger.debug("md_file=%s", md_file)
             try:
                 md_cfg = t8.Ten8tDumpConfig.markdown_default(
                     summary_columns=sum_cols or "all",
@@ -143,9 +139,26 @@ def run_checks(
                     output_file=md_file,
                 )
 
-                t8.ten8t_save_md(ch,config=md_cfg)
+                t8.ten8t_save_md(ch, config=md_cfg)
             except Exception as e:
-                typer.echo(str(e),err=True)
+                typer.echo(str(e), err=True)
+                return
+
+        if xl_file:
+
+            try:
+                t8.ten8t_logger.debug("xl_file=%s", xl_file)
+                xl_cfg = t8.Ten8tDumpConfig(
+                    summary_columns=sum_cols or "all",
+                    result_columns=res_cols or "all",
+                    show_summary=False,
+                    show_results=True,
+                    output_file=xl_file,
+                )
+
+                t8.ten8t_save_xls(ch, config=xl_cfg)
+            except Exception as e:
+                typer.echo(str(e), err=True)
                 return
 
         if score:
@@ -155,7 +168,7 @@ def run_checks(
         if json_file:
             d = ch.as_dict()
             with open(json_file, 'w', encoding='utf-8') as f:
-                json.dump(d, f, indent=2,default=str)
+                json.dump(d, f, indent=2, default=str)
 
         if verbose:
             dump_results(results)

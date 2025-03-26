@@ -9,12 +9,11 @@ from importlib.metadata import PackageNotFoundError, version
 from .render import BM, Ten8tAbstractRenderer, Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, \
     Ten8tBasicRichRenderer, Ten8tBasicStreamlitRenderer, Ten8tGitHubMarkdownRenderer, Ten8tMarkup, Ten8tRendererFactory, \
     Ten8tRendererProtocol, Ten8tTextRenderer
-# Built in render engines
-from .render import Ten8tAbstractRenderer, Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, Ten8tBasicRichRenderer, \
-    Ten8tBasicStreamlitRenderer, Ten8tGitHubMarkdownRenderer, Ten8tRendererFactory, Ten8tTextRenderer
 from .score import (ScoreBinaryFail, ScoreBinaryPass, ScoreByFunctionBinary, ScoreByFunctionMean, ScoreByResult,
                     ScoreStrategy, get_registered_strategies, get_strategy_class, register_score_class,
                     reset_score_strategy_registry)  # noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401
+from .serialize import Ten8tDump, Ten8tDumpCSV, Ten8tDumpConfig, Ten8tDumpExcel, Ten8tDumpMarkdown
+from .serialize import ten8t_save_csv, ten8t_save_md, ten8t_save_xls
 # Import and re-export symbols from sub packages
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
