@@ -296,11 +296,11 @@ class Ten8tChecker:
         raise Ten8tException('Packages must be a list of Ten8tPackage objects.')
 
     @staticmethod
-    def _process_modules(modules: list[Ten8tModule] | None) -> list[Ten8tModule]:
+    def _process_modules(modules: list[Ten8tModule] | pathlib.Path | str | None) -> list[Ten8tModule]:
         """ Allow modules to be in various forms"""
         if not modules:
             return []
-        if isinstance(modules, pathlib.Path):
+        if isinstance(modules, (pathlib.Path | str)):
             return [Ten8tModule(module_file=modules)]
         if isinstance(modules, Ten8tModule):
             return [modules]
@@ -771,7 +771,7 @@ class Ten8tChecker:
         Returns:
             list: A list of all module names from standalone modules and packages.
         """
-        return [module.name for module in self.modules] + \
+        return [module.module_name for module in self.modules] + \
             [m.module_name for pkg in self.packages for m in pkg.modules]
 
     @property

@@ -635,9 +635,9 @@ move a progress bar, and the rich table and some emojis to make a tabular output
     'score': 83.33333333333333,
     'env_nulls': [],
     '__version__': '0.0.21',
-    'start_time': datetime.datetime(2025, 3, 26, 17, 22, 13, 186527),
-    'end_time': datetime.datetime(2025, 3, 26, 17, 22, 15, 204324),
-    'duration_seconds': 2.017797,
+    'start_time': datetime.datetime(2025, 3, 27, 16, 35, 54, 378292),
+    'end_time': datetime.datetime(2025, 3, 27, 16, 35, 56, 393477),
+    'duration_seconds': 2.015185,
     'functions': ['check1', 'check2', 'check3', 'check4'],
     'passed_count': 5,
     'warn_count': 0,
@@ -661,7 +661,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 1 passed',
             'doc': 'Demo check function 1',
-            'runtime_sec': 0.5051748752593994,
+            'runtime_sec': 0.5027589797973633,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -689,7 +689,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 2 failed',
             'doc': 'Demo check function 2',
-            'runtime_sec': 0.5046577453613281,
+            'runtime_sec': 0.5050649642944336,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -717,7 +717,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 3 passed',
             'doc': 'Demo check function 3',
-            'runtime_sec': 0.5036110877990723,
+            'runtime_sec': 0.500093936920166,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -745,7 +745,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 4 passed',
             'doc': 'Demo check function 3',
-            'runtime_sec': 1.2159347534179688e-05,
+            'runtime_sec': 3.814697265625e-06,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -773,7 +773,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 5 passed',
             'doc': 'Demo check function 4',
-            'runtime_sec': 0.5003900527954102,
+            'runtime_sec': 0.5051987171173096,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -801,7 +801,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 6 passed',
             'doc': 'Demo check function 4',
-            'runtime_sec': 1.1920928955078125e-05,
+            'runtime_sec': 9.298324584960938e-06,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -824,7 +824,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
 
 ```
 
-<small>rich_demo.txt &nbsp;&nbsp; 17:22:15 2025-03-26</small>
+<small>rich_demo.txt &nbsp;&nbsp; 16:35:56 2025-03-27</small>
 
 <!--file end-->
 
@@ -928,7 +928,7 @@ __Halstead__
 | File                | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |---------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
 | ten8t_attribute.py  | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
-| ten8t_checker.py    | 0.46 | 6.51       | 8995.58 | 499.75 | F            | A                  | D              | D            |
+| ten8t_checker.py    | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
 | ten8t_exception.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_filter.py     | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
 | ten8t_function.py   | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
@@ -936,21 +936,20 @@ __Halstead__
 | ten8t_inirc.py      | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
 | ten8t_jsonrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_logging.py    | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
-| ten8t_module.py     | 0.06 | 4.84       | 828.85  | 46.05  | B            | A                  | A              | A            |
+| ten8t_module.py     | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
 | ten8t_package.py    | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
 | ten8t_progress.py   | 0.07 | 3.12       | 633.74  | 35.21  | B            | A                  | A              | A            |
 | ten8t_rc.py         | 0.02 | 1.65       | 122.11  | 6.78   | A            | A                  | A              | A            |
 | ten8t_rc_factory.py | 0.01 | 1.88       | 42.11   | 2.34   | A            | A                  | A              | A            |
 | ten8t_result.py     | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
 | ten8t_ruid.py       | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
-| ten8t_score.OLD.py  | 0.11 | 4.68       | 1483.88 | 82.44  | C            | A                  | B              | B            |
 | ten8t_thread.py     | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
 | ten8t_tomlrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_util.py       | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
 | ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
 | ten8t_yield.py      | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 17:22:16 2025-03-26</small>
+<small>radon_hal.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
 
 <!--file end-->
 
@@ -962,7 +961,7 @@ __Maintainability__
 | File                | Maint.<br>Index | Rank |
 |---------------------|-----------------|------|
 | ten8t_attribute.py  | 70.20           | A    |
-| ten8t_checker.py    | 27.80           | A    |
+| ten8t_checker.py    | 27.50           | A    |
 | ten8t_exception.py  | 100.00          | A    |
 | ten8t_filter.py     | 68.20           | A    |
 | ten8t_function.py   | 51.80           | A    |
@@ -970,21 +969,20 @@ __Maintainability__
 | ten8t_inirc.py      | 95.20           | A    |
 | ten8t_jsonrc.py     | 100.00          | A    |
 | ten8t_logging.py    | 89.50           | A    |
-| ten8t_module.py     | 65.70           | A    |
-| ten8t_package.py    | 71.50           | A    |
+| ten8t_module.py     | 62.80           | A    |
+| ten8t_package.py    | 71.70           | A    |
 | ten8t_progress.py   | 62.40           | A    |
 | ten8t_rc.py         | 70.20           | A    |
 | ten8t_rc_factory.py | 77.00           | A    |
 | ten8t_result.py     | 64.30           | A    |
 | ten8t_ruid.py       | 78.20           | A    |
-| ten8t_score.OLD.py  | 57.80           | A    |
 | ten8t_thread.py     | 63.90           | A    |
 | ten8t_tomlrc.py     | 100.00          | A    |
 | ten8t_util.py       | 69.70           | A    |
 | ten8t_xmlrc.py      | 85.80           | A    |
 | ten8t_yield.py      | 47.50           | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 17:22:16 2025-03-26</small>
+<small>radon_mi.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
 
 <!--file end-->
 
@@ -993,7 +991,7 @@ __Complexity__
 
 | File               | Name                  | Rank | Complexity |
 |--------------------|-----------------------|------|------------|
-| ten8t_checker.py   | Ten8tChecker          | A    | 4.00       |
+| ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
 | ten8t_exception.py | Ten8tTypeError        | A    | 1.00       |
 | ten8t_exception.py | Ten8tValueError       | A    | 1.00       |
 | ten8t_exception.py | Ten8tException        | A    | 1.00       |
@@ -1012,12 +1010,6 @@ __Complexity__
 | ten8t_progress.py  | Ten8tNoProgress       | A    | 2.00       |
 | ten8t_rc.py        | Ten8tRC               | B    | 6.00       |
 | ten8t_result.py    | Ten8tResult           | A    | 3.00       |
-| ten8t_score.OLD.py | ScoreByFunctionBinary | B    | 10.00      |
-| ten8t_score.OLD.py | ScoreByFunctionMean   | B    | 10.00      |
-| ten8t_score.OLD.py | ScoreBinaryFail       | A    | 5.00       |
-| ten8t_score.OLD.py | ScoreBinaryPass       | A    | 5.00       |
-| ten8t_score.OLD.py | ScoreByResult         | A    | 4.00       |
-| ten8t_score.OLD.py | ScoreStrategy         | A    | 3.00       |
 | ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
 | ten8t_tomlrc.py    | Ten8tTomlRC           | A    | 3.00       |
 | ten8t_util.py      | NextIntValue          | A    | 2.00       |
@@ -1030,7 +1022,7 @@ __Complexity__
 | ten8t_yield.py     | Ten8tYieldSummaryOnly | A    | 2.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 17:22:16 2025-03-26</small>
+<small>radon_cc.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
 
 <!--file end-->
 

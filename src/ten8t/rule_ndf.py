@@ -26,7 +26,8 @@ def rule_validate_ndf_schema(df: FrameT,
                              no_null_cols: StrList = None,
                              summary_name: StrList = '',
                              summary_only: bool = False,
-                             name=None) -> Generator[TR, None, None]:
+                             name=None,
+                             yielder: Ten8tYield = None) -> Generator[TR, None, None]:
     """
         Validates the schema of a DataFrame according to the specified rules.
 
@@ -43,6 +44,8 @@ def rule_validate_ndf_schema(df: FrameT,
         summary_only: A boolean flag indicating whether to yield only the summary of
                       the validation result
         name: An optional name for this rule
+        yielder: An optional Ten8tYield object to use for yielding results rather than using
+                 function parameters
 
         Returns:
         A generator of TR (Test Result) objects, each representing the validation result
@@ -63,8 +66,12 @@ def rule_validate_ndf_schema(df: FrameT,
         raise Ten8tException(f"No schema checks were specified for {name}")
 
     schema = df.dtypes
-
-    y = Ten8tYield(summary_name=summary_name, emit_summary=summary_only)
+    if yielder:
+        y = yielder
+    elif summary_only:
+        y = Ten8tYield(summary_name=summary_name, emit_pass=False, emit_fail=False, emit_summary=True)
+    else:
+        y = Ten8tYield(summary_name=summary_name, emit_pass=True, emit_fail=True, emit_summary=False)
 
     int_types = "int8 int16 int32 int64 uint8 uint16 uint32 uint64".split()
     float_types = "float32 float64".split()

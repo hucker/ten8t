@@ -27,7 +27,7 @@ class Ten8tModule:
     def __init__(
             self,
             *,
-            module_file: str,
+            module_file: pathlib.Path | str,
             module_name: str | None = None,
             check_prefix="check_",
             env_prefix="env_",
