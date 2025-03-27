@@ -94,9 +94,7 @@ class Ten8tPackage:
         check_file_glob = glob or self.module_glob
 
         for file_path in sorted(self.folder.glob(check_file_glob)):
-            module_name = f"{file_path.stem}"
-
-            module = Ten8tModule(module_name, module_file=str(file_path), auto_load=True)
+            module = Ten8tModule(module_file=str(file_path), auto_load=True)
             self.modules.append(module)
 
         return self.modules

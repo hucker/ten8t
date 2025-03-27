@@ -65,6 +65,7 @@ dependencies = [
     "orjson~=3.10.16",
     "uv~=0.6.9",
     "gitdb2~=3.0.3",
+    "textual==2.0.0",
 ]
 
 [project.urls]

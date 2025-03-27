@@ -3,6 +3,7 @@ This class manages running the checker against a list of functions.
 There is also support for low level progress for functions/classes.
 """
 import datetime as dt
+import pathlib
 from importlib.metadata import version
 from typing import Any, Callable
 
@@ -226,6 +227,7 @@ class Ten8tChecker:
         # if you need it with very little cost.
         if isinstance(progress_object, list):
             progress_object = Ten8tMultiProgress(progress_list=progress_object)
+            progress_object = Ten8tMultiProgress(progress_list=progress_object)
         elif progress_object is None:
             progress_object = Ten8tNoProgress()
 
@@ -298,6 +300,8 @@ class Ten8tChecker:
         """ Allow modules to be in various forms"""
         if not modules:
             return []
+        if isinstance(modules, pathlib.Path):
+            return [Ten8tModule(path=modules)]
         if isinstance(modules, Ten8tModule):
             return [modules]
         if isinstance(modules, list) and all(isinstance(m, Ten8tModule) for m in modules):

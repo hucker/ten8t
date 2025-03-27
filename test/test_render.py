@@ -135,7 +135,7 @@ def test_ten8t_basic_markdown(markup_func, input_, expected_output):
     (render.Ten8tMarkup().italic, "Hello, World!", "[italic]Hello, World![/italic]"),
     (render.Ten8tMarkup().underline, "Hello, World!", "[u]Hello, World![/u]"),
     (render.Ten8tMarkup().strikethrough, "Hello, World!", "[strike]Hello, World![/strike]"),
-    (render.Ten8tMarkup().code, "Hello, World!", "Hello, World!"),
+    (render.Ten8tMarkup().code, "Hello, World!", "[bold]Hello, World![/bold]"),
     (render.Ten8tMarkup().pass_, "Hello, World!", "[green]Hello, World![/green]"),
     (render.Ten8tMarkup().fail, "Hello, World!", "[red]Hello, World![/red]"),
     (render.Ten8tMarkup().warn, "Hello, World!", "[orange]Hello, World![/orange]"),

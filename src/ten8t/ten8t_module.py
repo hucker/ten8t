@@ -26,14 +26,48 @@ class Ten8tModule:
 
     def __init__(
             self,
-            module_name: str,
+            *,
             module_file: str,
+            module_name: str | None = None,
             check_prefix="check_",
             env_prefix="env_",
             env_functions: list | None = None,
             auto_load=True,
             auto_thread=False
     ) -> None:
+        """
+        Initialize a Ten8tModule instance that manages a collection of functions from a specified module file.
+
+        This constructor sets up the module's core properties, including file path, name, and function prefixes.
+        It can optionally load the module immediately and configure automatic threading.
+
+        Args:
+            module_file (str): Path to the Python file containing the module's functions.
+            module_name (str | None, optional): Name of the module. If None, will be derived from the file name.
+                Defaults to None.
+            check_prefix (str, optional): Prefix used to identify check functions in the module.
+                Defaults to "check_".
+            env_prefix (str, optional): Prefix used to identify environment setup functions in the module.
+                Defaults to "env_".
+            env_functions (list | None, optional): Pre-defined list of environment functions.
+                Defaults to None.
+            auto_load (bool, optional): Whether to load the module automatically upon initialization.
+                Defaults to True.
+            auto_thread (bool, optional): Whether to automatically assign thread IDs to functions
+                that don't have them. Defaults to False.
+
+        Returns:
+            None
+
+        Note:
+            When auto_load is True, the module is immediately loaded using the load() method.
+            When auto_thread is True, check functions without thread IDs are assigned
+            automatically generated ones.
+        """
+
+        if module_name is None:
+            module_name = pathlib.Path(module_file).stem
+
         self.module_name: str = module_name
         self.check_functions: list[Ten8tFunction] = []
         self.env_functions: list = env_functions or []

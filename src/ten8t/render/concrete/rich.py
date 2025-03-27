@@ -15,6 +15,7 @@ class Ten8tBasicRichRenderer(Ten8tAbstractRenderer):
                              TAG_ITALIC: ('[italic]', '[/italic]'),
                              TAG_UNDERLINE: ('[u]', '[/u]'),
                              TAG_STRIKETHROUGH: ('[strike]', '[/strike]'),
+                             TAG_CODE: ('[bold]', '[/bold]'),
                              TAG_PASS: ('[green]', '[/green]'),
                              TAG_FAIL: ('[red]', '[/red]'),
                              TAG_WARN: ('[orange]', '[/orange]'),

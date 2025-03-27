@@ -713,7 +713,7 @@ def test_auto_ruids():
         (t8.Ten8tBasicMarkdownRenderer(), "It works1 `hello`"),
         (t8.Ten8tTextRenderer(), "It works1 hello"),
         (t8.Ten8tBasicStreamlitRenderer(), "It works1 `hello`"),
-        (t8.Ten8tBasicRichRenderer(), "It works1 hello"),
+        (t8.Ten8tBasicRichRenderer(), "It works1 [bold]hello[/bold]"),
         (t8.Ten8tBasicHTMLRenderer(), "It works1 <code>hello</code>"),
     ],
 )

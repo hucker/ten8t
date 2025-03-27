@@ -8,6 +8,7 @@ this module detects valid renderers using the RendererProtocol.
 
 from typing import Type
 
+from .base import Ten8tAbstractRenderer
 from .concrete.github_markdown import Ten8tGitHubMarkdownRenderer
 from .concrete.html import Ten8tBasicHTMLRenderer
 from .concrete.markdown import Ten8tBasicMarkdownRenderer
@@ -15,7 +16,6 @@ from .concrete.rich import Ten8tBasicRichRenderer
 from .concrete.streamlit import Ten8tBasicStreamlitRenderer
 from .concrete.text import Ten8tTextRenderer
 from .protocol import Ten8tRendererProtocol
-from .. import Ten8tAbstractRenderer
 from ..ten8t_exception import Ten8tException, Ten8tValueError
 
 
