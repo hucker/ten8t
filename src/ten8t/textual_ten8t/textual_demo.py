@@ -221,11 +221,11 @@ class FileProcessorApp(App):
         elif checker.perfect_run:
             self.notify(message=f"There were no errors! out of {checker.result_count} checks. {score}",
                         title="SUCCESS",
-                        severity="success")
+                        severity="information")
         else:
             self.notify(message=f"There were {checker.fail_count} errors out of {checker.result_count} checks. {score}",
                         title="Warning",
-                        severity="success")
+                        severity="warning")
 
     def make_result_status(self, status):
         """Formate that pass/fail status nicely."""

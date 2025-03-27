@@ -301,7 +301,7 @@ class Ten8tChecker:
         if not modules:
             return []
         if isinstance(modules, pathlib.Path):
-            return [Ten8tModule(path=modules)]
+            return [Ten8tModule(module_file=modules)]
         if isinstance(modules, Ten8tModule):
             return [modules]
         if isinstance(modules, list) and all(isinstance(m, Ten8tModule) for m in modules):
