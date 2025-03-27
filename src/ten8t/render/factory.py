@@ -15,6 +15,7 @@ from .concrete.rich import Ten8tBasicRichRenderer
 from .concrete.streamlit import Ten8tBasicStreamlitRenderer
 from .concrete.text import Ten8tTextRenderer
 from .protocol import Ten8tRendererProtocol
+from .. import Ten8tAbstractRenderer
 from ..ten8t_exception import Ten8tException, Ten8tValueError
 
 
@@ -41,8 +42,7 @@ class Ten8tRendererFactory:
             self.initialize_renderers()
             self._initialized = True  # Ensure __init__ logic runs only once
 
-
-    def register_renderer(self, renderer_class: Type[Ten8tRendererProtocol]) -> None:
+    def register_renderer(self, renderer_class: Ten8tAbstractRenderer) -> None:
         """
         Register a renderer class with the factory.
 
@@ -58,7 +58,7 @@ class Ten8tRendererFactory:
 
         self._renderers[renderer_name] = renderer_class
 
-    def discover_renderers(self) -> list[Type[Ten8tRendererProtocol]]:
+    def discover_renderers(self) -> list[Type[Ten8tAbstractRenderer]]:
         """
         Return a manually defined list of renderer classes.
 

@@ -65,7 +65,7 @@ def handle_empty_hosts(skip_on_none: bool, pass_on_none: bool) -> TR:
 
 
 def rule_ping_host_check(host: str,
-                         timeout_sec: float) -> TR:
+                         timeout_sec: int) -> TR:
     """
     Perform a ping check for a single host.
 
@@ -74,7 +74,7 @@ def rule_ping_host_check(host: str,
 
     Args:
         host (str): The host to ping.
-        timeout_sec (float): The time in seconds to wait for the ping response.
+        timeout_sec (int): The time in seconds to wait for the ping response.
 
     Yields:
         TR: A single result object indicating the outcome of the ping check.
@@ -116,7 +116,7 @@ def rule_ping_host_check(host: str,
 
 def rule_ping_hosts_check(
         hosts: StrListOrNone = None,
-        ping_timeout_sec: float = 4.0,
+        ping_timeout_sec: int = 4,
         skip_on_none: bool = False,
         pass_on_none: bool = False,
         max_workers: int = 1,

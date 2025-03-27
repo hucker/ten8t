@@ -126,7 +126,7 @@ def test_yielder_exc():
     @t8.attributes(tag="tag", phase="phase", level=1, weight=100, skip=False)
     def should_pass_a_result_not_a_string():
         y = t8.Ten8tYield()
-        yield from y.results("foo")
+        yield from y.results("foo")  # Expected warning
 
     s_func = t8.Ten8tFunction(should_pass_a_result_not_a_string)
 
@@ -271,7 +271,7 @@ def test_yield_classes(yield_class, expected_length, expected_summary):
 
     # Run the checker
     ch = t8.Ten8tChecker(check_functions=[yield_result])
-    results: list(Ten8tResult) = ch.run_all()
+    results: list[Ten8tResult] = ch.run_all()
 
     # Verify the number of results
     assert len(results) == expected_length

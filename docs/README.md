@@ -271,29 +271,26 @@ def check_rule3(cfg):
 ```
 
 There are a handful of useful packages built into `ten8t`. You don't need to do anything special to use them
-beyond pip installing their dependencies. They will detect what you have installed on your system and the rules
-will be made available. So if you have `ping3` installed, then the rules in for ping will be available.
+beyond pip installing their dependencies. They detect what you have installed on your system and the rules
+will be made available. So if you have `ping3` installed, then the rules in for `ping3` will be available.
 
 This package uses `narwhals` to handle data frames. If you have pandas or polars installed the rules
-for dataframes should work for you (e.g., `ten8t` is dependent on narwhals not pandas/polars)
+for dataframes should work for you (e.g., `ten8t` is dependent on narwhals not `pandas`/`polars`)
 
-If you want to make your own rules that are "standardized" against a package, PR's are welcomed. Please
-look at `rule_files.py` for a canonical form of how to make a general purpose rule that handles one of
-something, and a sequence of something. You just need to pay attention to the `yielder`. If you have
-rules that would work well to run multithreaded, look in `rule_ping.py` for an example of a threaded
-rule.
+If you want to add rules for common usecases PRs are welcomed. See `rule_files.py` and `rule_ping.py`.
 
 | Package Name | GitHub Repository Link                                                               |
 |--------------|--------------------------------------------------------------------------------------|
-| pathlib      | Python `pathlib` package                                                             |
 | fs           | [GitHub - PyFilesystem/pyfilesystem2](https://github.com/PyFilesystem/pyfilesystem2) |
 | narwhals     | [GitHub - thousandoaks/narwhals](https://github.com/thousandoaks/narwhals)           |
-| camelot      | [GitHub - camelot-dev/camelot](https://github.com/camelot-dev/camelot)               |
+| pathlib      | Python `pathlib` package                                                             |
+| pdf          | [GitHub - camelot-dev/camelot](https://github.com/camelot-dev/camelot)               |
 | ping         | [GitHub - kyan001/ping3](https://github.com/kyan001/ping3)                           |
 | requests     | [GitHub - psf/requests](https://github.com/psf/requests)                             |
 | sqlalchemy   | [GitHub - sqlalchemy/sqlalchemy](https://github.com/sqlalchemy/sqlalchemy)           |
 
-If you aren't sure what has been detected when loading `ten8t` run this code in the REPL.
+If you aren't sure what has been detected when loading `ten8t` run this code in the REPL. If the name is
+in the whats_installed string then `ten8t` detected that you have pip installed the right tools.
 
 ```text
 >>> import ten8t
@@ -314,224 +311,228 @@ documentation for your rules that is exposed all the way up result stack. For ex
 include information useful providing detailed information and greatly simplify displaying metadata in UI elements
 like tooltips as well as detailed error information with the traceback and exception data.
 
-<!--file snippets/result.json-->
 
+<!--file snippets/result.json-->
 ```json
 {
-  "package_count": 1,
-  "module_count": 1,
-  "modules": [
-    "check_file_system"
-  ],
-  "function_count": 4,
-  "tags": [
-    "folder"
-  ],
-  "levels": [
-    1
-  ],
-  "phases": [
-    "proto"
-  ],
-  "ruids": [
-    "f1",
-    "f2",
-    "file1",
-    "file2"
-  ],
-  "score": 100.0,
-  "env_nulls": [],
-  "start_time": "2025-03-21 06:54:17.586919",
-  "end_time": "2025-03-21 06:54:17.587155",
-  "duration_seconds": 0.000236,
-  "functions": [],
-  "passed_count": 6,
-  "warn_count": 0,
-  "failed_count": 0,
-  "skip_count": 0,
-  "total_count": 6,
-  "check_count": 4,
-  "result_count": 6,
-  "clean_run": true,
-  "perfect_run": true,
-  "abort_on_fail": false,
-  "abort_on_exception": false,
-  "results": [
-    {
-      "status": true,
-      "func_name": "check_files_f1",
-      "pkg_name": "",
-      "module_name": "check_file_system",
-      "msg": "The path <<code>>../examples/file_system/folder1/file1.txt<</code>> does exist.",
-      "info_msg": "",
-      "warn_msg": "",
-      "msg_rendered": "The path ../examples/file_system/folder1/file1.txt does exist.",
-      "doc": "Simple always passing function",
-      "runtime_sec": 5.507469177246094e-05,
-      "except_": "None",
-      "traceback": "",
-      "skipped": false,
-      "weight": 100.0,
-      "tag": "folder",
-      "level": 1,
-      "phase": "proto",
-      "count": 1,
-      "ruid": "file1",
-      "ttl_minutes": 0.0,
-      "mit_msg": "",
-      "owner_list": [],
-      "skip_on_none": false,
-      "fail_on_none": false,
-      "summary_result": false,
-      "thread_id": "main_thread__"
-    },
-    {
-      "status": true,
-      "func_name": "check_files_f1",
-      "pkg_name": "",
-      "module_name": "check_file_system",
-      "msg": "The path <<code>>../examples/file_system/folder1/file2.txt<</code>> does exist.",
-      "info_msg": "",
-      "warn_msg": "",
-      "msg_rendered": "The path ../examples/file_system/folder1/file2.txt does exist.",
-      "doc": "Simple always passing function",
-      "runtime_sec": 1.621246337890625e-05,
-      "except_": "None",
-      "traceback": "",
-      "skipped": false,
-      "weight": 100.0,
-      "tag": "folder",
-      "level": 1,
-      "phase": "proto",
-      "count": 2,
-      "ruid": "file1",
-      "ttl_minutes": 0.0,
-      "mit_msg": "",
-      "owner_list": [],
-      "skip_on_none": false,
-      "fail_on_none": false,
-      "summary_result": false,
-      "thread_id": "main_thread__"
-    },
-    {
-      "status": true,
-      "func_name": "check_files_f2",
-      "pkg_name": "",
-      "module_name": "check_file_system",
-      "msg": "The path <<code>>../examples/file_system/folder2/file1.txt<</code>> does exist.",
-      "info_msg": "",
-      "warn_msg": "",
-      "msg_rendered": "The path ../examples/file_system/folder2/file1.txt does exist.",
-      "doc": "Simple always passing function",
-      "runtime_sec": 1.8835067749023438e-05,
-      "except_": "None",
-      "traceback": "",
-      "skipped": false,
-      "weight": 100.0,
-      "tag": "folder",
-      "level": 1,
-      "phase": "proto",
-      "count": 1,
-      "ruid": "file2",
-      "ttl_minutes": 0.0,
-      "mit_msg": "",
-      "owner_list": [],
-      "skip_on_none": false,
-      "fail_on_none": false,
-      "summary_result": false,
-      "thread_id": "main_thread__"
-    },
-    {
-      "status": true,
-      "func_name": "check_files_f2",
-      "pkg_name": "",
-      "module_name": "check_file_system",
-      "msg": "The path <<code>>../examples/file_system/folder2/file2.txt<</code>> does exist.",
-      "info_msg": "",
-      "warn_msg": "",
-      "msg_rendered": "The path ../examples/file_system/folder2/file2.txt does exist.",
-      "doc": "Simple always passing function",
-      "runtime_sec": 1.0013580322265625e-05,
-      "except_": "None",
-      "traceback": "",
-      "skipped": false,
-      "weight": 100.0,
-      "tag": "folder",
-      "level": 1,
-      "phase": "proto",
-      "count": 2,
-      "ruid": "file2",
-      "ttl_minutes": 0.0,
-      "mit_msg": "",
-      "owner_list": [],
-      "skip_on_none": false,
-      "fail_on_none": false,
-      "summary_result": false,
-      "thread_id": "main_thread__"
-    },
-    {
-      "status": true,
-      "func_name": "check_folder1",
-      "pkg_name": "",
-      "module_name": "check_file_system",
-      "msg": "The path <<code>>../examples/file_system/folder1<</code>> does exist.",
-      "info_msg": "",
-      "warn_msg": "",
-      "msg_rendered": "The path ../examples/file_system/folder1 does exist.",
-      "doc": "Simple always passing function",
-      "runtime_sec": 1.0013580322265625e-05,
-      "except_": "None",
-      "traceback": "",
-      "skipped": false,
-      "weight": 100.0,
-      "tag": "folder",
-      "level": 1,
-      "phase": "proto",
-      "count": 1,
-      "ruid": "f1",
-      "ttl_minutes": 0.0,
-      "mit_msg": "",
-      "owner_list": [],
-      "skip_on_none": false,
-      "fail_on_none": false,
-      "summary_result": false,
-      "thread_id": "main_thread__"
-    },
-    {
-      "status": true,
-      "func_name": "check_folder2",
-      "pkg_name": "",
-      "module_name": "check_file_system",
-      "msg": "The path <<code>>../examples/file_system/folder2<</code>> does exist.",
-      "info_msg": "",
-      "warn_msg": "",
-      "msg_rendered": "The path ../examples/file_system/folder2 does exist.",
-      "doc": "Simple always passing function",
-      "runtime_sec": 1.3113021850585938e-05,
-      "except_": "None",
-      "traceback": "",
-      "skipped": false,
-      "weight": 100.0,
-      "tag": "folder",
-      "level": 1,
-      "phase": "proto",
-      "count": 1,
-      "ruid": "f2",
-      "ttl_minutes": 0.0,
-      "mit_msg": "",
-      "owner_list": [],
-      "skip_on_none": false,
-      "fail_on_none": false,
-      "summary_result": false,
-      "thread_id": "main_thread__"
-    }
-  ]
+    "package_count": 1,
+    "module_count": 1,
+    "modules": [
+        "check_file_system"
+    ],
+    "function_count": 4,
+    "tags": [
+        "folder"
+    ],
+    "levels": [
+        1
+    ],
+    "phases": [
+        "proto"
+    ],
+    "ruids": [
+        "f1",
+        "f2",
+        "file1",
+        "file2"
+    ],
+    "score": 100.0,
+    "env_nulls": [],
+    "start_time": "2025-03-21 06:54:17.586919",
+    "end_time": "2025-03-21 06:54:17.587155",
+    "duration_seconds": 0.000236,
+    "functions": [],
+    "passed_count": 6,
+    "warn_count": 0,
+    "failed_count": 0,
+    "skip_count": 0,
+    "total_count": 6,
+    "check_count": 4,
+    "result_count": 6,
+    "clean_run": true,
+    "perfect_run": true,
+    "abort_on_fail": false,
+    "abort_on_exception": false,
+    "results": [
+        {
+            "status": true,
+            "func_name": "check_files_f1",
+            "pkg_name": "",
+            "module_name": "check_file_system",
+            "msg": "The path <<code>>../examples/file_system/folder1/file1.txt<</code>> does exist.",
+            "info_msg": "",
+            "warn_msg": "",
+            "msg_rendered": "The path ../examples/file_system/folder1/file1.txt does exist.",
+            "doc": "Simple always passing function",
+            "runtime_sec": 5.507469177246094e-05,
+            "except_": "None",
+            "traceback": "",
+            "skipped": false,
+            "weight": 100.0,
+            "tag": "folder",
+            "level": 1,
+            "phase": "proto",
+            "count": 1,
+            "ruid": "file1",
+            "ttl_minutes": 0.0,
+            "mit_msg": "",
+            "owner_list": [],
+            "skip_on_none": false,
+            "fail_on_none": false,
+            "summary_result": false,
+            "thread_id": "main_thread__"
+        },
+        {
+            "status": true,
+            "func_name": "check_files_f1",
+            "pkg_name": "",
+            "module_name": "check_file_system",
+            "msg": "The path <<code>>../examples/file_system/folder1/file2.txt<</code>> does exist.",
+            "info_msg": "",
+            "warn_msg": "",
+            "msg_rendered": "The path ../examples/file_system/folder1/file2.txt does exist.",
+            "doc": "Simple always passing function",
+            "runtime_sec": 1.621246337890625e-05,
+            "except_": "None",
+            "traceback": "",
+            "skipped": false,
+            "weight": 100.0,
+            "tag": "folder",
+            "level": 1,
+            "phase": "proto",
+            "count": 2,
+            "ruid": "file1",
+            "ttl_minutes": 0.0,
+            "mit_msg": "",
+            "owner_list": [],
+            "skip_on_none": false,
+            "fail_on_none": false,
+            "summary_result": false,
+            "thread_id": "main_thread__"
+        },
+        {
+            "status": true,
+            "func_name": "check_files_f2",
+            "pkg_name": "",
+            "module_name": "check_file_system",
+            "msg": "The path <<code>>../examples/file_system/folder2/file1.txt<</code>> does exist.",
+            "info_msg": "",
+            "warn_msg": "",
+            "msg_rendered": "The path ../examples/file_system/folder2/file1.txt does exist.",
+            "doc": "Simple always passing function",
+            "runtime_sec": 1.8835067749023438e-05,
+            "except_": "None",
+            "traceback": "",
+            "skipped": false,
+            "weight": 100.0,
+            "tag": "folder",
+            "level": 1,
+            "phase": "proto",
+            "count": 1,
+            "ruid": "file2",
+            "ttl_minutes": 0.0,
+            "mit_msg": "",
+            "owner_list": [],
+            "skip_on_none": false,
+            "fail_on_none": false,
+            "summary_result": false,
+            "thread_id": "main_thread__"
+        },
+        {
+            "status": true,
+            "func_name": "check_files_f2",
+            "pkg_name": "",
+            "module_name": "check_file_system",
+            "msg": "The path <<code>>../examples/file_system/folder2/file2.txt<</code>> does exist.",
+            "info_msg": "",
+            "warn_msg": "",
+            "msg_rendered": "The path ../examples/file_system/folder2/file2.txt does exist.",
+            "doc": "Simple always passing function",
+            "runtime_sec": 1.0013580322265625e-05,
+            "except_": "None",
+            "traceback": "",
+            "skipped": false,
+            "weight": 100.0,
+            "tag": "folder",
+            "level": 1,
+            "phase": "proto",
+            "count": 2,
+            "ruid": "file2",
+            "ttl_minutes": 0.0,
+            "mit_msg": "",
+            "owner_list": [],
+            "skip_on_none": false,
+            "fail_on_none": false,
+            "summary_result": false,
+            "thread_id": "main_thread__"
+        },
+        {
+            "status": true,
+            "func_name": "check_folder1",
+            "pkg_name": "",
+            "module_name": "check_file_system",
+            "msg": "The path <<code>>../examples/file_system/folder1<</code>> does exist.",
+            "info_msg": "",
+            "warn_msg": "",
+            "msg_rendered": "The path ../examples/file_system/folder1 does exist.",
+            "doc": "Simple always passing function",
+            "runtime_sec": 1.0013580322265625e-05,
+            "except_": "None",
+            "traceback": "",
+            "skipped": false,
+            "weight": 100.0,
+            "tag": "folder",
+            "level": 1,
+            "phase": "proto",
+            "count": 1,
+            "ruid": "f1",
+            "ttl_minutes": 0.0,
+            "mit_msg": "",
+            "owner_list": [],
+            "skip_on_none": false,
+            "fail_on_none": false,
+            "summary_result": false,
+            "thread_id": "main_thread__"
+        },
+        {
+            "status": true,
+            "func_name": "check_folder2",
+            "pkg_name": "",
+            "module_name": "check_file_system",
+            "msg": "The path <<code>>../examples/file_system/folder2<</code>> does exist.",
+            "info_msg": "",
+            "warn_msg": "",
+            "msg_rendered": "The path ../examples/file_system/folder2 does exist.",
+            "doc": "Simple always passing function",
+            "runtime_sec": 1.3113021850585938e-05,
+            "except_": "None",
+            "traceback": "",
+            "skipped": false,
+            "weight": 100.0,
+            "tag": "folder",
+            "level": 1,
+            "phase": "proto",
+            "count": 1,
+            "ruid": "f2",
+            "ttl_minutes": 0.0,
+            "mit_msg": "",
+            "owner_list": [],
+            "skip_on_none": false,
+            "fail_on_none": false,
+            "summary_result": false,
+            "thread_id": "main_thread__"
+        }
+    ]
 }
 ```
-
 <small>result.json &nbsp;&nbsp; 06:54:17 2025-03-21</small>
 
 <!--file end-->
+
+In addition to the json output, which has all data a set of serialization tools are included that allow for output
+in CSV, markdown and Excel formats. These tools are "easily" extended or modified by looking at the code in the
+`serialize` sub package. Do note that `render` is used for formatting single lines of result data, while serialization
+is used for exporting the entire results of a generated when running `checker.run_all()`.
 
 ## FastAPI Interface Demo (`ten8t/cli`)
 
@@ -588,7 +589,6 @@ Here is a example of connecting `ten8t` up to the rich package using the progres
 move a progress bar, and the rich table and some emojis to make a tabular output.
 
 <!--file snippets/rich_demo.txt-->
-
 ```
 [?25l[1;34mRunning Checks[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
 [2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
@@ -634,9 +634,10 @@ move a progress bar, and the rich table and some emojis to make a tabular output
     'ruids': ['ruid1', 'ruid2', 'ruid3', 'ruid4'],
     'score': 83.33333333333333,
     'env_nulls': [],
-    'start_time': datetime.datetime(2025, 3, 21, 7, 9, 43, 311586),
-    'end_time': datetime.datetime(2025, 3, 21, 7, 9, 45, 331164),
-    'duration_seconds': 2.019578,
+    '__version__': '0.0.21',
+    'start_time': datetime.datetime(2025, 3, 26, 17, 22, 13, 186527),
+    'end_time': datetime.datetime(2025, 3, 26, 17, 22, 15, 204324),
+    'duration_seconds': 2.017797,
     'functions': ['check1', 'check2', 'check3', 'check4'],
     'passed_count': 5,
     'warn_count': 0,
@@ -660,7 +661,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 1 passed',
             'doc': 'Demo check function 1',
-            'runtime_sec': 0.5012810230255127,
+            'runtime_sec': 0.5051748752593994,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -688,7 +689,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 2 failed',
             'doc': 'Demo check function 2',
-            'runtime_sec': 0.5050749778747559,
+            'runtime_sec': 0.5046577453613281,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -716,7 +717,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 3 passed',
             'doc': 'Demo check function 3',
-            'runtime_sec': 0.5050668716430664,
+            'runtime_sec': 0.5036110877990723,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -744,7 +745,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 4 passed',
             'doc': 'Demo check function 3',
-            'runtime_sec': 6.9141387939453125e-06,
+            'runtime_sec': 1.2159347534179688e-05,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -772,7 +773,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 5 passed',
             'doc': 'Demo check function 4',
-            'runtime_sec': 0.505047082901001,
+            'runtime_sec': 0.5003900527954102,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -800,7 +801,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
             'warn_msg': '',
             'msg_rendered': 'Test 6 passed',
             'doc': 'Demo check function 4',
-            'runtime_sec': 9.059906005859375e-06,
+            'runtime_sec': 1.1920928955078125e-05,
             'except_': 'None',
             'traceback': '',
             'skipped': False,
@@ -823,7 +824,7 @@ move a progress bar, and the rich table and some emojis to make a tabular output
 
 ```
 
-<small>rich_demo.txt &nbsp;&nbsp; 07:09:45 2025-03-21</small>
+<small>rich_demo.txt &nbsp;&nbsp; 17:22:15 2025-03-26</small>
 
 <!--file end-->
 
@@ -914,7 +915,6 @@ __Halstead__
 | ten8t_checker.py    | 0.46 | 6.51       | 8995.58 | 499.75 | F            | A                  | D              | D            |
 | ten8t_exception.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_filter.py     | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
-| ten8t_format.py     | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
 | ten8t_function.py   | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
 | ten8t_immutable.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_inirc.py      | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
@@ -927,14 +927,14 @@ __Halstead__
 | ten8t_rc_factory.py | 0.01 | 1.88       | 42.11   | 2.34   | A            | A                  | A              | A            |
 | ten8t_result.py     | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
 | ten8t_ruid.py       | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
-| ten8t_score.py      | 0.11 | 4.68       | 1483.88 | 82.44  | C            | A                  | B              | B            |
+| ten8t_score.OLD.py  | 0.11 | 4.68       | 1483.88 | 82.44  | C            | A                  | B              | B            |
 | ten8t_thread.py     | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
 | ten8t_tomlrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_util.py       | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
 | ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
-| ten8t_yield.py      | 0.12 | 3.85       | 1432.81 | 79.60  | C            | A                  | B              | B            |
+| ten8t_yield.py      | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 07:09:46 2025-03-21</small>
+<small>radon_hal.csv &nbsp;&nbsp; 17:22:16 2025-03-26</small>
 
 <!--file end-->
 
@@ -946,10 +946,9 @@ __Maintainability__
 | File                | Maint.<br>Index | Rank |
 |---------------------|-----------------|------|
 | ten8t_attribute.py  | 70.20           | A    |
-| ten8t_checker.py    | 27.90           | A    |
+| ten8t_checker.py    | 27.80           | A    |
 | ten8t_exception.py  | 100.00          | A    |
 | ten8t_filter.py     | 68.20           | A    |
-| ten8t_format.py     | 70.50           | A    |
 | ten8t_function.py   | 51.80           | A    |
 | ten8t_immutable.py  | 100.00          | A    |
 | ten8t_inirc.py      | 95.20           | A    |
@@ -960,68 +959,62 @@ __Maintainability__
 | ten8t_progress.py   | 62.40           | A    |
 | ten8t_rc.py         | 70.20           | A    |
 | ten8t_rc_factory.py | 77.00           | A    |
-| ten8t_result.py     | 64.40           | A    |
+| ten8t_result.py     | 64.30           | A    |
 | ten8t_ruid.py       | 78.20           | A    |
-| ten8t_score.py      | 57.80           | A    |
+| ten8t_score.OLD.py  | 57.80           | A    |
 | ten8t_thread.py     | 63.90           | A    |
 | ten8t_tomlrc.py     | 100.00          | A    |
 | ten8t_util.py       | 69.70           | A    |
 | ten8t_xmlrc.py      | 85.80           | A    |
-| ten8t_yield.py      | 45.90           | A    |
+| ten8t_yield.py      | 47.50           | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 07:09:46 2025-03-21</small>
+<small>radon_mi.csv &nbsp;&nbsp; 17:22:16 2025-03-26</small>
 
 <!--file end-->
 
 __Complexity__
 <!--file snippets/radon_cc.csv-->
 
-| File               | Name                        | Rank | Complexity |
-|--------------------|-----------------------------|------|------------|
-| ten8t_checker.py   | Ten8tChecker                | A    | 4.00       |
-| ten8t_exception.py | Ten8tTypeError              | A    | 1.00       |
-| ten8t_exception.py | Ten8tValueError             | A    | 1.00       |
-| ten8t_exception.py | Ten8tException              | A    | 1.00       |
-| ten8t_format.py    | Ten8tAbstractRender         | A    | 3.00       |
-| ten8t_format.py    | Ten8tBasicMarkdown          | A    | 3.00       |
-| ten8t_format.py    | Ten8tBasicRichRenderer      | A    | 3.00       |
-| ten8t_format.py    | Ten8tBasicStreamlitRenderer | A    | 3.00       |
-| ten8t_format.py    | Ten8tBasicHTMLRenderer      | A    | 3.00       |
-| ten8t_format.py    | Ten8tMarkup                 | A    | 2.00       |
-| ten8t_format.py    | Ten8tRenderText             | A    | 2.00       |
-| ten8t_function.py  | Ten8tFunction               | B    | 7.00       |
-| ten8t_immutable.py | Ten8tEnvList                | A    | 2.00       |
-| ten8t_immutable.py | Ten8tEnvDict                | A    | 2.00       |
-| ten8t_immutable.py | Ten8tEnvSet                 | A    | 1.00       |
-| ten8t_inirc.py     | Ten8tIniRC                  | A    | 3.00       |
-| ten8t_jsonrc.py    | Ten8tJsonRC                 | A    | 3.00       |
-| ten8t_module.py    | Ten8tModule                 | A    | 4.00       |
-| ten8t_package.py   | Ten8tPackage                | A    | 3.00       |
-| ten8t_progress.py  | Ten8tLogProgress            | A    | 4.00       |
-| ten8t_progress.py  | Ten8tDebugProgress          | A    | 3.00       |
-| ten8t_progress.py  | Ten8tMultiProgress          | A    | 3.00       |
-| ten8t_progress.py  | Ten8tProgress               | A    | 2.00       |
-| ten8t_progress.py  | Ten8tNoProgress             | A    | 2.00       |
-| ten8t_rc.py        | Ten8tRC                     | B    | 6.00       |
-| ten8t_result.py    | Ten8tResult                 | A    | 3.00       |
-| ten8t_score.py     | ScoreByFunctionBinary       | B    | 10.00      |
-| ten8t_score.py     | ScoreByFunctionMean         | B    | 10.00      |
-| ten8t_score.py     | ScoreBinaryFail             | A    | 5.00       |
-| ten8t_score.py     | ScoreBinaryPass             | A    | 5.00       |
-| ten8t_score.py     | ScoreByResult               | A    | 4.00       |
-| ten8t_score.py     | ScoreStrategy               | A    | 3.00       |
-| ten8t_thread.py    | Ten8tThread                 | A    | 3.00       |
-| ten8t_tomlrc.py    | Ten8tTomlRC                 | A    | 3.00       |
-| ten8t_util.py      | NextIntValue                | A    | 2.00       |
-| ten8t_xmlrc.py     | Ten8tXMLRC                  | A    | 5.00       |
-| ten8t_yield.py     | Ten8tYield                  | A    | 4.00       |
-| ten8t_yield.py     | Ten8tYieldPassOnly          | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldFailOnly          | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldPassFail          | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldAll               | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldSummaryOnly       | A    | 2.00       |
+| File               | Name                  | Rank | Complexity |
+|--------------------|-----------------------|------|------------|
+| ten8t_checker.py   | Ten8tChecker          | A    | 4.00       |
+| ten8t_exception.py | Ten8tTypeError        | A    | 1.00       |
+| ten8t_exception.py | Ten8tValueError       | A    | 1.00       |
+| ten8t_exception.py | Ten8tException        | A    | 1.00       |
+| ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
+| ten8t_immutable.py | Ten8tEnvList          | A    | 2.00       |
+| ten8t_immutable.py | Ten8tEnvDict          | A    | 2.00       |
+| ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
+| ten8t_inirc.py     | Ten8tIniRC            | A    | 3.00       |
+| ten8t_jsonrc.py    | Ten8tJsonRC           | A    | 3.00       |
+| ten8t_module.py    | Ten8tModule           | A    | 4.00       |
+| ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
+| ten8t_progress.py  | Ten8tLogProgress      | A    | 4.00       |
+| ten8t_progress.py  | Ten8tDebugProgress    | A    | 3.00       |
+| ten8t_progress.py  | Ten8tMultiProgress    | A    | 3.00       |
+| ten8t_progress.py  | Ten8tProgress         | A    | 2.00       |
+| ten8t_progress.py  | Ten8tNoProgress       | A    | 2.00       |
+| ten8t_rc.py        | Ten8tRC               | B    | 6.00       |
+| ten8t_result.py    | Ten8tResult           | A    | 3.00       |
+| ten8t_score.OLD.py | ScoreByFunctionBinary | B    | 10.00      |
+| ten8t_score.OLD.py | ScoreByFunctionMean   | B    | 10.00      |
+| ten8t_score.OLD.py | ScoreBinaryFail       | A    | 5.00       |
+| ten8t_score.OLD.py | ScoreBinaryPass       | A    | 5.00       |
+| ten8t_score.OLD.py | ScoreByResult         | A    | 4.00       |
+| ten8t_score.OLD.py | ScoreStrategy         | A    | 3.00       |
+| ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
+| ten8t_tomlrc.py    | Ten8tTomlRC           | A    | 3.00       |
+| ten8t_util.py      | NextIntValue          | A    | 2.00       |
+| ten8t_xmlrc.py     | Ten8tXMLRC            | A    | 5.00       |
+| ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
+| ten8t_yield.py     | Ten8tYieldPassOnly    | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldFailOnly    | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldPassFail    | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldAll         | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldSummaryOnly | A    | 2.00       |
+| ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 07:09:46 2025-03-21</small>
+<small>radon_cc.csv &nbsp;&nbsp; 17:22:16 2025-03-26</small>
 
 <!--file end-->
 
@@ -1034,3 +1027,4 @@ __Complexity__
 ## Latest changes
 
 1. Added explicit error messages for async check functions
+2. Added support for csv/markdown/excel output from the checker.

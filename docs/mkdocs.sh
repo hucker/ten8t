@@ -38,7 +38,7 @@ REQUIRED_SCRIPTS=(
     "${DOCS_DIR}/insert_files.py"
     "${DOCS_DIR}/add_badges.py"
 )
-dir
+
 # Check for required tools
 echo "Checking required external tools..."
 for tool in "${REQUIRED_TOOLS[@]}"; do

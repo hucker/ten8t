@@ -166,13 +166,13 @@ class Ten8tDumpExcel(Ten8tDump):
         # Freeze header row (optional)
         sheet.freeze_panes = "A2"
 
-    def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO) -> None:
+    def _dump_implementation(self, checker: Ten8tChecker, _: TextIO) -> None:
         """
         Implement the Excel output formatter.
 
         Args:
             checker: The Ten8tChecker instance containing results
-            output_file: TextIO object for status messages
+            _: This parameter is not used in this implmentation is not used in this
         """
 
         # Create Excel workbook
@@ -199,8 +199,8 @@ class Ten8tDumpExcel(Ten8tDump):
             if file_path.parent != pathlib.Path('.'):
                 file_path.parent.mkdir(parents=True, exist_ok=True)
 
-            workbook.save(str(file_path))
-        except PermissionError:
+            workbook.save(file_path)
+        except PermissionError as e:
             raise Ten8tException(
                 f"Could not write to Excel file: {file_path} - ensure it's not open in another application") from e
         except Exception as e:

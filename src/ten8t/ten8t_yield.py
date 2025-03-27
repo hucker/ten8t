@@ -255,11 +255,11 @@ class Ten8tYield:
 
         # If they just hand you a result then just pass it on
         if len(args_) == 1 and len(kwargs_) == 0 and isinstance(args_[0], Ten8tResult):
-            results = [args_[0]]
+            results: list[Ten8tResult] = [args_[0]]
 
         # This is when we get a generator
         elif len(args_) == 1 and len(kwargs_) == 0 and isinstance(args_[0], Generator):
-            results = list(args_[0])
+            results: list[Ten8tResult] = list(args_[0])
         else:
             # THIS branch of the if is what we should do 99% of the time since this has all
             # the syntactic sugar to make yielding a result similar to constructing a TR.

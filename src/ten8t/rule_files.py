@@ -18,7 +18,7 @@ from .ten8t_util import StrListOrNone, any_to_str_list
 from .ten8t_yield import Ten8tYield
 
 EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)
-"""Expected reasonable exceptions for these tests."""
+"""Expected reasonable exceptions for these rules."""
 
 def rule_path_exists(path_: str) -> TR:
     """
@@ -39,6 +39,7 @@ def rule_path_exists(path_: str) -> TR:
         boolean indicating the result of the existence check, and the `msg`
         attribute provides a formatted string message describing the result.
     """
+    path_str = ''
     try:
         path_str = BM.code(path_)
         if pathlib.Path(path_).exists():
@@ -267,7 +268,7 @@ def rule_large_files(folder: str,
     yield from y.yield_summary()
 
 
-def rule_max_files(folders: list,
+def rule_max_files(folders: list | str,
                    max_files: list | int,
                    pattern: str = '*',
                    summary_only=False,
