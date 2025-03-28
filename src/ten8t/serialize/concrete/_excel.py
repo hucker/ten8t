@@ -4,8 +4,8 @@ from typing import Any, List, TextIO
 import openpyxl
 from openpyxl.styles import Font, PatternFill
 
-from ..base import Ten8tDump
-from ..base import Ten8tDumpConfig
+from .._base import Ten8tDump
+from .._base import Ten8tDumpConfig
 from ...ten8t_checker import Ten8tChecker
 from ...ten8t_exception import Ten8tException
 from ...ten8t_result import Ten8tResult

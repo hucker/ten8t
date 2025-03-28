@@ -4,8 +4,8 @@ CSV serialization implementation for Ten8t test results.
 import csv
 from typing import Any, TextIO
 
-from ten8t.serialize.base import Ten8tDump
-from ten8t.serialize.config import Ten8tDumpConfig
+from ten8t.serialize._base import Ten8tDump
+from ten8t.serialize._config import Ten8tDumpConfig
 from ten8t.ten8t_checker import Ten8tChecker
 
 

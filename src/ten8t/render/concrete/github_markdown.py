@@ -4,8 +4,8 @@ GitHub Markdown Ten8t Output Renderer
 This adds support for handling some color coding that github allows.
 """
 
-from ten8t.render.base import Ten8tAbstractRenderer
-from ten8t.render.markup import *
+from ten8t.render._base import Ten8tAbstractRenderer
+from ten8t.render._markup import *
 
 
 class Ten8tGitHubMarkdownRenderer(Ten8tAbstractRenderer):

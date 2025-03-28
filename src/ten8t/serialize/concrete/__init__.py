@@ -1,9 +1,9 @@
 """
 Built-in scoring strategies.
 """
-from .csv import Ten8tDumpCSV
-from .excel import Ten8tDumpExcel
-from .markdown import Ten8tDumpMarkdown
+from ._csv import Ten8tDumpCSV
+from ._excel import Ten8tDumpExcel
+from ._markdown import Ten8tDumpMarkdown
 
 __all__ = [
     'Ten8tDumpCSV',

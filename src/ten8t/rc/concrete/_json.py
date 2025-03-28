@@ -4,7 +4,7 @@ Allow the usage of an JSON file as an RC file.
 import json
 import pathlib
 
-from ..base import Ten8tRC
+from .._base import Ten8tRC
 from ...ten8t_exception import Ten8tException
 
 

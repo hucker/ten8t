@@ -2,8 +2,8 @@ import sys
 from abc import ABC, abstractmethod
 from typing import List, TextIO
 
+from ._config import Ten8tDumpConfig
 from ..ten8t_checker import Ten8tChecker
-from .config import Ten8tDumpConfig
 
 
 class Ten8tDump(ABC):

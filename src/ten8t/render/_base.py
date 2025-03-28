@@ -4,7 +4,7 @@ render method and a concrete cleanup that removes all un-rendered tags.
 """
 from abc import ABC
 
-from ten8t.render.markup import *
+from ten8t.render._markup import *
 
 
 class Ten8tAbstractRenderer(ABC):

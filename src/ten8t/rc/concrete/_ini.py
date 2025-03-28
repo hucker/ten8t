@@ -3,7 +3,7 @@ Allow the usage of an INI file as an RC file.
 """
 import configparser
 
-from ..base import Ten8tRC
+from .._base import Ten8tRC
 from ...ten8t_exception import Ten8tException
 
 

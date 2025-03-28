@@ -1,8 +1,8 @@
-from .base import Ten8tProgress
-from .concrete.debug import Ten8tDebugProgress
-from .concrete.log import Ten8tLogProgress
-from .concrete.multi import Ten8tMultiProgress
-from .concrete.no import Ten8tNoProgress
+from ._base import Ten8tProgress
+from .concrete._debug import Ten8tDebugProgress
+from .concrete._log import Ten8tLogProgress
+from .concrete._multi import Ten8tMultiProgress
+from .concrete._no import Ten8tNoProgress
 
 __all__ = [
     "Ten8tDebugProgress",

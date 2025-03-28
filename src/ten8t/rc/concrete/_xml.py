@@ -4,7 +4,7 @@ Allow the usage of an XML file as an RC file.
 import pathlib
 from xml.etree import ElementTree
 
-from ..base import Ten8tRC
+from .._base import Ten8tRC
 from ...ten8t_exception import Ten8tException
 
 

@@ -1,4 +1,4 @@
-from ..base import Ten8tProgress
+from .._base import Ten8tProgress
 from ...ten8t_result import Ten8tResult
 from ...ten8t_util import StrOrNone
 

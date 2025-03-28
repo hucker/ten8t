@@ -1,7 +1,7 @@
-from .debug import Ten8tDebugProgress
-from .log import Ten8tLogProgress
-from .multi import Ten8tMultiProgress
-from .no import Ten8tNoProgress
+from ._debug import Ten8tDebugProgress
+from ._log import Ten8tLogProgress
+from ._multi import Ten8tMultiProgress
+from ._no import Ten8tNoProgress
 
 __all__ = [
     "Ten8tDebugProgress",

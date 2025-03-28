@@ -1,4 +1,4 @@
-from ..base import *
+from .._base import *
 
 
 class Ten8tBasicStreamlitRenderer(Ten8tAbstractRenderer):

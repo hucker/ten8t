@@ -1,6 +1,6 @@
 from typing import Any
 
-from ..base import ScoreStrategy
+from .._base import ScoreStrategy
 from ...ten8t_result import Ten8tResult
 
 

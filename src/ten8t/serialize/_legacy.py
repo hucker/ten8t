@@ -2,10 +2,10 @@
 The functions in this module used to be hand coded, they not use the serialazation classes.
 """
 
-from .concrete.csv import Ten8tDumpCSV
-from .concrete.excel import Ten8tDumpExcel
-from .concrete.markdown import Ten8tDumpMarkdown
-from .config import Ten8tDumpConfig
+from ._config import Ten8tDumpConfig
+from .concrete._csv import Ten8tDumpCSV
+from .concrete._excel import Ten8tDumpExcel
+from .concrete._markdown import Ten8tDumpMarkdown
 from ..ten8t_checker import Ten8tChecker
 
 

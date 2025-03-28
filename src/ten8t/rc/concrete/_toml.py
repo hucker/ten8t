@@ -6,7 +6,7 @@ import pathlib
 
 import toml
 
-from ..base import Ten8tRC
+from .._base import Ten8tRC
 from ...ten8t_exception import Ten8tException
 
 

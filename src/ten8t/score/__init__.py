@@ -1,13 +1,13 @@
 # Import and register all built-in strategies
-from .base import (
+from ._base import (
     ScoreStrategy,
 )
-from .concrete import (ScoreBinaryFail, ScoreBinaryPass, ScoreByFunctionBinary, ScoreByFunctionMean, ScoreByResult)
-from .factory import (get_registered_strategies, get_strategy_class, register_score_class,
-                      reset_score_strategy_registry)
-from .util import (
+from ._factory import (get_registered_strategies, get_strategy_class, register_score_class,
+                       reset_score_strategy_registry)
+from ._util import (
     sanitize_results
 )
+from .concrete import (ScoreBinaryFail, ScoreBinaryPass, ScoreByFunctionBinary, ScoreByFunctionMean, ScoreByResult)
 
 __all__ = [
     'ScoreStrategy',

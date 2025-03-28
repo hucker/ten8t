@@ -8,11 +8,11 @@ I have provided two implementations.
 
 import sys
 
-from .base import Ten8tRC
-from .concrete.ini import Ten8tIniRC
-from .concrete.json import Ten8tJsonRC
-from .concrete.toml import Ten8tTomlRC
-from .concrete.xml import Ten8tXMLRC
+from ._base import Ten8tRC
+from .concrete._ini import Ten8tIniRC
+from .concrete._json import Ten8tJsonRC
+from .concrete._toml import Ten8tTomlRC
+from .concrete._xml import Ten8tXMLRC
 from ..ten8t_exception import Ten8tException
 
 if sys.version_info[:2] >= (3, 10):

@@ -3,7 +3,7 @@ Registry system for score strategies.
 """
 from typing import Dict, List, Type
 
-from .protocol import ScoreStrategyProtocol
+from ._protocol import ScoreStrategyProtocol
 
 # Registry of score strategy classes
 _registered_score_strategies: Dict[str, Type[ScoreStrategyProtocol]] = {}

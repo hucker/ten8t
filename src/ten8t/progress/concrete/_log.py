@@ -1,6 +1,6 @@
 import logging
 
-from ..base import Ten8tProgress
+from .._base import Ten8tProgress
 from ...ten8t_exception import Ten8tException
 from ...ten8t_logging import ten8t_logger
 from ...ten8t_result import Ten8tResult
