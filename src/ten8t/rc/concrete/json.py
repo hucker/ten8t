@@ -33,6 +33,7 @@ class Ten8tJsonRC(Ten8tRC):
             cfg: Path to the configuration file as a string.
             section: Name of the section in the configuration file to process as a string.
         """
+        super().__init__()
         section_data = self._load_config(cfg, section)
 
         self.expand_attributes(section_data)

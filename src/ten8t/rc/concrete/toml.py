@@ -23,6 +23,7 @@ class Ten8tTomlRC(Ten8tRC):
     """
 
     def __init__(self, cfg: str, section: str):
+        super().__init__()
         section_data = self._load_config(cfg, section)
         self.cfg = cfg
         self.section = section

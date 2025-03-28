@@ -24,6 +24,7 @@ class Ten8tXMLRC(Ten8tRC):
             cfg (str): The path to the XML configuration file.
             section (str): The top-level XML tag corresponding to the desired configuration section.
         """
+        super().__init__()
         package_data = self._load_config(cfg, section)
         # Convert the attributes in the configuration into inclusion/exclusion lists.
         self.expand_attributes(package_data)
