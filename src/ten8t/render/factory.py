@@ -42,7 +42,7 @@ class Ten8tRendererFactory:
             self.initialize_renderers()
             self._initialized = True  # Ensure __init__ logic runs only once
 
-    def register_renderer(self, renderer_class: Ten8tAbstractRenderer) -> None:
+    def register_renderer(self, renderer_class: Type[Ten8tAbstractRenderer]) -> None:
         """
         Register a renderer class with the factory.
 

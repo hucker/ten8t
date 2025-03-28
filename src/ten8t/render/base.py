@@ -22,6 +22,11 @@ class Ten8tAbstractRenderer(ABC):
     # This has all the markups that ten8t knows about, these shouldn't change
     markup = Ten8tMarkup()
 
+    def __init__(self):
+
+        # Subclasses only need to fill in this mapping.
+        self.tag_mappings = {}
+
     def render(self, msg):
         """
         Apply tag mappings to transform markup in the message.

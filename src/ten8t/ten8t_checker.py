@@ -594,6 +594,8 @@ class Ten8tChecker:
             ten8t_logger.info("Checker has %d coroutine functions that will be ignored.",
                               self.coroutine_count)
 
+        self.results = []
+
         # Fixes linting issue
         function_ = None
         try:
@@ -617,6 +619,9 @@ class Ten8tChecker:
                     result.msg_rendered = result.msg if not self.renderer else self.renderer.render(result.msg)
 
                     ten8t_logger.debug("%s:%s:%s", result.func_name, result.status, result.msg)
+
+                    # TODO: Verify that we don't need to record any of the abort on data
+                    self.results.append(result)
 
                     yield result
 
@@ -648,16 +653,19 @@ class Ten8tChecker:
         self.progress_object.message("Rule Check Complete.")
         ten8t_logger.info("Checker complete ran %s check functions", self.function_count)
 
-    def run_all(self, env=None) -> list[Ten8tResult]:
-        """
-        List version of yield all.
-        """
-
-        # A deceptively important line of code
-        self.results = list(self.yield_all(env=env))
-
         self.score = self.score_strategy(self.results)
         self.progress_object.message(f"Score = {self.score:.1f}")
+
+    def run_all(self, env=None) -> list[Ten8tResult]:
+        """
+        Run through the generator.
+
+        """
+
+        # Just consume the generator.  Yield all saves everything for you
+        for _ in self.yield_all(env=env):
+            pass
+
         return self.results
 
     @property

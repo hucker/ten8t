@@ -128,6 +128,22 @@ class FileProcessorApp(App):
     Button:hover {
         background: green;
     }
+    
+   .textual-tooltip {
+        max-width: 100;  /* Set maximum width to 30 cells */
+        min-width: 10;  /* Set minimum width to 10 cells */
+        width: auto;    /* Allow automatic width between min and max */
+        /* Basic border around the tooltip */
+        border: solid $accent;
+        
+        /* Add some padding so text isn't right against the border */
+        padding: 1;
+        
+        /* Control background and text colors */
+        background: $surface;
+        color: $text;
+}
+
     """
 
     BINDINGS = [
@@ -201,11 +217,8 @@ class FileProcessorApp(App):
                                   progress_object=progress)
 
         ten8t_logger.info(msg=f"Start run = {checker.function_count} functions.")
-        checker.run_all()
-        ten8t_logger.info(msg=f"Run complete.")
-
         self.update_results_table(checker, selected_path)
-        self.textual_status(checker)
+        ten8t_logger.info(msg=f"Run complete.")
 
     def textual_status(self, checker: Ten8tChecker) -> None:
         """Toast messages for status."""
@@ -242,6 +255,24 @@ class FileProcessorApp(App):
         else:
             return ""
 
+    def make_tooltip(self, checker: Ten8tChecker) -> str:
+        """
+        Create a textual friendly tool tip.
+
+        The tool tip is for the whole table, so this just extracts a bunch of info from the checker as
+        a sort of poor mans summary or header.
+        """
+        c = checker
+        ruids = '' if not c.ruids else "ruids=" + ",".join(c.ruids) + '\n'
+        tags = '' if not c.tags else "tags=" + ",".join(c.tags) + '\n'
+        phases = '' if not c.phases else "phases=" + ",".join(c.phases) + '\n'
+        score = f"{c.score:.1f}%" if c.score else "N/A"
+        pass_count = c.pass_count
+        fail_count = c.fail_count
+        skip_count = c.skip_count
+        tt = f"Checker Run Summary:\n{score=}\n{pass_count=}\n{fail_count=}\n{skip_count=}\n{ruids}{tags}{phases}".strip()
+        return tt
+
     def update_results_table(self, checker: Ten8tChecker, path) -> None:
         """Update the results table with new data."""
         data_table = self.query_one("#results_table", DataTable)
@@ -253,7 +284,7 @@ class FileProcessorApp(App):
         )
 
         # Add rows for each result
-        for result in checker.results:
+        for result in checker.yield_all():
             status = self.make_result_status(result.status)
             skipped = self.make_skipped(result.skipped)
             message = result.msg_rendered if hasattr(result, 'msg_rendered') else str(result)
@@ -282,8 +313,12 @@ class FileProcessorApp(App):
                 phase,
                 function,
                 module,
-                runtime
+                runtime,
             )
+            data_table.refresh(repaint=True, recompose=True, layout=True)
+
+        data_table.tooltip = self.make_tooltip(checker)
+        self.textual_status(checker)
 
 
 @click.command()

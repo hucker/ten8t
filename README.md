@@ -25,12 +25,15 @@ makes simple tasks easy while providing the flexibility to tackle more complex s
 to write reusable, declarative rules, `Ten8t` lets you monitor and validate information systems. Whether it’s a
 quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
 
-`Ten8t` can be thought of as a "linter" for your infrastructure or file systems where you create the linting
-rules. Many "standard" rules are available out of the box, but it is easy to write python code to verify
-anything you like. It enables you to define customized pass/fail checks and organize them using tags,
-attributes, and phases for fine-grained control. With support for lightweight setup and scalability, `Ten8t`
-works for small projects and large, complex systems. Its intuitive tooling ensures that basic tests are
-easy to write, while its extensibility with standard Python code within reach of your coding ability.
+`Ten8t` can be thought of as a tool to build a "linter" for your infrastructure, file systems, databases,
+and documents. It is designed to be very efficient to set up rules to check and outputs in python data or
+JSON make integrating with common tools straight forward. Non-trival examples with streamlit, typer, rich,
+FastAPI and textual that development can be low friction. "Standard" rules are available out of the box,
+but it is easy to write python code to verify anything you like. It enables you to define customized pass/fail
+checks and organize them using tags, attributes, and phases for fine-grained control. With support for
+lightweight setup and scalability, `Ten8t` works for small projects and large, complex systems. Its intuitive
+tooling ensures that basic tests are easy to write, while its extensibility with standard Python code within
+reach of your coding ability.
 
 ## Why Not pytest, Great Expectations or other popular tools?
 
@@ -60,11 +63,12 @@ target audience.
 
 ### Ten8t:
 
-- **Scope**: Focused on testing filesystem, file and generic python checks.
-- **Complexity**: Lightweight and straightforward, designed for developers to get check functions up quickly.
+- **Scope**: Focused on testing filesystem, files, SQL, API access and custom coded python checks.
+- **Complexity**: Designed for to be light weight for developers to check things quickly and repeatably.
 - **Audience**: This tool is a framework for infrastructure developers needing a tool to be the backbone of your
   observability. Since the output is directly available as JSON it is very easy to integrate.
-- **Visibility**: Sample apps are included that run Streamlit, FastAPI and typer.
+- **Visibility**: `ten8t` generats JSON. INtegration samples are included for `streamlit`, `FastAPI`, `textual` and
+  `typer`.
 
 ## Getting Started with Ten8t
 
@@ -73,27 +77,37 @@ with modules starting with "test" and functions beginning with "test",
 transitioning to `ten8t` will feel natural. Additionally, if you understand fixtures, you'll find that the concept is
 also available through environments. Rule may be tagged with attributes to allow tight control over running checks.
 
-### Simple Rules
+### A modest checker...
 
-You can start with simple rules that don't even reference `ten8t` directly by returning or yielding boolean values.
-Here are some simple check functions.
+The very simplest thing you cand do with `ten8t` takes a few functions, gives them to the
+a checker object and then tells that object to run all the functions, collect the results. This is the core.
+Everything that follows from here is window dressing to make this test engine run.
 
 ```python
-
+import ten8t as t8
 import pathlib
 
 
-def check_boolean():
-   return pathlib.Path("./foo").exists()
+def check_foo():
+  """Check if a foo exists"""
+  return pathlib.Path("./foo.txt").exists()
 
 
-def check_yielded_values():
-    return [pathlib.Path("./foo").exists(), pathlib.Path("./fum").exists()]
+def check_fum():
+  """Check if a fum exists"""
+  return pathlib.Path("./fum.txt").exists()
+
+
+# A checker object collections your functions up, runs them all and hands you back results.
+results = t8.Ten8tChecker(check_functions=[check_foo, check_fum]).run_all()
+
+
 ```
 
-As you might expect, a framework could discover these tests provide 3 passing test results if the files all exist.
+As you might expect, a framework could discover these tests provide 2 passing test results if the files all exist.
 
-You can up your game and return status information by returning or yielding `Ten8tResults`.
+In order to be useful we need functions that return more detail and ideally functions that return more than
+one `Ten8tResult`. So we support yield and a result object that stores...everyting I could think of.
 
 ```python
 from ten8t import TR, attributes
@@ -197,15 +211,17 @@ Ten8t uses the following hierarchy:
         Ten8tModule` (one or more Ten8tFunctions in a Python file (function starting with the text "check_"))
             Ten8tFunction` (when called will return 0 or more `Ten8tResults`)
 
-Typically one works at the module or package level where you have python files that have 1 or more files with rules in
-them.
+Typically one works at the module or package level where you have python files that have 1 or more functions in them
+and you have collections of files to make packages. Note that `ten8t` a module is 1 file and a package is a folder
+with atleast one file that has a check function. Similare to python but not exact.
 
 Each `Ten8tFunction` returns/yields 0-to-N results from its generator function. By convention, if None is returned, the
 rule was skipped.
 
 The rule functions that you write don't need to use generators. They can return a variety of output
 (e.g., Boolean, List of Boolean, `Ten8tResult`, List of `Ten8tResult`), or you can write a generator that yields
-results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant.
+results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant, but returning booleans
+and depending on using your function name and your docstrings for error mssages is on you!
 
 Alternatively you can ignore the file and folder discovery mechanism and provide a list of rules as regular python
 functions and `Ten8t` will happily run them for you when you pass a list of check functions
@@ -290,7 +306,7 @@ If you want to add rules for common usecases PRs are welcomed. See `rule_files.p
 | sqlalchemy   | [GitHub - sqlalchemy/sqlalchemy](https://github.com/sqlalchemy/sqlalchemy)           |
 
 If you aren't sure what has been detected when loading `ten8t` run this code in the REPL. If the name is
-in the whats_installed string then `ten8t` detected that you have pip installed the right tools.
+in the `whats_installed` string then `ten8t` detected that you have pip installed the right tools.
 
 ```text
 >>> import ten8t
@@ -569,7 +585,7 @@ FastAPI swagger interface:
 
 FastAPI example running some rules:
 
-![FastAPI](docs/_static/fastapi.png)
+![FastAPI Demo](docs/_static/fastapi.png)
 
 ## Streamlit Demo  (`ten8t/st_ten8t/st_demo.py`)
 
@@ -581,252 +597,19 @@ tabular report.
 
 Here is the setup using a couple of modules in a package folder:
 
-![Streamlit](docs/_static/streamlit_allup.png)
+![Streamlit Demo](docs/_static/streamlit_allup.png)
 
 ## Rich Demo (`ten8t/rich_ten8t`)
 
 Here is a example of connecting `ten8t` up to the rich package using the progress bar object to
 move a progress bar, and the rich table and some emojis to make a tabular output.
 
-<!--file snippets/rich_demo.txt-->
-```
-[?25l[1;34mRunning Checks[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mScore = 83.3[0m [38;5;70m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m4/4[0m
-[?25h[3m                      Test Results                       [0m
-┏━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━┓
-┃[35m [0m[35mTag [0m[35m [0m┃[35m [0m[35mRUID [0m[35m [0m┃[35m [0m[35mFunction Name[0m[35m [0m┃[35m [0m[35mStatus[0m[35m [0m┃[35m [0m[35mMessage      [0m[35m [0m┃
-┣━━━━━━╋━━━━━━━╋━━━━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━━━━━━━━━┫
-┃[36m [0m[36mtag1[0m[36m [0m┃[32m [0m[32mruid1[0m[32m [0m┃[34m [0m[34m   check1    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 1 passed[0m[33m [0m┃
-┃[36m [0m[36mtag2[0m[36m [0m┃[32m [0m[32mruid2[0m[32m [0m┃[34m [0m[34m   check2    [0m[34m [0m┃  [31mFAIL[0m  ┃[33m [0m[33mTest 2 failed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid3[0m[32m [0m┃[34m [0m[34m   check3    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 3 passed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid3[0m[32m [0m┃[34m [0m[34m   check3    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 4 passed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid4[0m[32m [0m┃[34m [0m[34m   check4    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 5 passed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid4[0m[32m [0m┃[34m [0m[34m   check4    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 6 passed[0m[33m [0m┃
-┗━━━━━━┻━━━━━━━┻━━━━━━━━━━━━━━━┻━━━━━━━━┻━━━━━━━━━━━━━━━┛
-[1;31mPress Enter For Raw Data[0m
-{
-    'package_count': 0,
-    'module_count': 0,
-    'modules': [],
-    'function_count': 4,
-    'tags': ['tag1', 'tag2', 'tag3'],
-    'levels': [1],
-    'phases': [''],
-    'ruids': ['ruid1', 'ruid2', 'ruid3', 'ruid4'],
-    'score': 83.33333333333333,
-    'env_nulls': [],
-    '__version__': '0.0.21',
-    'start_time': datetime.datetime(2025, 3, 27, 16, 35, 54, 378292),
-    'end_time': datetime.datetime(2025, 3, 27, 16, 35, 56, 393477),
-    'duration_seconds': 2.015185,
-    'functions': ['check1', 'check2', 'check3', 'check4'],
-    'passed_count': 5,
-    'warn_count': 0,
-    'failed_count': 1,
-    'skip_count': 0,
-    'total_count': 6,
-    'check_count': 4,
-    'result_count': 6,
-    'clean_run': True,
-    'perfect_run': False,
-    'abort_on_fail': False,
-    'abort_on_exception': False,
-    'results': [
-        {
-            'status': True,
-            'func_name': 'check1',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 1 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 1 passed',
-            'doc': 'Demo check function 1',
-            'runtime_sec': 0.5027589797973633,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag1',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid1',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': False,
-            'func_name': 'check2',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 2 failed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 2 failed',
-            'doc': 'Demo check function 2',
-            'runtime_sec': 0.5050649642944336,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag2',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid2',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check3',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 3 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 3 passed',
-            'doc': 'Demo check function 3',
-            'runtime_sec': 0.500093936920166,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid3',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check3',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 4 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 4 passed',
-            'doc': 'Demo check function 3',
-            'runtime_sec': 3.814697265625e-06,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 2,
-            'ruid': 'ruid3',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check4',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 5 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 5 passed',
-            'doc': 'Demo check function 4',
-            'runtime_sec': 0.5051987171173096,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid4',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check4',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 6 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 6 passed',
-            'doc': 'Demo check function 4',
-            'runtime_sec': 9.298324584960938e-06,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 2,
-            'ruid': 'ruid4',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        }
-    ]
-}
+It is worth noting here that there are 4 progress bar steps, but there are 6 results. Is this a bug?
+No. It is not possible to reliably count the number of checks that will be performed before running
+the checker. This is because check functions can yield many results. What we can count is the number
+of functions that have been registered, so progress is given in functions run not yields...yielded.
 
-```
-
-<small>rich_demo.txt &nbsp;&nbsp; 16:35:56 2025-03-27</small>
-
-<!--file end-->
+![Rich Demo](docs/_static/rich_demo.png)
 
 ## Textual Demo
 
@@ -918,7 +701,7 @@ I needed to Google/ChatGPT for thresholds. The bugs and time columns seem to be 
 is reasonable to target bad code with these tools, it isn't perfect, but I know that `ten8t_function.py` and
 `ten8t_checker.py` are the most complicated and neglected classes given that many small and not so small
 features have been bolted on over time while most of the other class are the leafs in the project that are easier
-to apply "separation of concerns" to.
+to apply "separation of concerns" to. It is safe to say most of the magic happens in these two places.
 
 PR's for classes and files with low scores are welcomed.
 
