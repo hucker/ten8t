@@ -45,7 +45,7 @@ class Ten8tDumpCSV(Ten8tDump):
         if col == "status":
             return "PASS" if result.status else "FAIL"
         elif col == "runtime_sec":
-            return f"{result.runtime_sec:.4f}"  # Format with 4 decimal places
+            return f"{result.runtime_sec:.6f}"  # Format with 4 decimal places
         else:
             # Get attribute directly
             return getattr(result, col)
@@ -67,17 +67,7 @@ class Ten8tDumpCSV(Ten8tDump):
 
         # Write summary section if enabled
         if self.include_summary:
-            # Write summary header
-            writer.writerow(self._format_summary_header(self.summary_columns))
-
-            # Extract and write summary data
-            summary = checker.summary()
-            summary_row = [summary.get(col, 0) for col in self.summary_columns]
-            writer.writerow(summary_row)
-
-            # Add an empty row to separate summary from results
-            if self.include_results:
-                writer.writerow([])
+            pass  # CSV does not support summary info
 
         # Write results section if enabled
         if self.include_results:

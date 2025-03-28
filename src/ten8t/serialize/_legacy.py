@@ -51,6 +51,6 @@ def ten8t_save_xls(ch: Ten8tChecker,
         ch: Ten8tChecker instance containing results
         config: Configuration object for the dump process (None for default)
     """
-    config = config or Ten8tDumpConfig.xls_default()
+    config = config or Ten8tDumpConfig.excel_default()
     dumper = Ten8tDumpExcel(config)
     dumper.dump(ch)
