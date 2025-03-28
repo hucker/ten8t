@@ -3,6 +3,7 @@ Public API for the Ten8t project.
 """
 from importlib.metadata import PackageNotFoundError, version
 
+from .rc import (Ten8tIniRC, Ten8tJsonRC, Ten8tRC, Ten8tTomlRC, Ten8tXMLRC, ten8t_rc_factory)
 # Built in render engines.  Note that for things like streamlit and rich we do
 # not take on dependencies.  The format strings are just a few lines of code
 # to map the supported formatting strings.
@@ -40,7 +41,6 @@ from .ten8t_immutable import (
     Ten8tEnvList,  # noqa: F401
     Ten8tEnvSet,  # noqa: F401
 )
-from .ten8t_jsonrc import Ten8tJsonRC  # noqa: F401
 from .ten8t_logging import (
     ten8t_logger,  # noqa: F401
     ten8t_reset_logging,  # noqa: F401
@@ -55,8 +55,6 @@ from .ten8t_progress import (
     Ten8tNoProgress,  # noqa: F401
     Ten8tProgress,  # noqa: F401
 )
-from .ten8t_rc import Ten8tRC  # noqa: F401
-from .ten8t_rc_factory import ten8t_rc_factory  # noqa:F401
 from .ten8t_result import (
     TR,  # noqa: F401
     Ten8tResult,  # noqa: F401
@@ -71,7 +69,6 @@ from .ten8t_ruid import (
     valid_ruids,  # noqa: F401
 )
 from .ten8t_thread import Ten8tThread  # noqa: F401
-from .ten8t_tomlrc import Ten8tTomlRC  # noqa: F401
 from .ten8t_util import (
     IntList,  # noqa: F401
     IntListOrNone,  # noqa: F401

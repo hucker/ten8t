@@ -1,10 +1,10 @@
 """
-Allow the usage of an INI file as an RC file.  
+Allow the usage of an INI file as an RC file.
 """
 import configparser
 
-from .ten8t_exception import Ten8tException
-from .ten8t_rc import Ten8tRC
+from ..base import Ten8tRC
+from ...ten8t_exception import Ten8tException
 
 
 class Ten8tIniRC(Ten8tRC):

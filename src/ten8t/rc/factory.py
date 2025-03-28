@@ -8,12 +8,12 @@ I have provided two implementations.
 
 import sys
 
-from .ten8t_exception import Ten8tException
-from .ten8t_inirc import Ten8tIniRC
-from .ten8t_jsonrc import Ten8tJsonRC
-from .ten8t_rc import Ten8tRC
-from .ten8t_tomlrc import Ten8tTomlRC
-from .ten8t_xmlrc import Ten8tXMLRC
+from .base import Ten8tRC
+from .concrete.ini import Ten8tIniRC
+from .concrete.json import Ten8tJsonRC
+from .concrete.toml import Ten8tTomlRC
+from .concrete.xml import Ten8tXMLRC
+from ..ten8t_exception import Ten8tException
 
 if sys.version_info[:2] >= (3, 10):
     def ten8t_rc_factory(param: dict | str, section: str = "") -> Ten8tRC:

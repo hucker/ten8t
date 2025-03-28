@@ -4,8 +4,8 @@ Handles configuration abstraction for ten8t, includes classes to parse TOML and 
 import re
 from typing import Sequence
 
-from .ten8t_exception import Ten8tException
-from .ten8t_util import IntList, StrList
+from ..ten8t_exception import Ten8tException
+from ..ten8t_util import IntList, StrList
 
 
 class Ten8tRC:
@@ -71,7 +71,7 @@ class Ten8tRC:
 
         Spaces and commas are treated as separators for the elements in the list. Non-string
         data elements will be converted to strings.
-        
+
         Args:
             data (Sequence or str): A list of data values or a single string to separate.
 
@@ -118,7 +118,7 @@ class Ten8tRC:
         Determines whether a given `ruid`/`tag`/`phase`/`level` matches any of the inclusions
         defined, and doesn't match any of the exclusions.
 
-        With no inclusions defined, all values are included by default. Exclusion matching takes 
+        With no inclusions defined, all values are included by default. Exclusion matching takes
         precedent over inclusion matching.
 
         Args:

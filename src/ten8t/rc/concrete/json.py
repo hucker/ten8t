@@ -1,11 +1,11 @@
 """
-Allow the usage of an JSON file as an RC file.  
+Allow the usage of an JSON file as an RC file.
 """
 import json
 import pathlib
 
-from .ten8t_exception import Ten8tException
-from .ten8t_rc import Ten8tRC
+from ..base import Ten8tRC
+from ...ten8t_exception import Ten8tException
 
 
 class Ten8tJsonRC(Ten8tRC):
