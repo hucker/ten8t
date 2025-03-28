@@ -3,6 +3,9 @@ Public API for the Ten8t project.
 """
 from importlib.metadata import PackageNotFoundError, version
 
+# Some simple progress indicators.
+from .progress import (Ten8tDebugProgress, Ten8tLogProgress, Ten8tMultiProgress, Ten8tNoProgress,
+                       Ten8tProgress)  # noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401
 from .rc import (Ten8tIniRC, Ten8tJsonRC, Ten8tRC, Ten8tTomlRC, Ten8tXMLRC, ten8t_rc_factory)
 # Built in render engines.  Note that for things like streamlit and rich we do
 # not take on dependencies.  The format strings are just a few lines of code
@@ -48,13 +51,6 @@ from .ten8t_logging import (
 )
 from .ten8t_module import Ten8tModule  # noqa: F401
 from .ten8t_package import Ten8tPackage  # noqa: F401
-from .ten8t_progress import (
-    Ten8tDebugProgress,  # noqa: F401
-    Ten8tLogProgress,  # noqa: F401
-    Ten8tMultiProgress,  # noqa: F401
-    Ten8tNoProgress,  # noqa: F401
-    Ten8tProgress,  # noqa: F401
-)
 from .ten8t_result import (
     TR,  # noqa: F401
     Ten8tResult,  # noqa: F401
@@ -122,8 +118,6 @@ try:
 except ImportError:
     _install("pathlib", installed=False)
 
-
-
 try:
     import narwhals as nw
 
@@ -133,10 +127,10 @@ try:
         rule_validate_ndf_schema,  # noqa: F401
         rule_validate_ndf_values_by_col,  # noqa: F401
     )
+
     _install("narwhals")
 except ImportError:
-    _install("narwhals",installed=False)
-
+    _install("narwhals", installed=False)
 
 # webapi using requests
 try:
@@ -146,11 +140,10 @@ try:
         rule_url_200,  # noqa: F401
         rule_web_api,  # noqa: F401
     )
+
     _install("requests")
 except ImportError:
     _install("requests", installed=False)
-
-
 
 # ping rules
 try:
@@ -160,20 +153,20 @@ try:
         rule_ping_host_check,  # noqa: F401
         rule_ping_hosts_check,  # noqa: F401
     )
+
     _install("ping")
 except ImportError:
     _install("ping", installed=False)
-
 
 # xlsx rules
 try:
     import openpyxl
 
     from .rule_xlsx import rule_xlsx_a1_pass_fail, rule_xlsx_df_pass_fail
+
     _install("openpyxl")
 except ImportError:
     _install("openpyxl", installed=False)
-
 
 # pdf rules
 try:
@@ -184,20 +177,20 @@ try:
         extract_tables_from_pdf,  # noqa: F401
         rule_from_pdf_rule_ids,  # noqa: F401
     )
+
     _install("pdf")
 except ImportError:
     _install("pdf", installed=False)
-
 
 # sql alchemy support
 try:
     import sqlalchemy
 
     from .rule_sqlachemy import rule_sql_table_col_name_schema, rule_sql_table_schema
+
     _install("sqlalchemy")
 except ImportError:
     _install("sqlalchemy", installed=False)
-
 
 try:
     import warnings
@@ -217,7 +210,6 @@ try:
     _install("fs")
 except ImportError:
     _install("fs", installed=False)
-
 
 try:
     __version__ = version("ten8t")  # Replace with the actual package name in pyproject.toml

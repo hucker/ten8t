@@ -2,9 +2,9 @@ import pytest
 
 import ten8t
 from ten8t import Ten8tResult
-from ten8t.ten8t_exception import Ten8tException
-from ten8t.ten8t_progress import Ten8tDebugProgress, Ten8tLogProgress, Ten8tMultiProgress, Ten8tNoProgress, \
+from ten8t.progress import Ten8tDebugProgress, Ten8tLogProgress, Ten8tMultiProgress, Ten8tNoProgress, \
     Ten8tProgress
+from ten8t.ten8t_exception import Ten8tException
 from ten8t.ten8t_util import StrOrNone
 
 

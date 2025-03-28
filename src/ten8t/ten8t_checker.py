@@ -7,6 +7,7 @@ import pathlib
 from importlib.metadata import version
 from typing import Any, Callable
 
+from .progress import Ten8tMultiProgress, Ten8tNoProgress, Ten8tProgress
 from .rc import Ten8tRC
 from .render import Ten8tAbstractRenderer
 from .render import Ten8tTextRenderer
@@ -17,7 +18,6 @@ from .ten8t_immutable import Ten8tEnvDict, Ten8tEnvList, Ten8tEnvSet
 from .ten8t_logging import ten8t_logger
 from .ten8t_module import Ten8tModule
 from .ten8t_package import Ten8tPackage
-from .ten8t_progress import Ten8tMultiProgress, Ten8tNoProgress, Ten8tProgress
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
 from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
