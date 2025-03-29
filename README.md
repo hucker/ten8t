@@ -19,21 +19,19 @@
 &nbsp;&nbsp;
 ![GitHub Release](https://img.shields.io/github/v/release/hucker/ten8t?include_prereleases)
 
-`Ten8t` (pronounced "ten-eighty") is a framework for managing observability and rule-based checks across
-files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest` and `pylint`, `Ten8t`
-makes simple tasks easy while providing the flexibility to tackle more complex scenarios as needed. By allowing you
-to write reusable, declarative rules, `Ten8t` lets you monitor and validate information systems. Whether it’s a
-quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
+# Ten8t Framework
 
-`Ten8t` can be thought of as a tool to build a "linter" for your infrastructure, file systems, databases,
-and documents. It is designed to be very efficient to set up rules to check and outputs in python data or
-JSON make integrating with common tools straight forward. Non-trival examples with streamlit, typer, rich,
-FastAPI and textual that development can be low friction. "Standard" rules are available out of the box,
-but it is easy to write python code to verify anything you like. It enables you to define customized pass/fail
-checks and organize them using tags, attributes, and phases for fine-grained control. With support for
-lightweight setup and scalability, `Ten8t` works for small projects and large, complex systems. Its intuitive
-tooling ensures that basic tests are easy to write, while its extensibility with standard Python code within
-reach of your coding ability.
+`Ten8t` (pronounced "ten-eighty") is a framework for observability and rule-based checks across files, folders, APIs,
+spreadsheets, and projects. Inspired by `pytest` and `pylint`, it simplifies basic tasks while handling complex
+scenarios flexibly. With reusable, declarative rules, Ten8t enables monitoring and validation of information
+systems—from simple file existence checks to comprehensive system health verification.
+
+Think of Ten8t as an infrastructure "linter" for file systems, databases, and documents. It enables quick
+rule setup with Python data or JSON output for tool integration. Examples with streamlit, typer, rich,
+FastAPI and textual demonstrate low-friction development. While "standard" rules are available, writing
+custom Python verifications is straightforward. Ten8t supports custom pass/fail checks organized with tags,
+attributes, and phases for precise control. Its design works for both small projects and complex
+systems, making basic tests easy while remaining extensible through standard Python.
 
 ## Why Not pytest, Great Expectations or other popular tools?
 
@@ -67,7 +65,7 @@ target audience.
 - **Complexity**: Designed for to be light weight for developers to check things quickly and repeatably.
 - **Audience**: This tool is a framework for infrastructure developers needing a tool to be the backbone of your
   observability. Since the output is directly available as JSON it is very easy to integrate.
-- **Visibility**: `ten8t` generats JSON. INtegration samples are included for `streamlit`, `FastAPI`, `textual` and
+- **Visibility**: `ten8t` generates JSON. INtegration samples are included for `streamlit`, `FastAPI`, `textual` and
   `typer`.
 
 ## Getting Started with Ten8t
@@ -128,7 +126,7 @@ def check_yielded_values():
 
 As you might expect running this will also provide 3 passing test results with richer data using the TR object. Note
 that these functions yield results rather than return them and some tags have been added, foreshadowing that you
-will be able to run the "foo" tests or the "fum" tests because the check function has be tagged with catagories.
+will be able to run the "foo" tests or the "fum" tests because the check function has be tagged with `categories`.
 
 Now we can add more complexity running more complex code. Tag check functions with attributes to allow subsets of checks
 to be run. Below
@@ -140,13 +138,11 @@ from ten8t import attributes, categories, TR
 import datetime as dt
 import pathlib
 
-
 @categories(tag="file_exist")
 def check_file_exists():
     """ Verify this that my_file exists """
     status = pathlib.Path("my_file.csv").exists()
     yield TR(status=status, msg="Verify daily CSV file exists")
-
 
 @categories(tag="file_age")
 def check_file_age():
@@ -197,7 +193,7 @@ def check_file_age(csv_file):
         return TR(status=False, msg="The file is stale")
 ```
 
-## Threaing Support
+## Threading Support
 
 Threading is supported in various ways. The easies way to enable threading
 
@@ -689,6 +685,145 @@ Python 3.10, 3.11, 3.12 and 3.13.
 Your code has been rated at 9.79/10 (previous run: 9.79/10, +0.00)
 ```
 
+
+## Why does this exist?
+
+This project is a piece of code that is useful to me, and it serves as non-trivial piece of code where
+I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
+advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
+mypy, pypi, tox, pytest, coverage, code metrics and readthedocs. It's a useful, non-trivial test bed.
+As it has grown over time and I have used it more in real use cases it has been dramatically updated,
+I am very thankful for the tests, I routinely perform architectural surgery and I completely trust that
+it is good to go when the tests pass. TDD is real and a massive time saver.
+
+TDD and tests in general are very useful if you follow a YAGNI philosphy. I will generally build up a
+class until it gets unwieldy and then split it up when the abstraction no longer supports "clean" design.  
+Early in my career I built big systems of objects that were just ceremony for stuff that never came,
+to exist.
+
+## Philosophy
+
+One of the decisions I made early on was how tolerant/flexible I should make the API. One of the
+things I was playing with was being "smart" about the types things are passed. I made the decision
+that I would try to help users and be very flexible with parameters being passed to functions. If
+I can save a user time from looking stuff up and just doing the right thing I'll do it.
+
+In many cases I accept, strings or lists of strings or just booleans and I "just figure it out." While
+this is not necessarily best practice, it is important to me that users get up and running quickly and
+that connecting the code up to other tools be as simple as possible (unlike say JSON which is very
+opinionated...and I love it). You will find the following "features."
+
+1) A list of strings can be this "foo fum quux", or "foo" or ["foo"] or ["",'fum','quux']...or [] or ''
+   or `None`! The code that accepts the parameters will automatically coerce things in the expected form.
+2) Same thing when files are needed. Pass in `file.txt` as a string or a `pathlib.Path("file.txt")`, if it
+   expects files it will do the right thing. If you have file names with spaces in them then you
+   must pass the data in correctly in the list of strings presentation.
+3) In cases where a list of "stuff" is needed, if you just give one of the thing, there will be code
+   to detect it and put the single item into a list so the list of 1 can be iterated over. Thus, you
+   might see str | int | list[int] | `None` and you can pass in anything knowing that what comes out
+   will be a list of ints.
+
+I have found that the code the end user needs to write to access `ten8t` when dealing with data read
+from config files or command line options, is cleaner because fewer data shaping operations are
+required. If there is desire, I will make strict versions.
+
+## Code Metrics (from radon)
+
+The code metrics section contains the output from running the python tool [Radon](https://github.com/rubik/radon)
+against all the files in the ten8t package folder. The metrics all come with a rank (except Halstead, which I googled
+for reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
+`ten8t_checker` and `ten8t_function` have issues as these are the most complex code where lots of "magic"
+happens getting everything to work flexibly for end users.
+
+Interestingly the radon grading system for maintainability gave everything an A (as of 0.0.20). The checker
+and function modules had the lowest scores, while the other metrics hit pretty hard and gave C's
+and F's. My preference is the Halstead metrics as those appear to be far more sensitive...and those are the ones
+I needed to Google/ChatGPT for thresholds. The bugs and time columns seem to be the most sensitive. I think it
+is reasonable to target bad code with these tools, it isn't perfect, but I know that `ten8t_function.py` and
+`ten8t_checker.py` are the most complicated and neglected classes given that many small and not so small
+features have been bolted on over time while most of the other class are the leafs in the project that are easier
+to apply "separation of concerns" to. It is safe to say most of the magic happens in these two places.
+
+PR's for classes and files with low scores are welcomed.
+
+__Halstead__
+<!--file snippets/radon_hal.csv-->
+
+| File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
+|--------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
+| ten8t_attribute.py | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
+| ten8t_checker.py   | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
+| ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
+| ten8t_filter.py    | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
+| ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
+| ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
+| ten8t_logging.py   | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
+| ten8t_module.py    | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
+| ten8t_package.py   | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
+| ten8t_result.py    | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
+| ten8t_ruid.py      | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
+| ten8t_thread.py    | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
+| ten8t_util.py      | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
+| ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
+
+<small>radon_hal.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
+
+<!--file end-->
+
+__Maintainability__
+<!--file snippets/radon_mi.csv-->
+
+| File               | Maint.<br>Index | Rank |
+|--------------------|-----------------|------|
+| ten8t_attribute.py | 58.40           | A    |
+| ten8t_checker.py   | 27.30           | A    |
+| ten8t_exception.py | 100.00          | A    |
+| ten8t_filter.py    | 68.20           | A    |
+| ten8t_function.py  | 51.80           | A    |
+| ten8t_immutable.py | 100.00          | A    |
+| ten8t_logging.py   | 89.50           | A    |
+| ten8t_module.py    | 62.80           | A    |
+| ten8t_package.py   | 71.70           | A    |
+| ten8t_result.py    | 64.30           | A    |
+| ten8t_ruid.py      | 78.20           | A    |
+| ten8t_thread.py    | 63.90           | A    |
+| ten8t_util.py      | 69.70           | A    |
+| ten8t_yield.py     | 47.50           | A    |
+
+<small>radon_mi.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
+
+<!--file end-->
+
+__Complexity__
+<!--file snippets/radon_cc.csv-->
+
+| File               | Name                  | Rank | Complexity |
+|--------------------|-----------------------|------|------------|
+| ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
+| ten8t_exception.py | Ten8tTypeError        | A    | 1.00       |
+| ten8t_exception.py | Ten8tValueError       | A    | 1.00       |
+| ten8t_exception.py | Ten8tException        | A    | 1.00       |
+| ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
+| ten8t_immutable.py | Ten8tEnvList          | A    | 2.00       |
+| ten8t_immutable.py | Ten8tEnvDict          | A    | 2.00       |
+| ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
+| ten8t_module.py    | Ten8tModule           | A    | 4.00       |
+| ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
+| ten8t_result.py    | Ten8tResult           | A    | 3.00       |
+| ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
+| ten8t_util.py      | NextIntValue          | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
+| ten8t_yield.py     | Ten8tYieldPassOnly    | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldFailOnly    | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldPassFail    | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldAll         | A    | 2.00       |
+| ten8t_yield.py     | Ten8tYieldSummaryOnly | A    | 2.00       |
+| ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
+
+<small>radon_cc.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
+
+<!--file end-->
+
 ## WTH does `Ten8t` and what's with your wierd names?
 
 `Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). Why was this
@@ -718,167 +853,6 @@ a [T-800](https://en.wikipedia.org/wiki/T-800_(character))) *NOT* `tate`.
 Why is your name `hucker`? It is a portmanteau of Chuck (my name) and hacker with the added benefit
 that is a derogatory name for someone who isn't very good at skiing. I'll call it a portmanthree.
 
-## Why does this exist?
-
-This project is a piece of code that is useful to me, and it serves as non-trivial piece of code where
-I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
-advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
-mypy, pypi, tox, pytest, coverage, code metrics and readthedocs. It's a useful, non-trivial test bed.
-As it has grown over time and I have used it more in real use cases it has been dramatically updated,
-I am very thankful for the tests, I routinely perform architectural surgery and I completely trust that
-it is good to go when the tests pass. TDD is real and a massive time saver.
-
-TDD and tests in general are very useful if you follow a YAGNI philosphy. I will generally build up a
-class until it gets unwieldy and then split it up when the abstraction no longer supports "clean" design.  
-Early in my career I built big systems of objects that were just ceremony for stuff that never came.
-
-## Philosophy
-
-One of the decisions I made early on was how tolerant/flexible I should make the API. One of the
-things I was playing with was being "smart" about the types things are passed. I made the decision
-that I would try to help users and be very flexible with parameters being passed to functions. If
-I can save a user time from looking stuff up and just doing the right thing I'll do it.
-
-In many cases I accept, strings or lists of strings or just booleans and I "just figure it out." While
-this is not necessarily best practice, it is important to me that users get up and running quickly and
-that connecting the code up to other tools be as simple as possible (unlike say JSON which is very
-opinionated...and I love it). You will find the following "features."
-
-1) A list of strings can be this "foo fum quux", or "foo" or ["foo"] or ["foo",'fum','quux']. The code
-   at that accepts the parameters will automatically coerse things in the expected form.
-2) Same thing when files are needed. Pass in "file.txt" as a string or a pathlib.Path("file.txt")
-3) In cases where a list of "stuff" is needed, if you just give one of the thing, there will be code
-   to detect it and put the single item into a list so the list of 1 can be iterated over. Thus you
-   might see str | int | list[int] | None and you can pass in anything knowing that what comes out
-   will be a list of ints.
-
-I have found that the code the end user needs to write to access `ten8t` when dealing with data read
-from config files or command line options, is cleaner because fewer data shaping operations are
-required.
-
-## Code Metrics (from radon)
-
-The code metrics section contains the output from running the python tool [Radon](https://github.com/rubik/radon)
-against all the files in the ten8t package folder. The metrics all come with a rank (except Halstead, which I googled
-for reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
-`ten8t_checker` and `ten8t_function` have issues as these are the most complex code where lots of "magic"
-happens getting everything to work flexibly for end users.
-
-Interestingly the radon grading system for maintainability gave everything an A (as of 0.0.20). The checker
-and function modules had the lowest scores, while the other metrics hit pretty hard and gave C's
-and F's. My preference is the Halstead metrics as those appear to be far more sensitive...and those are the ones
-I needed to Google/ChatGPT for thresholds. The bugs and time columns seem to be the most sensitive. I think it
-is reasonable to target bad code with these tools, it isn't perfect, but I know that `ten8t_function.py` and
-`ten8t_checker.py` are the most complicated and neglected classes given that many small and not so small
-features have been bolted on over time while most of the other class are the leafs in the project that are easier
-to apply "separation of concerns" to. It is safe to say most of the magic happens in these two places.
-
-PR's for classes and files with low scores are welcomed.
-
-__Halstead__
-<!--file snippets/radon_hal.csv-->
-
-| File                | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
-|---------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_attribute.py  | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
-| ten8t_checker.py    | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
-| ten8t_exception.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_filter.py     | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
-| ten8t_function.py   | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
-| ten8t_immutable.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_inirc.py      | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
-| ten8t_jsonrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_logging.py    | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
-| ten8t_module.py     | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
-| ten8t_package.py    | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
-| ten8t_progress.py   | 0.07 | 3.12       | 633.74  | 35.21  | B            | A                  | A              | A            |
-| ten8t_rc.py         | 0.02 | 1.65       | 122.11  | 6.78   | A            | A                  | A              | A            |
-| ten8t_rc_factory.py | 0.01 | 1.88       | 42.11   | 2.34   | A            | A                  | A              | A            |
-| ten8t_result.py     | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
-| ten8t_ruid.py       | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
-| ten8t_thread.py     | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
-| ten8t_tomlrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_util.py       | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
-| ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
-| ten8t_yield.py      | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
-
-<small>radon_hal.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
-
-<!--file end-->
-
-
-
-__Maintainability__
-<!--file snippets/radon_mi.csv-->
-
-| File                | Maint.<br>Index | Rank |
-|---------------------|-----------------|------|
-| ten8t_attribute.py  | 70.20           | A    |
-| ten8t_checker.py    | 27.50           | A    |
-| ten8t_exception.py  | 100.00          | A    |
-| ten8t_filter.py     | 68.20           | A    |
-| ten8t_function.py   | 51.80           | A    |
-| ten8t_immutable.py  | 100.00          | A    |
-| ten8t_inirc.py      | 95.20           | A    |
-| ten8t_jsonrc.py     | 100.00          | A    |
-| ten8t_logging.py    | 89.50           | A    |
-| ten8t_module.py     | 62.80           | A    |
-| ten8t_package.py    | 71.70           | A    |
-| ten8t_progress.py   | 62.40           | A    |
-| ten8t_rc.py         | 70.20           | A    |
-| ten8t_rc_factory.py | 77.00           | A    |
-| ten8t_result.py     | 64.30           | A    |
-| ten8t_ruid.py       | 78.20           | A    |
-| ten8t_thread.py     | 63.90           | A    |
-| ten8t_tomlrc.py     | 100.00          | A    |
-| ten8t_util.py       | 69.70           | A    |
-| ten8t_xmlrc.py      | 85.80           | A    |
-| ten8t_yield.py      | 47.50           | A    |
-
-<small>radon_mi.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
-
-<!--file end-->
-
-__Complexity__
-<!--file snippets/radon_cc.csv-->
-
-| File               | Name                  | Rank | Complexity |
-|--------------------|-----------------------|------|------------|
-| ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
-| ten8t_exception.py | Ten8tTypeError        | A    | 1.00       |
-| ten8t_exception.py | Ten8tValueError       | A    | 1.00       |
-| ten8t_exception.py | Ten8tException        | A    | 1.00       |
-| ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
-| ten8t_immutable.py | Ten8tEnvList          | A    | 2.00       |
-| ten8t_immutable.py | Ten8tEnvDict          | A    | 2.00       |
-| ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
-| ten8t_inirc.py     | Ten8tIniRC            | A    | 3.00       |
-| ten8t_jsonrc.py    | Ten8tJsonRC           | A    | 3.00       |
-| ten8t_module.py    | Ten8tModule           | A    | 4.00       |
-| ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
-| ten8t_progress.py  | Ten8tLogProgress      | A    | 4.00       |
-| ten8t_progress.py  | Ten8tDebugProgress    | A    | 3.00       |
-| ten8t_progress.py  | Ten8tMultiProgress    | A    | 3.00       |
-| ten8t_progress.py  | Ten8tProgress         | A    | 2.00       |
-| ten8t_progress.py  | Ten8tNoProgress       | A    | 2.00       |
-| ten8t_rc.py        | Ten8tRC               | B    | 6.00       |
-| ten8t_result.py    | Ten8tResult           | A    | 3.00       |
-| ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
-| ten8t_tomlrc.py    | Ten8tTomlRC           | A    | 3.00       |
-| ten8t_util.py      | NextIntValue          | A    | 2.00       |
-| ten8t_xmlrc.py     | Ten8tXMLRC            | A    | 5.00       |
-| ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
-| ten8t_yield.py     | Ten8tYieldPassOnly    | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldFailOnly    | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldPassFail    | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldAll         | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYieldSummaryOnly | A    | 2.00       |
-| ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
-
-<small>radon_cc.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
-
-<!--file end-->
-
 ## TODO
 
 1. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
@@ -888,6 +862,7 @@ __Complexity__
 
 ## Latest changes
 
-1. Added a textual demo.
+1. Improved the decorator mechanism for setting up check functions.
+2. Added a textual demo.
 2. Added explicit error messages for async check functions
 2. Added support for csv/markdown/excel output from the checker.

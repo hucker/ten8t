@@ -25,12 +25,15 @@ makes simple tasks easy while providing the flexibility to tackle more complex s
 to write reusable, declarative rules, `Ten8t` lets you monitor and validate information systems. Whether it’s a
 quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
 
-`Ten8t` can be thought of as a "linter" for your infrastructure or file systems where you create the linting
-rules. Many "standard" rules are available out of the box, but it is easy to write python code to verify
-anything you like. It enables you to define customized pass/fail checks and organize them using tags,
-attributes, and phases for fine-grained control. With support for lightweight setup and scalability, `Ten8t`
-works for small projects and large, complex systems. Its intuitive tooling ensures that basic tests are
-easy to write, while its extensibility with standard Python code within reach of your coding ability.
+`Ten8t` can be thought of as a tool to build a "linter" for your infrastructure, file systems, databases,
+and documents. It is designed to be very efficient to set up rules to check and outputs in python data or
+JSON make integrating with common tools straight forward. Non-trival examples with streamlit, typer, rich,
+FastAPI and textual that development can be low friction. "Standard" rules are available out of the box,
+but it is easy to write python code to verify anything you like. It enables you to define customized pass/fail
+checks and organize them using tags, attributes, and phases for fine-grained control. With support for
+lightweight setup and scalability, `Ten8t` works for small projects and large, complex systems. Its intuitive
+tooling ensures that basic tests are easy to write, while its extensibility with standard Python code within
+reach of your coding ability.
 
 ## Why Not pytest, Great Expectations or other popular tools?
 
@@ -60,11 +63,12 @@ target audience.
 
 ### Ten8t:
 
-- **Scope**: Focused on testing filesystem, file and generic python checks.
-- **Complexity**: Lightweight and straightforward, designed for developers to get check functions up quickly.
+- **Scope**: Focused on testing filesystem, files, SQL, API access and custom coded python checks.
+- **Complexity**: Designed for to be light weight for developers to check things quickly and repeatably.
 - **Audience**: This tool is a framework for infrastructure developers needing a tool to be the backbone of your
   observability. Since the output is directly available as JSON it is very easy to integrate.
-- **Visibility**: Sample apps are included that run Streamlit, FastAPI and typer.
+- **Visibility**: `ten8t` generats JSON. INtegration samples are included for `streamlit`, `FastAPI`, `textual` and
+  `typer`.
 
 ## Getting Started with Ten8t
 
@@ -73,40 +77,50 @@ with modules starting with "test" and functions beginning with "test",
 transitioning to `ten8t` will feel natural. Additionally, if you understand fixtures, you'll find that the concept is
 also available through environments. Rule may be tagged with attributes to allow tight control over running checks.
 
-### Simple Rules
+### A modest checker...
 
-You can start with simple rules that don't even reference `ten8t` directly by returning or yielding boolean values.
-Here are some simple check functions.
+The very simplest thing you cand do with `ten8t` takes a few functions, gives them to the
+a checker object and then tells that object to run all the functions, collect the results. This is the core.
+Everything that follows from here is window dressing to make this test engine run.
 
 ```python
-
+import ten8t as t8
 import pathlib
 
 
-def check_boolean():
-   return pathlib.Path("./foo").exists()
+def check_foo():
+  """Check if a foo exists"""
+  return pathlib.Path("./foo.txt").exists()
 
 
-def check_yielded_values():
-    return [pathlib.Path("./foo").exists(), pathlib.Path("./fum").exists()]
+def check_fum():
+  """Check if a fum exists"""
+  return pathlib.Path("./fum.txt").exists()
+
+
+# A checker object collections your functions up, runs them all and hands you back results.
+results = t8.Ten8tChecker(check_functions=[check_foo, check_fum]).run_all()
+
+
 ```
 
-As you might expect, a framework could discover these tests provide 3 passing test results if the files all exist.
+As you might expect, a framework could discover these tests provide 2 passing test results if the files all exist.
 
-You can up your game and return status information by returning or yielding `Ten8tResults`.
+In order to be useful we need functions that return more detail and ideally functions that return more than
+one `Ten8tResult`. So we support yield and a result object that stores...everyting I could think of.
 
 ```python
-from ten8t import TR, attributes
+from ten8t import TR, categories
 import pathlib
 
 #NOTE TR is an alias for Tent8tResult.  Since it is used very often it is useful to have a short version.
 
-@attributes(tag="foo")
+@categories(tag="foo")
 def check_boolean():
     yield TR(status=pathlib.Path("./foo").exists(), msg="Folder foo exists")
 
 
-@attributes(tag="fum")
+@categories(tag="fum")
 def check_yielded_values():
     yield TR(status=pathlib.Path("./fum").exists(), msg="Folder foo exists")
     yield TR(status=pathlib.Path("./fum").exists(), msg="Folder fum exists")
@@ -114,7 +128,7 @@ def check_yielded_values():
 
 As you might expect running this will also provide 3 passing test results with richer data using the TR object. Note
 that these functions yield results rather than return them and some tags have been added, foreshadowing that you
-will be able to run the "foo" tests or the "fum" tests.
+will be able to run the "foo" tests or the "fum" tests because the check function has be tagged with catagories.
 
 Now we can add more complexity running more complex code. Tag check functions with attributes to allow subsets of checks
 to be run. Below
@@ -122,19 +136,19 @@ two functions are given different tags. When you make calls to run checks you ca
 you want to allow to run.
 
 ```python
-from ten8t import attributes, TR
+from ten8t import attributes, categories, TR
 import datetime as dt
 import pathlib
 
 
-@attributes(tag="file_exist")
+@categories(tag="file_exist")
 def check_file_exists():
     """ Verify this that my_file exists """
     status = pathlib.Path("my_file.csv").exists()
     yield TR(status=status, msg="Verify daily CSV file exists")
 
 
-@attributes(tag="file_age")
+@categories(tag="file_age")
 def check_file_age():
     file = pathlib.Path("my_file.csv")
     modification_time = file.stat().st_mtime
@@ -157,7 +171,7 @@ work fine, but sharing a SQL connection across threads won't work.
 ```python
 import datetime as dt
 import pathlib
-from ten8t import attributes, TR
+from ten8t import categories, TR
 
 
 def env_csv_file():
@@ -165,13 +179,13 @@ def env_csv_file():
     return env
 
 
-@attributes(tag="file")
+@categories(tag="file")
 def check_file_exists(csv_file):
     """ Verify this that my_file exists """
     return TR(status=csv_file.exists(), msg="Verify daily CSV file exists")
 
 
-@attributes(tag="file")
+@categories(tag="file")
 def check_file_age(csv_file):
     modification_time = csv_file.stat().st_mtime
     current_time = dt.datetime.now().timestamp()
@@ -181,6 +195,45 @@ def check_file_age(csv_file):
         return TR(status=True, msg="The file age is OK {file_age_in_hours}")
     else:
         return TR(status=False, msg="The file is stale")
+```
+
+## Threaing Support
+
+Threading is supported in various ways. The easies way to enable threading
+
+```python
+import datetime as dt
+import pathlib
+from ten8t import categories, threading, TR, Ten8tChecker, Ten8tThread
+
+
+@categories(tag="file")
+@threading(thread_id='thread1')
+def check_file_exists():
+    """ Verify this that my_file exists """
+    return TR(status=pathlib.Path('myfile.txt').exists(), msg="Verify daily CSV file exists")
+
+
+@categories(tag="file")
+@threading(thread_id='thread2')
+def check_file_age():
+    modification_time = pathlib.Path('myfile.txt').stat().st_mtime
+    current_time = dt.datetime.now().timestamp()
+    file_age_in_seconds = current_time - modification_time
+    file_age_in_hours = file_age_in_seconds / 3600
+    if file_age_in_hours < 24:
+        return TR(status=True, msg="The file age is OK {file_age_in_hours}")
+    else:
+        return TR(status=False, msg="The file is stale")
+
+
+ch = Ten8tChecker(check_functions=[check_file_age, check_file_exists])
+
+# Use the Ten8tThread class to run the checker.  
+results = Ten8tThread(checker=ch).run_all(max_workers=5)
+
+
+
 ```
 
 ## How is Ten8t Used?
@@ -197,15 +250,17 @@ Ten8t uses the following hierarchy:
         Ten8tModule` (one or more Ten8tFunctions in a Python file (function starting with the text "check_"))
             Ten8tFunction` (when called will return 0 or more `Ten8tResults`)
 
-Typically one works at the module or package level where you have python files that have 1 or more files with rules in
-them.
+Typically one works at the module or package level where you have python files that have 1 or more functions in them
+and you have collections of files to make packages. Note that `ten8t` a module is 1 file and a package is a folder
+with atleast one file that has a check function. Similare to python but not exact.
 
 Each `Ten8tFunction` returns/yields 0-to-N results from its generator function. By convention, if None is returned, the
 rule was skipped.
 
 The rule functions that you write don't need to use generators. They can return a variety of output
 (e.g., Boolean, List of Boolean, `Ten8tResult`, List of `Ten8tResult`), or you can write a generator that yields
-results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant.
+results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant, but returning booleans
+and depending on using your function name and your docstrings for error mssages is on you!
 
 Alternatively you can ignore the file and folder discovery mechanism and provide a list of rules as regular python
 functions and `Ten8t` will happily run them for you when you pass a list of check functions
@@ -251,19 +306,20 @@ in the last 5 minutes using rules from based on the `pathlib` packages
 ```python
 import ten8t as t8
 
-@t8.attributes(tag="tag")
+
+@t8.categories(tag="tag")
 def check_rule1():
     for folder in ['folder1', 'folder2', 'folder3']:
         yield from t8.rule_large_files(folder=folder, pattern="log*.txt", max_size=100_000)
 
 
-@t8.attributes(tag="tag")
+@t8.categories(tag="tag")
 def check_rule2():
     for folder in ['folder1', 'folder2', 'folder3']:
         yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
 
 
-@t8.attributes(tag="tag")
+@t8.categories(tag="tag")
 def check_rule3(cfg):
     """cfg: application config file."""
     for folder in cfg['logging']['folders']:
@@ -290,7 +346,7 @@ If you want to add rules for common usecases PRs are welcomed. See `rule_files.p
 | sqlalchemy   | [GitHub - sqlalchemy/sqlalchemy](https://github.com/sqlalchemy/sqlalchemy)           |
 
 If you aren't sure what has been detected when loading `ten8t` run this code in the REPL. If the name is
-in the whats_installed string then `ten8t` detected that you have pip installed the right tools.
+in the `whats_installed` string then `ten8t` detected that you have pip installed the right tools.
 
 ```text
 >>> import ten8t
@@ -569,7 +625,7 @@ FastAPI swagger interface:
 
 FastAPI example running some rules:
 
-![FastAPI](./_static/fastapi.png)
+![FastAPI Demo](./_static/fastapi.png)
 
 ## Streamlit Demo  (`ten8t/st_ten8t/st_demo.py`)
 
@@ -581,252 +637,19 @@ tabular report.
 
 Here is the setup using a couple of modules in a package folder:
 
-![Streamlit](./_static/streamlit_allup.png)
+![Streamlit Demo](./_static/streamlit_allup.png)
 
 ## Rich Demo (`ten8t/rich_ten8t`)
 
 Here is a example of connecting `ten8t` up to the rich package using the progress bar object to
 move a progress bar, and the rich table and some emojis to make a tabular output.
 
-<!--file snippets/rich_demo.txt-->
-```
-[?25l[1;34mRunning Checks[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check1[0m [38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m0/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check2[0m [38;5;197m━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m1/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check3[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━━━━━━━━━━━[0m [1;32m2/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mFunction Start check4[0m [38;5;197m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[38;5;237m╺[0m[38;5;237m━━━━━━━━━[0m [1;32m3/4[0m
-[2K[1;34mScore = 83.3[0m [38;5;70m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [1;32m4/4[0m
-[?25h[3m                      Test Results                       [0m
-┏━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━┓
-┃[35m [0m[35mTag [0m[35m [0m┃[35m [0m[35mRUID [0m[35m [0m┃[35m [0m[35mFunction Name[0m[35m [0m┃[35m [0m[35mStatus[0m[35m [0m┃[35m [0m[35mMessage      [0m[35m [0m┃
-┣━━━━━━╋━━━━━━━╋━━━━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━━━━━━━━━┫
-┃[36m [0m[36mtag1[0m[36m [0m┃[32m [0m[32mruid1[0m[32m [0m┃[34m [0m[34m   check1    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 1 passed[0m[33m [0m┃
-┃[36m [0m[36mtag2[0m[36m [0m┃[32m [0m[32mruid2[0m[32m [0m┃[34m [0m[34m   check2    [0m[34m [0m┃  [31mFAIL[0m  ┃[33m [0m[33mTest 2 failed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid3[0m[32m [0m┃[34m [0m[34m   check3    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 3 passed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid3[0m[32m [0m┃[34m [0m[34m   check3    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 4 passed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid4[0m[32m [0m┃[34m [0m[34m   check4    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 5 passed[0m[33m [0m┃
-┃[36m [0m[36mtag3[0m[36m [0m┃[32m [0m[32mruid4[0m[32m [0m┃[34m [0m[34m   check4    [0m[34m [0m┃  [32mPASS[0m  ┃[33m [0m[33mTest 6 passed[0m[33m [0m┃
-┗━━━━━━┻━━━━━━━┻━━━━━━━━━━━━━━━┻━━━━━━━━┻━━━━━━━━━━━━━━━┛
-[1;31mPress Enter For Raw Data[0m
-{
-    'package_count': 0,
-    'module_count': 0,
-    'modules': [],
-    'function_count': 4,
-    'tags': ['tag1', 'tag2', 'tag3'],
-    'levels': [1],
-    'phases': [''],
-    'ruids': ['ruid1', 'ruid2', 'ruid3', 'ruid4'],
-    'score': 83.33333333333333,
-    'env_nulls': [],
-    '__version__': '0.0.21',
-    'start_time': datetime.datetime(2025, 3, 27, 16, 35, 54, 378292),
-    'end_time': datetime.datetime(2025, 3, 27, 16, 35, 56, 393477),
-    'duration_seconds': 2.015185,
-    'functions': ['check1', 'check2', 'check3', 'check4'],
-    'passed_count': 5,
-    'warn_count': 0,
-    'failed_count': 1,
-    'skip_count': 0,
-    'total_count': 6,
-    'check_count': 4,
-    'result_count': 6,
-    'clean_run': True,
-    'perfect_run': False,
-    'abort_on_fail': False,
-    'abort_on_exception': False,
-    'results': [
-        {
-            'status': True,
-            'func_name': 'check1',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 1 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 1 passed',
-            'doc': 'Demo check function 1',
-            'runtime_sec': 0.5027589797973633,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag1',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid1',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': False,
-            'func_name': 'check2',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 2 failed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 2 failed',
-            'doc': 'Demo check function 2',
-            'runtime_sec': 0.5050649642944336,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag2',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid2',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check3',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 3 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 3 passed',
-            'doc': 'Demo check function 3',
-            'runtime_sec': 0.500093936920166,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid3',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check3',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 4 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 4 passed',
-            'doc': 'Demo check function 3',
-            'runtime_sec': 3.814697265625e-06,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 2,
-            'ruid': 'ruid3',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check4',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 5 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 5 passed',
-            'doc': 'Demo check function 4',
-            'runtime_sec': 0.5051987171173096,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 1,
-            'ruid': 'ruid4',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        },
-        {
-            'status': True,
-            'func_name': 'check4',
-            'pkg_name': '',
-            'module_name': 'adhoc',
-            'msg': 'Test 6 passed',
-            'info_msg': '',
-            'warn_msg': '',
-            'msg_rendered': 'Test 6 passed',
-            'doc': 'Demo check function 4',
-            'runtime_sec': 9.298324584960938e-06,
-            'except_': 'None',
-            'traceback': '',
-            'skipped': False,
-            'weight': 100.0,
-            'tag': 'tag3',
-            'level': 1,
-            'phase': '',
-            'count': 2,
-            'ruid': 'ruid4',
-            'ttl_minutes': 0.0,
-            'mit_msg': '',
-            'owner_list': [],
-            'skip_on_none': False,
-            'fail_on_none': False,
-            'summary_result': False,
-            'thread_id': 'main_thread__'
-        }
-    ]
-}
+It is worth noting here that there are 4 progress bar steps, but there are 6 results. Is this a bug?
+No. It is not possible to reliably count the number of checks that will be performed before running
+the checker. This is because check functions can yield many results. What we can count is the number
+of functions that have been registered, so progress is given in functions run not yields...yielded.
 
-```
-
-<small>rich_demo.txt &nbsp;&nbsp; 16:35:56 2025-03-27</small>
-
-<!--file end-->
+![Rich Demo](./_static/rich_demo.png)
 
 ## Textual Demo
 
@@ -901,13 +724,46 @@ This project is a piece of code that is useful to me, and it serves as non-trivi
 I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
 advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
 mypy, pypi, tox, pytest, coverage, code metrics and readthedocs. It's a useful, non-trivial test bed.
+As it has grown over time and I have used it more in real use cases it has been dramatically updated,
+I am very thankful for the tests, I routinely perform architectural surgery and I completely trust that
+it is good to go when the tests pass. TDD is real and a massive time saver.
+
+TDD and tests in general are very useful if you follow a YAGNI philosphy. I will generally build up a
+class until it gets unwieldy and then split it up when the abstraction no longer supports "clean" design.  
+Early in my career I built big systems of objects that were just ceremony for stuff that never came,
+to exist.
+
+## Philosophy
+
+One of the decisions I made early on was how tolerant/flexible I should make the API. One of the
+things I was playing with was being "smart" about the types things are passed. I made the decision
+that I would try to help users and be very flexible with parameters being passed to functions. If
+I can save a user time from looking stuff up and just doing the right thing I'll do it.
+
+In many cases I accept, strings or lists of strings or just booleans and I "just figure it out." While
+this is not necessarily best practice, it is important to me that users get up and running quickly and
+that connecting the code up to other tools be as simple as possible (unlike say JSON which is very
+opinionated...and I love it). You will find the following "features."
+
+1) A list of strings can be this "foo fum quux", or "foo" or ["foo"] or ["foo",'fum','quux']...or [] or ''
+   or None! The code that accepts the parameters will automatically coerce things in the expected form.
+2) Same thing when files are needed. Pass in "file.txt" as a string or a pathlib.Path("file.txt"), if it
+   expects files it will do the right thing. If you have file names with spaces in them then you
+   must pass the data in correctly.
+3) In cases where a list of "stuff" is needed, if you just give one of the thing, there will be code
+   to detect it and put the single item into a list so the list of 1 can be iterated over. Thus you
+   might see str | int | list[int] | None and you can pass in anything knowing that what comes out
+   will be a list of ints.
+
+I have found that the code the end user needs to write to access `ten8t` when dealing with data read
+from config files or command line options, is cleaner because fewer data shaping operations are
+required. If there is desire, I will make strict versions.
 
 ## Code Metrics (from radon)
 
 The code metrics section contains the output from running the python tool [Radon](https://github.com/rubik/radon)
 against all the files in the ten8t package folder. The metrics all come with a rank (except Halstead, which I googled
-for
-reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
+for reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
 `ten8t_checker` and `ten8t_function` have issues as these are the most complex code where lots of "magic"
 happens getting everything to work flexibly for end users.
 
@@ -918,38 +774,31 @@ I needed to Google/ChatGPT for thresholds. The bugs and time columns seem to be 
 is reasonable to target bad code with these tools, it isn't perfect, but I know that `ten8t_function.py` and
 `ten8t_checker.py` are the most complicated and neglected classes given that many small and not so small
 features have been bolted on over time while most of the other class are the leafs in the project that are easier
-to apply "separation of concerns" to.
+to apply "separation of concerns" to. It is safe to say most of the magic happens in these two places.
 
 PR's for classes and files with low scores are welcomed.
 
 __Halstead__
 <!--file snippets/radon_hal.csv-->
 
-| File                | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
-|---------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_attribute.py  | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
-| ten8t_checker.py    | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
-| ten8t_exception.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_filter.py     | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
-| ten8t_function.py   | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
-| ten8t_immutable.py  | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_inirc.py      | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
-| ten8t_jsonrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_logging.py    | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
-| ten8t_module.py     | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
-| ten8t_package.py    | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
-| ten8t_progress.py   | 0.07 | 3.12       | 633.74  | 35.21  | B            | A                  | A              | A            |
-| ten8t_rc.py         | 0.02 | 1.65       | 122.11  | 6.78   | A            | A                  | A              | A            |
-| ten8t_rc_factory.py | 0.01 | 1.88       | 42.11   | 2.34   | A            | A                  | A              | A            |
-| ten8t_result.py     | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
-| ten8t_ruid.py       | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
-| ten8t_thread.py     | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
-| ten8t_tomlrc.py     | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_util.py       | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
-| ten8t_xmlrc.py      | 0.00 | 0.50       | 2.38    | 0.13   | A            | A                  | A              | A            |
-| ten8t_yield.py      | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
+| File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
+|--------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
+| ten8t_attribute.py | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
+| ten8t_checker.py   | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
+| ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
+| ten8t_filter.py    | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
+| ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
+| ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
+| ten8t_logging.py   | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
+| ten8t_module.py    | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
+| ten8t_package.py   | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
+| ten8t_result.py    | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
+| ten8t_ruid.py      | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
+| ten8t_thread.py    | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
+| ten8t_util.py      | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
+| ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
+<small>radon_hal.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
 
 <!--file end-->
 
@@ -958,31 +807,24 @@ __Halstead__
 __Maintainability__
 <!--file snippets/radon_mi.csv-->
 
-| File                | Maint.<br>Index | Rank |
-|---------------------|-----------------|------|
-| ten8t_attribute.py  | 70.20           | A    |
-| ten8t_checker.py    | 27.50           | A    |
-| ten8t_exception.py  | 100.00          | A    |
-| ten8t_filter.py     | 68.20           | A    |
-| ten8t_function.py   | 51.80           | A    |
-| ten8t_immutable.py  | 100.00          | A    |
-| ten8t_inirc.py      | 95.20           | A    |
-| ten8t_jsonrc.py     | 100.00          | A    |
-| ten8t_logging.py    | 89.50           | A    |
-| ten8t_module.py     | 62.80           | A    |
-| ten8t_package.py    | 71.70           | A    |
-| ten8t_progress.py   | 62.40           | A    |
-| ten8t_rc.py         | 70.20           | A    |
-| ten8t_rc_factory.py | 77.00           | A    |
-| ten8t_result.py     | 64.30           | A    |
-| ten8t_ruid.py       | 78.20           | A    |
-| ten8t_thread.py     | 63.90           | A    |
-| ten8t_tomlrc.py     | 100.00          | A    |
-| ten8t_util.py       | 69.70           | A    |
-| ten8t_xmlrc.py      | 85.80           | A    |
-| ten8t_yield.py      | 47.50           | A    |
+| File               | Maint.<br>Index | Rank |
+|--------------------|-----------------|------|
+| ten8t_attribute.py | 58.40           | A    |
+| ten8t_checker.py   | 27.30           | A    |
+| ten8t_exception.py | 100.00          | A    |
+| ten8t_filter.py    | 68.20           | A    |
+| ten8t_function.py  | 51.80           | A    |
+| ten8t_immutable.py | 100.00          | A    |
+| ten8t_logging.py   | 89.50           | A    |
+| ten8t_module.py    | 62.80           | A    |
+| ten8t_package.py   | 71.70           | A    |
+| ten8t_result.py    | 64.30           | A    |
+| ten8t_ruid.py      | 78.20           | A    |
+| ten8t_thread.py    | 63.90           | A    |
+| ten8t_util.py      | 69.70           | A    |
+| ten8t_yield.py     | 47.50           | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
+<small>radon_mi.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
 
 <!--file end-->
 
@@ -999,21 +841,11 @@ __Complexity__
 | ten8t_immutable.py | Ten8tEnvList          | A    | 2.00       |
 | ten8t_immutable.py | Ten8tEnvDict          | A    | 2.00       |
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
-| ten8t_inirc.py     | Ten8tIniRC            | A    | 3.00       |
-| ten8t_jsonrc.py    | Ten8tJsonRC           | A    | 3.00       |
 | ten8t_module.py    | Ten8tModule           | A    | 4.00       |
 | ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
-| ten8t_progress.py  | Ten8tLogProgress      | A    | 4.00       |
-| ten8t_progress.py  | Ten8tDebugProgress    | A    | 3.00       |
-| ten8t_progress.py  | Ten8tMultiProgress    | A    | 3.00       |
-| ten8t_progress.py  | Ten8tProgress         | A    | 2.00       |
-| ten8t_progress.py  | Ten8tNoProgress       | A    | 2.00       |
-| ten8t_rc.py        | Ten8tRC               | B    | 6.00       |
 | ten8t_result.py    | Ten8tResult           | A    | 3.00       |
 | ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
-| ten8t_tomlrc.py    | Ten8tTomlRC           | A    | 3.00       |
 | ten8t_util.py      | NextIntValue          | A    | 2.00       |
-| ten8t_xmlrc.py     | Ten8tXMLRC            | A    | 5.00       |
 | ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
 | ten8t_yield.py     | Ten8tYieldPassOnly    | A    | 2.00       |
 | ten8t_yield.py     | Ten8tYieldFailOnly    | A    | 2.00       |
@@ -1022,7 +854,7 @@ __Complexity__
 | ten8t_yield.py     | Ten8tYieldSummaryOnly | A    | 2.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 16:35:57 2025-03-27</small>
+<small>radon_cc.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
 
 <!--file end-->
 
@@ -1031,6 +863,7 @@ __Complexity__
 1. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
 2. Add support for handling coroutines and async generators, so ten8t can support all function types.
 2. Progress bars for using multithreading is broken.
+3. Improved decorators for so attribute didn't do ALL the work.
 
 ## Latest changes
 

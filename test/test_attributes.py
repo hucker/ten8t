@@ -4,6 +4,7 @@ import ten8t.ten8t_attribute as ten8t_attribute
 import ten8t.ten8t_exception as ten8t_exception
 import ten8t.ten8t_function as ten8t_function
 import ten8t.ten8t_result as ten8t_result
+from ten8t import Ten8tException
 
 
 @pytest.mark.parametrize("ttl,units,result", [
@@ -148,13 +149,13 @@ def test_control_decorator():
     assert function.skip == True
 
 
-def test_threading_decorator():
-    @ten8t_attribute.threading(thread_id="worker-1")
-    def check_threading():
-        return ten8t_result.Ten8tResult(status=True, msg="It works")
+def test_bad_threading_decorator():
+    with pytest.raises(Ten8tException):
+        @ten8t_attribute.threading(thread_id="worker-1")
+        def check_threading():
+            return ten8t_result.Ten8tResult(status=True, msg="It works")
 
-    function = ten8t_function.Ten8tFunction(check_threading)
-    assert function.thread_id == "worker-1"
+        _ = ten8t_function.Ten8tFunction(check_threading)
 
 
 def test_caching_decorator_with_string():
@@ -217,7 +218,7 @@ def test_attributes_comprehensive_decorator():
     assert function.thread_id == "main"
 
 
-@pytest.mark.xfail(reason="Disallowed character overrides are not work completely yet.")
+# @pytest.mark.xfail(reason="Disallowed character overrides are not work completely yet.")
 def test_attributes_with_custom_disallowed():
     @ten8t_attribute.attributes(
         tag="test-tag",  # Contains a dash which would normally be disallowed
@@ -274,7 +275,7 @@ def test_multiple_decorators_different_orderings():
     assert function3.weight == 95.5
 
     # Test with threading and caching decorators included
-    @ten8t_attribute.threading(thread_id="worker-1")
+    @ten8t_attribute.threading(thread_id="worker-1", disallowed_chars=' ')
     @ten8t_attribute.caching(ttl_minutes=15)
     @ten8t_attribute.control(skip=True)
     @ten8t_attribute.categories(tag="multi4", phase="test4")
