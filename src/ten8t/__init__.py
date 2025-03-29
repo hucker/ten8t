@@ -22,10 +22,8 @@ from .serialize import ten8t_save_csv, ten8t_save_md, ten8t_save_xls
 # This depends on pathlib which should always be there so
 # there is no need to try to import the dependency before
 # exporting these rules.
-from .ten8t_attribute import (
-    attributes,  # noqa: F401
-    get_attribute,  # noqa: F401
-)
+from .ten8t_attribute import (attributes, caching, categories, control, get_attribute, score,
+                              threading)  # noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401
 from .ten8t_checker import Ten8tChecker  # noqa: F401
 from .ten8t_exception import Ten8tException  # noqa: F401
 from .ten8t_filter import (

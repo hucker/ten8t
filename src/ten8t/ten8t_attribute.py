@@ -30,6 +30,8 @@ DEFAULT_FAIL_ON_NONE = False
 DEFAULT_INDEX = 1  # All ten8t functions are given an index of 1 when created.
 DEFAULT_THREAD_ID = "main_thread__"
 
+# Define at module level.  This *could* be changed...
+DEFAULT_DISALLOWED_CHARS = ' ,!@#$%^&:?*<>\\/(){}[]<>~`-+=\t\n\'"'
 
 def _parse_ttl_string(input_string: str) -> float:
     """
@@ -84,81 +86,140 @@ def _parse_ttl_string(input_string: str) -> float:
     return 0.0
 
 
-def attributes(
-        *,
-        tag: str = DEFAULT_TAG,
-        phase: str = DEFAULT_PHASE,
-        level: int = DEFAULT_LEVEL,
-        weight: float = DEFAULT_WEIGHT,
-        skip: bool = DEFAULT_SKIP,
-        ruid: str = DEFAULT_RUID,
-        ttl_minutes: str | int | float = DEFAULT_TTL_MIN,
-        finish_on_fail: bool = DEFAULT_FINISH_ON_FAIL,
-        skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
-        fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
-        thread_id: str = DEFAULT_THREAD_ID
-) -> Callable:
-    """
-    A decorator to assign metadata and control attributes to functions for processing logic.
+def _ensure_defaults(func):
+    """Initialize all Ten8t attributes with default values if they're not already set."""
+    # Category attributes
+    func.tag = getattr(func, 'tag', DEFAULT_TAG)
+    func.phase = getattr(func, 'phase', DEFAULT_PHASE)
+    func.level = getattr(func, 'level', DEFAULT_LEVEL)
+    func.ruid = getattr(func, 'ruid', DEFAULT_RUID)
 
-    Allows specifying function attributes for processing flows configuration and metadata tagging.
-    Validates attribute values and raises exceptions for constraint violations.
+    # Control attributes
+    func.skip_on_none = getattr(func, 'skip_on_none', DEFAULT_SKIP_ON_NONE)
+    func.fail_on_none = getattr(func, 'fail_on_none', DEFAULT_FAIL_ON_NONE)
+    func.finish_on_fail = getattr(func, 'finish_on_fail', DEFAULT_FINISH_ON_FAIL)
+    func.skip = getattr(func, 'skip', DEFAULT_SKIP)
 
-    Args:
-        tag (str): Tag associated with the function
-        phase (str): Operation phase
-        level (int): Execution level
-        weight (float): Function weight (must be > 0.0)
-        skip (bool): Whether to skip the function
-        ruid (str): Unique identifier string
-        ttl_minutes (str): Time-to-live in minutes
-        finish_on_fail (bool): Abort entire process on function failure
-        skip_on_none (bool): Skip function when inputs are None
-        fail_on_none (bool): Fail function when inputs are None
-        thread_id (str): Thread identifier for processing
+    # Threading attributes
+    func.thread_id = getattr(func, 'thread_id', DEFAULT_THREAD_ID)
 
-    Raises:
-        Ten8tException: On invalid weight/ruid/thread_id or disallowed characters
+    # Caching attributes
+    func.ttl_minutes = getattr(func, 'ttl_minutes', DEFAULT_TTL_MIN)
 
-    Returns:
-        Callable: Decorated function with injected attributes
-    """
+    # Score attributes
+    func.weight = getattr(func, 'weight', DEFAULT_WEIGHT)
 
-    if weight in [None, True, False] or weight <= 0:
-        raise Ten8tException("Weight must be numeric and > than 0.0.  Nominal value is 100.0.")
+    # Other attributes
+    func.index = getattr(func, 'index', DEFAULT_INDEX)
 
-    if not isinstance(thread_id, str):
-        raise Ten8tException("thread_id must be a string.")
+    return func
+
+
+def _validate_category_names(tag, phase, ruid, disallowed_chars=DEFAULT_DISALLOWED_CHARS):
+    for attr_name, attr in (('tag', tag), ('phase', phase), ('ruid', ruid)):
+        attr = str(attr)
+        bad_chars = [c for c in disallowed_chars if c in attr]
+        if bad_chars:
+            raise Ten8tException(f"Invalid characters {bad_chars} found in {attr_name}")
+
+
+def categories(*, tag: str = DEFAULT_TAG,
+               phase: str = DEFAULT_PHASE,
+               level: int = DEFAULT_LEVEL,
+               ruid: str = DEFAULT_RUID,
+               disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:
+    """Decorator for categorizing functions."""
+    # Validation for disallowed characters
+
+    # This does a little bit of clean up on phase/tag/ruid
+    phase, tag, ruid = [str(t) for t in [phase, tag, ruid, ]]
+
+    _validate_category_names(phase, tag, ruid, disallowed_chars)
 
     if not isinstance(ruid, str):
         raise Ten8tException("ruid must be a string.")
 
-    # throws exception on bad input
-    ttl_minutes = _parse_ttl_string(str(ttl_minutes))
+    def decorator(func):
+        # Ensure all defaults are set first
+        _ensure_defaults(func)
 
-    # Make sure these names don't have bad characters.  Very important for regular expressions
-    disallowed = ' ,!@#$%^&:?*<>\\/(){}[]<>~`-+=\t\n\'"'
-    for attr_name, attr in (('tag', tag), ('phase', phase), ('ruid', ruid)):
-        bad_chars = [c for c in disallowed if c in attr]
-        if bad_chars:
-            raise Ten8tException(f"Invalid characters {bad_chars} found in {attr_name} ")
+        # Now override the specific attributes this decorator manages
+        func.tag = tag
+        func.phase = phase
+        func.level = level
+        func.ruid = ruid
+        return func
+
+    return decorator
+
+
+def control(*, skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
+            fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
+            finish_on_fail: bool = DEFAULT_FINISH_ON_FAIL,
+            skip: bool = DEFAULT_SKIP) -> Callable:
+    """Decorator for controlling function execution behavior."""
 
     def decorator(func):
-        """Jam in all the attributes"""
-        func.phase = phase
-        func.tag = tag
-        func.level = level
-        func.weight = weight
-        func.skip = skip
-        func.ruid = ruid
-        func.ttl_minutes = ttl_minutes
-        func.finish_on_fail = finish_on_fail
+        # Ensure all defaults are set first
+        _ensure_defaults(func)
+
+        # Now override the specific attributes this decorator manages
         func.skip_on_none = skip_on_none
         func.fail_on_none = fail_on_none
+        func.finish_on_fail = finish_on_fail
+        func.skip = skip
+        return func
+
+    return decorator
+
+
+def threading(*, thread_id: str = DEFAULT_THREAD_ID) -> Callable:
+    """Decorator for thread-related attributes."""
+    if not isinstance(thread_id, str):
+        raise Ten8tException("thread_id must be a string.")
+
+    def decorator(func):
+        # Ensure all defaults are set first
+        _ensure_defaults(func)
+
+        # Now override the specific attributes this decorator manages
         func.thread_id = thread_id
         return func
 
     return decorator
+
+
+def caching(*, ttl_minutes: str | int | float = DEFAULT_TTL_MIN) -> Callable:
+    """Decorator for caching-related attributes."""
+    # Process ttl_minutes
+    parsed_ttl = _parse_ttl_string(str(ttl_minutes))
+
+    def decorator(func):
+        # Ensure all defaults are set first
+        _ensure_defaults(func)
+
+        # Now override the specific attributes this decorator manages
+        func.ttl_minutes = parsed_ttl
+        return func
+
+    return decorator
+
+
+def score(*, weight: float = DEFAULT_WEIGHT) -> Callable:
+    """Decorator for scoring-related attributes."""
+    if weight in [None, True, False] or weight <= 0:
+        raise Ten8tException("Weight must be numeric and > than 0.0. Nominal value is 100.0.")
+
+    def decorator(func):
+        # Ensure all defaults are set first
+        _ensure_defaults(func)
+
+        # Now override the specific attributes this decorator manages
+        func.weight = weight
+        return func
+
+    return decorator
+
 
 
 # Define defaults at module level since they're constant
@@ -194,3 +255,42 @@ def get_attribute(func, attr: str, default_value=None):
         return getattr(func, attr, default_value)
 
     return getattr(func, attr, ATTRIBUTE_DEFAULTS[attr])
+
+
+def attributes(*,
+               tag: str = DEFAULT_TAG,
+               phase: str = DEFAULT_PHASE,
+               level: int = DEFAULT_LEVEL,
+               weight: float = DEFAULT_WEIGHT,
+               skip: bool = DEFAULT_SKIP,
+               ruid: str = DEFAULT_RUID,
+               ttl_minutes: str | int | float = DEFAULT_TTL_MIN,
+               finish_on_fail: bool = DEFAULT_FINISH_ON_FAIL,
+               skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
+               fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
+               thread_id: str = DEFAULT_THREAD_ID,
+               disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:
+    """
+    A decorator to assign metadata and control attributes to functions for processing logic.
+    This is a comprehensive decorator that combines all functionality of the more specific
+    decorators (categories, control, threading, caching, score).
+
+    This decorator is for LEGACY purposes.  Original ten8t code was written with a single
+    decorator.  Over time the list of decorators grew to become unwieldy.  The attributes
+    decorator is here mostly to keep the tests working.  Please used the more specific
+    decorators instead.
+    """
+    _validate_category_names(phase, tag, ruid, disallowed_chars)
+
+    def decorator(func):
+        # Apply each specialized decorator in sequence
+        # Each will ensure all defaults are set and apply its specific validations
+        func = categories(tag=tag, phase=phase, level=level, ruid=ruid)(func)
+        func = control(skip_on_none=skip_on_none, fail_on_none=fail_on_none,
+                       finish_on_fail=finish_on_fail, skip=skip)(func)
+        func = threading(thread_id=thread_id)(func)
+        func = caching(ttl_minutes=ttl_minutes)(func)
+        func = score(weight=weight)(func)
+        return func
+
+    return decorator

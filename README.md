@@ -110,17 +110,17 @@ In order to be useful we need functions that return more detail and ideally func
 one `Ten8tResult`. So we support yield and a result object that stores...everyting I could think of.
 
 ```python
-from ten8t import TR, attributes
+from ten8t import TR, categories
 import pathlib
 
 #NOTE TR is an alias for Tent8tResult.  Since it is used very often it is useful to have a short version.
 
-@attributes(tag="foo")
+@categories(tag="foo")
 def check_boolean():
     yield TR(status=pathlib.Path("./foo").exists(), msg="Folder foo exists")
 
 
-@attributes(tag="fum")
+@categories(tag="fum")
 def check_yielded_values():
     yield TR(status=pathlib.Path("./fum").exists(), msg="Folder foo exists")
     yield TR(status=pathlib.Path("./fum").exists(), msg="Folder fum exists")
@@ -128,7 +128,7 @@ def check_yielded_values():
 
 As you might expect running this will also provide 3 passing test results with richer data using the TR object. Note
 that these functions yield results rather than return them and some tags have been added, foreshadowing that you
-will be able to run the "foo" tests or the "fum" tests.
+will be able to run the "foo" tests or the "fum" tests because the check function has be tagged with catagories.
 
 Now we can add more complexity running more complex code. Tag check functions with attributes to allow subsets of checks
 to be run. Below
@@ -136,19 +136,19 @@ two functions are given different tags. When you make calls to run checks you ca
 you want to allow to run.
 
 ```python
-from ten8t import attributes, TR
+from ten8t import attributes, categories, TR
 import datetime as dt
 import pathlib
 
 
-@attributes(tag="file_exist")
+@categories(tag="file_exist")
 def check_file_exists():
     """ Verify this that my_file exists """
     status = pathlib.Path("my_file.csv").exists()
     yield TR(status=status, msg="Verify daily CSV file exists")
 
 
-@attributes(tag="file_age")
+@categories(tag="file_age")
 def check_file_age():
     file = pathlib.Path("my_file.csv")
     modification_time = file.stat().st_mtime
@@ -171,7 +171,7 @@ work fine, but sharing a SQL connection across threads won't work.
 ```python
 import datetime as dt
 import pathlib
-from ten8t import attributes, TR
+from ten8t import categories, TR
 
 
 def env_csv_file():
@@ -179,13 +179,13 @@ def env_csv_file():
     return env
 
 
-@attributes(tag="file")
+@categories(tag="file")
 def check_file_exists(csv_file):
     """ Verify this that my_file exists """
     return TR(status=csv_file.exists(), msg="Verify daily CSV file exists")
 
 
-@attributes(tag="file")
+@categories(tag="file")
 def check_file_age(csv_file):
     modification_time = csv_file.stat().st_mtime
     current_time = dt.datetime.now().timestamp()
@@ -195,6 +195,45 @@ def check_file_age(csv_file):
         return TR(status=True, msg="The file age is OK {file_age_in_hours}")
     else:
         return TR(status=False, msg="The file is stale")
+```
+
+## Threaing Support
+
+Threading is supported in various ways. The easies way to enable threading
+
+```python
+import datetime as dt
+import pathlib
+from ten8t import categories, threading, TR, Ten8tChecker, Ten8tThread
+
+
+@categories(tag="file")
+@threading(thread_id='thread1')
+def check_file_exists():
+    """ Verify this that my_file exists """
+    return TR(status=pathlib.Path('myfile.txt').exists(), msg="Verify daily CSV file exists")
+
+
+@categories(tag="file")
+@threading(thread_id='thread2')
+def check_file_age():
+    modification_time = pathlib.Path('myfile.txt').stat().st_mtime
+    current_time = dt.datetime.now().timestamp()
+    file_age_in_seconds = current_time - modification_time
+    file_age_in_hours = file_age_in_seconds / 3600
+    if file_age_in_hours < 24:
+        return TR(status=True, msg="The file age is OK {file_age_in_hours}")
+    else:
+        return TR(status=False, msg="The file is stale")
+
+
+ch = Ten8tChecker(check_functions=[check_file_age, check_file_exists])
+
+# Use the Ten8tThread class to run the checker.  
+results = Ten8tThread(checker=ch).run_all(max_workers=5)
+
+
+
 ```
 
 ## How is Ten8t Used?
@@ -267,19 +306,20 @@ in the last 5 minutes using rules from based on the `pathlib` packages
 ```python
 import ten8t as t8
 
-@t8.attributes(tag="tag")
+
+@t8.categories(tag="tag")
 def check_rule1():
     for folder in ['folder1', 'folder2', 'folder3']:
         yield from t8.rule_large_files(folder=folder, pattern="log*.txt", max_size=100_000)
 
 
-@t8.attributes(tag="tag")
+@t8.categories(tag="tag")
 def check_rule2():
     for folder in ['folder1', 'folder2', 'folder3']:
         yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
 
 
-@t8.attributes(tag="tag")
+@t8.categories(tag="tag")
 def check_rule3(cfg):
     """cfg: application config file."""
     for folder in cfg['logging']['folders']:
@@ -684,13 +724,43 @@ This project is a piece of code that is useful to me, and it serves as non-trivi
 I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
 advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
 mypy, pypi, tox, pytest, coverage, code metrics and readthedocs. It's a useful, non-trivial test bed.
+As it has grown over time and I have used it more in real use cases it has been dramatically updated,
+I am very thankful for the tests, I routinely perform architectural surgery and I completely trust that
+it is good to go when the tests pass. TDD is real and a massive time saver.
+
+TDD and tests in general are very useful if you follow a YAGNI philosphy. I will generally build up a
+class until it gets unwieldy and then split it up when the abstraction no longer supports "clean" design.  
+Early in my career I built big systems of objects that were just ceremony for stuff that never came.
+
+## Philosophy
+
+One of the decisions I made early on was how tolerant/flexible I should make the API. One of the
+things I was playing with was being "smart" about the types things are passed. I made the decision
+that I would try to help users and be very flexible with parameters being passed to functions. If
+I can save a user time from looking stuff up and just doing the right thing I'll do it.
+
+In many cases I accept, strings or lists of strings or just booleans and I "just figure it out." While
+this is not necessarily best practice, it is important to me that users get up and running quickly and
+that connecting the code up to other tools be as simple as possible (unlike say JSON which is very
+opinionated...and I love it). You will find the following "features."
+
+1) A list of strings can be this "foo fum quux", or "foo" or ["foo"] or ["foo",'fum','quux']. The code
+   at that accepts the parameters will automatically coerse things in the expected form.
+2) Same thing when files are needed. Pass in "file.txt" as a string or a pathlib.Path("file.txt")
+3) In cases where a list of "stuff" is needed, if you just give one of the thing, there will be code
+   to detect it and put the single item into a list so the list of 1 can be iterated over. Thus you
+   might see str | int | list[int] | None and you can pass in anything knowing that what comes out
+   will be a list of ints.
+
+I have found that the code the end user needs to write to access `ten8t` when dealing with data read
+from config files or command line options, is cleaner because fewer data shaping operations are
+required.
 
 ## Code Metrics (from radon)
 
 The code metrics section contains the output from running the python tool [Radon](https://github.com/rubik/radon)
 against all the files in the ten8t package folder. The metrics all come with a rank (except Halstead, which I googled
-for
-reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
+for reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
 `ten8t_checker` and `ten8t_function` have issues as these are the most complex code where lots of "magic"
 happens getting everything to work flexibly for end users.
 
@@ -814,6 +884,7 @@ __Complexity__
 1. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
 2. Add support for handling coroutines and async generators, so ten8t can support all function types.
 2. Progress bars for using multithreading is broken.
+3. Improved decorators for so attribute didn't do ALL the work.
 
 ## Latest changes
 
