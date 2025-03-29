@@ -19,21 +19,19 @@
 &nbsp;&nbsp;
 ![GitHub Release](https://img.shields.io/github/v/release/hucker/ten8t?include_prereleases)
 
-`Ten8t` (pronounced "ten-eighty") is a framework for managing observability and rule-based checks across
-files, folders, APIs, spreadsheets, and projects. Drawing inspiration from tools like `pytest` and `pylint`, `Ten8t`
-makes simple tasks easy while providing the flexibility to tackle more complex scenarios as needed. By allowing you
-to write reusable, declarative rules, `Ten8t` lets you monitor and validate information systems. Whether it’s a
-quick check of a file’s existence or enforcing hundreds of granular rules for system health and data integrity.
+# Ten8t Framework
 
-`Ten8t` can be thought of as a tool to build a "linter" for your infrastructure, file systems, databases,
-and documents. It is designed to be very efficient to set up rules to check and outputs in python data or
-JSON make integrating with common tools straight forward. Non-trival examples with streamlit, typer, rich,
-FastAPI and textual that development can be low friction. "Standard" rules are available out of the box,
-but it is easy to write python code to verify anything you like. It enables you to define customized pass/fail
-checks and organize them using tags, attributes, and phases for fine-grained control. With support for
-lightweight setup and scalability, `Ten8t` works for small projects and large, complex systems. Its intuitive
-tooling ensures that basic tests are easy to write, while its extensibility with standard Python code within
-reach of your coding ability.
+`Ten8t` (pronounced "ten-eighty") is a framework for observability and rule-based checks across files, folders, APIs,
+spreadsheets, and projects. Inspired by `pytest` and `pylint`, it simplifies basic tasks while handling complex
+scenarios flexibly. With reusable, declarative rules, Ten8t enables monitoring and validation of information
+systems—from simple file existence checks to comprehensive system health verification.
+
+Think of Ten8t as an infrastructure "linter" for file systems, databases, and documents. It enables quick
+rule setup with Python data or JSON output for python/web integration. Examples with `streamlit`, `typer`, `rich`,
+`FastAPI` and `textual` demonstrate low-friction development. While "standard" rules are available, writing
+custom Python verifications is straightforward. Ten8t supports custom pass/fail checks organized with many attributes
+for precise filtering control. Its design works for both small projects and complex systems, making basic
+tests easy while remaining extensible through standard Python.
 
 ## Why Not pytest, Great Expectations or other popular tools?
 
@@ -64,10 +62,10 @@ target audience.
 ### Ten8t:
 
 - **Scope**: Focused on testing filesystem, files, SQL, API access and custom coded python checks.
-- **Complexity**: Designed for to be light weight for developers to check things quickly and repeatably.
+- **Complexity**: Designed for to be lightweight for developers to check things quickly and repeatably.
 - **Audience**: This tool is a framework for infrastructure developers needing a tool to be the backbone of your
   observability. Since the output is directly available as JSON it is very easy to integrate.
-- **Visibility**: `ten8t` generats JSON. INtegration samples are included for `streamlit`, `FastAPI`, `textual` and
+- **Visibility**: `ten8t` generates JSON. Integration samples are included for `streamlit`, `FastAPI`, `textual` and
   `typer`.
 
 ## Getting Started with Ten8t
@@ -79,8 +77,8 @@ also available through environments. Rule may be tagged with attributes to allow
 
 ### A modest checker...
 
-The very simplest thing you cand do with `ten8t` takes a few functions, gives them to the
-a checker object and then tells that object to run all the functions, collect the results. This is the core.
+The very simplest thing you cand do with `ten8t` takes a few functions, gives them to the checker
+object and then tells that object to run all the functions, collect the results. This is the core.
 Everything that follows from here is window dressing to make this test engine run.
 
 ```python
@@ -107,7 +105,7 @@ results = t8.Ten8tChecker(check_functions=[check_foo, check_fum]).run_all()
 As you might expect, a framework could discover these tests provide 2 passing test results if the files all exist.
 
 In order to be useful we need functions that return more detail and ideally functions that return more than
-one `Ten8tResult`. So we support yield and a result object that stores...everyting I could think of.
+one `Ten8tResult`. So we support yield and a result object that stores...everything I could think of.
 
 ```python
 from ten8t import TR, categories
@@ -128,25 +126,23 @@ def check_yielded_values():
 
 As you might expect running this will also provide 3 passing test results with richer data using the TR object. Note
 that these functions yield results rather than return them and some tags have been added, foreshadowing that you
-will be able to run the "foo" tests or the "fum" tests because the check function has be tagged with catagories.
+will be able to run the "foo" tests or the "fum" tests because the check function has be tagged with `categories`.
 
-Now we can add more complexity running more complex code. Tag check functions with attributes to allow subsets of checks
-to be run. Below
-two functions are given different tags. When you make calls to run checks you can specify which tags
+Now we can add more complexity running more complex code. Tag check functions with `categories` to allow
+subsets of checks to be run. Below two functions are given different tags. When you make calls to run
+checks you can specify which tags
 you want to allow to run.
 
 ```python
-from ten8t import attributes, categories, TR
+from ten8t import categories, TR
 import datetime as dt
 import pathlib
-
 
 @categories(tag="file_exist")
 def check_file_exists():
     """ Verify this that my_file exists """
     status = pathlib.Path("my_file.csv").exists()
     yield TR(status=status, msg="Verify daily CSV file exists")
-
 
 @categories(tag="file_age")
 def check_file_age():
@@ -197,9 +193,9 @@ def check_file_age(csv_file):
         return TR(status=False, msg="The file is stale")
 ```
 
-## Threaing Support
+## Threading Support
 
-Threading is supported in various ways. The easies way to enable threading
+Threading is supported in various ways. The easiest way to enable threading
 
 ```python
 import datetime as dt
@@ -211,13 +207,13 @@ from ten8t import categories, threading, TR, Ten8tChecker, Ten8tThread
 @threading(thread_id='thread1')
 def check_file_exists():
     """ Verify this that my_file exists """
-    return TR(status=pathlib.Path('myfile.txt').exists(), msg="Verify daily CSV file exists")
+    return TR(status=pathlib.Path('my_file.txt').exists(), msg="Verify daily CSV file exists")
 
 
 @categories(tag="file")
 @threading(thread_id='thread2')
 def check_file_age():
-    modification_time = pathlib.Path('myfile.txt').stat().st_mtime
+    modification_time = pathlib.Path('my_file.txt').stat().st_mtime
     current_time = dt.datetime.now().timestamp()
     file_age_in_seconds = current_time - modification_time
     file_age_in_hours = file_age_in_seconds / 3600
@@ -250,9 +246,9 @@ Ten8t uses the following hierarchy:
         Ten8tModule` (one or more Ten8tFunctions in a Python file (function starting with the text "check_"))
             Ten8tFunction` (when called will return 0 or more `Ten8tResults`)
 
-Typically one works at the module or package level where you have python files that have 1 or more functions in them
+Typically one works at the module or package level where you have python files that have 1 or more functions in them,
 and you have collections of files to make packages. Note that `ten8t` a module is 1 file and a package is a folder
-with atleast one file that has a check function. Similare to python but not exact.
+with at least one file that has a check function. Similar to python but not exact.
 
 Each `Ten8tFunction` returns/yields 0-to-N results from its generator function. By convention, if None is returned, the
 rule was skipped.
@@ -260,7 +256,7 @@ rule was skipped.
 The rule functions that you write don't need to use generators. They can return a variety of output
 (e.g., Boolean, List of Boolean, `Ten8tResult`, List of `Ten8tResult`), or you can write a generator that yields
 results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant, but returning booleans
-and depending on using your function name and your docstrings for error mssages is on you!
+and depending on using your function name and your docstrings for error messages is on you!
 
 Alternatively you can ignore the file and folder discovery mechanism and provide a list of rules as regular python
 functions and `Ten8t` will happily run them for you when you pass a list of check functions
@@ -290,7 +286,9 @@ checker = t8.Ten8tChecker(check_functions=[rule1, rule2, rule3, rule4], env={'da
 results = checker.run_all()
 ```
 
-This example shows a bunch of rules that are passed in some of which might need a single sql connection object.
+You can see here that data is provided externally, but programmatically via the env parameter. Often times
+this parameter is directly loaded from a config file, or comes pre-populated with data frames and database
+connections.
 
 ## Rule Integrations
 
@@ -320,7 +318,7 @@ def check_rule2():
 
 
 @t8.categories(tag="tag")
-def check_rule3(cfg):
+def check_rule3(cfg):  # <-- Config file has the test setup
     """cfg: application config file."""
     for folder in cfg['logging']['folders']:
         yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
@@ -333,7 +331,7 @@ will be made available. So if you have `ping3` installed, then the rules in for 
 This package uses `narwhals` to handle data frames. If you have pandas or polars installed the rules
 for dataframes should work for you (e.g., `ten8t` is dependent on narwhals not `pandas`/`polars`)
 
-If you want to add rules for common usecases PRs are welcomed. See `rule_files.py` and `rule_ping.py`.
+If you want to add rules for common use cases PRs are welcomed. See `rule_files.py` and `rule_ping.py`.
 
 | Package Name | GitHub Repository Link                                                               |
 |--------------|--------------------------------------------------------------------------------------|
@@ -641,7 +639,7 @@ Here is the setup using a couple of modules in a package folder:
 
 ## Rich Demo (`ten8t/rich_ten8t`)
 
-Here is a example of connecting `ten8t` up to the rich package using the progress bar object to
+Here is an example of connecting `ten8t` up to the `rich` package using the progress bar object to
 move a progress bar, and the rich table and some emojis to make a tabular output.
 
 It is worth noting here that there are 4 progress bar steps, but there are 6 results. Is this a bug?
@@ -689,94 +687,57 @@ Python 3.10, 3.11, 3.12 and 3.13.
 Your code has been rated at 9.79/10 (previous run: 9.79/10, +0.00)
 ```
 
-## WTH does `Ten8t` and what's with your wierd names?
+```markdown
+# Development Philosophy
 
-`Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). Why was this
-chosen...because the first things I picked that were not packages on pypi were "too close" to existing package
-names. I spent more time that I care to admit coming up with different names. The name refers to skiing or
-snowboarding tricks involving 3 rotations.
+This project serves as both a practical tool and a playground for advanced Python features I don't 
+encounter in my day job: code inspection, advanced yielding, threading, strategy patterns, dynamic 
+function creation, hooks, decorators, mypy, pypi, tox, pytest, coverage metrics, and readthedocs.
 
-The preferred way for using `ten8t` in code is to write:
+As it evolved through real-world use cases, tests have proven invaluable. They give me confidence 
+to perform major architectural changes, confirming everything works when tests pass. TDD genuinely 
+saves significant time.
 
-```python
-import ten8t as t8
-
-t8.ten8t_logger.info("Hello")
+TDD complements YAGNI principles in my development approach. Rather than creating extensive object
+systems upfront, I build classes incrementally, only refactoring when the existing abstraction no 
+longer supports clean design. This contrasts with my early career tendency to build elaborate 
+frameworks for functionality that never materialized.
 ```
 
-or
-
-```python
-from ten8t import ten8t_logger
-
-ten8t_logger("Hello")
-```
-
-Please pronounce the `t8` as `tee eight` (as in an early prototype for
-a [T-800](https://en.wikipedia.org/wiki/T-800_(character))) *NOT* `tate`.
-
-Why is your name `hucker`? It is a portmanteau of Chuck (my name) and hacker with the added benefit
-that is a derogatory name for someone who isn't very good at skiing. I'll call it a portmanthree.
-
-## Why does this exist?
-
-This project is a piece of code that is useful to me, and it serves as non-trivial piece of code where
-I can experiment with more advanced features in Python that I don't get at my day job. Inspecting code,
-advanced yielding, threading, strategy patterns, dynamic function creation, hook functions, decorators,
-mypy, pypi, tox, pytest, coverage, code metrics and readthedocs. It's a useful, non-trivial test bed.
-As it has grown over time and I have used it more in real use cases it has been dramatically updated,
-I am very thankful for the tests, I routinely perform architectural surgery and I completely trust that
-it is good to go when the tests pass. TDD is real and a massive time saver.
-
-TDD and tests in general are very useful if you follow a YAGNI philosphy. I will generally build up a
-class until it gets unwieldy and then split it up when the abstraction no longer supports "clean" design.  
-Early in my career I built big systems of objects that were just ceremony for stuff that never came,
-to exist.
-
+```markdown
 ## Philosophy
 
-One of the decisions I made early on was how tolerant/flexible I should make the API. One of the
-things I was playing with was being "smart" about the types things are passed. I made the decision
-that I would try to help users and be very flexible with parameters being passed to functions. If
-I can save a user time from looking stuff up and just doing the right thing I'll do it.
+I designed the API to prioritize flexibility and user experience. Rather than requiring strict parameter 
+formats, the library intelligently handles various input types to save users time and reduce friction.
 
-In many cases I accept, strings or lists of strings or just booleans and I "just figure it out." While
-this is not necessarily best practice, it is important to me that users get up and running quickly and
-that connecting the code up to other tools be as simple as possible (unlike say JSON which is very
-opinionated...and I love it). You will find the following "features."
+The API accepts multiple formats for common inputs:
+1) Lists of strings can be passed as space-delimited strings ("foo fum quux"), single values ("foo"), 
+   conventional lists (["foo"]), or even empty values ("", [], None)
+2) File paths work with both strings ("file.txt") and Path objects (pathlib.Path("file.txt"))
+3) When a list is expected but a single item is provided, the API automatically wraps it in a list
 
-1) A list of strings can be this "foo fum quux", or "foo" or ["foo"] or ["foo",'fum','quux']...or [] or ''
-   or None! The code that accepts the parameters will automatically coerce things in the expected form.
-2) Same thing when files are needed. Pass in "file.txt" as a string or a pathlib.Path("file.txt"), if it
-   expects files it will do the right thing. If you have file names with spaces in them then you
-   must pass the data in correctly.
-3) In cases where a list of "stuff" is needed, if you just give one of the thing, there will be code
-   to detect it and put the single item into a list so the list of 1 can be iterated over. Thus you
-   might see str | int | list[int] | None and you can pass in anything knowing that what comes out
-   will be a list of ints.
+This approach simplifies integration with configuration files and command-line options by reducing data
+transformation code. While this diverges from strict typing practices, it significantly improves developer
+experience and speeds up implementation.
 
-I have found that the code the end user needs to write to access `ten8t` when dealing with data read
-from config files or command line options, is cleaner because fewer data shaping operations are
-required. If there is desire, I will make strict versions.
+If there's demand, I may introduce strict variants of these interfaces in the future.
+```
 
 ## Code Metrics (from radon)
 
-The code metrics section contains the output from running the python tool [Radon](https://github.com/rubik/radon)
-against all the files in the ten8t package folder. The metrics all come with a rank (except Halstead, which I googled
-for reasonable values). Anything less than **C** is suspect. For the most part the code is all A's and B's though
-`ten8t_checker` and `ten8t_function` have issues as these are the most complex code where lots of "magic"
-happens getting everything to work flexibly for end users.
+I track code quality using [Radon](https://github.com/rubik/radon) metrics across the ten8t package.
+In general, the codebase maintains good quality scores with mostly A's and B's.
 
-Interestingly the radon grading system for maintainability gave everything an A (as of 0.0.20). The checker
-and function modules had the lowest scores, while the other metrics hit pretty hard and gave C's
-and F's. My preference is the Halstead metrics as those appear to be far more sensitive...and those are the ones
-I needed to Google/ChatGPT for thresholds. The bugs and time columns seem to be the most sensitive. I think it
-is reasonable to target bad code with these tools, it isn't perfect, but I know that `ten8t_function.py` and
-`ten8t_checker.py` are the most complicated and neglected classes given that many small and not so small
-features have been bolted on over time while most of the other class are the leafs in the project that are easier
-to apply "separation of concerns" to. It is safe to say most of the magic happens in these two places.
+The most complex modules are `ten8t_checker.py` and `ten8t_function.py`, which contain much of the
+project's "magic" functionality that provides flexibility for end users. These modules consistently
+show higher complexity in metrics like Halstead (particularly in "bugs" and "time" indicators).
 
-PR's for classes and files with low scores are welcomed.
+Despite some complexity, all modules maintain an A rank for maintainability. The complexity metrics
+generally confirm what I already knew about the codebase architecture - the core modules that handle
+the flexible behavior are necessarily more complex, while the peripheral modules maintain cleaner
+separation of concerns.
+
+Pull requests addressing code quality in lower-scoring files are welcome...actually any PR's are welcome.
 
 __Halstead__
 <!--file snippets/radon_hal.csv-->
@@ -798,11 +759,9 @@ __Halstead__
 | ten8t_util.py      | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
+<small>radon_hal.csv &nbsp;&nbsp; 15:58:16 2025-03-29</small>
 
 <!--file end-->
-
-
 
 __Maintainability__
 <!--file snippets/radon_mi.csv-->
@@ -824,7 +783,7 @@ __Maintainability__
 | ten8t_util.py      | 69.70           | A    |
 | ten8t_yield.py     | 47.50           | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
+<small>radon_mi.csv &nbsp;&nbsp; 15:58:16 2025-03-29</small>
 
 <!--file end-->
 
@@ -854,19 +813,48 @@ __Complexity__
 | ten8t_yield.py     | Ten8tYieldSummaryOnly | A    | 2.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 15:19:02 2025-03-29</small>
+<small>radon_cc.csv &nbsp;&nbsp; 15:58:16 2025-03-29</small>
 
 <!--file end-->
+
+## WTH does `Ten8t` and what's with your wierd names?
+
+`Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). I chose this
+name after discovering that my initial choices were too similar to existing packages on PyPI.
+The name refers to skiing or snowboarding tricks involving 3 rotations.
+
+The preferred way for using `ten8t` in code is to write:
+
+```python
+import ten8t as t8
+
+t8.ten8t_logger.info("Hello")
+```
+
+or
+
+```python
+from ten8t import ten8t_logger
+
+ten8t_logger("Hello")
+```
+
+Please pronounce the `t8` as `tee eight` (as in an early prototype for
+a [T-800](https://en.wikipedia.org/wiki/T-800_(character))) *NOT* `tate`.
+
+Why is your name `hucker`? It is a portmanteau of Chuck (my name) and hacker with the added benefit
+that is a derogatory name for someone who isn't very good at skiing. I'll call it a portmanthree.
 
 ## TODO
 
 1. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
 2. Add support for handling coroutines and async generators, so ten8t can support all function types.
-2. Progress bars for using multithreading is broken.
-3. Improved decorators for so attribute didn't do ALL the work.
+3. Progress bars for using multithreading is broken.
+4. Improved decorators for so attribute didn't do ALL the work.
 
 ## Latest changes
 
-1. Added a textual demo.
-2. Added explicit error messages for async check functions
-2. Added support for csv/markdown/excel output from the checker.
+1. Improved the decorator mechanism for setting up check functions.
+2. Added a textual demo.
+3. Added explicit error messages for async check functions
+4. Added support for csv/markdown/excel output from the checker.
