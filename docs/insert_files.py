@@ -112,6 +112,13 @@ class ToMarkdown(ABC):
         return md
 
 
+class MarkdownToMarkdown(ToMarkdown):
+    def __init__(self, file_name: str, date_stamp: bool, **kwargs):
+        super().__init__(file_name, date_stamp, **kwargs)
+
+    def to_markdown(self):
+        return f"\n{self.text}\n"
+
 
 class TextToMarkdown(ToMarkdown):
     def __init__(self, file_name: str,date_stamp:bool, **kwargs):
@@ -219,7 +226,7 @@ def markdown_factory(filename:str,date_time:bool, **kwargs):
     """
 
     if filename.endswith(".md"):
-        return TextToMarkdown(filename,date_time,**kwargs)
+        return MarkdownToMarkdown(filename, date_time, **kwargs)
     elif filename.endswith(".py"):
         return PyToMarkdown(filename,date_time,**kwargs)
     elif filename.endswith(".json"):

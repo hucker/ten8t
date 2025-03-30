@@ -687,14 +687,14 @@ Python 3.10, 3.11, 3.12 and 3.13.
 Your code has been rated at 9.79/10 (previous run: 9.79/10, +0.00)
 ```
 
-```markdown
 # Development Philosophy
 
 This project serves as both a practical tool and a playground for advanced Python features I don't
 encounter in my day job: code inspection, advanced yielding, threading, strategy patterns, dynamic
-function creation, hooks, decorators, mypy, pypi, tox, pytest, coverage metrics, and readthedocs.
+function creation, hooks, decorators, mypy, github, pypi, tox, pytest integrtion, coverage metrics, dynamically
+created readme and readthedocs.
 
-As it evolved through real-world use cases, tests have proven invaluable. They give me confidence
+As it evolved, tests have proven invaluable. They give me confidence
 to perform major architectural changes, confirming everything works when tests pass. TDD genuinely
 saves significant time.
 
@@ -702,9 +702,8 @@ TDD complements YAGNI principles in my development approach. Rather than creatin
 systems upfront, I build classes incrementally, only refactoring when the existing abstraction no
 longer supports clean design. This contrasts with my early career tendency to build elaborate
 frameworks for functionality that never materialized.
-```
 
-```markdown
+
 ## Philosophy
 
 I designed the API to prioritize flexibility and user experience. Rather than requiring strict parameter
@@ -712,9 +711,9 @@ formats, the library intelligently handles various input types to save users tim
 
 The API accepts multiple formats for common inputs:
 
-1) Lists of strings can be passed as space-delimited strings ("foo fum quux"), single values ("foo"),
-   conventional lists (["foo"]), or even empty values ("", [], None)
-2) File paths work with both strings ("file.txt") and Path objects (pathlib.Path("file.txt"))
+1) Lists of strings can be passed as space-delimited strings (`"foo fum quux"`), single values (`"foo"`),
+   conventional lists (`["foo"]`), or even empty values (`""`, `[]`, `None`)
+2) File paths work with both strings (`"file.txt"`) and Path objects (`pathlib.Path("file.txt")`)
 3) When a list is expected but a single item is provided, the API automatically wraps it in a list
 
 This approach simplifies integration with configuration files and command-line options by reducing data
@@ -722,99 +721,98 @@ transformation code. While this diverges from strict typing practices, it signif
 experience and speeds up implementation.
 
 If there's demand, I may introduce strict variants of these interfaces in the future.
-```
 
-## Code Metrics (from radon)
+## Code Metrics (from `radon`)
 
-I track code quality using [Radon](https://github.com/rubik/radon) metrics across the ten8t package.
+I track code quality using [Radon](https://github.com/rubik/radon) metrics across the `ten8t` package.
 In general, the codebase maintains good quality scores with mostly A's and B's.
 
-The most complex modules are `ten8t_checker.py` and `ten8t_function.py`, which contain much of the
-project's "magic" functionality that provides flexibility for end users. These modules consistently
-show higher complexity in metrics like Halstead (particularly in "bugs" and "time" indicators).
-
-Despite some complexity, all modules maintain an A rank for maintainability. The complexity metrics
-generally confirm what I already knew about the codebase architecture - the core modules that handle
-the flexible behavior are necessarily more complex, while the peripheral modules maintain cleaner
-separation of concerns.
+The columns below have been sorted worst to best. It can be seen that most of the complexity is in the
+`ten8t_checker`/`function`/`yield` modules as those are the most complex functionality in the system and
+they are reliably at the top of all of these metrics. This is where the paid is.
 
 Pull requests addressing code quality in lower-scoring files are welcome...actually any PR's are welcome.
+
+NOTE: Restructuring occurred recently made the flat architecture more hierarchical, where classes that were
+subclassed were made into subprojects and files were split up in to folders and sub folders
+(see folders progress/rc/render/score/serialize) At this time those files are not visible in this listing.
 
 __Halstead__
 <!--file snippets/radon_hal.csv-->
 
 | File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |--------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_attribute.py | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
 | ten8t_checker.py   | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
-| ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_filter.py    | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
 | ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
-| ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_logging.py   | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
-| ten8t_module.py    | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
-| ten8t_package.py   | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
-| ten8t_result.py    | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
-| ten8t_ruid.py      | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
-| ten8t_thread.py    | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
-| ten8t_util.py      | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
+| ten8t_attribute.py | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
+| ten8t_module.py    | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
+| ten8t_util.py      | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
+| ten8t_ruid.py      | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
+| ten8t_result.py    | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
+| ten8t_filter.py    | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
+| ten8t_package.py   | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
+| ten8t_thread.py    | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
+| ten8t_logging.py   | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
+| ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
+| ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 15:58:16 2025-03-29</small>
+<small>radon_hal.csv &nbsp;&nbsp; 07:57:08 2025-03-30</small>
 
 <!--file end-->
 
-__Maintainability__
+__Maintainability Index__
 <!--file snippets/radon_mi.csv-->
 
 | File               | Maint.<br>Index | Rank |
 |--------------------|-----------------|------|
-| ten8t_attribute.py | 58.40           | A    |
 | ten8t_checker.py   | 27.30           | A    |
-| ten8t_exception.py | 100.00          | A    |
-| ten8t_filter.py    | 68.20           | A    |
-| ten8t_function.py  | 51.80           | A    |
-| ten8t_immutable.py | 100.00          | A    |
-| ten8t_logging.py   | 89.50           | A    |
-| ten8t_module.py    | 62.80           | A    |
-| ten8t_package.py   | 71.70           | A    |
-| ten8t_result.py    | 64.30           | A    |
-| ten8t_ruid.py      | 78.20           | A    |
-| ten8t_thread.py    | 63.90           | A    |
-| ten8t_util.py      | 69.70           | A    |
 | ten8t_yield.py     | 47.50           | A    |
+| ten8t_function.py  | 51.80           | A    |
+| ten8t_attribute.py | 58.40           | A    |
+| ten8t_module.py    | 62.80           | A    |
+| ten8t_thread.py    | 63.90           | A    |
+| ten8t_result.py    | 64.30           | A    |
+| ten8t_filter.py    | 68.20           | A    |
+| ten8t_util.py      | 69.70           | A    |
+| ten8t_package.py   | 71.70           | A    |
+| ten8t_ruid.py      | 78.20           | A    |
+| ten8t_logging.py   | 89.50           | A    |
+| ten8t_exception.py | 100.00          | A    |
+| ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 15:58:16 2025-03-29</small>
+<small>radon_mi.csv &nbsp;&nbsp; 07:57:08 2025-03-30</small>
 
 <!--file end-->
 
 __Complexity__
+NOTE: This is by class. There is some function based code that is invisible (e.g., decorators in `ten8t_attribute.py`).
 <!--file snippets/radon_cc.csv-->
 
 | File               | Name                  | Rank | Complexity |
 |--------------------|-----------------------|------|------------|
-| ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
-| ten8t_exception.py | Ten8tTypeError        | A    | 1.00       |
-| ten8t_exception.py | Ten8tValueError       | A    | 1.00       |
-| ten8t_exception.py | Ten8tException        | A    | 1.00       |
 | ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
-| ten8t_immutable.py | Ten8tEnvList          | A    | 2.00       |
-| ten8t_immutable.py | Ten8tEnvDict          | A    | 2.00       |
-| ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
+| ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
+| ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
 | ten8t_module.py    | Ten8tModule           | A    | 4.00       |
 | ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
 | ten8t_result.py    | Ten8tResult           | A    | 3.00       |
 | ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
+| ten8t_immutable.py | Ten8tEnvList          | A    | 2.00       |
+| ten8t_immutable.py | Ten8tEnvDict          | A    | 2.00       |
 | ten8t_util.py      | NextIntValue          | A    | 2.00       |
-| ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
 | ten8t_yield.py     | Ten8tYieldPassOnly    | A    | 2.00       |
 | ten8t_yield.py     | Ten8tYieldFailOnly    | A    | 2.00       |
 | ten8t_yield.py     | Ten8tYieldPassFail    | A    | 2.00       |
 | ten8t_yield.py     | Ten8tYieldAll         | A    | 2.00       |
 | ten8t_yield.py     | Ten8tYieldSummaryOnly | A    | 2.00       |
+| ten8t_exception.py | Ten8tTypeError        | A    | 1.00       |
+| ten8t_exception.py | Ten8tValueError       | A    | 1.00       |
+| ten8t_exception.py | Ten8tException        | A    | 1.00       |
+| ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 15:58:16 2025-03-29</small>
+<small>radon_cc.csv &nbsp;&nbsp; 07:57:08 2025-03-30</small>
 
 <!--file end-->
 
@@ -846,12 +844,26 @@ a [T-800](https://en.wikipedia.org/wiki/T-800_(character))) *NOT* `tate`.
 Why is your name `hucker`? It is a portmanteau of Chuck (my name) and hacker with the added benefit
 that is a derogatory name for someone who isn't very good at skiing. I'll call it a portmanthree.
 
+## Contributors
+
+<!--file snippets/contribs.md-->
+
+| Username     | Commits | Last<br>Contribution |
+|--------------|--------:|:--------------------:|
+| **hucker**   |     124 |      2025-03-29      |
+| _dependabot_ |       2 |         N/A          |
+
+<small>contribs.md &nbsp;&nbsp; 07:57:07 2025-03-30</small>
+
+<!--file end-->
+
 ## TODO
 
-1. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
+1. Fix qc scripts to include metrics for code in subpackages.
+2. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
 2. Add support for handling coroutines and async generators, so ten8t can support all function types.
 3. Progress bars for using multithreading is broken.
-4. Improved decorators for so attribute didn't do ALL the work.
+4. Improved decorators so attribute didn't do ALL the work.
 
 ## Latest changes
 

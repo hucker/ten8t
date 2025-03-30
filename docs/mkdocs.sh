@@ -37,6 +37,7 @@ REQUIRED_SCRIPTS=(
     "${DOCS_DIR}/qc_radon.py"
     "${DOCS_DIR}/insert_files.py"
     "${DOCS_DIR}/add_badges.py"
+    "${DOCS_DIR}/contribs.py"
 )
 
 # Check for required tools
@@ -64,12 +65,14 @@ mkdir -p ${SNIPPETS_DIR}
 echo "Generating help documentation..."
 python ${SRC_DIR}/cli/ten8t_cli.py --help > ${SNIPPETS_DIR}/help.txt
 python ${SRC_DIR}/rich_ten8t/rich_demo.py > ${SNIPPETS_DIR}/rich_demo.txt
+python ${DOCS_DIR}/contribs.py > ${SNIPPETS_DIR}/contribs.md
 
 echo "Generating example results..."
 (
   cd ${SRC_DIR}/cli || exit 1
   python ten8t_cli.py --json=${DOCS_DIR}/snippets/result.json --pkg=../examples/file_system
 )
+
 
 echo "Generating code metrics..."
 radon cc --json   ${SRC_DIR}/t*.py > ${SNIPPETS_DIR}/radon_cc.json
@@ -80,6 +83,7 @@ python ${DOCS_DIR}/qc_radon.py
 echo "Generating README and documentation..."
 python ${DOCS_DIR}/insert_files.py --output=${PROJECT_ROOT}/README.md ${PROJECT_ROOT}/README.md
 python ${DOCS_DIR}/add_badges.py
+
 
 echo "Building HTML documentation..."
 cd ${DOCS_DIR}

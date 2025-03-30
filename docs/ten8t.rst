@@ -70,13 +70,6 @@ ten8t.rule\_xlsx module
    :show-inheritance:
    :undoc-members:
 
-ten8t.setup module
-------------------
-
-.. automodule:: ten8t.setup
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 ten8t.ten8t\_attribute module
 -----------------------------
@@ -102,13 +95,7 @@ ten8t.ten8t\_exception module
    :show-inheritance:
    :undoc-members:
 
-ten8t.ten8t\_format module
---------------------------
 
-.. automodule:: ten8t.ten8t_format
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 ten8t.ten8t\_function module
 ----------------------------
@@ -126,21 +113,7 @@ ten8t.ten8t\_immutable module
    :show-inheritance:
    :undoc-members:
 
-ten8t.ten8t\_inirc module
--------------------------
 
-.. automodule:: ten8t.ten8t_inirc
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-ten8t.ten8t\_jsonrc module
---------------------------
-
-.. automodule:: ten8t.ten8t_jsonrc
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 ten8t.ten8t\_logging module
 ---------------------------
@@ -166,13 +139,7 @@ ten8t.ten8t\_package module
    :show-inheritance:
    :undoc-members:
 
-ten8t.ten8t\_rc module
-----------------------
 
-.. automodule:: ten8t.ten8t_rc
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 ten8t.ten8t\_rc\_factory module
 -------------------------------
@@ -198,13 +165,6 @@ ten8t.ten8t\_ruid module
    :show-inheritance:
    :undoc-members:
 
-ten8t.ten8t\_score module
--------------------------
-
-.. automodule:: ten8t.ten8t_score
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 ten8t.ten8t\_thread module
 --------------------------
@@ -214,13 +174,7 @@ ten8t.ten8t\_thread module
    :show-inheritance:
    :undoc-members:
 
-ten8t.ten8t\_tomlrc module
---------------------------
 
-.. automodule:: ten8t.ten8t_tomlrc
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 ten8t.ten8t\_util module
 ------------------------
@@ -230,13 +184,7 @@ ten8t.ten8t\_util module
    :show-inheritance:
    :undoc-members:
 
-ten8t.ten8t\_xmlrc module
--------------------------
 
-.. automodule:: ten8t.ten8t_xmlrc
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 Module contents
 ---------------
