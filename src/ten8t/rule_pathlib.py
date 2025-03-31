@@ -14,7 +14,7 @@ from typing import Generator
 from .render import BM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrListOrNone, any_to_str_list
+from .ten8t_util import PathList, StrOrPathListOrNone, any_to_path_list
 from .ten8t_yield import Ten8tYield
 
 EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)
@@ -50,7 +50,8 @@ def rule_path_exists(path_: str) -> TR:
         return TR(status=False,
                   msg=f"Exception occurred while checking for the path {path_str}",except_=exc)
 
-def rule_paths_exist(paths: StrListOrNone,
+
+def rule_paths_exist(paths: StrOrPathListOrNone,
                      summary_only=False,
                      summary_name=None,
                      name="Path Check",
@@ -83,7 +84,7 @@ def rule_paths_exist(paths: StrListOrNone,
 
     y = yielder if yielder else Ten8tYield(emit_summary=summary_only, summary_name=summary_name)
 
-    paths = any_to_str_list(paths)
+    paths = any_to_path_list(paths)
 
     for path in paths:
         yield from y(rule_path_exists(path))
@@ -165,12 +166,13 @@ def rule_stale_file(
 
 
 def rule_stale_files(
-        folder: str | pathlib.Path,
+        folders: PathList | str | pathlib.Path,
         pattern: str | pathlib.Path,
         days: float = 0,
         hours: float = 0,
         minutes: float = 0,
         seconds: float = 0,
+        recursive=False,
         no_files_pass_status: bool = True,
         yielder: Ten8tYield = None,
         summary_only=False,
@@ -191,6 +193,7 @@ def rule_stale_files(
         hours: The number of hours to include in the age threshold, defaulting to 0.
         minutes: The number of minutes to include in the age threshold, defaulting to 0.
         seconds: The number of seconds to add to the age limit, defaulting to 0.
+        recursive: A flag indicating whether the search should be performed recursively.
         no_files_pass_status: A flag indicating whether the rule should pass (`True`)
             or fail (`False`) when no files matching the pattern are found. Defaults to True.
         summary_only: A Boolean that, when set to True, instructs the rule to yield only a
@@ -207,14 +210,22 @@ def rule_stale_files(
                                            summary_name=summary_name or "Rule_stale_files")
     code = BM.code
     current_time = time.time()
-    for filepath in pathlib.Path(folder).rglob(str(pattern)):
-        yield from y.results(rule_stale_file(filepath=filepath,
-                                             days=days,
-                                             hours=hours,
-                                             minutes=minutes,
-                                             seconds=seconds,
-                                             current_time=current_time))
 
+    folders = any_to_path_list(folders)
+
+    for folder in folders:
+        if recursive:
+            filepaths = pathlib.Path(folder).rglob(str(pattern))
+        else:
+            filepaths = pathlib.Path(folder).glob(str(pattern))
+
+        for filepath in filepaths:
+            yield from y.results(rule_stale_file(filepath=filepath,
+                                                 days=days,
+                                                 hours=hours,
+                                                 minutes=minutes,
+                                                 seconds=seconds,
+                                                 current_time=current_time))
     if y.count == 0:
         yield from y(status=no_files_pass_status,
                      msg=f"No files were found in {code(folder)} matching pattern {code(pattern)}")
@@ -222,16 +233,21 @@ def rule_stale_files(
     yield from y.yield_summary()
 
 
-def rule_large_files(folder: str,
+def rule_large_files(folders: str,
                      pattern: str,
                      max_size: float,
                      no_files_pass_status: bool = True,
                      summary_only=False,
                      summary_name=None,
+                     recursive=False,
                      yielder: Ten8tYield = None) -> Generator[TR, None, None]:
     """
     Checks for any large files exceeding the specified maximum size in a folder
     matching a given pattern and generates corresponding status messages.
+
+    The pattern semantics for file matching of patterns is based on `pathlib`.
+
+    The function of the recursive flag is to use rglob instead of glob.
 
     Args:
         folder (str): The directory to search for files.
@@ -244,6 +260,7 @@ def rule_large_files(folder: str,
                                         Default is False.
         summary_name (str or None, optional): The name to assign to the summary.
                                               Default is None.
+        recursive (bool, optional): If set to True, the search is performed recursively.
     """
     y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_large_files")
@@ -253,14 +270,26 @@ def rule_large_files(folder: str,
 
     code = BM.code
     bold = BM.bold
-    for filepath in pathlib.Path(folder).rglob(pattern):
-        size_bytes = filepath.stat().st_size
-        if size_bytes > max_size:
-            yield from y(
-                status=False,
-                msg=f"Large file {code(filepath)}, {code(size_bytes)} bytes, " \
-                    f"exceeds limit of {code(max_size)} bytes",
-            )
+
+    for folder in any_to_path_list(folders):
+
+        # Allow or disallow recursion.
+        file_paths = pathlib.Path(folder).rglob(pattern) if recursive else pathlib.Path(folder).glob(pattern)
+
+        for filepath in file_paths:
+            size_bytes = filepath.stat().st_size
+            if size_bytes > max_size:
+                yield from y(
+                    status=False,
+                    msg=f"Large file {code(filepath)}, {code(size_bytes)} bytes, " \
+                        f"exceeds limit of {code(max_size)} bytes",
+                )
+            else:
+                yield from y(
+                    status=True,
+                    msg=f"File {code(filepath)}, {code(size_bytes)} bytes, " \
+                        f"is within limit of {code(max_size)} bytes",
+                )
     if y.count == 0:
         yield from y(status=no_files_pass_status,
                      msg=f"{bold('NO')} files found matching {code(pattern)} in {code(folder)}.")
@@ -291,6 +320,8 @@ def rule_max_files(folders: list | str,
             folders.
         pattern (str):
             The file-matching pattern to count files in the folder(s). Default is '*' for all files.
+        recursive (bool):
+            Recursively check
         summary_only (bool):
             Whether to yield only a summary result instead of individual checks. Default is False.
         summary_name (str or None):
@@ -311,8 +342,8 @@ def rule_max_files(folders: list | str,
 
     y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_max_files")
-    if isinstance(folders, (str, pathlib.Path)):
-        folders = [folders]
+    folders = any_to_path_list(folders)
+
     if isinstance(max_files, int):
         max_files = [max_files] * len(folders)
 

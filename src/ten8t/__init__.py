@@ -63,18 +63,9 @@ from .ten8t_ruid import (
     valid_ruids,  # noqa: F401
 )
 from .ten8t_thread import Ten8tThread  # noqa: F401
-from .ten8t_util import (
-    IntList,  # noqa: F401
-    IntListOrNone,  # noqa: F401
-    IntOrNone,  # noqa: F401
-    StrList,  # noqa: F401
-    StrListOrNone,  # noqa: F401
-    StrOrNone,  # noqa: F401
-    any_to_int_list,  # noqa: F401
-    any_to_str_list,  # noqa: F401
-    next_int_value,  # noqa: F401
-    str_to_bool,  # noqa: F401
-)
+from .ten8t_util import (IntList, IntListOrNone, IntOrNone, StrList, StrListOrNone, StrOrNone, any_to_int_list,
+                         any_to_path_list, any_to_str_list, next_int_value,
+                         str_to_bool)  # noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401
 from .ten8t_yield import (Ten8tNoResultSummary, Ten8tYield, Ten8tYieldAll, Ten8tYieldFailOnly, Ten8tYieldPassFail,
                           Ten8tYieldPassOnly,
                           Ten8tYieldSummaryOnly)  # noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401; noqa: F401
@@ -104,7 +95,7 @@ try:
     import pathlib
 
     _install("pathlib")
-    from .rule_files import (
+    from .rule_pathlib import (
         rule_large_files,  # noqa: F401
         rule_max_files,  # noqa: F401
         rule_path_exists,  # noqa: F401

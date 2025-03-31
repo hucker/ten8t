@@ -1,7 +1,7 @@
 import pytest
 
 import ten8t
-from ten8t import any_to_int_list, any_to_str_list, str_to_bool
+from ten8t import any_to_int_list, any_to_path_list, any_to_str_list, str_to_bool
 
 
 @pytest.mark.parametrize("input_val",
@@ -116,3 +116,44 @@ def test_next_int():
         s.add(v2)
         assert v2 - v1 == 1
     assert len(s) == num_tests * 2
+
+
+import pathlib
+import pytest
+
+
+@pytest.mark.parametrize("input_files, expected_output", [
+
+    # String with extra spaces
+    ("  test.py   test2.py  ", [pathlib.Path("test.py"), pathlib.Path("test2.py")]),
+
+    # Single filename as a simple string
+    ("test.py", [pathlib.Path("test.py")]),
+
+    # Empty string (no file)
+    ("", []),
+
+    # Multiple filenames separated by spaces
+    ("test.py test2.py", [pathlib.Path("test.py"), pathlib.Path("test2.py")]),
+
+    # List of filenames as string list
+    (["test.py", "test2.py"], [pathlib.Path("test.py"), pathlib.Path("test2.py")]),
+
+    # List including Path objects
+    ([pathlib.Path("test.py"), pathlib.Path("test2.py")], [pathlib.Path("test.py"), pathlib.Path("test2.py")]),
+
+    # Single Path object only
+    (pathlib.Path("test.py"), [pathlib.Path("test.py")]),
+
+    # Mixed list of string and Path objects
+    (["test.py", pathlib.Path("test2.py")], [pathlib.Path("test.py"), pathlib.Path("test2.py")]),
+
+    # String with extra spaces
+    ("  test.py   test2.py  ", [pathlib.Path("test.py"), pathlib.Path("test2.py")]),
+
+    # None input should yield empty list
+    (None, []),
+
+])
+def test_any_to_path_list_parametrized(input_files, expected_output):
+    assert any_to_path_list(input_files) == expected_output

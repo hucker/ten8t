@@ -745,9 +745,9 @@ __Halstead__
 | ten8t_checker.py   | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
 | ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
+| ten8t_util.py      | 0.10 | 3.80       | 1119.81 | 62.21  | B            | A                  | B              | B            |
 | ten8t_attribute.py | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
 | ten8t_module.py    | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
-| ten8t_util.py      | 0.06 | 3.55       | 664.73  | 36.93  | B            | A                  | A              | A            |
 | ten8t_ruid.py      | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
 | ten8t_result.py    | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
 | ten8t_filter.py    | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
@@ -757,7 +757,7 @@ __Halstead__
 | ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 07:57:08 2025-03-30</small>
+<small>radon_hal.csv &nbsp;&nbsp; 17:02:04 2025-03-30</small>
 
 <!--file end-->
 
@@ -773,15 +773,15 @@ __Maintainability Index__
 | ten8t_module.py    | 62.80           | A    |
 | ten8t_thread.py    | 63.90           | A    |
 | ten8t_result.py    | 64.30           | A    |
+| ten8t_util.py      | 64.70           | A    |
 | ten8t_filter.py    | 68.20           | A    |
-| ten8t_util.py      | 69.70           | A    |
 | ten8t_package.py   | 71.70           | A    |
 | ten8t_ruid.py      | 78.20           | A    |
 | ten8t_logging.py   | 89.50           | A    |
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 07:57:08 2025-03-30</small>
+<small>radon_mi.csv &nbsp;&nbsp; 17:02:04 2025-03-30</small>
 
 <!--file end-->
 
@@ -812,7 +812,7 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 07:57:08 2025-03-30</small>
+<small>radon_cc.csv &nbsp;&nbsp; 17:02:04 2025-03-30</small>
 
 <!--file end-->
 
@@ -853,7 +853,7 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 | **hucker**   |     124 |      2025-03-29      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 07:57:07 2025-03-30</small>
+<small>contribs.md &nbsp;&nbsp; 17:02:03 2025-03-30</small>
 
 <!--file end-->
 

@@ -6,10 +6,10 @@ ten8t package
 Submodules
 ----------
 
-ten8t.rule\_files module
+ten8t.rule\_pathlib module
 ------------------------
 
-.. automodule:: ten8t.rule_files
+.. automodule:: ten8t.rule_pathlib
    :members:
    :show-inheritance:
    :undoc-members:

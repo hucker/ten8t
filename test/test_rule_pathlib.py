@@ -29,7 +29,7 @@ def test_rule_file_exist():
     ("rule_files_/my_file.txt rule_files_/my_big_file.txt"),  # Test with a string of paths
 
 ])
-def test_rule_files_exist(paths):
+def test_rule_files_as_list_exist(paths):
     @t8.attributes(tag="tag")
     def check_files():
         yield from t8.rule_paths_exist(paths=paths)
@@ -38,32 +38,89 @@ def test_rule_files_exist(paths):
         assert result.status is True
 
 
+def test_rule_files_as_string_pathlib_exist():
+    path = "rule_files_/my_file.txt rule_files_/my_file.txt"
+
+    @t8.attributes(tag="tag")
+    def check_files():
+        yield from t8.rule_paths_exist(paths=path)
+
+    for result in t8.Ten8tFunction(check_files)():
+        assert result.status is True
+
+
+@pytest.mark.parametrize("path_string, expected_status", [
+    # 1 valid path
+    ("rule_files_/my_file.txt", True),
+
+    # 2 valid paths, space-separated
+    ("rule_files_/my_file.txt rule_files_/my_file.txt", True),
+
+    # 1 invalid (non-existing) path (assuming it doesn't exist)
+    ("rule_files_/nonexistent.txt", False),
+
+    # mixed valid and invalid paths
+    ("rule_files_/nonexistent.txt rule_files_/nonexistent.txt", False),
+
+])
+def test_rule_files_as_string_pathlib_exist(path_string, expected_status):
+    """Handle various cases of arbitrary string cases.
+
+    This is a little bit testing the code that decodes the path list but I think
+    it is important to make sure this capability is working.
+    """
+
+    @t8.attributes(tag="tag")
+    def check_files():
+        yield from t8.rule_paths_exist(paths=path_string)
+
+    for result in t8.Ten8tFunction(check_files)():
+        assert result.status is expected_status
+
+
+def test_rule_files_exist_no_files():
+    """ This test the flag that determines what to do if files don't exist"""
+    path = ""
+
+    @t8.attributes(tag="tag")
+    def check_true_no_files():
+        yield from t8.rule_paths_exist(paths=path, no_paths_pass_status=True)
+
+    @t8.attributes(tag="tag")
+    def check_false_no_files():
+        yield from t8.rule_paths_exist(paths=path, no_paths_pass_status=False)
+
+    for result in t8.Ten8tFunction(check_true_no_files)():
+        assert result.status is True
+
+    for result in t8.Ten8tFunction(check_false_no_files)():
+        assert result.status is False
+
+
+
 def test_rule_large_files():
     """Verify that we can use the rule_path_exists rule in a function that we build."""
 
     @t8.attributes(tag="tag")
     def check_rule1():
-        for result_ in t8.rule_large_files(folder="./rule_files_", pattern="*.txt", max_size=10000):
+        for result_ in t8.rule_large_files(folders="./rule_files_", pattern="my_big_file.txt", max_size=1000):
             yield result_
 
-    @t8.attributes(tag="tag")
     def check_rule2():
-        for result_ in t8.rule_large_files(folder="./rule_files_", pattern="*.txt", max_size=50):
+        for result_ in t8.rule_large_files(folders="./rule_files_", pattern="my_big_file.txt", max_size=2000):
             yield result_
 
-    s_func1 = t8.Ten8tFunction(check_rule1, '')
-    for result in s_func1():
-        assert result.status
+    ch = t8.Ten8tChecker(check_functions=[check_rule1, check_rule2])
+    results = ch.run_all()
+    assert results[0].status is False
+    assert results[1].status is True
 
-    s_func2 = t8.Ten8tFunction(check_rule2, '')
-
-    for result in s_func2():
-        assert result.status is False
 
 
 def test_rule_large_file_bad_setup():
+    """Handled exception for file size."""
     def check_rule_bad_setup():
-        yield from t8.rule_large_files(folder="./rule_files_",
+        yield from t8.rule_large_files(folders="./rule_files_",
                                        pattern="*.foobar",
                                        max_size=-50,
                                        no_files_pass_status=True)
@@ -74,30 +131,43 @@ def test_rule_large_file_bad_setup():
         assert result.except_
 
 
-def test_rule_large_files_missing():
-    """Verify that we can use the rule_path_exists rule in a function that we build."""
+@pytest.mark.parametrize(
+    "folder_str, no_files_pass_status, expected_status",
+    [
+        # Existing folder, no files match
+        ("./rule_files_", True, True),
+        ("./rule_files_", False, False),
 
-    @t8.attributes(tag="tag")
-    def check_rule_missing_pass():
-        yield from t8.rule_large_files(folder="./rule_files_",
-                                       pattern="*.foobar",
-                                       max_size=50,
-                                       no_files_pass_status=True)
+        # Non-existent folder
+        ("./nonexistent_folder", True, True),
+        ("./nonexistent_folder", False, False),
+    ]
+)
+def test_rule_large_files_parameterized(folder_str, no_files_pass_status, expected_status):
+    """
+    Verify the rule_large_files behavior with folder paths as both strings and pathlib.Path objects.
 
-    @t8.attributes(tag="tag")
-    def check_rule_missing_fail():
-        yield from t8.rule_large_files(folder="./rule_files_",
-                                       pattern="*.foobar",
-                                       max_size=50,
-                                       no_files_pass_status=False)
+    Args:
+        folder_str (str): String folder path to check.
+        no_files_pass_status (bool): Status to return when no matching files are found.
+        expected_status (bool): Expected result status from rule evaluation.
 
-    s_func1 = t8.Ten8tFunction(check_rule_missing_pass)
-    for result in s_func1():
-        assert result.status
+    """
+    for folder in [folder_str, pathlib.Path(folder_str)]:
 
-    s_func2 = t8.Ten8tFunction(check_rule_missing_fail)
-    for result in s_func2():
-        assert result.status is False
+        @t8.attributes(tag="tag")
+        def check_rule_large_files():
+            yield from t8.rule_large_files(
+                folders=folder,
+                pattern="*.foobar",
+                max_size=50,
+                no_files_pass_status=no_files_pass_status
+            )
+
+        s_func = t8.Ten8tFunction(check_rule_large_files)
+        for result in s_func():
+            assert result.status is expected_status
+
 
 
 @pytest.mark.parametrize("days, hours, minutes, seconds", [
@@ -112,7 +182,7 @@ def test_bad_stale_file_setup(days, hours, minutes, seconds):
     file_path = pathlib.Path("./rule_files_")
 
     def check_rule_files():
-        yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.txt", days=days, hours=hours,
+        yield from t8.rule_stale_files(folders=file_path, pattern="my_file*.txt", days=days, hours=hours,
                                        minutes=minutes, seconds=seconds)
 
     s_func = t8.Ten8tFunction(check_rule_files)
@@ -126,11 +196,11 @@ def test_stale_file_no_match():
     file_path = pathlib.Path("./rule_files_")
 
     def check_rule_missing_true():
-        yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.foobar", days=0, hours=0, minutes=0,
+        yield from t8.rule_stale_files(folders=file_path, pattern="my_file*.foobar", days=0, hours=0, minutes=0,
                                        seconds=.5, no_files_pass_status=True)
 
     def check_rule_missing_false():
-        yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.foobar", days=0, hours=0, minutes=0,
+        yield from t8.rule_stale_files(folders=file_path, pattern="my_file*.foobar", days=0, hours=0, minutes=0,
                                        seconds=.5, no_files_pass_status=False)
 
     s_func1 = t8.Ten8tFunction(check_rule_missing_true)
@@ -153,7 +223,7 @@ def test_stale_files_noage():
 
     @t8.attributes(tag="tag")
     def check_rule_no_age():
-        yield from t8.rule_stale_files(folder=file_path,
+        yield from t8.rule_stale_files(folders=file_path,
                                        pattern="my_file*.txt",
                                        days=0,
                                        hours=0,
@@ -179,7 +249,7 @@ def test_stale_files():
 
     @t8.attributes(tag="tag")
     def check_rule_sec():
-        yield from t8.rule_stale_files(folder=file_path,
+        yield from t8.rule_stale_files(folders=file_path,
                                        pattern="my_file*.txt",
                                        days=0,
                                        hours=0,
@@ -188,7 +258,7 @@ def test_stale_files():
 
     @t8.attributes(tag="tag")
     def check_rule_min():
-        yield from t8.rule_stale_files(folder=file_path,
+        yield from t8.rule_stale_files(folders=file_path,
                                        pattern="my_file*.txt",
                                        days=0,
                                        hours=0,
@@ -197,7 +267,7 @@ def test_stale_files():
 
     @t8.attributes(tag="tag")
     def check_rule_hour():
-        yield from t8.rule_stale_files(folder=file_path,
+        yield from t8.rule_stale_files(folders=file_path,
                                        pattern="my_file*.txt",
                                        days=0,
                                        hours=1 / (2 * 3600.0),
@@ -206,7 +276,7 @@ def test_stale_files():
 
     @t8.attributes(tag="tag")
     def check_rule_day():
-        yield from t8.rule_stale_files(folder=file_path,
+        yield from t8.rule_stale_files(folders=file_path,
                                        pattern="my_file*.txt",
                                        days=1 / (2 * 86400.0),
                                        hours=0,
@@ -226,7 +296,9 @@ def test_stale_files():
         # Wait for a bit more than .5 sec
         time.sleep(.6)
 
-        for result in s_func1():
+        results = list(s_func1())
+
+        for result in results:
             assert not result.status
 
 
@@ -240,7 +312,7 @@ def test_stale_file_summary():
 
     @t8.attributes(tag="tag")
     def check_rule_sec():
-        yield from t8.rule_stale_files(folder=file_path, pattern="my_file*.txt", days=0, hours=0, minutes=0,
+        yield from t8.rule_stale_files(folders=file_path, pattern="my_file*.txt", days=0, hours=0, minutes=0,
                                        seconds=.5, summary_only=True, summary_name="Rule_files_ stale check")
 
     sfunc = t8.Ten8tFunction(check_rule_sec)
@@ -292,12 +364,3 @@ def test_max_file_summary():
     for result in check_rule():
         assert result.status is True
 
-
-def test_custom_yield():
-    @t8.attributes(tag="tag")
-    def check_rule():
-        y = t8.Ten8tYield()
-        for i in [1, 2, 3]:
-            yield from y.results(t8.Ten8tResult(status=False, msg=f"Msg {i}"))
-        if not y.yielded:
-            yield from y.results(t8.Ten8tResult(status=True, msg="Nothing was to be done"))

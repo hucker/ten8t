@@ -1,6 +1,7 @@
 """
 This is the sad place for lonely functions that don't have a place
 """
+import pathlib
 from typing import Sequence, TypeAlias
 
 # Type aliases.
@@ -33,7 +34,12 @@ FloatList: TypeAlias = Sequence[float]
 FloatListOrNone: TypeAlias = FloatList | FloatOrNone
 """Type alias for a sequence of floats or None."""
 
+StrOrPath: TypeAlias = str | pathlib.Path
+StrOrPathOrNone: TypeAlias = StrOrPath | None
+StrOrPathList: TypeAlias = Sequence[StrOrPath]
+StrOrPathListOrNone: TypeAlias = StrOrPathList | None
 
+PathList: TypeAlias = Sequence[pathlib.Path]
 
 class NextIntValue:
     """
@@ -94,6 +100,47 @@ def any_to_str_list(param: StrListOrNone, sep=' ') -> StrList:
         if all(isinstance(item, str) for item in param):
             return param
     raise ValueError(f'Invalid parameter type, expected all strings. {param}')
+
+
+def any_to_path_list(param: StrOrPathListOrNone, sep=' ') -> PathList:
+    """
+    Flexibly take a list of strings are pathlib objects and make a uniform
+    list of pathlib objects.  This is useful for normalizing data read from
+    different sources without have a bunch of point of use parsing.
+
+    The assumption is that this data could come from a config file, a command line parameter,
+    a UI element that returns strings, or code.  This should make all code
+    just "fix" the data with this call.
+
+
+    Args:
+        param: StrOrPathListOrNone  Data to normalize
+        sep: Separator character.  Should almost always be  ' '
+
+    Returns:
+
+    """
+    if param is None:
+        return []
+
+    # Listify single path
+    if isinstance(param, (pathlib.Path)):
+        param = [param]
+
+    # Given a string make it a list of strings
+    if isinstance(param, str):
+        param = param.strip()
+        if param == '':
+            param = []
+        else:
+            # Space split is slightly different and preferable
+            if sep == ' ':
+                param = param.split()
+            else:
+                param = param.split(sep)
+
+    # Now we have a list of paths and strings, covert them all th paths
+    return [pathlib.Path(p) for p in param]
 
 
 def any_to_int_list(param: IntListOrNone, sep=' ') -> IntList:

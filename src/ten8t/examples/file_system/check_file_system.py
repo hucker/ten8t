@@ -1,5 +1,5 @@
 """Sample ten8t module with check functions"""
-from ten8t import attributes, rule_files
+from ten8t import attributes
 
 
 @attributes(tag="folder", ruid="f1", level=1, phase="proto")
