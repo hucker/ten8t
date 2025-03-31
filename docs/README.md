@@ -665,6 +665,77 @@ just a demo, it is quite useful in that you can rapidly test your rule sets inte
 
 ![Textual Demo](./_static/textual_demo.png)
 
+## uv run Example
+
+It wouldn't be an example unless we showed you that you can run this with uv without knowing anything beyond
+installing uv on your machine by taking advantage of support for [PEP 723](https://peps.python.org/pep-0723/).
+Assuming you have `uv` on your machine, save this script to your machine.
+
+<!--file ../src/ten8t/uv_ten8t/uv_ten8t.py-->
+
+```python
+#!/user/bin/env -S uv run --script
+# /// script
+# dependencies = ["ten8t>=0.0.22"]
+# ///
+
+import ten8t as t8
+from ten8t import Ten8tResult, Ten8tChecker
+
+
+def check_1():
+    # This never runs because the checker doesn't run
+    return t8.Ten8tResult(status=True, msg="This test worked.")  # pragma no cover
+
+def check_2():
+    # List of filenames
+    yield from t8.rule_paths_exist(paths=["uv_ten8t.py"])
+
+def check_3():
+    # String of file names
+    yield from t8.rule_paths_exist(paths="uv_ten8t.py")
+
+def check_4():
+    # Multiple paths in string
+    yield from t8.rule_paths_exist(paths="uv_ten8t.py .")
+
+def check_5():
+    yield from t8.rule_url_200(urls = "http://www.google.com http://www.microsoft.com")
+
+
+ch = Ten8tChecker(check_functions=[check_1,check_2,check_3,check_4,check_5])
+result:Ten8tResult = None
+
+for result in ch.yield_all():
+    if result.status:
+        print(f"Pass: Function:{result.func_name} - {result.msg_rendered}")
+    else:
+        print(f"Fail: Function:{result.func_name} - {result.msg_rendered}")
+
+print(f"Final result: {ch.pass_count=} {ch.fail_count=} ")
+```
+
+<small>uv_ten8t.py &nbsp;&nbsp; 18:04:35 2025-03-30</small>
+
+<!--file end-->
+
+__Then type in `uv run uv_ten8t.py` and see the magic of uv make it just work.__
+
+```text
+(ten8t) chuck@Chucks-Mac-mini uv_ten8t % uv run uv_ten8t.py
+Pass: Function:check_1 - This test worked.
+Pass: Function:check_2 - The path uv_ten8t.py does exist.
+Pass: Function:check_3 - The path uv_ten8t.py does exist.
+Pass: Function:check_4 - The path uv_ten8t.py does exist.
+Pass: Function:check_4 - The path . does exist.
+Pass: Function:check_5 - URL http://www.google.com returned 200
+Pass: Function:check_5 - URL http://www.microsoft.com returned 200
+
+```
+
+NOTE: At this time, the installation of `ten8t` still has development and optional dependencies installed, that is why
+there are so many. The dependency list will be MUCH smaller soon.
+
 ## TOX
 
 Python 3.10, 3.11, 3.12 and 3.13.
@@ -757,7 +828,7 @@ __Halstead__
 | ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 17:02:04 2025-03-30</small>
+<small>radon_hal.csv &nbsp;&nbsp; 18:05:31 2025-03-30</small>
 
 <!--file end-->
 
@@ -781,7 +852,7 @@ __Maintainability Index__
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 17:02:04 2025-03-30</small>
+<small>radon_mi.csv &nbsp;&nbsp; 18:05:31 2025-03-30</small>
 
 <!--file end-->
 
@@ -812,7 +883,7 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 17:02:04 2025-03-30</small>
+<small>radon_cc.csv &nbsp;&nbsp; 18:05:31 2025-03-30</small>
 
 <!--file end-->
 
@@ -850,10 +921,10 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 | Username     | Commits | Last<br>Contribution |
 |--------------|--------:|:--------------------:|
-| **hucker**   |     124 |      2025-03-29      |
+| **hucker**   |     128 |      2025-03-31      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 17:02:03 2025-03-30</small>
+<small>contribs.md &nbsp;&nbsp; 18:05:30 2025-03-30</small>
 
 <!--file end-->
 
