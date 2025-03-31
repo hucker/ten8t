@@ -9,7 +9,7 @@ from typing import Generator, Sequence
 from sqlalchemy import Engine, MetaData, Table
 from sqlalchemy.sql.type_api import TypeEngine
 
-from .render import BM
+from .render import TM
 from .ten8t_result import TR
 
 
@@ -56,11 +56,11 @@ def rule_sql_table_col_name_schema(engine: Engine,
     # Verify expected columns exist
     for column in expected_columns:
         if column in actual_columns:
-            yield TR(status=True, msg=f"Column {BM.code(column)} " \
-                                      f"is present in table {BM.code(table)}")
+            yield TR(status=True, msg=f"Column {TM.code(column)} " \
+                                      f"is present in table {TM.code(table)}")
         else:
-            yield TR(status=False, msg=f"Column {BM.code(column)} is {BM.fail('MISSING')} " \
-                                       f"in table {BM.code(table)}")
+            yield TR(status=False, msg=f"Column {TM.code(column)} is {TM.fail('MISSING')} " \
+                                       f"in table {TM.code(table)}")
 
     # If extra columns existing in the database is OK then don't check
     if not extra_columns_ok:
@@ -70,8 +70,8 @@ def rule_sql_table_col_name_schema(engine: Engine,
         # over the set (that varies with python version).   For small sets this isn't to terrible
         for column in actual_columns:
             if column in extra_columns:
-                yield TR(status=False, msg=f"Column {BM.code(column)} is " \
-                                           f"UNEXPECTED in table {BM.code(table)}")
+                yield TR(status=False, msg=f"Column {TM.code(column)} is " \
+                                           f"UNEXPECTED in table {TM.code(table)}")
 
 
 def rule_sql_table_schema(engine: Engine,
@@ -117,21 +117,21 @@ def rule_sql_table_schema(engine: Engine,
             if unqualified_actual_type == unqualified_expected_type:
                 # pylint: disable=line-too-long
                 yield TR(status=True,
-                         msg=f"Column {BM.expected(expected_column)} of type {BM.expected(expected_type)} "
-                             f"is correctly present in table {BM.code(table)}")
+                         msg=f"Column {TM.expected(expected_column)} of type {TM.expected(expected_type)} "
+                             f"is correctly present in table {TM.code(table)}")
             else:
                 # pylint: disable=line-too-long
                 yield TR(status=False,
-                         msg=f"Column {BM.expected(expected_column)}  has incorrect type. Expected: " \
-                             f"{BM.expected(unqualified_expected_type)} , " \
-                             f"got: {BM.actual(unqualified_actual_type)}")
+                         msg=f"Column {TM.expected(expected_column)}  has incorrect type. Expected: " \
+                             f"{TM.expected(unqualified_expected_type)} , " \
+                             f"got: {TM.actual(unqualified_actual_type)}")
         else:
             yield TR(status=False, msg=f"Missing column in table {table}: " \
-                                       f"{BM.expected(expected_column)} ")
+                                       f"{TM.expected(expected_column)} ")
 
     # If extra columns existing in the database is OK then don't check
     if not extra_columns_ok:
         extra_columns = set(actual_columns.keys()) - set(column for column, _ in expected_columns)
         for column in extra_columns:
             yield TR(status=False, msg=f"Unexpected column in table " \
-                                       f"{BM.code(table)}: {BM.code(column)}")
+                                       f"{TM.code(table)}: {TM.code(column)}")

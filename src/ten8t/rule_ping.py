@@ -29,7 +29,7 @@ from typing import Generator
 import ping3  # type: ignore
 
 import ten8t
-from .render import BM
+from .render import TM
 from .ten8t_logging import ten8t_logger
 from .ten8t_result import TR
 from .ten8t_util import StrListOrNone, any_to_str_list
@@ -90,7 +90,7 @@ def rule_ping_host_check(host: str,
         if timeout_sec <= 0:
             return TR(
                 status=False,
-                msg=f"Ping timeout must be > 0 for {BM.code(host)} timeout = {BM.code(timeout_str)} ms"
+                msg=f"Ping timeout must be > 0 for {TM.code(host)} timeout = {TM.code(timeout_str)} ms"
             )
 
         # Perform the ping call
@@ -99,13 +99,13 @@ def rule_ping_host_check(host: str,
         if latency is None or latency < MIN_LATENCY_MS:
             return TR(
                 status=False,
-                msg=f"No ping response from server {BM.code(host)} timeout = {BM.code(timeout_str)} ms"
+                msg=f"No ping response from server {TM.code(host)} timeout = {TM.code(timeout_str)} ms"
             )
         else:
             latency_str = f"{latency:0.1f}"
             return TR(
                 status=True,
-                msg=f"Host {BM.code(host)} is up, response time = {BM.code(latency_str)} ms"
+                msg=f"Host {TM.code(host)} is up, response time = {TM.code(latency_str)} ms"
             )
     except Exception as e:
         # We carry on here since we do not want to crash the app

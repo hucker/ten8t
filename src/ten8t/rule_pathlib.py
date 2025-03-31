@@ -11,7 +11,7 @@ import pathlib
 import time
 from typing import Generator
 
-from .render import BM
+from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
 from .ten8t_util import PathList, StrOrPathListOrNone, any_to_path_list
@@ -41,11 +41,11 @@ def rule_path_exists(path_: str) -> TR:
     """
     path_str = ''
     try:
-        path_str = BM.code(path_)
+        path_str = TM.code(path_)
         if pathlib.Path(path_).exists():
             return TR(status=True, msg=f"The path {path_str} does exist.")
         else:
-            return TR(status=False, msg=f"The path  {path_str} does {BM.bold('NOT')} exist.")
+            return TR(status=False, msg=f"The path  {path_str} does {TM.bold('NOT')} exist.")
     except EXPECTED_FILE_EXCEPTIONS as exc:
         return TR(status=False,
                   msg=f"Exception occurred while checking for the path {path_str}",except_=exc)
@@ -91,7 +91,7 @@ def rule_paths_exist(paths: StrOrPathListOrNone,
 
     if y.count == 0:
         yield from y(status=no_paths_pass_status,
-                     msg=f"There were no paths to check in {BM.code(name)}.")
+                     msg=f"There were no paths to check in {TM.code(name)}.")
 
     yield from y.yield_summary()
 
@@ -130,10 +130,10 @@ def rule_stale_file(
 
     age_in_seconds = days * 86400.0 + hours * 3600.0 + minutes * 60.0 + seconds
     if age_in_seconds <= 0:
-        raise Ten8tException(f"Age for stale file check {BM.code(age_in_seconds)} should be > 0")
+        raise Ten8tException(f"Age for stale file check {TM.code(age_in_seconds)} should be > 0")
 
     try:
-        code = BM.code
+        code = TM.code
         file_mod_time = filepath.stat().st_mtime
         file_age_in_seconds = current_time - file_mod_time
 
@@ -159,7 +159,7 @@ def rule_stale_file(
             result = TR(status=True, msg=f"Not stale file {code(filepath)}")
     except EXPECTED_FILE_EXCEPTIONS as exc:
         result = TR(status=False,
-                    msg=f"Exception occurred while checking for the path {BM.code(filepath)}",
+                    msg=f"Exception occurred while checking for the path {TM.code(filepath)}",
                     except_=exc)
 
     return result
@@ -208,7 +208,7 @@ def rule_stale_files(
     """
     y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_stale_files")
-    code = BM.code
+    code = TM.code
     current_time = time.time()
 
     folders = any_to_path_list(folders)
@@ -268,8 +268,8 @@ def rule_large_files(folders: str,
     if max_size <= 0:
         raise Ten8tException(f"Size for large file check should be > 0 not {max_size=}")
 
-    code = BM.code
-    bold = BM.bold
+    code = TM.code
+    bold = TM.bold
 
     for folder in any_to_path_list(folders):
 
@@ -338,7 +338,7 @@ def rule_max_files(folders: list | str,
         Ten8tYield:
             The result of each folder's file count check or a summary if `summary_only` is True.
     """
-    code = BM.code
+    code = TM.code
 
     y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_max_files")

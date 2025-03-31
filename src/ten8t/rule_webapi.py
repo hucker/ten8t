@@ -16,7 +16,7 @@ import requests
 from requests.exceptions import RequestException
 
 from . import Ten8tException
-from .render import BM
+from .render import TM
 from .ten8t_result import TR
 from .ten8t_yield import Ten8tYield
 
@@ -66,15 +66,15 @@ def rule_url_200(urls: str | Sequence[str],
     if isinstance(urls, str):
         urls = urls.replace(",", " ").split()
 
-    # This covers the case BM.code(url) throws an exception
+    # This covers the case TM.code(url) throws an exception
     url_str = "URL Not Provided"
 
     for url in urls:
         try:
-            url_str = BM.code(url)
+            url_str = TM.code(url)
             response = requests.get(url, timeout=timeout_sec)
-            url_str = BM.code(url)
-            code_str = BM.code(response.status_code)
+            url_str = TM.code(url)
+            code_str = TM.code(response.status_code)
 
             if response.status_code == expected_status:
                 yield from y(status=True, msg=f"URL {url_str} returned {code_str}")
@@ -165,14 +165,14 @@ def rule_web_api(url: str,
 
         if response.status_code not in expected_response:
             yield from y(status=False,
-                         msg=f"URL {BM.code(url)} expected {BM.expected(expected_response)} " 
-                             f"returned {BM.actual(response.status_code)} ")
+                         msg=f"URL {TM.code(url)} expected {TM.expected(expected_response)} "
+                             f"returned {TM.actual(response.status_code)} ")
             return
 
         # This handles an expected failure by return true but not checking the json
         if response.status_code != 200:
             yield from y(status=True,
-                         msg=f"URL {BM.code(url)} returned {BM.code(response.status_code)}, " 
+                         msg=f"URL {TM.code(url)} returned {TM.code(response.status_code)}, " 
                              f"no JSON comparison needed.")
             return
 
@@ -182,12 +182,12 @@ def rule_web_api(url: str,
 
         if d_status is None:
             yield from y(status=True,
-                         msg=f"URL {BM.code(url)} returned the expected JSON {BM.code(json_d)}")
+                         msg=f"URL {TM.code(url)} returned the expected JSON {TM.code(json_d)}")
         else:
             yield from y(status=False,
-                         msg=f"URL {BM.code(url)} did not match at key {d_status}")
+                         msg=f"URL {TM.code(url)} did not match at key {d_status}")
 
     except (requests.exceptions.ReadTimeout, requests.exceptions.Timeout):  # pragma: no cover
-        yield from y(status=timeout_expected, msg=f"URL {BM.code(url)} timed out.")
+        yield from y(status=timeout_expected, msg=f"URL {TM.code(url)} timed out.")
 
     yield from y.yield_summary(summary_name or "Rule 200 check")

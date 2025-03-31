@@ -9,7 +9,7 @@ Methods or classes in this module can be extended or combined for more specific 
 import openpyxl
 import pandas as pd
 
-from .render import BM
+from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
 from .ten8t_util import StrOrNone, str_to_bool
@@ -157,9 +157,9 @@ def rule_xlsx_a1_pass_fail(wb: openpyxl.workbook.Workbook,
             desc = ""
 
         if str_to_bool(value):
-            yield TR(status=True, msg=f"{BM.expected(desc)}-Passed")
+            yield TR(status=True, msg=f"{TM.expected(desc)}-Passed")
         else:
-            yield TR(status=False, msg=f"{BM.expected(desc)}-Failed")
+            yield TR(status=False, msg=f"{TM.expected(desc)}-Failed")
 
 
 def rule_xlsx_df_pass_fail(df: pd.DataFrame, desc_col: str, val_col: str, skip_on_none=False):
@@ -192,19 +192,19 @@ def rule_xlsx_df_pass_fail(df: pd.DataFrame, desc_col: str, val_col: str, skip_o
         if pd.isnull(row_dict[val_col]):
             if skip_on_none:
                 yield TR(status=None, skipped=True,
-                         msg=f"Null value detected in column={BM.expected(val_col)}")
+                         msg=f"Null value detected in column={TM.expected(val_col)}")
             else:
                 yield TR(status=False,
-                         msg=f"Null value detected in column={BM.expected(val_col)}")
+                         msg=f"Null value detected in column={TM.expected(val_col)}")
             continue
 
         if pd.isnull(row_dict[desc_col]):
             if skip_on_none:
                 yield TR(status=None, skipped=True,
-                         msg=f"Null description detected in column={BM.expected(desc_col)}")
+                         msg=f"Null description detected in column={TM.expected(desc_col)}")
             else:
                 yield TR(status=False,
-                         msg=f"Null description detected in column={BM.expected(desc_col)}")
+                         msg=f"Null description detected in column={TM.expected(desc_col)}")
             continue
 
         description = row_dict[desc_col]
@@ -212,6 +212,6 @@ def rule_xlsx_df_pass_fail(df: pd.DataFrame, desc_col: str, val_col: str, skip_o
         # Very lenient boolean values
         status = str_to_bool(row_dict[val_col])
         if status:
-            yield TR(status=True, msg=f"{BM.code(description)}-Passed")
+            yield TR(status=True, msg=f"{TM.code(description)}-Passed")
         else:
-            yield TR(status=False, msg=f"{BM.code(description)}-Failed")
+            yield TR(status=False, msg=f"{TM.code(description)}-Failed")

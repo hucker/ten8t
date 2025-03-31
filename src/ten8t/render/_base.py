@@ -1,6 +1,24 @@
 """
 Base class for all ten8t renderers.  This has a list of all supported tags, the abstract
 render method and a concrete cleanup that removes all un-rendered tags.
+
+The purpose of this class is for formatting and coloring output of test results uniformly
+against many target environments (e.g., html, markdown, streamlit...)  The usecase is FULLY
+intended to only support formatting single lines of text for reporting purposes.
+
+This is NOT intended to format documents as much as it meant to format lines of text.
+
+As such there is support for coloring and font types and also the ability to format types of
+information.  The Pass tag might color things green, while the FAIL tag might color things red.
+
+This mechanism supports many output formats, so it sort of means that it hits a least
+common denominator.  The main casualty of this is that nested formatting is not supported because
+some targets don't support nesting.  This doesn't mean you couldn't set up nesting IF you know your
+target will support it (HTML for example), but in doing so your output will not be able to be displayed
+in targets that can't do nesting.
+
+Please refer to _markup.py for a list of the supported tags and informaiton on how to use them.
+
 """
 from abc import ABC
 

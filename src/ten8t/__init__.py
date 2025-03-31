@@ -10,7 +10,7 @@ from .rc import (Ten8tIniRC, Ten8tJsonRC, Ten8tRC, Ten8tTomlRC, Ten8tXMLRC, ten8
 # Built in render engines.  Note that for things like streamlit and rich we do
 # not take on dependencies.  The format strings are just a few lines of code
 # to map the supported formatting strings.
-from .render import BM, Ten8tAbstractRenderer, Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, \
+from .render import TM, Ten8tAbstractRenderer, Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, \
     Ten8tBasicRichRenderer, Ten8tBasicStreamlitRenderer, Ten8tGitHubMarkdownRenderer, Ten8tMarkup, Ten8tRendererFactory, \
     Ten8tRendererProtocol, Ten8tTextRenderer
 from .score import (ScoreBinaryFail, ScoreBinaryPass, ScoreByFunctionBinary, ScoreByFunctionMean, ScoreByResult,

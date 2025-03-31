@@ -9,7 +9,7 @@ from typing import Generator, Sequence
 
 import humanize
 
-from .render import BM
+from .render import TM
 from .ten8t_result import TR
 
 # Suppress DeprecationWarning only during `fs` module import
@@ -93,7 +93,7 @@ def rule_fs_file_within_max_size(filesys: OSFS,
             for failure), a descriptive message, and an indication if the validation was skipped.
     """
     if not filesys.isfile(path):
-        yield TR(status=False, msg=f'File "{path}" does {BM.bold("NOT")} exist in {filesys.root_path}',
+        yield TR(status=False, msg=f'File "{path}" does {TM.bold("NOT")} exist in {filesys.root_path}',
                  skipped=skip_if_missing)
     else:
         file_size = filesys.getsize(path)

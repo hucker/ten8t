@@ -3,7 +3,7 @@ import re
 import pytest
 
 from src import ten8t as t8
-from ten8t import BM
+from ten8t import TM
 
 
 @pytest.fixture
@@ -727,7 +727,7 @@ def test_check_render_p(renderer, expected):
 
     @t8.attributes(tag="t1", level=1, phase='p1')
     def render_func1():
-        yield t8.Ten8tResult(status=True, msg=f"It works1 {BM.code('hello')}")
+        yield t8.Ten8tResult(status=True, msg=f"It works1 {TM.code('hello')}")
 
     rfunc1 = t8.Ten8tFunction(render_func1)
     ch = t8.Ten8tChecker(check_functions=[rfunc1], renderer=renderer)
@@ -750,7 +750,7 @@ def test_check_render_p(renderer, expected):
 def test_check_render_color(renderer, expected):
     @t8.attributes(tag="t1", level=1, phase='p1')
     def render_func1():
-        yield t8.Ten8tResult(status=True, msg=f"It works1 {BM.red('hello')}")
+        yield t8.Ten8tResult(status=True, msg=f"It works1 {TM.red('hello')}")
 
     rfunc1 = t8.Ten8tFunction(render_func1)
     ch = t8.Ten8tChecker(check_functions=[rfunc1], renderer=renderer)
@@ -760,6 +760,63 @@ def test_check_render_color(renderer, expected):
     assert results[0].status == True
     assert results[0].msg == "It works1 <<red>>hello<</red>>"
     assert results[0].msg_rendered == expected
+
+
+def test_msg_renderer_simple():
+    """Verify that all the messages are populated in a simple case."""
+
+    @t8.attributes(tag="t1", level=1, phase='p1')
+    def render_func1():
+        yield t8.Ten8tResult(status=True, msg=f"message", warn_msg="warning", info_msg="info")
+
+    ch = t8.Ten8tChecker(check_functions=[render_func1])
+    results = ch.run_all()
+    result = results[0]
+    assert result.msg_rendered == "message"
+    assert result.warn_msg_rendered == "warning"
+    assert result.info_msg_rendered == "info"
+
+    assert result.msg == "message"
+    assert result.warn_msg == "warning"
+    assert result.info_msg == "info"
+
+    assert result.msg_text == "message"
+    assert result.warn_msg_text == "warning"
+    assert result.info_msg_text == "info"
+
+
+def test_msg_renderer_complex():
+    """
+    Verify that msg/info/warn messages are populated in a rendered case.
+
+    In this case all messages are the same
+    """
+
+    @t8.attributes(tag="t1", level=1, phase='p1')
+    def render_func1():
+        yield t8.TR(status=True,
+                    msg=f"<<code>>message<</code>>",
+                    warn_msg="<<code>>warning<</code>>",
+                    info_msg="<<code>>info<</code>>")
+
+    ch = t8.Ten8tChecker(check_functions=[render_func1], renderer=t8.Ten8tBasicMarkdownRenderer())
+    results = ch.run_all()
+    result = results[0]
+
+    # Renderer applied
+    assert result.msg_rendered == "`message`"
+    assert result.warn_msg_rendered == "`warning`"
+    assert result.info_msg_rendered == "`info`"
+
+    # Raw messages with markup
+    assert result.msg == "<<code>>message<</code>>"
+    assert result.warn_msg == "<<code>>warning<</code>>"
+    assert result.info_msg == "<<code>>info<</code>>"
+
+    # Raw Text
+    assert result.msg_text == "message"
+    assert result.warn_msg_text == "warning"
+    assert result.info_msg_text == "info"
 
 
 @pytest.fixture(scope="module")

@@ -46,7 +46,7 @@ class Ten8tMarkup:
 
     The idea of ten8t markup is a way to tag all result message with formatting
     information that may be used to provide the end user with a richer formatting
-    experience targeting multiple output environments.  Since I use rich_ten8t, markdown
+    experience targeting multiple output environments.  Since I use rich, markdown
     and streamlit and a bit of HTML I needed it to work for those platforms.
 
     Ten8t messages can have embedded formatting information that indicates to
@@ -83,7 +83,7 @@ class Ten8tMarkup:
 
     NOTE: This markup is intended for small amounts of text.  Generally single lines of text output.
     It should be used to add some color or bold text to line based string output.  It supports many outputs
-    it sort of only works well for the subset of features that every target supports.  If you target HTML
+    it works well for the subset of features that every target supports.  If you target HTML
     then you should be able to do almost anything since it supports deep nesting, however if you target
     markdown you will run into issues if you try deeply nest (or even nest) some tags.
 
@@ -98,7 +98,7 @@ class Ten8tMarkup:
         The assumption is that you want markup that looks like <<bold>> <</bold>> and this
         __init__ defaults to those delimiters.
 
-        If you don't like the <<>> then you can change it.
+        If you don't like the <<>> then you can change them.
 
         """
         self.open_pattern = open_pattern
@@ -205,4 +205,4 @@ class Ten8tMarkup:
 # markup formatter.  I have no thought that there will be multiple markups running at
 # the same time, though I can image multiple renderers running at the same time, the
 # obvious example being writing to a log file and a web interface or markdown file.
-BM = Ten8tMarkup()
+TM = Ten8tMarkup()

@@ -10,7 +10,7 @@ from typing import Generator
 import narwhals as nw
 from narwhals.typing import FrameT
 
-from .render import BM
+from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
 from .ten8t_util import StrList, StrListOrNone, any_to_str_list
@@ -84,40 +84,40 @@ def rule_validate_ndf_schema(df: FrameT,
                             f"Column {int_col} is an integer type"))
         else:
             yield from y(TR(False,
-                            f"Column {BM.code(int_col)} is {BM.bold('NOT')} an integer type"))
+                            f"Column {TM.code(int_col)} is {TM.bold('NOT')} an integer type"))
 
     for float_col in float_cols:
         if schema[float_col].name in float_types:
             yield from y(TR(True,
-                            f"Column {BM.code(float_col)} is a float type"))
+                            f"Column {TM.code(float_col)} is a float type"))
         else:
             yield from y(TR(False,
-                            f"Column {BM.code(float_col)} is {BM.bold('NOT')} an float type"))
+                            f"Column {TM.code(float_col)} is {TM.bold('NOT')} an float type"))
 
     for number_col in number_cols:
         if schema[number_col].name in num_types:
             yield from y(TR(True,
-                            f"Column {BM.code(number_col)} is a number type"))
+                            f"Column {TM.code(number_col)} is a number type"))
         else:
             yield from y(TR(False,
-                            f"Column {BM.code(number_col)} is {BM.bold('NOT')} an number type"))
+                            f"Column {TM.code(number_col)} is {TM.bold('NOT')} an number type"))
 
     for str_col in str_cols:
         if schema[str_col].name in str_types:
             yield from y(TR(True,
-                            f"Column {BM.code(str_col)} is an string type"))
+                            f"Column {TM.code(str_col)} is an string type"))
         else:
             yield from y(TR(False,
-                            f"Column {BM.code(str_col)} is {BM.bold('NOT')} an string type"))
+                            f"Column {TM.code(str_col)} is {TM.bold('NOT')} an string type"))
 
     for no_null_col in no_null_cols:
         null_count = len([v for v in df[no_null_col] if v is None or v == ''])
         if null_count == 0:
             yield from y(TR(True,
-                            f"Column {BM.code(no_null_col)} has {null_count} empty/null values."))
+                            f"Column {TM.code(no_null_col)} has {null_count} empty/null values."))
         else:
             yield from y(TR(False,
-                            f"Column {BM.code(no_null_col)} has {null_count} empty/null values"))
+                            f"Column {TM.code(no_null_col)} has {null_count} empty/null values"))
 
 
 @nw.narwhalify()
@@ -145,10 +145,10 @@ def rule_ndf_columns_check(name: str, df: FrameT, expected_cols_: str | list[str
 
     if df.is_empty() or not df.columns:
         if not expected_cols_:
-            yield TR(status=True, msg=f"The {BM.code(name)} data frame is " \
+            yield TR(status=True, msg=f"The {TM.code(name)} data frame is " \
                                       "empty and there are no expected columns.")
         else:
-            raise ValueError(f"There are no columns in {BM.code(name)}.")
+            raise ValueError(f"There are no columns in {TM.code(name)}.")
 
     df_col_names = set(df.columns)
     expected_cols = set(any_to_str_list(expected_cols_))
@@ -159,22 +159,22 @@ def rule_ndf_columns_check(name: str, df: FrameT, expected_cols_: str | list[str
     if exact:
         if not missing_columns and not extra_columns:
             yield TR(status=True,
-                     msg=f"All columns were found in the {BM.code(name)} dataframe: " \
-                         f"{BM.expected(expected_cols)}")
+                     msg=f"All columns were found in the {TM.code(name)} dataframe: " \
+                         f"{TM.expected(expected_cols)}")
         else:
-            msg = f"Data frame {BM.code(name)} is missing {BM.expected(missing_columns)} " \
-                  "columns and has extra {BM.expected(extra_columns)} columns"
+            msg = f"Data frame {TM.code(name)} is missing {TM.expected(missing_columns)} " \
+                  "columns and has extra {TM.expected(extra_columns)} columns"
             yield TR(status=False, msg=msg)
 
     else:
         # The not exact case means there are no missing but may be extra.
         if not missing_columns:
             yield TR(status=True,
-                     msg=f"Data frame {BM.code(name)} has NO missing columns")
+                     msg=f"Data frame {TM.code(name)} has NO missing columns")
         else:
             yield TR(status=False,
-                     msg=f"Data frame {BM.code(name)} has missing columns " \
-                         f"{BM.expected(missing_columns)}")
+                     msg=f"Data frame {TM.code(name)} has missing columns " \
+                         f"{TM.expected(missing_columns)}")
 
 
 def convert_to_tuple(input_val: tuple[float, list[str] | str] | None) \
@@ -253,97 +253,97 @@ def rule_validate_ndf_values_by_col(df: FrameT,
         for col in positive:
             if df[col].min() > 0.0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are positive.")
+                         msg=f"All values in {TM.code(col)} are positive.")
 
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')}  positive.")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')}  positive.")
 
     if non_negative:
         for col in non_negative:
             if df[col].min() >= 0.0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are non-negative.")
+                         msg=f"All values in {TM.code(col)} are non-negative.")
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} non-negative.")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} non-negative.")
 
     if percent:
         # Just check 0-100
         for col in percent:
             if 0.0 <= df[col].min() and df[col].max() <= 100.0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are  a percent.")
+                         msg=f"All values in {TM.code(col)} are  a percent.")
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} a percent.")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} a percent.")
 
     if probability:
         for col in probability:
             # Just check 0-100
             if 0.0 <= df[col].min() and df[col].max() <= 1.0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are probabilities.", )
+                         msg=f"All values in {TM.code(col)} are probabilities.", )
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} probabilities.")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} probabilities.")
 
     if correlation:
         for col in correlation:
             # Just check 0-100
             if -1.0 <= df[col].min() and df[col].max() <= 1.0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are correlations.", )
+                         msg=f"All values in {TM.code(col)} are correlations.", )
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} correlations.")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} correlations.")
 
     if min_:
         val, cols = min_
         for col in cols:
             if df[col].min() >= val:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are > {val}")
+                         msg=f"All values in {TM.code(col)} are > {val}")
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} > {val}")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} > {val}")
 
     if max_:
         val, cols = max_
         for col in cols:
             if df[col].max() <= val:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are < {val}")
+                         msg=f"All values in {TM.code(col)} are < {val}")
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} < {val}")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} < {val}")
 
     if negative:
         for col in negative:
             if df[col].max() < 0.0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are negative.")
+                         msg=f"All values in {TM.code(col)} are negative.")
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} negative.")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} negative.")
 
     if non_positive:
         for col in non_positive:
             if df[col].max() <= 0.0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are non-positive.")
+                         msg=f"All values in {TM.code(col)} are non-positive.")
             else:
                 yield TR(status=False,
-                         msg=f"All values in {BM.code(col)} are {BM.bold('NOT')} non-positive.")
+                         msg=f"All values in {TM.code(col)} are {TM.bold('NOT')} non-positive.")
 
     if non_positive:
         for col in non_positive:
             if df[col].max() < 0:
                 yield TR(status=True,
-                         msg=f"All values in {BM.code(col)} are non-positive.")
+                         msg=f"All values in {TM.code(col)} are non-positive.")
             else:
                 yield TR(status=False,
-                         msg=f"All values in {col} are {BM.bold('NOT')} non-positive.")
+                         msg=f"All values in {col} are {TM.bold('NOT')} non-positive.")
 
 
 def extended_bool(value) -> bool:
@@ -420,9 +420,9 @@ def rule_ndf_pf_columns(df: FrameT,
             continue
 
         pass_status = extended_bool(row[pf_col])
-        row_description = BM.code(row[desc_col])
+        row_description = TM.code(row[desc_col])
         ten8t_result = TR(pass_status,
-                          f"{row_description} {BM.pass_('passed.') if pass_status else BM.fail('failed.')}")
+                          f"{row_description} {TM.pass_('passed.') if pass_status else TM.fail('failed.')}")
 
         yield from y(ten8t_result)
 

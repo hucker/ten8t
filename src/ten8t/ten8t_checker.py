@@ -26,8 +26,7 @@ ADHOC_MODULE_NAME = 'adhoc'
 """Name of the adhoc module"""
 
 
-def _param_str_list(params: StrListOrNone,
-                    disallowed=' ,!@#$%^&*(){}[]<>~`-+=\t\n\'"') -> StrList:
+def _param_str_list(params: StrListOrNone, disallowed=' ,!@#$%^&*(){}[]<>~`-+=\t\n\'"') -> StrList:
     """
     Allow user to specify "foo fum" instead of ["foo","fum"] or slightly more
     shady "foo" instead of ["foo"].  This is strictly for reducing friction
@@ -96,10 +95,6 @@ def _param_int_list(params: IntListOrNone) -> IntList:
     return [int(param) for param in params]
 
 
-
-
-
-
 class Ten8tChecker:
     """
     A checker object is what manages running rules against a system.
@@ -117,21 +112,13 @@ class Ten8tChecker:
 
     """
 
-    def __init__(
-            self,
-            packages: list[Ten8tPackage] | None = None,
-            modules: list[Ten8tModule] | None = None,
+    def __init__(self, packages: list[Ten8tPackage] | None = None, modules: list[Ten8tModule] | None = None,
             check_functions: list[Ten8tFunction | Callable] | None = None,
             progress_object: Ten8tProgress | list[Ten8tProgress] | None = None,
-            score_strategy: ScoreStrategy | None = None,
-            rc: Ten8tRC | None = None,
-            env: dict[str, Any] | None = None,
-            renderer: Ten8tAbstractRenderer = None,
-            abort_on_fail=False,
-            abort_on_exception=False,
-            auto_setup: bool = True,
-            auto_ruid: bool = False,
-    ):
+                 score_strategy: ScoreStrategy | None = None, rc: Ten8tRC | None = None,
+                 env: dict[str, Any] | None = None,
+                 renderer: Ten8tAbstractRenderer = None, abort_on_fail=False, abort_on_exception=False,
+                 auto_setup: bool = True, auto_ruid: bool = False, ):
         """
 
         
@@ -173,6 +160,9 @@ class Ten8tChecker:
         # if none are provided we create one
         self.renderer = renderer or Ten8tTextRenderer()
 
+        # We always have a raw text version of messages for logs and exceptions.
+        self.text_renderer = Ten8tTextRenderer()
+
         # If we are provided with an environment we save it off but first wrap it in
         # a class that guards reasonably against writes to the underlying environment
         # data.
@@ -208,9 +198,7 @@ class Ten8tChecker:
         self.auto_ruid = auto_ruid
 
         if not self.packages and not self.modules and not self.check_functions:
-            raise Ten8tException(
-                "You must provide at least one package, module or function to check."
-            )
+            raise Ten8tException("You must provide at least one package, module or function to check.")
 
         # For some use cases there is no need for special setup so just do auto setup
         # to clean up the startup.  Real code will likely need to be sophisticated
@@ -321,9 +309,7 @@ class Ten8tChecker:
                     f = Ten8tFunction(f)
 
                 if not isinstance(f, Ten8tFunction):
-                    raise Ten8tException(
-                        "Functions must be a list of Ten8tFunction objects or callable objects."
-                    )
+                    raise Ten8tException("Functions must be a list of Ten8tFunction objects or callable objects.")
 
                 # Set the index and module appropriately
                 f.index = count
@@ -358,8 +344,8 @@ class Ten8tChecker:
 
         # This is a bit of a hack and is NOT required and one could argue that it is bad code.
         # I suspect that this will only be useful for testing.
-        self.pre_collected = [Ten8tFunction(func) if not isinstance(func, Ten8tFunction) else func
-                              for func in self.pre_collected]
+        self.pre_collected = [Ten8tFunction(func) if not isinstance(func, Ten8tFunction) else func for func in
+                              self.pre_collected]
 
         # List of all possible functions that could be run
         return self.pre_collected
@@ -416,9 +402,7 @@ class Ten8tChecker:
             return self.check_func_list
 
         # Otherwise there is a problem.
-        raise Ten8tException(
-            f"There are duplicate or missing RUIDS: {ruid_issues(ruids)}"
-        )
+        raise Ten8tException(f"There are duplicate or missing RUIDS: {ruid_issues(ruids)}")
 
     def auto_gen_ruids(self, template='__ruid__@id@'):
         """ Provide a mechanism for to transition from no ruids to ruids.  This way they
@@ -440,18 +424,14 @@ class Ten8tChecker:
         if not self.rc:
             return self.check_func_list
 
-        self.check_func_list = [function for function in self.check_func_list
-                                if self.rc.does_match(ruid=function.ruid,
-                                                      tag=function.tag,
-                                                      phase=function.phase,
-                                                      level=function.level)]
+        self.check_func_list = [function for function in self.check_func_list if
+                                self.rc.does_match(ruid=function.ruid, tag=function.tag, phase=function.phase,
+                                                   level=function.level)]
 
         return self.check_func_list
 
-    def exclude_by_attribute(self, tags: StrListOrNone = None,
-                             ruids: StrListOrNone = None,
-                             levels: IntListOrNone = None,
-                             phases: StrListOrNone = None) -> list[Ten8tFunction]:
+    def exclude_by_attribute(self, tags: StrListOrNone = None, ruids: StrListOrNone = None,
+                             levels: IntListOrNone = None, phases: StrListOrNone = None) -> list[Ten8tFunction]:
         """ Run everything except the ones that match these attributes """
 
         # Make everything nice lists
@@ -461,17 +441,12 @@ class Ten8tChecker:
         levels = _param_int_list(levels)
 
         # Exclude attributes that don't match
-        self.check_func_list = [f for f in self.check_func_list if f.tag not in tags and
-                                f.ruid not in ruids and
-                                f.level not in levels and
-                                f.phase not in phases]
+        self.check_func_list = [f for f in self.check_func_list if
+                                f.tag not in tags and f.ruid not in ruids and f.level not in levels and f.phase not in phases]
         return self.check_func_list
 
-    def include_by_attribute(self,
-                             tags: StrListOrNone = None,
-                             ruids: StrListOrNone = None,
-                             levels: IntListOrNone = None,
-                             phases: StrListOrNone = None) -> list[Ten8tFunction]:
+    def include_by_attribute(self, tags: StrListOrNone = None, ruids: StrListOrNone = None,
+                             levels: IntListOrNone = None, phases: StrListOrNone = None) -> list[Ten8tFunction]:
         """ Run everything that matches these attributes """
 
         # Make everything nice lists
@@ -485,10 +460,8 @@ class Ten8tChecker:
         #    return self.collected
 
         # Only include the attributes that match
-        self.check_func_list = [f for f in self.check_func_list if (f.tag in tags_) or
-                                (f.ruid in ruids_) or
-                                (f.level in levels_) or
-                                (f.phase in phases_)]
+        self.check_func_list = [f for f in self.check_func_list if
+                                (f.tag in tags_) or (f.ruid in ruids_) or (f.level in levels_) or (f.phase in phases_)]
 
         return self.check_func_list
 
@@ -561,6 +534,34 @@ class Ten8tChecker:
         """
         return sorted(set(f.phase for f in self.check_func_list))
 
+    def render_messages(self, result: Ten8tResult) -> str:
+        """
+        The result can have any/all of 3 different messages that  can be reported
+        as a result of running a function.  msg, info, warn.  Internally for
+        each message the code tracks the markup that was used to create the text,
+        the rendered text using the user specified renderer and finally a
+        raw text version that that can be used in text contexts like logging,
+        and screen based output.  This provides a lot of flexibility in presenting
+        data in a useful way.
+        Args:
+            result:
+
+        Returns:
+
+        """
+
+        # Messages rendered as text for things like exceptions, logs etc.
+        result.msg_text = self.text_renderer.render(result.msg)
+        result.info_msg_text = self.text_renderer.render(result.info_msg)
+        result.warn_msg_text = self.text_renderer.render(result.warn_msg)
+
+        # Access to text rendered with the user selected rendering engine.
+        result.msg_rendered = self.renderer.render(result.msg)
+        result.info_msg_rendered = self.renderer.render(result.info_msg)
+        result.warn_msg_rendered = self.renderer.render(result.warn_msg)
+
+        return result
+
     class AbortYieldException(Exception):
         """Allow breaking out of multi level loop without state variables"""
 
@@ -588,11 +589,9 @@ class Ten8tChecker:
         ten8t_logger.info("Checker start with %d functions", len(self.check_func_list))
 
         if self.async_count:
-            ten8t_logger.info("Checker has %d async functions that will be ignored.",
-                              self.async_count)
+            ten8t_logger.info("Checker has %d async functions that will be ignored.", self.async_count)
         if self.coroutine_count:
-            ten8t_logger.info("Checker has %d coroutine functions that will be ignored.",
-                              self.coroutine_count)
+            ten8t_logger.info("Checker has %d coroutine functions that will be ignored.", self.coroutine_count)
 
         self.results = []
 
@@ -616,7 +615,7 @@ class Ten8tChecker:
 
                     # Render the message if needed.  The render happens right before it is yielded so it "knows"
                     # as much as possible at this point.
-                    result.msg_rendered = result.msg if not self.renderer else self.renderer.render(result.msg)
+                    self.render_messages(result)
 
                     ten8t_logger.debug("%s:%s:%s", result.func_name, result.status, result.msg)
 
@@ -779,8 +778,8 @@ class Ten8tChecker:
         Returns:
             list: A list of all module names from standalone modules and packages.
         """
-        return [module.module_name for module in self.modules] + \
-            [m.module_name for pkg in self.packages for m in pkg.modules]
+        return [module.module_name for module in self.modules] + [m.module_name for pkg in self.packages for m in
+                                                                  pkg.modules]
 
     @property
     def duration_seconds(self) -> float:
@@ -801,19 +800,11 @@ class Ten8tChecker:
 
     def get_header(self) -> dict:
         """Make a header with the top level information about the checker run"""
-        header = {
-            "package_count": self.package_count,
-            "module_count": self.module_count,
-            "modules": self.module_names,
-            "function_count": self.function_count,
-            "tags": self.tags,
-            "levels": self.levels,
-            "phases": self.phases,
-            "ruids": self.ruids,
-            "score": self.score,
-            "env_nulls": self.env_nulls,
-            "__version__": version("ten8t"),
-        }
+        header = {"package_count": self.package_count, "module_count": self.module_count, "modules": self.module_names,
+                  "function_count": self.function_count, "tags": self.tags, "levels": self.levels,
+                  "phases": self.phases,
+                  "ruids": self.ruids, "score": self.score, "env_nulls": self.env_nulls,
+                  "__version__": version("ten8t"), }
         return header
 
     def as_dict(self):
@@ -822,25 +813,14 @@ class Ten8tChecker:
         """
         h = self.get_header()
 
-        r = {
-            # This is the less important header stuff.
-            "start_time": self.start_time,
-            "end_time": self.end_time,
-            "duration_seconds": self.duration_seconds,
-            "functions": [f.function_name for f in self.check_functions],
-            "passed_count": self.pass_count,
-            "warn_count": self.warn_count,
-            "failed_count": self.fail_count,
-            "skip_count": self.skip_count,
-            "total_count": self.result_count,
-            "check_count": self.function_count,
-            "result_count": self.result_count,
-            "clean_run": self.clean_run,
-            "perfect_run": self.perfect_run,
-            "abort_on_fail": self.abort_on_fail,
+        r = {  # This is the less important header stuff.
+            "start_time": self.start_time, "end_time": self.end_time, "duration_seconds": self.duration_seconds,
+            "functions": [f.function_name for f in self.check_functions], "passed_count": self.pass_count,
+            "warn_count": self.warn_count, "failed_count": self.fail_count, "skip_count": self.skip_count,
+            "total_count": self.result_count, "check_count": self.function_count, "result_count": self.result_count,
+            "clean_run": self.clean_run, "perfect_run": self.perfect_run, "abort_on_fail": self.abort_on_fail,
             "abort_on_exception": self.abort_on_exception,
 
             # the meat of the output lives here
-            "results": [r.as_dict() for r in self.results],
-        }
+            "results": [r.as_dict() for r in self.results], }
         return h | r
