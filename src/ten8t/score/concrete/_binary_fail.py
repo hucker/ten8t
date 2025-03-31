@@ -1,3 +1,4 @@
+"""Score strategy that assesses a binary success or failure. """
 from .._base import ScoreStrategy
 from ...ten8t_result import Ten8tResult
 

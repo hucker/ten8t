@@ -1,3 +1,5 @@
+'''Ten8tMarkup for Rich'''
+
 from .._base import *
 
 

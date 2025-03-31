@@ -260,6 +260,7 @@ def threading(*, thread_id: str = DEFAULT_THREAD_ID, disallowed_chars=DEFAULT_DI
     Args:
         thread_id (str, optional): Identifier for the thread to run the function in.
             Defaults to DEFAULT_THREAD_ID.
+        disallowed_chars (str, optional): Characters not allowed in the thread identifier.
 
     Returns:
         Callable: Decorator function that applies the threading attributes.

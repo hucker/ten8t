@@ -124,7 +124,7 @@ def any_to_path_list(param: StrOrPathListOrNone, sep=' ') -> PathList:
         return []
 
     # Listify single path
-    if isinstance(param, (pathlib.Path)):
+    if isinstance(param, pathlib.Path):
         param = [param]
 
     # Given a string make it a list of strings

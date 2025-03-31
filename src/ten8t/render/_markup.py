@@ -105,7 +105,7 @@ class Ten8tMarkup:
         self.close_pattern = close_pattern
 
         if open_pattern == close_pattern:
-            raise Ten8tValueError("Open and close patterns %s for markup should not be the same.", open_pattern)
+            raise Ten8tValueError(f"Open and close patterns '{open_pattern}' for markup should not be the same.")
 
     def open_tag(self, tag: str) -> str:
         """if tag is 'red' open tag is <<red>>"""

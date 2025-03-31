@@ -1,7 +1,8 @@
 """
-GitHub Markdown Ten8t Output Renderer
+Markdown Ten8t Output Renderer
 
-This adds support for handling some color coding that github allows.
+This just handles basic text font manipulations as well as using backticks to wrap most "special"
+text.  Color is ignored because there is no color in basic markdown.
 """
 
 from ten8t.render._base import Ten8tAbstractRenderer
@@ -10,8 +11,7 @@ from ten8t.render._markup import *
 
 class Ten8tBasicMarkdownRenderer(Ten8tAbstractRenderer):
     """
-    GitHub Markdown renderer that extends basic markdown with GitHub-specific features.
-    GitHub Markdown supports HTML-based color styling and other GitHub-specific features.
+    Markdown renderer.
     """
 
     def __init__(self):

@@ -1,3 +1,6 @@
+"""
+Concrete implementation of binary scoring strategy requiring ALL tests to pass.
+"""
 from typing import Any
 
 from .._base import ScoreStrategy
@@ -20,6 +23,7 @@ class ScoreByFunctionBinary(ScoreStrategy):
     strategy_name = "by_function_binary"
 
     def score(self, results: list[Ten8tResult] | None = None) -> float:
+        """Any function fails the test is a fail."""
         if not results:
             return 0.0
 

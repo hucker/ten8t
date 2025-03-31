@@ -534,7 +534,7 @@ class Ten8tChecker:
         """
         return sorted(set(f.phase for f in self.check_func_list))
 
-    def render_messages(self, result: Ten8tResult) -> str:
+    def render_messages(self, result: Ten8tResult) -> Ten8tResult:
         """
         The result can have any/all of 3 different messages that  can be reported
         as a result of running a function.  msg, info, warn.  Internally for

@@ -1,3 +1,4 @@
+"""Base class for serialzation implementations."""
 import sys
 from abc import ABC, abstractmethod
 from typing import List, TextIO
@@ -91,4 +92,3 @@ class Ten8tDump(ABC):
             output_file: File handle for writing output
         """
         pass
-

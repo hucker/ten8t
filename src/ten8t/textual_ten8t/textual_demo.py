@@ -53,6 +53,13 @@ class FilteredDirectoryTree(DirectoryTree):
     """
 
     def filter_paths(self, paths: Iterable[pathlib.Path]) -> Iterable[pathlib.Path]:
+        """
+        Given list of paths, filter out unwanted files and directories.
+        IN this context we ignore '.' folders, and we look for files that start
+        with "check_" and end in py.
+
+        NOTE: You will need to change this if you change your file naming convention.
+        """
         def valid_path(p):
             # The prefix is changeable, but for now check_ is good for demos.
             if p.is_file() and p.suffix == '.py' and p.name.startswith('check_'):
@@ -175,7 +182,7 @@ class FileProcessorApp(App):
 
     def on_mount(self) -> None:
         """Called when app is mounted."""
-        self.title = ("Ten8t Runner")
+        self.title = "Ten8t Runner"
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Called when any button is pressed."""
@@ -217,8 +224,8 @@ class FileProcessorApp(App):
                                   progress_object=progress)
 
         ten8t_logger.info(msg=f"Start run = {checker.function_count} functions.")
-        self.update_results_table(checker, selected_path)
-        ten8t_logger.info(msg=f"Run complete.")
+        self.update_results_table(checker)
+        ten8t_logger.info(msg="Run complete.")
 
     def textual_status(self, checker: Ten8tChecker) -> None:
         """Toast messages for status."""
@@ -240,7 +247,8 @@ class FileProcessorApp(App):
                         title="Warning",
                         severity="warning")
 
-    def make_result_status(self, status):
+    @staticmethod
+    def make_result_status(status: bool) -> str:
         """Formate that pass/fail status nicely."""
         if status:
             return "[green]PASS[/green]"
@@ -249,18 +257,21 @@ class FileProcessorApp(App):
         else:
             return "N/A"
 
-    def make_skipped(self, skipped):
+    @staticmethod
+    def make_skipped(skipped: bool) -> str:
+        """Formate that skipped status nicely."""
         if skipped:
             return "[purple]Skipped[/purple]"
         else:
             return ""
 
-    def make_tooltip(self, checker: Ten8tChecker) -> str:
+    @staticmethod
+    def make_tooltip(checker: Ten8tChecker) -> str:
         """
         Create a textual friendly tool tip.
 
         The tool tip is for the whole table, so this just extracts a bunch of info from the checker as
-        a sort of poor mans summary or header.
+        a sort of poor man's summary or header.
         """
         c = checker
         ruids = '' if not c.ruids else "ruids=" + ",".join(c.ruids) + '\n'
@@ -273,7 +284,7 @@ class FileProcessorApp(App):
         tt = f"Checker Run Summary:\n{score=}\n{pass_count=}\n{fail_count=}\n{skip_count=}\n{ruids}{tags}{phases}".strip()
         return tt
 
-    def update_results_table(self, checker: Ten8tChecker, path) -> None:
+    def update_results_table(self, checker: Ten8tChecker) -> None:
         """Update the results table with new data."""
         data_table = self.query_one("#results_table", DataTable)
         # Clear any existing data
@@ -324,6 +335,7 @@ class FileProcessorApp(App):
 @click.command()
 @click.option("--folder", "-f", default=".", help="Starting folder path")
 def main(folder: str):
+    """Entry point for click app."""
     t8.ten8t_logging.ten8t_setup_logging(level=logging.INFO, file_name="./textual_demo.log")
     ten8t_logger.info(msg=f"Startup package folder = {folder}")
 

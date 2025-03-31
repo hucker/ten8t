@@ -14,7 +14,7 @@ from typing import Generator
 from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import PathList, StrOrPathListOrNone, any_to_path_list
+from .ten8t_util import StrOrPathListOrNone, any_to_path_list
 from .ten8t_yield import Ten8tYield
 
 EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)
@@ -166,7 +166,7 @@ def rule_stale_file(
 
 
 def rule_stale_files(
-        folders: PathList | str | pathlib.Path,
+        folders: StrOrPathListOrNone,
         pattern: str | pathlib.Path,
         days: float = 0,
         hours: float = 0,
@@ -185,7 +185,7 @@ def rule_stale_files(
     on the provided pattern and compares their last modified time against the stipulated duration.
 
     Args:
-        folder: The folder path where the files should be searched. This can be either
+        folders: The folder path where the files should be searched. This can be either
             a string or a pathlib.Path object.
         pattern: The file name pattern to search for within the folder. It supports
             wildcard patterns and can also be a pathlib.Path.
@@ -233,7 +233,7 @@ def rule_stale_files(
     yield from y.yield_summary()
 
 
-def rule_large_files(folders: str,
+def rule_large_files(folders: StrOrPathListOrNone,
                      pattern: str,
                      max_size: float,
                      no_files_pass_status: bool = True,
@@ -250,7 +250,7 @@ def rule_large_files(folders: str,
     The function of the recursive flag is to use rglob instead of glob.
 
     Args:
-        folder (str): The directory to search for files.
+        folders (StrOrPathListOrNone): The directory to search for files.
         pattern (str): The file search pattern to apply (e.g., "/*.txt").
         max_size (float): The maximum allowed file size in bytes.
                           Files exceeding this size will be flagged.
@@ -297,7 +297,7 @@ def rule_large_files(folders: str,
     yield from y.yield_summary()
 
 
-def rule_max_files(folders: list | str,
+def rule_max_files(folders: StrOrPathListOrNone,
                    max_files: list | int,
                    pattern: str = '*',
                    summary_only=False,
@@ -312,7 +312,7 @@ def rule_max_files(folders: list | str,
     supports providing summary results only via the `summary_only` parameter.
 
     Args:
-        folders (list or str):
+        folders (StrOrPathListOrNone):
             The directories to check for files. Can be a single folder or a list of folders.
         max_files (list or int):
             The maximum number of files allowed in the corresponding folder(s). Can be a single

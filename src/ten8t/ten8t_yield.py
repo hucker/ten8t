@@ -20,7 +20,7 @@ class Ten8tNoResultSummary(Enum):
     SummaryFailOnNone = "SummaryFailOnNone"  # Emit a failing summary that says "no results"
 
     # Note these two cases elevate a summary result to a regular result.  This is nice because it
-    # can make it so you always have atlease one record for every test.
+    # can make it so you always have at least one record for every test.
     ResultFailOnNone = "ResultFailOnNone"  # Emit a failing RESULT if there are no results
     ResultPassOnNone = "ResultPassOnNone"  # Emit a passing RESULT if there are no results
 
@@ -30,7 +30,7 @@ class Ten8tNoResultSummary(Enum):
 DEFAULT_NO_RESULT = Ten8tNoResultSummary.SummaryPassOnNone
 
 
-# For now we default to reporting a passing summary record if they ask for one and there is no data.
+# For now, we default to reporting a passing summary record if they ask for one and there is no data.
 
 
 class Ten8tYield:

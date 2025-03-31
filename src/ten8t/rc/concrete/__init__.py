@@ -1,3 +1,4 @@
+"""Concrete resource file classes."""
 from ._ini import Ten8tIniRC
 from ._json import Ten8tJsonRC
 from ._toml import Ten8tTomlRC

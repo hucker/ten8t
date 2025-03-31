@@ -1,3 +1,4 @@
+"""Base class for Ten8t serialization configuration."""
 from dataclasses import dataclass
 from typing import List
 

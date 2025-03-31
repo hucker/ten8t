@@ -1,7 +1,7 @@
 # Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
-![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-899/899-brightgreen.svg)
+![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-983/983-brightgreen.svg)
 &nbsp;&nbsp;
 ![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
 &nbsp;&nbsp;
@@ -28,8 +28,8 @@ systems—from simple file existence checks to comprehensive system health verif
 
 Think of Ten8t as an infrastructure "linter" for file systems, databases, and documents. It enables quick
 rule setup with Python data or JSON output for python/web integration. Examples with `streamlit`, `typer`, `rich`,
-`FastAPI` and `textual` demonstrate low-friction development. While "standard" rules are available, writing
-custom Python verifications is straightforward. Ten8t supports custom pass/fail checks organized with many attributes
+`FastAPI`, `uv run` and `textual` demonstrate low-friction development. While "standard" rules are available, writing
+custom Python verifications is straightforward. `Ten8t` supports custom pass/fail checks organized with many attributes
 for precise filtering control. Its design works for both small projects and complex systems, making basic
 tests easy while remaining extensible through standard Python.
 
@@ -195,7 +195,17 @@ def check_file_age(csv_file):
 
 ## Threading Support
 
-Threading is supported in various ways. The easiest way to enable threading
+Threading is supported in various ways. The easiest way to enable threading is by setting
+`thread_ids` using the `@threading` decorator and then using the `Ten8tThread` object to run the checker.
+Under non-free-threading pythons, IO bound calls will scale nicely with the number of workers.
+Keep in mind that you are still responsible for writing code that is threadable. Database connections
+and dataframes and things aren't hashable will likely have issues. As a general rule if you keep all
+of your check functions in a single file and all of those functions work with their own copy of data
+and setup things will work nicely, if you give every function a unique thread id and try to run everything
+concurrently you may have issues.
+
+Test cases with things like ping or requests show very nice improvements. I have not yet tested
+free-threading to see how CPU bound operations are improved.
 
 ```python
 import datetime as dt
@@ -213,7 +223,7 @@ def check_file_exists():
 @categories(tag="file")
 @threading(thread_id='thread2')
 def check_file_age():
-  modification_time = pathlib.Path('my_file.txt').stat().st_mtime
+    modification_time = pathlib.Path('my_file.txt').stat().st_mtime
     current_time = dt.datetime.now().timestamp()
     file_age_in_seconds = current_time - modification_time
     file_age_in_hours = file_age_in_seconds / 3600
@@ -227,8 +237,6 @@ ch = Ten8tChecker(check_functions=[check_file_age, check_file_exists])
 
 # Use the Ten8tThread class to run the checker.  
 results = Ten8tThread(checker=ch).run_all(max_workers=5)
-
-
 
 ```
 
@@ -308,20 +316,20 @@ import ten8t as t8
 @t8.categories(tag="tag")
 def check_rule1():
     for folder in ['folder1', 'folder2', 'folder3']:
-        yield from t8.rule_large_files(folder=folder, pattern="log*.txt", max_size=100_000)
+        yield from t8.rule_large_files(folders=folder, pattern="log*.txt", max_size=100_000)
 
 
 @t8.categories(tag="tag")
 def check_rule2():
     for folder in ['folder1', 'folder2', 'folder3']:
-        yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
+        yield from t8.rule_stale_files(folders=folder, pattern="log*.txt", minutes=5.0)
 
 
 @t8.categories(tag="tag")
 def check_rule3(cfg):  # <-- Config file has the test setup
     """cfg: application config file."""
     for folder in cfg['logging']['folders']:
-        yield from t8.rule_stale_files(folder=folder, pattern="log*.txt", minutes=5.0)
+        yield from t8.rule_stale_files(folders=folder, pattern="log*.txt", minutes=5.0)
 ```
 
 There are a handful of useful packages built into `ten8t`. You don't need to do anything special to use them
@@ -665,45 +673,47 @@ just a demo, it is quite useful in that you can rapidly test your rule sets inte
 
 ![Textual Demo](docs/_static/textual_demo.png)
 
-## uv run Example
+## `uv` run Example
 
-It wouldn't be an example unless we showed you that you can run this with uv without knowing anything beyond
-installing uv on your machine by taking advantage of support for [PEP 723](https://peps.python.org/pep-0723/).
+It wouldn't be an example unless we showed you that you can run this with `uv` without knowing anything beyond
+installing `uv` on your machine by taking advantage of support for [PEP 723](https://peps.python.org/pep-0723/).
 Assuming you have `uv` on your machine, save this script to your machine.
 
 <!--file ../src/ten8t/uv_ten8t/uv_ten8t.py-->
-
 ```python
 #!/user/bin/env -S uv run --script
 # /// script
 # dependencies = ["ten8t>=0.0.22"]
 # ///
 
+"""Example of a checker run under uv run"""
+
 import ten8t as t8
-from ten8t import Ten8tResult, Ten8tChecker
+from ten8t import Ten8tChecker, Ten8tResult
 
 
 def check_1():
-    # This never runs because the checker doesn't run
+    """ This never runs because the checker doesn't run """
     return t8.Ten8tResult(status=True, msg="This test worked.")  # pragma no cover
 
 
 def check_2():
-    # List of filenames
+    """ List of filenames """
     yield from t8.rule_paths_exist(paths=["uv_ten8t.py"])
 
 
 def check_3():
-    # String of file names
+    """ String of file names """
     yield from t8.rule_paths_exist(paths="uv_ten8t.py")
 
 
 def check_4():
-    # Multiple paths in string
+    """ Multiple paths in string """
     yield from t8.rule_paths_exist(paths="uv_ten8t.py .")
 
 
 def check_5():
+    """ Check multiple URLs """
     yield from t8.rule_url_200(urls="http://www.google.com http://www.microsoft.com")
 
 
@@ -717,13 +727,14 @@ for result in ch.yield_all():
         print(f"Fail: Function:{result.func_name} - {result.msg_rendered}")
 
 print(f"Final result: {ch.pass_count=} {ch.fail_count=} ")
+
 ```
 
-<small>uv_ten8t.py &nbsp;&nbsp; 18:04:35 2025-03-30</small>
+<small>uv_ten8t.py &nbsp;&nbsp; 06:14:07 2025-03-31</small>
 
 <!--file end-->
 
-__Then type in `uv run uv_ten8t.py` and see the magic of uv make it just work.__
+__Then type in `uv run uv_ten8t.py` and see the magic of `uv` make it just work.__
 
 ```text
 (ten8t) chuck@Chucks-Mac-mini uv_ten8t % uv run uv_ten8t.py
@@ -762,12 +773,12 @@ Python 3.10, 3.11, 3.12 and 3.13.
 Your code has been rated at 9.79/10 (previous run: 9.79/10, +0.00)
 ```
 
-# Development Philosophy
+# Development Comments
 
 This project serves as both a practical tool and a playground for advanced Python features I don't
-encounter in my day job: code inspection, advanced yielding, threading, strategy patterns, dynamic
-function creation, hooks, decorators, mypy, github, pypi, tox, pytest integrtion, coverage metrics, dynamically
-created readme and readthedocs.
+encounter often in my day job: code inspection, advanced yielding, threading, strategy patterns, dynamic
+function creation, hooks, decorators, mypy, GitHub, pypi, tox, pytest integration, coverage metrics,
+dynamically created readme and readthedocs integration.
 
 As it evolved, tests have proven invaluable. They give me confidence
 to perform major architectural changes, confirming everything works when tests pass. TDD genuinely
@@ -781,10 +792,11 @@ frameworks for functionality that never materialized.
 
 ## Philosophy
 
-I designed the API to prioritize flexibility and user experience. Rather than requiring strict parameter
-formats, the library intelligently handles various input types to save users time and reduce friction.
+I designed the "API" to prioritize flexibility and dev. experience. Rather than requiring strict
+parameter formats, the library intelligently handles various input types to save users time and
+reduce friction.
 
-The API accepts multiple formats for common inputs:
+The API often times accepts data in multiple types:
 
 1) Lists of strings can be passed as space-delimited strings (`"foo fum quux"`), single values (`"foo"`),
    conventional lists (`["foo"]`), or even empty values (`""`, `[]`, `None`)
@@ -792,10 +804,70 @@ The API accepts multiple formats for common inputs:
 3) When a list is expected but a single item is provided, the API automatically wraps it in a list
 
 This approach simplifies integration with configuration files and command-line options by reducing data
-transformation code. While this diverges from strict typing practices, it significantly improves developer
+transformation code. While this diverges from strict typing practices, it improves developer
 experience and speeds up implementation.
 
 If there's demand, I may introduce strict variants of these interfaces in the future.
+
+### Class Hierarchy
+
+For the most part any structures that have base class/subclass heirarchys are split out into the a
+structure that looks like a folder with a bunch of private classes that define the abstract class
+and any supporting classes, and then a concrete folder that has private classes that define this
+functionality exposed to the application.
+
+![Class Structure](docs/_static/class_struct.png)
+
+The public interface is described in the __init__.py file.
+
+```python
+"""
+Exports all Ten8t renderer classes from the render package.
+"""
+
+# Import base classes and protocols
+from ._base import Ten8tAbstractRenderer
+
+# Import factory
+from ._factory import Ten8tRendererFactory
+
+# Import markup definitions
+from ._markup import TAG_ACTUAL, TAG_BLACK, TAG_BLUE, TAG_BOLD, TAG_CODE, TAG_DATA, TAG_EXPECTED, TAG_FAIL, TAG_GREEN,
+    TAG_ITALIC, TAG_ORANGE, TAG_PASS, TAG_PURPLE, TAG_RED, TAG_SKIP, TAG_STRIKETHROUGH, TAG_UNDERLINE, TAG_WARN,
+    TAG_WHITE, TAG_YELLOW, Ten8tMarkup
+from ._markup import TM, Ten8tMarkup
+from ._protocol import Ten8tRendererProtocol
+
+# Import concrete renderers
+from .concrete import (Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, Ten8tBasicRichRenderer,
+                       Ten8tBasicStreamlitRenderer, Ten8tGitHubMarkdownRenderer, Ten8tTextRenderer)
+
+# Define the public exports
+__all__ = [
+    # Base classes
+    'Ten8tAbstractRenderer',
+    'Ten8tRendererProtocol',
+
+    # Renderers
+    'Ten8tBasicHTMLRenderer',
+    'Ten8tBasicMarkdownRenderer',
+    'Ten8tGitHubMarkdownRenderer',
+    'Ten8tBasicRichRenderer',
+    'Ten8tBasicStreamlitRenderer',
+    'Ten8tTextRenderer',
+    'Ten8tRendererFactory',
+
+    # Markup
+    'Ten8tMarkup',
+    'TM',
+
+    # Tags
+    'TAG_BOLD', 'TAG_ITALIC', 'TAG_UNDERLINE', 'TAG_STRIKETHROUGH',
+    'TAG_DATA', 'TAG_EXPECTED', 'TAG_ACTUAL', 'TAG_FAIL', 'TAG_PASS',
+    'TAG_CODE', 'TAG_RED', 'TAG_BLUE', 'TAG_GREEN', 'TAG_PURPLE',
+    'TAG_ORANGE', 'TAG_YELLOW', 'TAG_BLACK', 'TAG_WHITE', 'TAG_WARN', 'TAG_SKIP'
+]
+```
 
 ## Code Metrics (from `radon`)
 
@@ -803,10 +875,11 @@ I track code quality using [Radon](https://github.com/rubik/radon) metrics acros
 In general, the codebase maintains good quality scores with mostly A's and B's.
 
 The columns below have been sorted worst to best. It can be seen that most of the complexity is in the
-`ten8t_checker`/`function`/`yield` modules as those are the most complex functionality in the system and
-they are reliably at the top of all of these metrics. This is where the paid is.
+`ten8t_checker`/`function`/`yield` modules as those are the most complex functionality in the system, and
+they are reliably at the top of all of these metrics. This is where the pain is and where effort should
+be placed on improving the code.
 
-Pull requests addressing code quality in lower-scoring files are welcome...actually any PR's are welcome.
+Pull requests addressing code quality in lower-scoring files are welcome...actually any PRs are welcome.
 
 NOTE: Restructuring occurred recently made the flat architecture more hierarchical, where classes that were
 subclassed were made into subprojects and files were split up in to folders and sub folders
@@ -817,7 +890,7 @@ __Halstead__
 
 | File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |--------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_checker.py   | 0.47 | 6.50       | 9149.36 | 508.30 | F            | A                  | D              | F            |
+| ten8t_checker.py   | 0.46 | 6.51       | 9049.57 | 502.75 | F            | A                  | D              | F            |
 | ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
 | ten8t_util.py      | 0.10 | 3.80       | 1119.81 | 62.21  | B            | A                  | B              | B            |
@@ -832,7 +905,7 @@ __Halstead__
 | ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 18:05:31 2025-03-30</small>
+<small>radon_hal.csv &nbsp;&nbsp; 12:16:54 2025-03-31</small>
 
 <!--file end-->
 
@@ -841,13 +914,13 @@ __Maintainability Index__
 
 | File               | Maint.<br>Index | Rank |
 |--------------------|-----------------|------|
-| ten8t_checker.py   | 27.30           | A    |
+| ten8t_checker.py   | 26.00           | A    |
 | ten8t_yield.py     | 47.50           | A    |
 | ten8t_function.py  | 51.80           | A    |
-| ten8t_attribute.py | 58.40           | A    |
+| ten8t_attribute.py | 58.30           | A    |
+| ten8t_result.py    | 61.70           | A    |
 | ten8t_module.py    | 62.80           | A    |
 | ten8t_thread.py    | 63.90           | A    |
-| ten8t_result.py    | 64.30           | A    |
 | ten8t_util.py      | 64.70           | A    |
 | ten8t_filter.py    | 68.20           | A    |
 | ten8t_package.py   | 71.70           | A    |
@@ -856,7 +929,7 @@ __Maintainability Index__
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 18:05:31 2025-03-30</small>
+<small>radon_mi.csv &nbsp;&nbsp; 12:16:54 2025-03-31</small>
 
 <!--file end-->
 
@@ -867,8 +940,8 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 | File               | Name                  | Rank | Complexity |
 |--------------------|-----------------------|------|------------|
 | ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
-| ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
 | ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
+| ten8t_checker.py   | Ten8tChecker          | A    | 4.00       |
 | ten8t_module.py    | Ten8tModule           | A    | 4.00       |
 | ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
 | ten8t_result.py    | Ten8tResult           | A    | 3.00       |
@@ -887,7 +960,7 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 18:05:31 2025-03-30</small>
+<small>radon_cc.csv &nbsp;&nbsp; 12:16:54 2025-03-31</small>
 
 <!--file end-->
 
@@ -925,10 +998,10 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 | Username     | Commits | Last<br>Contribution |
 |--------------|--------:|:--------------------:|
-| **hucker**   |     128 |      2025-03-31      |
+| **hucker**   |     130 |      2025-03-31      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 18:05:30 2025-03-30</small>
+<small>contribs.md &nbsp;&nbsp; 12:16:53 2025-03-31</small>
 
 <!--file end-->
 
@@ -936,9 +1009,9 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 1. Fix qc scripts to include metrics for code in subpackages.
 2. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
-2. Add support for handling coroutines and async generators, so ten8t can support all function types.
-3. Progress bars for using multithreading is broken.
-4. Improved decorators so attribute didn't do ALL the work.
+3. Add support for handling coroutines and async generators, so ten8t can support all function types.
+4. Progress bars for using multithreading is broken.
+5. Improved decorators so attribute didn't do ALL the work.
 
 ## Latest changes
 

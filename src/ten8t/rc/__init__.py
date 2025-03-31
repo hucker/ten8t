@@ -1,3 +1,4 @@
+"""Public interface for RC File Support."""
 from ._base import (Ten8tRC, )
 from ._base import (Ten8tRC)
 from ._factory import (ten8t_rc_factory)

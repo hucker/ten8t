@@ -3,31 +3,34 @@
 # dependencies = ["ten8t>=0.0.22"]
 # ///
 
+"""Example of a checker run under uv run"""
+
 import ten8t as t8
 from ten8t import Ten8tChecker, Ten8tResult
 
 
 def check_1():
-    # This never runs because the checker doesn't run
+    """ This never runs because the checker doesn't run """
     return t8.Ten8tResult(status=True, msg="This test worked.")  # pragma no cover
 
 
 def check_2():
-    # List of filenames
+    """ List of filenames """
     yield from t8.rule_paths_exist(paths=["uv_ten8t.py"])
 
 
 def check_3():
-    # String of file names
+    """ String of file names """
     yield from t8.rule_paths_exist(paths="uv_ten8t.py")
 
 
 def check_4():
-    # Multiple paths in string
+    """ Multiple paths in string """
     yield from t8.rule_paths_exist(paths="uv_ten8t.py .")
 
 
 def check_5():
+    """ Check multiple URLs """
     yield from t8.rule_url_200(urls="http://www.google.com http://www.microsoft.com")
 
 

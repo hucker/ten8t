@@ -1,4 +1,4 @@
-# concrete/__init__.py
+"""Concreate classes for renderers."""
 from .github_markdown import Ten8tGitHubMarkdownRenderer
 from .html import Ten8tBasicHTMLRenderer
 from .markdown import Ten8tBasicMarkdownRenderer

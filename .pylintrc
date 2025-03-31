@@ -9,4 +9,4 @@ max-line-length = 120
 
 
 [MASTER]
-ignore=ten8t/cli,ten8t/examples,ten8t/st_ten8t,ten8t/rich_ten8t
+ignore=ten8t/cli,ten8t/examples,ten8t/st_ten8t,ten8t/rich_ten8t,ten8t/uv_ten8t,ten8t/textual_ten8t

@@ -49,4 +49,3 @@ class Ten8tRendererProtocol(Protocol):
         This might include closing file handles, releasing resources,
         or resetting internal state.
         """
-

@@ -1,4 +1,4 @@
-# Import and register all built-in strategies
+""" Import and register all built-in strategies """
 from ._base import (
     ScoreStrategy,
 )

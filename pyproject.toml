@@ -65,7 +65,7 @@ dependencies = [
     "orjson~=3.10.16",
     "uv~=0.6.9",
     "gitdb2~=3.0.3",
-    "textual==2.0.0",
+    "textual~=2.0.0",
 ]
 
 [project.urls]
@@ -110,7 +110,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.extras]
-demos = ["fastapi", "streamlit", "typer", "requests", "rich", "fastapi-cli"]
+demos = ["fastapi", "streamlit", "typer", "requests", "rich", "fastapi-cli", "textual"]
 pdf = ["pypdf", "PyPDF2"]
 df = ["narwhals"]
 fs = ["fs", "humanize"]

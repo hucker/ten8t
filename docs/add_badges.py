@@ -127,4 +127,5 @@ def update_coverage_badge(readme_file: str, coverage_file: str):
 
 # Example usage:
 update_test_badge('../README.md', '../test/test/results.xml')
-update_coverage_badge('../README.md', '/Users/chuck/Library/Caches/JetBrains/PyCharm2024.3/coverage/ten8t$.xml')
+update_coverage_badge('../README.md',
+                      '/Users/chuck/Library/Caches/JetBrains/PyCharm2024.3/coverage/ten8t$pytest_in_test.xml')

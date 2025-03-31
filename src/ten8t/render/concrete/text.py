@@ -1,7 +1,5 @@
 """
-GitHub Markdown Ten8t Output Renderer
-
-This adds support for handling some color coding that github allows.
+Ten8tMarkup for Raw Text
 """
 
 from .._base import Ten8tAbstractRenderer

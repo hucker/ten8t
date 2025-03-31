@@ -59,8 +59,8 @@ class Ten8tLogProgress(Ten8tProgress):
 
     def result_msg(
             self,
-            current_iter: int,
-            max_iter: int,
+            current_iteration: int,
+            max_iteration: int,
             msg: StrOrNone = "",
             result: Ten8tResult | None = None,
     ):
@@ -75,7 +75,7 @@ class Ten8tLogProgress(Ten8tProgress):
 
             self.logger.log(
                 self.result_level,
-                f"[{current_iter}/{max_iter}] {status_str}{msg_str}{tag_str}{level_str}{phase_str} - {result.msg}",
+                f"[{current_iteration}/{max_iteration}] {status_str}{msg_str}{tag_str}{level_str}{phase_str} - {result.msg}",
             )
 
     @staticmethod

@@ -1,3 +1,6 @@
+"""
+Excel file serialization implementation for Ten8t test results.
+"""
 import pathlib
 from typing import Any, List, TextIO
 

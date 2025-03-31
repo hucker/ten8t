@@ -1,3 +1,5 @@
+"""Public interface for Progress Support."""
+
 from ._base import Ten8tProgress
 from .concrete._debug import Ten8tDebugProgress
 from .concrete._log import Ten8tLogProgress

@@ -33,7 +33,7 @@ __all__ = [
 
     # Markup
     'Ten8tMarkup',
-    'BM',
+    'TM',
 
     # Tags
     'TAG_BOLD', 'TAG_ITALIC', 'TAG_UNDERLINE', 'TAG_STRIKETHROUGH',

@@ -1,7 +1,8 @@
 """
-GitHub Markdown Ten8t Output Renderer
+HTML Ten8t Output Renderer
 
-This adds support for handling some color coding that github allows.
+This supports very basic HTML formatting.  Presumably people will look at this module
+and then tweak it for their use case.
 """
 
 from ten8t.render._base import Ten8tAbstractRenderer

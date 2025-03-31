@@ -1,3 +1,8 @@
+"""
+Returning the average of the results from each function.  Note that there are weights
+on each function.
+"""
+
 from typing import Any
 
 from .._base import ScoreStrategy

@@ -1,3 +1,4 @@
+"""    Abstract base class for tracking and managing progress.  """
 from abc import ABC
 
 from ..ten8t_result import Ten8tResult

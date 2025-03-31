@@ -100,8 +100,6 @@ def display_results(results: list[t8.Ten8tResult]):
     ]
 
     for count, r in enumerate(results, start=1):
-        # Determine the status
-        status = "Skipped" if r.skipped else "Pass" if r.status else "Fail"
 
         c_f = green if r.status else red if not r.skipped else orange
 
@@ -173,8 +171,8 @@ class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
         """Just overwrite the old message. """
         self.progress_bar.progress(self.last_percent, msg)
 
-    def result_msg(self, current_count: int,
-                   max_count: int,
+    def result_msg(self, current_iteration: int,
+                   max_iteration: int,
                    msg:StrOrNone='',
                    result: Ten8tResult | None = None):
         """
@@ -184,9 +182,9 @@ class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
         as a result which is the detailed results.  Presumably some progress systems
         would watch the result metadata while others would be content with the message.
         """
-        max_count = max(max_count, 1)
-        current_count = min(current_count, max_count)
-        self.last_percent = min(max(0, current_count / float(max_count)), 1.0)
+        max_iteration = max(max_iteration, 1)
+        current_iteration = min(current_iteration, max_iteration)
+        self.last_percent = min(max(0, current_iteration / float(max_iteration)), 1.0)
         self.progress_bar.progress(self.last_percent, msg)
 
 
@@ -220,7 +218,7 @@ def main():
     package_name = st.selectbox("Select Package", options=list(packages_mapping.keys()), index=0)
     package_folder = packages_mapping[package_name]
     st_renderer = (
-        t8.Ten8TBasicStreamlitRenderer()
+        t8.Ten8tBasicStreamlitRenderer()
     )  # Nice color coding for streamlit
     package = t8.Ten8tPackage(folder=package_folder)
     checker = t8.Ten8tChecker(packages=[package], renderer=st_renderer)

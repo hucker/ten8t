@@ -107,7 +107,7 @@ def rule_ping_host_check(host: str,
                 status=True,
                 msg=f"Host {TM.code(host)} is up, response time = {TM.code(latency_str)} ms"
             )
-    except Exception as e:
+    except ping3.errors.PingError as e:
         # We carry on here since we do not want to crash the app
         emsg = f"An error occurred while processing {host=}: {str(e)}"
         ten8t_logger.error(emsg)

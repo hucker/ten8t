@@ -6,14 +6,14 @@ import os
 import pathlib
 import sys
 
-# Set terminal width environment variables at the very beginning
-os.environ["COLUMNS"] = "100"  # This affects Click/Typer formatting
-
 import typer
 import uvicorn
 
 import ten8t as t8
 import ten8t_api
+
+# Set terminal width environment variables at the very beginning
+os.environ["COLUMNS"] = "100"  # This affects Click/Typer formatting
 
 s = pathlib.Path('./src').resolve()
 sys.path.insert(0, str(s))

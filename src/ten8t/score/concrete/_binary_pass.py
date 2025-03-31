@@ -1,3 +1,6 @@
+"""
+Concrete implementation of binary scoring strategy requiring any test to pass
+"""
 from .._base import ScoreStrategy
 from ...ten8t_result import Ten8tResult
 

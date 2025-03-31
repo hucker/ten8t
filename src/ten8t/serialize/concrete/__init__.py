@@ -1,5 +1,5 @@
 """
-Built-in scoring strategies.
+Built-in Serialzation strategies.
 """
 from ._csv import Ten8tDumpCSV
 from ._excel import Ten8tDumpExcel

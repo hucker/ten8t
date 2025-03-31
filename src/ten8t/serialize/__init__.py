@@ -1,4 +1,4 @@
-# Import main classes to expose at the serialization package level
+""" Import main classes to expose at the serialization package level """
 from ten8t.serialize.concrete import Ten8tDumpCSV, Ten8tDumpExcel, Ten8tDumpMarkdown
 from ._base import Ten8tDump
 from ._config import Ten8tDumpConfig

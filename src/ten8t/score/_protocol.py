@@ -21,7 +21,6 @@ class ScoreStrategyProtocol(Protocol):
         Returns:
             The calculated score
         """
-        ...
 
     def __call__(self, results: list[Ten8tResult]) -> float:
         """
@@ -33,4 +32,3 @@ class ScoreStrategyProtocol(Protocol):
         Returns:
             The calculated score
         """
-        ...
