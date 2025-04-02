@@ -1,3 +1,4 @@
+
 """
 Markdown Ten8t Output Renderer
 
@@ -37,4 +38,5 @@ class Ten8tBasicMarkdownRenderer(Ten8tAbstractRenderer):
             # Better code formatting using GitHub syntax highlighting
             TAG_CODE: ('`', '`'),
             TAG_DATA: ('`', '`'),
+            TAG_BREAK: ('<br>', ''),  # This is a bit of a hack
         }

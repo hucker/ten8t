@@ -449,8 +449,8 @@ def test_as_dict(func1, func2):
     assert d["package_count"] == 0
     assert d["module_count"] == 0
     assert d["function_count"] == 2
-    assert d["passed_count"] == 2
-    assert d["failed_count"] == 0
+    assert d["pass_count"] == 2
+    assert d["fail_count"] == 0
     assert d["total_count"] == 2
     assert d["phases"] == ['p1', 'p2']
     assert d["levels"] == [1, 2]

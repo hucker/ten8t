@@ -38,6 +38,7 @@ TAG_ORANGE = 'orange'
 TAG_YELLOW = 'yellow'
 TAG_BLACK = 'black'
 TAG_WHITE = 'white'
+TAG_BREAK = 'br'  # Used to force line breaks in formats that wrap automatically e.g. html
 
 
 class Ten8tMarkup:

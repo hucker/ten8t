@@ -5,6 +5,7 @@ There is also support for low level progress for functions/classes.
 import datetime as dt
 import pathlib
 from importlib.metadata import version
+from string import Template
 from typing import Any, Callable
 
 from .progress import Ten8tMultiProgress, Ten8tNoProgress, Ten8tProgress
@@ -24,6 +25,44 @@ from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
 
 ADHOC_MODULE_NAME = 'adhoc'
 """Name of the adhoc module"""
+
+
+class Ten8tStatusStrategy:
+    """This strategy formats a summary of the result of running all checks."""
+
+    def __init__(self, fmt="", renderer: Ten8tAbstractRenderer = None):
+        self.renderer: Ten8tAbstractRenderer = renderer or Ten8tTextRenderer()
+        # Default template string clearly defined explicitly:
+        self.fmt: str = fmt or (
+            "<<green>>$pass_count Pass<</green>>/"
+            "<<red>>$fail_count Fail<</red>> of "
+            "<<b>>$result_count<</b>> Total ten8t:$__version__ runtime=$duration_seconds sec <<br>><</br>>"
+        )
+        self.template = Template(self.fmt)
+
+    def render(self, ch: "Ten8tChecker") -> str:
+        d = ch.as_dict()
+        # Clearly format the float first explicitly (string.Template does not handle format specifications directly)
+        d["duration_seconds"] = "{:.03f}".format(d["duration_seconds"])
+        formatted = self.template.safe_substitute(**d)
+        return self.renderer.render(formatted)
+
+
+class Ten8tResultStrategy:
+    """This strategy formats a single line of text."""
+
+    def __init__(self, fmt="", renderer: Ten8tAbstractRenderer = None):
+        self.renderer: Ten8tAbstractRenderer = renderer or Ten8tTextRenderer()
+        # Default template clearly shown using $placeholders explicitly:
+        self.fmt: str = fmt or "Status:$status Skip:$skipped Msg:$msg_rendered <<br>><</br>>"
+        self.template = Template(self.fmt)
+
+    def render(self, result: Ten8tResult) -> str:
+        d = result.as_dict()
+        d["status"] = "<<green>>PASS<</green>>" if result.status else "<<red>>FAIL<</red>>"
+        formatted = self.template.safe_substitute(**d)
+        return self.renderer.render(formatted)
+
 
 
 def _param_str_list(params: StrListOrNone, disallowed=' ,!@#$%^&*(){}[]<>~`-+=\t\n\'"') -> StrList:
@@ -197,6 +236,9 @@ class Ten8tChecker:
         self.results: list[Ten8tResult] = []
         self.auto_ruid = auto_ruid
 
+        self.status_strategy: Ten8tStatusStrategy = Ten8tStatusStrategy(renderer=self.renderer)
+        self.result_strategy: Ten8tResultStrategy = Ten8tResultStrategy(renderer=self.renderer)
+
         if not self.packages and not self.modules and not self.check_functions:
             raise Ten8tException("You must provide at least one package, module or function to check.")
 
@@ -220,6 +262,9 @@ class Ten8tChecker:
             progress_object = Ten8tNoProgress()
 
         self.progress_object: Ten8tProgress = progress_object
+
+    def status_msg(self):
+        return self.status_strategy.render(self)
 
     @property
     def check_function_count(self) -> int:
@@ -814,11 +859,20 @@ class Ten8tChecker:
         h = self.get_header()
 
         r = {  # This is the less important header stuff.
-            "start_time": self.start_time, "end_time": self.end_time, "duration_seconds": self.duration_seconds,
-            "functions": [f.function_name for f in self.check_functions], "passed_count": self.pass_count,
-            "warn_count": self.warn_count, "failed_count": self.fail_count, "skip_count": self.skip_count,
-            "total_count": self.result_count, "check_count": self.function_count, "result_count": self.result_count,
-            "clean_run": self.clean_run, "perfect_run": self.perfect_run, "abort_on_fail": self.abort_on_fail,
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+            "duration_seconds": self.duration_seconds,
+            "functions": [f.function_name for f in self.check_functions],
+            "pass_count": self.pass_count,
+            "warn_count": self.warn_count,
+            "fail_count": self.fail_count,
+            "skip_count": self.skip_count,
+            "total_count": self.result_count,
+            "check_count": self.function_count,
+            "result_count": self.result_count,
+            "clean_run": self.clean_run,
+            "perfect_run": self.perfect_run,
+            "abort_on_fail": self.abort_on_fail,
             "abort_on_exception": self.abort_on_exception,
 
             # the meat of the output lives here

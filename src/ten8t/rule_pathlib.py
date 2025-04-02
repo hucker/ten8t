@@ -261,6 +261,7 @@ def rule_large_files(folders: StrOrPathListOrNone,
         summary_name (str or None, optional): The name to assign to the summary.
                                               Default is None.
         recursive (bool, optional): If set to True, the search is performed recursively.
+        yielder (Ten8tYield, optional): An optional pre-configured yield object.
     """
     y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
                                            summary_name=summary_name or "Rule_large_files")
@@ -320,8 +321,6 @@ def rule_max_files(folders: StrOrPathListOrNone,
             folders.
         pattern (str):
             The file-matching pattern to count files in the folder(s). Default is '*' for all files.
-        recursive (bool):
-            Recursively check
         summary_only (bool):
             Whether to yield only a summary result instead of individual checks. Default is False.
         summary_name (str or None):

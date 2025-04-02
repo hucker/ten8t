@@ -1,10 +1,10 @@
 """Concreate classes for renderers."""
-from .github_markdown import Ten8tGitHubMarkdownRenderer
-from .html import Ten8tBasicHTMLRenderer
-from .markdown import Ten8tBasicMarkdownRenderer
-from .rich import Ten8tBasicRichRenderer
-from .streamlit import Ten8tBasicStreamlitRenderer
-from .text import Ten8tTextRenderer
+from ._github_markdown import Ten8tGitHubMarkdownRenderer
+from ._html import Ten8tBasicHTMLRenderer
+from ._markdown import Ten8tBasicMarkdownRenderer
+from ._rich import Ten8tBasicRichRenderer
+from ._streamlit import Ten8tBasicStreamlitRenderer
+from ._text import Ten8tTextRenderer
 
 __all__ = [
     'Ten8tBasicHTMLRenderer',

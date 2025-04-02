@@ -26,7 +26,7 @@ spreadsheets, and projects. Inspired by `pytest` and `pylint`, it simplifies bas
 scenarios flexibly. With reusable, declarative rules, Ten8t enables monitoring and validation of information
 systems—from simple file existence checks to comprehensive system health verification.
 
-Think of Ten8t as an infrastructure "linter" for file systems, databases, and documents. It enables quick
+Think of Ten8t as an infrastructure "lint builder" for file systems, databases, and documents. It enables quick
 rule setup with Python data or JSON output for python/web integration. Examples with `streamlit`, `typer`, `rich`,
 `FastAPI`, `uv run` and `textual` demonstrate low-friction development. While "standard" rules are available, writing
 custom Python verifications is straightforward. `Ten8t` supports custom pass/fail checks organized with many attributes
@@ -77,7 +77,7 @@ also available through environments. Rule may be tagged with attributes to allow
 
 ### A modest checker...
 
-The very simplest thing you cand do with `ten8t` takes a few functions, gives them to the checker
+The simplest thing you can do with `ten8t` takes a few functions, gives them to the checker
 object and then tells that object to run all the functions, collect the results. This is the core.
 Everything that follows from here is window dressing to make this test engine run.
 
@@ -158,7 +158,7 @@ def check_file_age():
 ```
 
 And even a bit more complexity pass values to these functions using environments, which are similar to `pytest`
-fixtures. Ten8t detects functions that start with "env_" and calls them prior to running the check functions.
+fixtures. `Ten8t` detects functions that start with "env_" and calls them prior to running the check functions.
 It builds an environment that can be used to pass parameters to check functions. Typically, things like database
 connections, filenames, config files are passed around with this mechanism. Note that in multi threading checking
 some variables may not be shared across threads. File names, lists of strings and integers (and anything hashable)
@@ -240,10 +240,9 @@ results = Ten8tThread(checker=ch).run_all(max_workers=5)
 
 ```
 
-## How is Ten8t Used?
+## How is `Ten8t` Used?
 
 Once you have your check functions written you need to set up a `Ten8tChecker` object to run them.
-Essentially you need to pass the checker all of your check functions so they can be run.
 
 A common use case is to have check-functions saved in python source files that `ten8t` can discover via
 the import mechanism allowing check-functions in files to be auto-detected like `pytest`.
@@ -267,8 +266,8 @@ results as they are checked. Canonical form is that you yield, but `ten8t` is to
 and depending on using your function name and your docstrings for error messages is on you!
 
 Alternatively you can ignore the file and folder discovery mechanism and provide a list of rules as regular python
-functions and `Ten8t` will happily run them for you when you pass a list of check functions
-the make a `Ten8tChecker` object.
+functions and `Ten8t` will happily run them for you from a list of check functions passed at `Ten8tChecker` object
+creation time.
 
 ```python
 import ten8t as t8
@@ -309,292 +308,69 @@ These generally take the form of you wrapping them up with data specific to your
 The rules shown below trigger errors if there are any log files > 100k in length and if they haven't been updated
 in the last 5 minutes using rules from based on the `pathlib` packages
 
+<!--file ../src/ten8t/uv_ten8t/uv_rule_clip.py-->
 ```python
+#!/user/bin/env -S uv run --script
+# /// script
+# dependencies = ["ten8t>=0.0.22"]
+# ///
+
 import ten8t as t8
+import pathlib
+from ten8t import Ten8tBasicMarkdownRenderer, Ten8tChecker
 
 
-@t8.categories(tag="tag")
+@t8.categories(tag="file")
 def check_rule1():
-    for folder in ['folder1', 'folder2', 'folder3']:
-        yield from t8.rule_large_files(folders=folder, pattern="log*.txt", max_size=100_000)
+    root = pathlib.Path('./examples/file_system')
+    for folder in [root / f for f in ['folder1', 'folder2', 'folder3']]:
+        yield from t8.rule_large_files(folders=folder, pattern="*.txt", max_size=100_000)
 
 
 @t8.categories(tag="tag")
-def check_rule2():
-    for folder in ['folder1', 'folder2', 'folder3']:
-        yield from t8.rule_stale_files(folders=folder, pattern="log*.txt", minutes=5.0)
-
-
-@t8.categories(tag="tag")
-def check_rule3(cfg):  # <-- Config file has the test setup
+def check_rule2(cfg):  # <-- Config file has the test setup
     """cfg: application config file."""
     for folder in cfg['logging']['folders']:
-        yield from t8.rule_stale_files(folders=folder, pattern="log*.txt", minutes=5.0)
+        yield from t8.rule_stale_files(folders=folder, pattern="*.txt", minutes=5.0)
+
+
+cfg = {'cfg': {'logging': {'folders': ["../examples/file_system/folder1"]}}}
+
+ch: Ten8tChecker = t8.Ten8tChecker(check_functions=[check_rule1, check_rule2],
+                                   env=cfg,
+                                   renderer=Ten8tBasicMarkdownRenderer())
+
+for r in ch.yield_all():
+    print(ch.result_strategy.render(r))
+print(ch.status_strategy.render(ch))
 ```
 
-There are a handful of useful packages built into `ten8t`. You don't need to do anything special to use them
-beyond pip installing their dependencies. They detect what you have installed on your system and the rules
-will be made available. So if you have `ping3` installed, then the rules in for `ping3` will be available.
-
-This package uses `narwhals` to handle data frames. If you have pandas or polars installed the rules
-for dataframes should work for you (e.g., `ten8t` is dependent on narwhals not `pandas`/`polars`)
-
-If you want to add rules for common use cases PRs are welcomed. See `rule_files.py` and `rule_ping.py`.
-
-| Package Name | GitHub Repository Link                                                               |
-|--------------|--------------------------------------------------------------------------------------|
-| fs           | [GitHub - PyFilesystem/pyfilesystem2](https://github.com/PyFilesystem/pyfilesystem2) |
-| narwhals     | [GitHub - thousandoaks/narwhals](https://github.com/thousandoaks/narwhals)           |
-| pathlib      | Python `pathlib` package                                                             |
-| pdf          | [GitHub - camelot-dev/camelot](https://github.com/camelot-dev/camelot)               |
-| ping         | [GitHub - kyan001/ping3](https://github.com/kyan001/ping3)                           |
-| requests     | [GitHub - psf/requests](https://github.com/psf/requests)                             |
-| sqlalchemy   | [GitHub - sqlalchemy/sqlalchemy](https://github.com/sqlalchemy/sqlalchemy)           |
-
-If you aren't sure what has been detected when loading `ten8t` run this code in the REPL. If the name is
-in the `whats_installed` string then `ten8t` detected that you have pip installed the right tools.
-
-```text
->>> import ten8t
->>> ten8t.__version__
-'0.0.21'
->>> ten8t.whats_installed()
-'fs,narwhals,openpyxl,pathlib,pdf,ping,requests,sqlalchemy'
-```
-
-## What is the output?
-
-The low level output of a `Ten8tFunction` are `Ten8tResults`. Each `Ten8tResult` is trivially converted to a `json`
-record or a line in a CSV file for processing by other tools. It is easy to connect things up to
-`Streamlit`, `FastAPI` or a `typer` CLI app by json-ifying the results. Each test can have a lot of data attached
-to it, if needed, but from the end user perspective the `msg` and `status` are often enough. You will notice that
-there are useful elements in the result including the doc string of the rule function, which allows you to provide
-documentation for your rules that is exposed all the way up result stack. For example your doc strings could
-include information useful providing detailed information and greatly simplify displaying metadata in UI elements
-like tooltips as well as detailed error information with the traceback and exception data.
-
-
-<!--file snippets/result.json-->
-```json
-{
-    "package_count": 1,
-    "module_count": 1,
-    "modules": [
-        "check_file_system"
-    ],
-    "function_count": 4,
-    "tags": [
-        "folder"
-    ],
-    "levels": [
-        1
-    ],
-    "phases": [
-        "proto"
-    ],
-    "ruids": [
-        "f1",
-        "f2",
-        "file1",
-        "file2"
-    ],
-    "score": 100.0,
-    "env_nulls": [],
-    "start_time": "2025-03-21 06:54:17.586919",
-    "end_time": "2025-03-21 06:54:17.587155",
-    "duration_seconds": 0.000236,
-    "functions": [],
-    "passed_count": 6,
-    "warn_count": 0,
-    "failed_count": 0,
-    "skip_count": 0,
-    "total_count": 6,
-    "check_count": 4,
-    "result_count": 6,
-    "clean_run": true,
-    "perfect_run": true,
-    "abort_on_fail": false,
-    "abort_on_exception": false,
-    "results": [
-        {
-            "status": true,
-            "func_name": "check_files_f1",
-            "pkg_name": "",
-            "module_name": "check_file_system",
-            "msg": "The path <<code>>../examples/file_system/folder1/file1.txt<</code>> does exist.",
-            "info_msg": "",
-            "warn_msg": "",
-            "msg_rendered": "The path ../examples/file_system/folder1/file1.txt does exist.",
-            "doc": "Simple always passing function",
-            "runtime_sec": 5.507469177246094e-05,
-            "except_": "None",
-            "traceback": "",
-            "skipped": false,
-            "weight": 100.0,
-            "tag": "folder",
-            "level": 1,
-            "phase": "proto",
-            "count": 1,
-            "ruid": "file1",
-            "ttl_minutes": 0.0,
-            "mit_msg": "",
-            "owner_list": [],
-            "skip_on_none": false,
-            "fail_on_none": false,
-            "summary_result": false,
-            "thread_id": "main_thread__"
-        },
-        {
-            "status": true,
-            "func_name": "check_files_f1",
-            "pkg_name": "",
-            "module_name": "check_file_system",
-            "msg": "The path <<code>>../examples/file_system/folder1/file2.txt<</code>> does exist.",
-            "info_msg": "",
-            "warn_msg": "",
-            "msg_rendered": "The path ../examples/file_system/folder1/file2.txt does exist.",
-            "doc": "Simple always passing function",
-            "runtime_sec": 1.621246337890625e-05,
-            "except_": "None",
-            "traceback": "",
-            "skipped": false,
-            "weight": 100.0,
-            "tag": "folder",
-            "level": 1,
-            "phase": "proto",
-            "count": 2,
-            "ruid": "file1",
-            "ttl_minutes": 0.0,
-            "mit_msg": "",
-            "owner_list": [],
-            "skip_on_none": false,
-            "fail_on_none": false,
-            "summary_result": false,
-            "thread_id": "main_thread__"
-        },
-        {
-            "status": true,
-            "func_name": "check_files_f2",
-            "pkg_name": "",
-            "module_name": "check_file_system",
-            "msg": "The path <<code>>../examples/file_system/folder2/file1.txt<</code>> does exist.",
-            "info_msg": "",
-            "warn_msg": "",
-            "msg_rendered": "The path ../examples/file_system/folder2/file1.txt does exist.",
-            "doc": "Simple always passing function",
-            "runtime_sec": 1.8835067749023438e-05,
-            "except_": "None",
-            "traceback": "",
-            "skipped": false,
-            "weight": 100.0,
-            "tag": "folder",
-            "level": 1,
-            "phase": "proto",
-            "count": 1,
-            "ruid": "file2",
-            "ttl_minutes": 0.0,
-            "mit_msg": "",
-            "owner_list": [],
-            "skip_on_none": false,
-            "fail_on_none": false,
-            "summary_result": false,
-            "thread_id": "main_thread__"
-        },
-        {
-            "status": true,
-            "func_name": "check_files_f2",
-            "pkg_name": "",
-            "module_name": "check_file_system",
-            "msg": "The path <<code>>../examples/file_system/folder2/file2.txt<</code>> does exist.",
-            "info_msg": "",
-            "warn_msg": "",
-            "msg_rendered": "The path ../examples/file_system/folder2/file2.txt does exist.",
-            "doc": "Simple always passing function",
-            "runtime_sec": 1.0013580322265625e-05,
-            "except_": "None",
-            "traceback": "",
-            "skipped": false,
-            "weight": 100.0,
-            "tag": "folder",
-            "level": 1,
-            "phase": "proto",
-            "count": 2,
-            "ruid": "file2",
-            "ttl_minutes": 0.0,
-            "mit_msg": "",
-            "owner_list": [],
-            "skip_on_none": false,
-            "fail_on_none": false,
-            "summary_result": false,
-            "thread_id": "main_thread__"
-        },
-        {
-            "status": true,
-            "func_name": "check_folder1",
-            "pkg_name": "",
-            "module_name": "check_file_system",
-            "msg": "The path <<code>>../examples/file_system/folder1<</code>> does exist.",
-            "info_msg": "",
-            "warn_msg": "",
-            "msg_rendered": "The path ../examples/file_system/folder1 does exist.",
-            "doc": "Simple always passing function",
-            "runtime_sec": 1.0013580322265625e-05,
-            "except_": "None",
-            "traceback": "",
-            "skipped": false,
-            "weight": 100.0,
-            "tag": "folder",
-            "level": 1,
-            "phase": "proto",
-            "count": 1,
-            "ruid": "f1",
-            "ttl_minutes": 0.0,
-            "mit_msg": "",
-            "owner_list": [],
-            "skip_on_none": false,
-            "fail_on_none": false,
-            "summary_result": false,
-            "thread_id": "main_thread__"
-        },
-        {
-            "status": true,
-            "func_name": "check_folder2",
-            "pkg_name": "",
-            "module_name": "check_file_system",
-            "msg": "The path <<code>>../examples/file_system/folder2<</code>> does exist.",
-            "info_msg": "",
-            "warn_msg": "",
-            "msg_rendered": "The path ../examples/file_system/folder2 does exist.",
-            "doc": "Simple always passing function",
-            "runtime_sec": 1.3113021850585938e-05,
-            "except_": "None",
-            "traceback": "",
-            "skipped": false,
-            "weight": 100.0,
-            "tag": "folder",
-            "level": 1,
-            "phase": "proto",
-            "count": 1,
-            "ruid": "f2",
-            "ttl_minutes": 0.0,
-            "mit_msg": "",
-            "owner_list": [],
-            "skip_on_none": false,
-            "fail_on_none": false,
-            "summary_result": false,
-            "thread_id": "main_thread__"
-        }
-    ]
-}
-```
-<small>result.json &nbsp;&nbsp; 06:54:17 2025-03-21</small>
+<small>uv_rule_clip.py &nbsp;&nbsp; 13:19:46 2025-04-02</small>
 
 <!--file end-->
 
+Running this file yields markdown of:
+<small>
+<!--file ../src/ten8t/uv_ten8t/uv_rule_clip.md-->
+
+Status:PASS Skip:False Msg:**NO** files found matching `*.txt` in `examples/file_system/folder1`. <br>
+Status:PASS Skip:False Msg:**NO** files found matching `*.txt` in `examples/file_system/folder2`. <br>
+Status:PASS Skip:False Msg:**NO** files found matching `*.txt` in `examples/file_system/folder3`. <br>
+Status:FAIL Skip:False Msg:Stale file `../examples/file_system/folder1/file2.txt`
+`age = 54949.40 minutes age_in_seconds=300.0` <br>
+Status:FAIL Skip:False Msg:Stale file `../examples/file_system/folder1/file1.txt`
+`age = 54949.40 minutes age_in_seconds=300.0` <br>
+3 Pass/2 Fail of **5** Total ten8t:0.0.21 runtime=0.001 sec <br>
+
+<small>uv_rule_clip.md &nbsp;&nbsp; 13:42:10 2025-04-02</small>
+</small>
+<!--file end-->
+
+
 In addition to the json output, which has all data a set of serialization tools are included that allow for output
 in CSV, markdown and Excel formats. These tools are "easily" extended or modified by looking at the code in the
-`serialize` sub package. Do note that `render` is used for formatting single lines of result data, while serialization
-is used for exporting the entire results of a generated when running `checker.run_all()`.
+`serialize` sub package. Do note that `render` is best used for formatting single lines of result data,
+while serialization is used for exporting the entire results of a generated when running `checker.run_all()`.
 
 ## FastAPI Interface Demo (`ten8t/cli`)
 
@@ -677,7 +453,6 @@ just a demo, it is quite useful in that you can rapidly test your rule sets inte
 
 It wouldn't be an example unless we showed you that you can run this with `uv` without knowing anything beyond
 installing `uv` on your machine by taking advantage of support for [PEP 723](https://peps.python.org/pep-0723/).
-Assuming you have `uv` on your machine, save this script to your machine.
 
 <!--file ../src/ten8t/uv_ten8t/uv_ten8t.py-->
 ```python
@@ -730,7 +505,7 @@ print(f"Final result: {ch.pass_count=} {ch.fail_count=} ")
 
 ```
 
-<small>uv_ten8t.py &nbsp;&nbsp; 06:14:07 2025-03-31</small>
+<small>uv_ten8t.py &nbsp;&nbsp; 12:18:45 2025-03-31</small>
 
 <!--file end-->
 
@@ -743,8 +518,8 @@ Pass: Function:check_2 - The path uv_ten8t.py does exist.
 Pass: Function:check_3 - The path uv_ten8t.py does exist.
 Pass: Function:check_4 - The path uv_ten8t.py does exist.
 Pass: Function:check_4 - The path . does exist.
-Pass: Function:check_5 - URL http://www.google.com returned 200
-Pass: Function:check_5 - URL http://www.microsoft.com returned 200
+Pass: Function:check_5 - URL https://www.google.com returned 200
+Pass: Function:check_5 - URL https://www.microsoft.com returned 200
 
 ```
 
@@ -753,7 +528,7 @@ there are so many. The dependency list will be MUCH smaller soon.
 
 ## TOX
 
-Python 3.10, 3.11, 3.12 and 3.13.
+`Ten8t` is tested under Python 3.10, 3.11, 3.12 and 3.13.
 
 ```text
 2025-03-17 14:48:54 [INFO] pytest_logger: Global pytest logger initialized.
@@ -800,8 +575,10 @@ The API often times accepts data in multiple types:
 
 1) Lists of strings can be passed as space-delimited strings (`"foo fum quux"`), single values (`"foo"`),
    conventional lists (`["foo"]`), or even empty values (`""`, `[]`, `None`)
-2) File paths work with both strings (`"file.txt"`) and Path objects (`pathlib.Path("file.txt")`)
+2) File paths work with both strings (`"file.txt"`) and `pathlib.Path` objects (`pathlib.Path("file.txt")`)
 3) When a list is expected but a single item is provided, the API automatically wraps it in a list
+4) When you pass a list of functions to the checker they can be regular pythong function so they can be
+   of type `Ten8tFunction`.
 
 This approach simplifies integration with configuration files and command-line options by reducing data
 transformation code. While this diverges from strict typing practices, it improves developer
@@ -811,7 +588,7 @@ If there's demand, I may introduce strict variants of these interfaces in the fu
 
 ### Class Hierarchy
 
-For the most part any structures that have base class/subclass heirarchys are split out into the a
+For the most part any structures that have base class/subclass hierarchy are split out into the
 structure that looks like a folder with a bunch of private classes that define the abstract class
 and any supporting classes, and then a concrete folder that has private classes that define this
 functionality exposed to the application.
@@ -822,7 +599,7 @@ The public interface is described in the __init__.py file.
 
 ```python
 """
-Exports all Ten8t renderer classes from the render package.
+Exports all `Ten8t` renderer classes from the render package.
 """
 
 # Import base classes and protocols
@@ -839,7 +616,7 @@ from ._markup import TM, Ten8tMarkup
 from ._protocol import Ten8tRendererProtocol
 
 # Import concrete renderers
-from .concrete import (Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, Ten8tBasicRichRenderer,
+from ._concrete import (Ten8tBasicHTMLRenderer, Ten8tBasicMarkdownRenderer, Ten8tBasicRichRenderer,
                        Ten8tBasicStreamlitRenderer, Ten8tGitHubMarkdownRenderer, Ten8tTextRenderer)
 
 # Define the public exports
@@ -890,7 +667,7 @@ __Halstead__
 
 | File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |--------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_checker.py   | 0.46 | 6.51       | 9049.57 | 502.75 | F            | A                  | D              | F            |
+| ten8t_checker.py   | 0.50 | 6.63       | 9859.21 | 547.73 | F            | A                  | D              | F            |
 | ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
 | ten8t_util.py      | 0.10 | 3.80       | 1119.81 | 62.21  | B            | A                  | B              | B            |
@@ -905,7 +682,7 @@ __Halstead__
 | ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 12:16:54 2025-03-31</small>
+<small>radon_hal.csv &nbsp;&nbsp; 13:43:34 2025-04-02</small>
 
 <!--file end-->
 
@@ -914,7 +691,7 @@ __Maintainability Index__
 
 | File               | Maint.<br>Index | Rank |
 |--------------------|-----------------|------|
-| ten8t_checker.py   | 26.00           | A    |
+| ten8t_checker.py   | 24.40           | A    |
 | ten8t_yield.py     | 47.50           | A    |
 | ten8t_function.py  | 51.80           | A    |
 | ten8t_attribute.py | 58.30           | A    |
@@ -929,7 +706,7 @@ __Maintainability Index__
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 12:16:54 2025-03-31</small>
+<small>radon_mi.csv &nbsp;&nbsp; 13:43:34 2025-04-02</small>
 
 <!--file end-->
 
@@ -941,8 +718,10 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 |--------------------|-----------------------|------|------------|
 | ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
 | ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
+| ten8t_checker.py   | Ten8tResultStrategy   | A    | 4.00       |
 | ten8t_checker.py   | Ten8tChecker          | A    | 4.00       |
 | ten8t_module.py    | Ten8tModule           | A    | 4.00       |
+| ten8t_checker.py   | Ten8tStatusStrategy   | A    | 3.00       |
 | ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
 | ten8t_result.py    | Ten8tResult           | A    | 3.00       |
 | ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
@@ -960,7 +739,7 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 12:16:54 2025-03-31</small>
+<small>radon_cc.csv &nbsp;&nbsp; 13:43:34 2025-04-02</small>
 
 <!--file end-->
 
@@ -998,10 +777,10 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 | Username     | Commits | Last<br>Contribution |
 |--------------|--------:|:--------------------:|
-| **hucker**   |     130 |      2025-03-31      |
+| **hucker**   |     131 |      2025-03-31      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 12:16:53 2025-03-31</small>
+<small>contribs.md &nbsp;&nbsp; 13:43:33 2025-04-02</small>
 
 <!--file end-->
 
@@ -1009,9 +788,8 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 1. Fix qc scripts to include metrics for code in subpackages.
 2. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
-3. Add support for handling coroutines and async generators, so ten8t can support all function types.
+3. Add support for handling coroutines and async generators, so `ten8t` can support all function types.
 4. Progress bars for using multithreading is broken.
-5. Improved decorators so attribute didn't do ALL the work.
 
 ## Latest changes
 

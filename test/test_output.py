@@ -37,9 +37,18 @@ def test_json(simple1, simple2):
     assert set(d['phases']) == {'proto', 'production'}
     assert set(d['functions']) == {'func1', 'func2'}
 
-    assert d['passed_count'] == 2
-    assert d['failed_count'] == 0
+    assert d['pass_count'] == 2
+    assert d['fail_count'] == 0
+    assert d['skip_count'] == 0
+    assert d['warn_count'] == 0
+    assert d['check_count'] == 2
+    assert d['total_count'] == 2
+    assert d['clean_run'] is True
+    assert d['perfect_run'] is True
+    assert d['abort_on_fail'] is False
+    assert d['abort_on_exception'] is False
     assert len(d['results']) == 2
+    assert d['__version__'] == t8.__version__
 
     # We don't know the order that the functions run in
     for result in d['results']:

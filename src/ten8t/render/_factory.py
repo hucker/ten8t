@@ -1,5 +1,5 @@
 """
-This module privdes support for creating a singleton object that manages the available renderers.
+This module provides support for creating a singleton object that manages the available renderers.
 
 Because of difficulties in using isinstance to detect inherited classes (because of import naming issues)
 this module detects valid renderers using the RendererProtocol.
@@ -10,12 +10,12 @@ from typing import Type
 
 from ._base import Ten8tAbstractRenderer
 from ._protocol import Ten8tRendererProtocol
-from .concrete.github_markdown import Ten8tGitHubMarkdownRenderer
-from .concrete.html import Ten8tBasicHTMLRenderer
-from .concrete.markdown import Ten8tBasicMarkdownRenderer
-from .concrete.rich import Ten8tBasicRichRenderer
-from .concrete.streamlit import Ten8tBasicStreamlitRenderer
-from .concrete.text import Ten8tTextRenderer
+from .concrete import Ten8tBasicHTMLRenderer
+from .concrete import Ten8tBasicMarkdownRenderer
+from .concrete import Ten8tBasicRichRenderer
+from .concrete import Ten8tBasicStreamlitRenderer
+from .concrete import Ten8tGitHubMarkdownRenderer
+from .concrete import Ten8tTextRenderer
 from ..ten8t_exception import Ten8tException, Ten8tValueError
 
 
