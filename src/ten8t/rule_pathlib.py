@@ -41,11 +41,14 @@ def rule_path_exists(path_: str) -> TR:
     """
     path_str = ''
     try:
+        code = TM.code
+        fail = TM.fail
+        pass_ = TM.pass_
         path_str = TM.code(path_)
         if pathlib.Path(path_).exists():
-            return TR(status=True, msg=f"The path {path_str} does exist.")
+            return TR(status=True, msg=f"The path {pass_(path_str)} does exist.")
         else:
-            return TR(status=False, msg=f"The path  {path_str} does {TM.bold('NOT')} exist.")
+            return TR(status=False, msg=f"The path  {fail(path_str)} does {fail('NOT')} exist.")
     except EXPECTED_FILE_EXCEPTIONS as exc:
         return TR(status=False,
                   msg=f"Exception occurred while checking for the path {path_str}",except_=exc)
@@ -134,32 +137,34 @@ def rule_stale_file(
 
     try:
         code = TM.code
+        pass_ = TM.pass_
+        fail = TM.fail
+
         file_mod_time = filepath.stat().st_mtime
         file_age_in_seconds = current_time - file_mod_time
-
+        file_str = code(filepath)
         file_age = 0
+        unit = "seconds"
+        if days > 0:
+            file_age = file_age_in_seconds / 86400.0
+            unit = "days"
+        elif hours > 0:
+            file_age = file_age_in_seconds / 3600.0
+            unit = "hours"
+        elif minutes > 0:
+            file_age = file_age_in_seconds / 60.0
+            unit = "minutes"
+        elif seconds > 0:
+            file_age = file_age_in_seconds
+        age_msg = f"age = {file_age:.2f} {unit} {age_in_seconds=}"
 
         if file_age_in_seconds > age_in_seconds:
-            unit = "seconds"
-            if days > 0:
-                file_age = file_age_in_seconds / 86400.0
-                unit = "days"
-            elif hours > 0:
-                file_age = file_age_in_seconds / 3600.0
-                unit = "hours"
-            elif minutes > 0:
-                file_age = file_age_in_seconds / 60.0
-                unit = "minutes"
-            elif seconds > 0:
-                file_age = file_age_in_seconds
-
-            age_msg = f"age = {file_age:.2f} {unit} {age_in_seconds=}"
-            result = TR(status=False, msg=f"Stale file {code(filepath)} {code(age_msg)}")
+            result = TR(status=False, msg=f"Stale file {file_str} {pass_(age_msg)}")
         else:
-            result = TR(status=True, msg=f"Not stale file {code(filepath)}")
+            result = TR(status=True, msg=f"File {file_str} is stale. {fail(age_msg)}")
     except EXPECTED_FILE_EXCEPTIONS as exc:
         result = TR(status=False,
-                    msg=f"Exception occurred while checking for the path {TM.code(filepath)}",
+                    msg=f"{fail('Exception:')} occurred while checking for the path {file_str}",
                     except_=exc)
 
     return result
@@ -271,6 +276,7 @@ def rule_large_files(folders: StrOrPathListOrNone,
 
     code = TM.code
     bold = TM.bold
+    fail = TM.fail
 
     for folder in any_to_path_list(folders):
 
@@ -293,7 +299,7 @@ def rule_large_files(folders: StrOrPathListOrNone,
                 )
     if y.count == 0:
         yield from y(status=no_files_pass_status,
-                     msg=f"{bold('NO')} files found matching {code(pattern)} in {code(folder)}.")
+                     msg=f"{fail('NO')} files found matching {code(pattern)} in {code(folder)}.")
 
     yield from y.yield_summary()
 

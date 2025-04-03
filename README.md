@@ -315,14 +315,17 @@ in the last 5 minutes using rules from based on the `pathlib` packages
 # dependencies = ["ten8t>=0.0.22"]
 # ///
 
-import ten8t as t8
 import pathlib
-from ten8t import Ten8tBasicMarkdownRenderer, Ten8tChecker
+
+import ten8t as t8
+from ten8t import Ten8tBasicMarkdownRenderer, Ten8tChecker, cwd_here
+
+cwd_here(__file__)
 
 
 @t8.categories(tag="file")
 def check_rule1():
-    root = pathlib.Path('./examples/file_system')
+    root = pathlib.Path('../examples/file_system')
     for folder in [root / f for f in ['folder1', 'folder2', 'folder3']]:
         yield from t8.rule_large_files(folders=folder, pattern="*.txt", max_size=100_000)
 
@@ -343,9 +346,10 @@ ch: Ten8tChecker = t8.Ten8tChecker(check_functions=[check_rule1, check_rule2],
 for r in ch.yield_all():
     print(ch.result_strategy.render(r))
 print(ch.status_strategy.render(ch))
+
 ```
 
-<small>uv_rule_clip.py &nbsp;&nbsp; 13:19:46 2025-04-02</small>
+<small>uv_rule_clip.py &nbsp;&nbsp; 05:41:36 2025-04-03</small>
 
 <!--file end-->
 
@@ -362,15 +366,25 @@ Status:FAIL Skip:False Msg:Stale file `../examples/file_system/folder1/file1.txt
 `age = 54949.40 minutes age_in_seconds=300.0` <br>
 3 Pass/2 Fail of **5** Total ten8t:0.0.21 runtime=0.001 sec <br>
 
+
 <small>uv_rule_clip.md &nbsp;&nbsp; 13:42:10 2025-04-02</small>
-</small>
+
 <!--file end-->
 
+## Integration,Rendering and Serializing
 
-In addition to the json output, which has all data a set of serialization tools are included that allow for output
-in CSV, markdown and Excel formats. These tools are "easily" extended or modified by looking at the code in the
-`serialize` sub package. Do note that `render` is best used for formatting single lines of result data,
-while serialization is used for exporting the entire results of a generated when running `checker.run_all()`.
+Ease of integration with external tools and workflows is a key design goal for `Ten8t`. While providing useful
+functionality is valuable, seamless integration capability significantly enhances utility. There are multiple
+flexible options provided by `Ten8t` to enable easy integration: directly using its classes within Python code,
+exporting data into widely-accepted JSON formats for use with external APIs like FastAPI, rendering results
+directly for visualization tools such as Streamlit or Textual, and serializing outputs into common file formats.
+
+| Integration Method      | Explanation                                                                                   | Examples & Supported Formats                                      |
+|-------------------------|-----------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| **Direct Class Access** | Direct invocation of Ten8t internal classes and APIs within your Python codebase.             | Custom Python scripts or workflows                                |
+| **JSON Export**         | Export results into standard JSON format for easy consumption by external services or APIs.   | FastAPI, REST services                                            |
+| **Rendered Outputs**    | Render and stream Ten8t's outputs directly into visualization and UI-oriented frameworks/tools.| `rich`, `streamlit`, `textual`, `markdown`, `text`, `html`       |
+| **Direct Serialization**| Serialize data directly into widely-used file formats for offline review or sharing.          | `markdown`, `csv`, `excel`                                        |
 
 ## FastAPI Interface Demo (`ten8t/cli`)
 
@@ -417,7 +431,9 @@ example showing many of the features of `ten8t` in a `streamlit` app. In 200 lin
 packages folders, have a full streamlit UI to select the package, tags,levels, ruids and generate colored
 tabular report.
 
-Here is the setup using a couple of modules in a package folder:
+From the sitepackages/lib/ten8t/st_ten8t folder run the command
+
+`st_ten8t % python -m streamlit run st_demo.py`
 
 ![Streamlit Demo](docs/_static/streamlit_allup.png)
 
@@ -464,11 +480,12 @@ installing `uv` on your machine by taking advantage of support for [PEP 723](htt
 """Example of a checker run under uv run"""
 
 import ten8t as t8
-from ten8t import Ten8tChecker, Ten8tResult
+from ten8t import Ten8tChecker, Ten8tResult, cwd_here
 
+cwd_here(__file__)
 
 def check_1():
-    """ This never runs because the checker doesn't run """
+    """ Always returns pass """
     return t8.Ten8tResult(status=True, msg="This test worked.")  # pragma no cover
 
 
@@ -505,7 +522,7 @@ print(f"Final result: {ch.pass_count=} {ch.fail_count=} ")
 
 ```
 
-<small>uv_ten8t.py &nbsp;&nbsp; 12:18:45 2025-03-31</small>
+<small>uv_ten8t.py &nbsp;&nbsp; 05:47:36 2025-04-03</small>
 
 <!--file end-->
 
@@ -667,10 +684,10 @@ __Halstead__
 
 | File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |--------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_checker.py   | 0.50 | 6.63       | 9859.21 | 547.73 | F            | A                  | D              | F            |
+| ten8t_checker.py   | 0.49 | 6.64       | 9704.10 | 539.12 | F            | A                  | D              | F            |
 | ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
-| ten8t_util.py      | 0.10 | 3.80       | 1119.81 | 62.21  | B            | A                  | B              | B            |
+| ten8t_util.py      | 0.10 | 3.75       | 1180.78 | 65.60  | C            | A                  | B              | B            |
 | ten8t_attribute.py | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
 | ten8t_module.py    | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
 | ten8t_ruid.py      | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
@@ -682,7 +699,7 @@ __Halstead__
 | ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 13:43:34 2025-04-02</small>
+<small>radon_hal.csv &nbsp;&nbsp; 06:12:42 2025-04-03</small>
 
 <!--file end-->
 
@@ -696,9 +713,9 @@ __Maintainability Index__
 | ten8t_function.py  | 51.80           | A    |
 | ten8t_attribute.py | 58.30           | A    |
 | ten8t_result.py    | 61.70           | A    |
+| ten8t_util.py      | 61.90           | A    |
 | ten8t_module.py    | 62.80           | A    |
 | ten8t_thread.py    | 63.90           | A    |
-| ten8t_util.py      | 64.70           | A    |
 | ten8t_filter.py    | 68.20           | A    |
 | ten8t_package.py   | 71.70           | A    |
 | ten8t_ruid.py      | 78.20           | A    |
@@ -706,7 +723,7 @@ __Maintainability Index__
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 13:43:34 2025-04-02</small>
+<small>radon_mi.csv &nbsp;&nbsp; 06:12:42 2025-04-03</small>
 
 <!--file end-->
 
@@ -739,7 +756,7 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 13:43:34 2025-04-02</small>
+<small>radon_cc.csv &nbsp;&nbsp; 06:12:42 2025-04-03</small>
 
 <!--file end-->
 
@@ -777,10 +794,10 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 | Username     | Commits | Last<br>Contribution |
 |--------------|--------:|:--------------------:|
-| **hucker**   |     131 |      2025-03-31      |
+| **hucker**   |     132 |      2025-04-02      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 13:43:33 2025-04-02</small>
+<small>contribs.md &nbsp;&nbsp; 06:12:39 2025-04-03</small>
 
 <!--file end-->
 

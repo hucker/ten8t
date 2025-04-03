@@ -443,7 +443,7 @@ def test_as_dict(func1, func2):
     _ = ch.run_all()
     d = ch.as_dict()
     assert isinstance(d, dict)
-
+    d = d["header"]
     assert d["functions"] == ['func1', 'func2']
     assert d["modules"] == []
     assert d["package_count"] == 0

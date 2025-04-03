@@ -23,35 +23,37 @@ def simple2():
     return t8.Ten8tFunction(func2)
 
 
-def test_json(simple1, simple2):
-    """Test that the as_dict method serializes  nicely"""
+def test_json_ready_dict(simple1, simple2):
+    """Test that the as_dict method serializes to json nicely"""
     ch = t8.Ten8tChecker(check_functions=[simple1, simple2])
     _ = ch.run_all()
-    d = ch.as_dict()
-    assert d['function_count'] == 2
+    report = ch.as_dict()
+    header = report['header']
+    results = report['results']
+    assert header['function_count'] == 2
 
     # Important to treat these as sets, don't assume order.
-    assert set(d['levels']) == {1, 2}
-    assert set(d['ruids']) == {'ruid_1', 'ruid_2'}
-    assert set(d['tags']) == {'t1', 't2'}
-    assert set(d['phases']) == {'proto', 'production'}
-    assert set(d['functions']) == {'func1', 'func2'}
+    assert set(header['levels']) == {1, 2}
+    assert set(header['ruids']) == {'ruid_1', 'ruid_2'}
+    assert set(header['tags']) == {'t1', 't2'}
+    assert set(header['phases']) == {'proto', 'production'}
+    assert set(header['functions']) == {'func1', 'func2'}
 
-    assert d['pass_count'] == 2
-    assert d['fail_count'] == 0
-    assert d['skip_count'] == 0
-    assert d['warn_count'] == 0
-    assert d['check_count'] == 2
-    assert d['total_count'] == 2
-    assert d['clean_run'] is True
-    assert d['perfect_run'] is True
-    assert d['abort_on_fail'] is False
-    assert d['abort_on_exception'] is False
-    assert len(d['results']) == 2
-    assert d['__version__'] == t8.__version__
+    assert header['pass_count'] == 2
+    assert header['fail_count'] == 0
+    assert header['skip_count'] == 0
+    assert header['warn_count'] == 0
+    assert header['check_count'] == 2
+    assert header['total_count'] == 2
+    assert header['clean_run'] is True
+    assert header['perfect_run'] is True
+    assert header['abort_on_fail'] is False
+    assert header['abort_on_exception'] is False
+    assert header['__version__'] == t8.__version__
 
     # We don't know the order that the functions run in
-    for result in d['results']:
+    assert len(results) == 2
+    for result in results:
         if result['func_name'] == 'func1':
             assert result['status'] is True
             assert result['func_name'] == 'func1'

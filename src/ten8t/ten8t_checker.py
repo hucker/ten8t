@@ -41,7 +41,9 @@ class Ten8tStatusStrategy:
         self.template = Template(self.fmt)
 
     def render(self, ch: "Ten8tChecker") -> str:
+        """Render contents of the header per user template"""
         d = ch.as_dict()
+        d = d["header"]
         # Clearly format the float first explicitly (string.Template does not handle format specifications directly)
         d["duration_seconds"] = "{:.03f}".format(d["duration_seconds"])
         formatted = self.template.safe_substitute(**d)
@@ -740,7 +742,8 @@ class Ten8tChecker:
         Returns:
             int: The number of skipped results.
         """
-        return len([r for r in self.results if r.skipped])
+        return sum(r.skipped for r in self.results)
+
 
     @property
     def warn_count(self):
@@ -750,7 +753,8 @@ class Ten8tChecker:
         Returns:
             int: The number of results with warnings.
         """
-        return len([r for r in self.results if r.warn_msg])
+        return sum(r.warn_msg for r in self.results if r.warn_msg is not None and len(r.warn_msg) > 0)
+
 
     @property
     def pass_count(self):
@@ -760,7 +764,7 @@ class Ten8tChecker:
         Returns:
             int: The number of passing results excluding skips.
         """
-        return len([r for r in self.results if r.status and not r.skipped])
+        return sum(1 for r in self.results if r.status and not r.skipped)
 
     @property
     def fail_count(self):
@@ -770,7 +774,7 @@ class Ten8tChecker:
         Returns:
             int: The number of failed results excluding skips.
         """
-        return len([r for r in self.results if not r.status and not r.skipped])
+        return sum(1 for r in self.results if not r.status and not r.skipped)
 
     @property
     def summary_count(self):
@@ -780,7 +784,7 @@ class Ten8tChecker:
         Returns:
             int: The number of summary results excluding skips.
         """
-        return len([r for r in self.results if not r.summary_result and not r.skipped])
+        return sum(1 for r in self.results if not r.summary_result and not r.skipped)
 
     @property
     def result_count(self):
@@ -849,32 +853,31 @@ class Ten8tChecker:
                   "function_count": self.function_count, "tags": self.tags, "levels": self.levels,
                   "phases": self.phases,
                   "ruids": self.ruids, "score": self.score, "env_nulls": self.env_nulls,
-                  "__version__": version("ten8t"), }
+                  "__version__": version("ten8t"), "start_time": self.start_time,
+                  "end_time": self.end_time,
+                  "duration_seconds": self.duration_seconds,
+                  "functions": [f.function_name for f in self.check_functions],
+                  "pass_count": self.pass_count,
+                  "warn_count": self.warn_count,
+                  "fail_count": self.fail_count,
+                  "skip_count": self.skip_count,
+                  "total_count": self.result_count,
+                  "check_count": self.function_count,
+                  "result_count": self.result_count,
+                  "clean_run": self.clean_run,
+                  "perfect_run": self.perfect_run,
+                  "abort_on_fail": self.abort_on_fail,
+                  "abort_on_exception": self.abort_on_exception, }
         return header
 
     def as_dict(self):
         """
-        Return a dictionary of the results.
+        Return a dictionary of the results which is a header and an array of results.
         """
-        h = self.get_header()
+        report = {  # This is the less important header stuff.
 
-        r = {  # This is the less important header stuff.
-            "start_time": self.start_time,
-            "end_time": self.end_time,
-            "duration_seconds": self.duration_seconds,
-            "functions": [f.function_name for f in self.check_functions],
-            "pass_count": self.pass_count,
-            "warn_count": self.warn_count,
-            "fail_count": self.fail_count,
-            "skip_count": self.skip_count,
-            "total_count": self.result_count,
-            "check_count": self.function_count,
-            "result_count": self.result_count,
-            "clean_run": self.clean_run,
-            "perfect_run": self.perfect_run,
-            "abort_on_fail": self.abort_on_fail,
-            "abort_on_exception": self.abort_on_exception,
-
+            "header": self.get_header(),
             # the meat of the output lives here
             "results": [r.as_dict() for r in self.results], }
-        return h | r
+
+        return report

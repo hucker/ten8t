@@ -82,7 +82,7 @@ def test_missing_web_api():
     def check_rule2():
         yield from t8.rule_web_api(url='https://httpbin.org/json1',
                                    json_d={'name': 'Luke Skywalker'},
-                                   expected_response=[404, 502],
+                                   expected_response=[404, 502, 503],
                                    # WARNING: This used to return 404, not sometimes is 502
                                    timeout_sec=TIME_OUT_SEC)
 

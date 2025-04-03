@@ -38,6 +38,9 @@ REQUIRED_SCRIPTS=(
     "${DOCS_DIR}/insert_files.py"
     "${DOCS_DIR}/add_badges.py"
     "${DOCS_DIR}/contribs.py"
+    "${SRC_DIR}/uv_ten8t/uv_rule_clip.py"
+    "${SRC_DIR}/uv_ten8t/uv_ten8t.py"
+
 )
 
 # Check for required tools
@@ -66,6 +69,8 @@ echo "Generating help documentation..."
 python ${SRC_DIR}/cli/ten8t_cli.py --help > ${SNIPPETS_DIR}/help.txt
 python ${SRC_DIR}/rich_ten8t/rich_demo.py > ${SNIPPETS_DIR}/rich_demo.txt
 python ${DOCS_DIR}/contribs.py > ${SNIPPETS_DIR}/contribs.md
+python ${SRC_DIR}/uv_ten8t/uv_rule_clip.py > ${SNIPPETS_DIR}/uv_rule_clip.md
+python ${SRC_DIR}/uv_ten8t/uv_ten8t.py > ${SNIPPETS_DIR}/uv_ten8t.txt
 
 echo "Generating example results..."
 (

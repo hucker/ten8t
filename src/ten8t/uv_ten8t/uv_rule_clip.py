@@ -6,12 +6,14 @@
 import pathlib
 
 import ten8t as t8
-from ten8t import Ten8tBasicMarkdownRenderer, Ten8tChecker
+from ten8t import Ten8tBasicMarkdownRenderer, Ten8tChecker, cwd_here
+
+cwd_here(__file__)
 
 
 @t8.categories(tag="file")
 def check_rule1():
-    root = pathlib.Path('./examples/file_system')
+    root = pathlib.Path('../examples/file_system')
     for folder in [root / f for f in ['folder1', 'folder2', 'folder3']]:
         yield from t8.rule_large_files(folders=folder, pattern="*.txt", max_size=100_000)
 

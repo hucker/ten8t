@@ -6,11 +6,12 @@
 """Example of a checker run under uv run"""
 
 import ten8t as t8
-from ten8t import Ten8tChecker, Ten8tResult
+from ten8t import Ten8tChecker, Ten8tResult, cwd_here
 
+cwd_here(__file__)
 
 def check_1():
-    """ This never runs because the checker doesn't run """
+    """ Always returns pass """
     return t8.Ten8tResult(status=True, msg="This test worked.")  # pragma no cover
 
 

@@ -1,6 +1,7 @@
 """
 This is the sad place for lonely functions that don't have a place
 """
+import os
 import pathlib
 from typing import Sequence, TypeAlias
 
@@ -61,6 +62,56 @@ next_int_value = NextIntValue()
 
 # next_int_value can be called like a function and the class manages the count
 next_int_value.current_id = 1
+
+
+def cwd_here(file_: StrOrPathOrNone = None) -> pathlib.Path:
+    """
+    Change current working directory to the provided folder or to the parent folder if a file is provided.
+
+    If 'file_' is:
+        - None: the current file (__file__) location is used to set cwd.
+        - a directory: the provided directory itself becomes the current working directory.
+        - a file: the parent directory containing that file becomes the current working directory.
+
+    Why?  This is useful for running scripts in different locations without having to worry about setting
+    the current working directy.  Simplifies setup of demos and examples and allows you to NOT
+    set the CWD in a configuration launch files.
+
+    python foo/fum/demo.py
+
+    And have code call cwd_here() and know that relative paths for demo.py will be correct.
+
+    Args:
+        file_ (str | pathlib.Path | None): The path to a file or directory, or None. Default is None.
+
+    Returns:
+        pathlib.Path: Explicitly returns path of the new current working directory.
+
+    Example usage:
+    --------
+    >>> cwd_here('/path/to/directory')
+    # sets cwd to '/path/to/directory'
+
+    >>> cwd_here('/path/to/file.txt')
+    # sets cwd to '/path/to/'
+
+    >>> cwd_here()
+    # sets the cwd to currently running script (__FILE__)
+    """
+
+    if file_ is None:
+        file_ = __file__
+
+    path = pathlib.Path(file_).resolve()
+
+    if path.is_file():
+        new_dir = path.parent
+    else:
+        new_dir = path
+
+    os.chdir(new_dir)
+
+    return new_dir
 
 
 def str_to_bool(s: str, default=None) -> bool:

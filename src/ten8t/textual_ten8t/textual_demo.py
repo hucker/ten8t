@@ -291,7 +291,7 @@ class FileProcessorApp(App):
         data_table.clear(columns=True)
         # Add columns with appropriate styles
         data_table.add_columns(
-            "Status", "Skipped", "Message", "RUID", "Tag", "Phase", "Function", "Module", "Runtime"
+            "Status", "Skipped", "RUID", "Tag", "Phase", "Function", "Module", "Runtime", "Message"
         )
 
         # Add rows for each result
@@ -318,13 +318,13 @@ class FileProcessorApp(App):
             data_table.add_row(
                 f"[{status_style}]{status}[/{status_style}]" if status_style else status,
                 skipped,
-                message,
                 ruid,
                 tag,
                 phase,
                 function,
                 module,
                 runtime,
+                message,
             )
             data_table.refresh(repaint=True, recompose=True, layout=True)
 
