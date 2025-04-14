@@ -10,7 +10,11 @@ from ..ten8t_util import IntList, StrList
 
 class Ten8tRC:
     """
-    Loads configurations from a dictionary.
+    The baseline configuration for ten8t is a simple dictionary.  Loading data
+    from file should be a straight forward conversion.
+
+    Setting up a configuration involves setting up default values for in/exclusions
+    for ruids, phases, tags and levels.
     """
 
     def __init__(self, *, rc_d: dict | None = None):

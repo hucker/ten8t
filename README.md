@@ -374,10 +374,8 @@ Status:FAIL Skip:False Msg:Stale file `../examples/file_system/folder1/file1.txt
 ## Integration,Rendering and Serializing
 
 Ease of integration with external tools and workflows is a key design goal for `Ten8t`. While providing useful
-functionality is valuable, seamless integration capability significantly enhances utility. There are multiple
-flexible options provided by `Ten8t` to enable easy integration: directly using its classes within Python code,
-exporting data into widely-accepted JSON formats for use with external APIs like FastAPI, rendering results
-directly for visualization tools such as Streamlit or Textual, and serializing outputs into common file formats.
+functionality is valuable, seamless integration significantly enhances utility. There are multiple
+options provided by `Ten8t` shown in the table below.
 
 | Integration Method      | Explanation                                                                                   | Examples & Supported Formats                                      |
 |-------------------------|-----------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
@@ -426,7 +424,7 @@ FastAPI example running some rules:
 ## Streamlit Demo  (`ten8t/st_ten8t/st_demo.py`)
 
 Integration with `streamlit` was important, so I made the way you interact with `ten8t` work well with the
-tools that `streamlit` exposes. Integrating with the goodness of `streamlit` is a breeze. Here is a non-trivial
+tools that `streamlit` exposes. Here is a non-trivial
 example showing many of the features of `ten8t` in a `streamlit` app. In 200 lines of code you can select from
 packages folders, have a full streamlit UI to select the package, tags,levels, ruids and generate colored
 tabular report.
@@ -440,12 +438,12 @@ From the sitepackages/lib/ten8t/st_ten8t folder run the command
 ## Rich Demo (`ten8t/rich_ten8t`)
 
 Here is an example of connecting `ten8t` up to the `rich` package using the progress bar object to
-move a progress bar, and the rich table and some emojis to make a tabular output.
+move a progress bar, and the `rich` table and some emojis to make a tabular output.
 
 It is worth noting here that there are 4 progress bar steps, but there are 6 results. Is this a bug?
 No. It is not possible to reliably count the number of checks that will be performed before running
 the checker. This is because check functions can yield many results. What we can count is the number
-of functions that have been registered, so progress is given in functions run not yields...yielded.
+of functions that have been registered, so progress is given in functions run not yielded results.
 
 ![Rich Demo](docs/_static/rich_demo.png)
 
@@ -468,7 +466,14 @@ just a demo, it is quite useful in that you can rapidly test your rule sets inte
 ## `uv` run Example
 
 It wouldn't be an example unless we showed you that you can run this with `uv` without knowing anything beyond
-installing `uv` on your machine by taking advantage of support for [PEP 723](https://peps.python.org/pep-0723/).
+installing `uv` on your machine by taking advantage of support for [PEP 723](https://peps.python.org/pep-0723/). Note
+the use of the `cwd_here`
+function. This is a utility function in `ten8t` that makes the current working directly the current file. This
+is very useful for examples that are included with the baseline installation. This allows you to type
+
+`python lib/site-ackages/ten8t/uv_ten8t/uv_ten8t.py`
+
+And not worry about what folder you ran from.
 
 <!--file ../src/ten8t/uv_ten8t/uv_ten8t.py-->
 ```python
@@ -573,20 +578,25 @@ function creation, hooks, decorators, mypy, GitHub, pypi, tox, pytest integratio
 dynamically created readme and readthedocs integration.
 
 As it evolved, tests have proven invaluable. They give me confidence
-to perform major architectural changes, confirming everything works when tests pass. TDD genuinely
-saves significant time.
+to perform major architectural changes, confirming everything works when tests pass. TDD increases time
+because you need to make the tests, but it reduces debug time and dramatically reduces refactoring time
+as well as increasing the confidence in the code as you make changes...and if you miss something add the
+tests that would have caught it. A significant amount of testing can be thought of as automated debugging,
+sure it took a little more time upfront to write a test, but every time after that I'm not in the debugger
+stepping and that payback is huge...and then couple that with testing on different versions and manual
+testing becomes intractable.
 
 TDD complements YAGNI principles in my development approach. Rather than creating extensive object
 systems upfront, I build classes incrementally, only refactoring when the existing abstraction no
-longer supports clean design. This contrasts with my early career tendency to build elaborate
-frameworks for functionality that never materialized.
-
+longer supports clean design. This contrasts with my early career tendency to build elaborate webs
+of interacting objects most of which would never be derived from and often times needed extensive
+coupling.
 
 ## Philosophy
 
 I designed the "API" to prioritize flexibility and dev. experience. Rather than requiring strict
-parameter formats, the library intelligently handles various input types to save users time and
-reduce friction.
+parameter formats, the library "intelligently" handles various input types to save users time and
+reduce friction. Reverse JSON mindset.
 
 The API often times accepts data in multiple types:
 
@@ -594,8 +604,8 @@ The API often times accepts data in multiple types:
    conventional lists (`["foo"]`), or even empty values (`""`, `[]`, `None`)
 2) File paths work with both strings (`"file.txt"`) and `pathlib.Path` objects (`pathlib.Path("file.txt")`)
 3) When a list is expected but a single item is provided, the API automatically wraps it in a list
-4) When you pass a list of functions to the checker they can be regular pythong function so they can be
-   of type `Ten8tFunction`.
+4) When you pass a list of functions to the checker they can be regular python function or they can be
+   of type `Ten8tFunction`...`ten8t` will generically wrap the function with no special attributes.
 
 This approach simplifies integration with configuration files and command-line options by reducing data
 transformation code. While this diverges from strict typing practices, it improves developer
@@ -612,7 +622,14 @@ functionality exposed to the application.
 
 ![Class Structure](docs/_static/class_struct.png)
 
-The public interface is described in the __init__.py file.
+IN this example you can see there is a `_base.py`, `_factory.py`, `_protocol.py` and `_markup.py`
+classes that implement the base features of the object and then there are derived classes to support
+each of the rendering transformation for the target output.
+
+The public interface is described in the `__init__.py` file so you never need to know about how
+the classes are structured allowing for you to just say `import .render` and you can be confident that
+you have everything you need. At this time rendering, rc files, logging, scoring and serialization have
+such interfaces.
 
 ```python
 """
@@ -779,7 +796,7 @@ or
 ```python
 from ten8t import ten8t_logger
 
-ten8t_logger("Hello")
+ten8t_logger.info("Hello")
 ```
 
 Please pronounce the `t8` as `tee eight` (as in an early prototype for
