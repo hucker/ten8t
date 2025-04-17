@@ -6,7 +6,7 @@ import datetime as dt
 import pathlib
 from importlib.metadata import version
 from string import Template
-from typing import Any, Callable
+from typing import Any, Callable, TypeAlias
 
 from .progress import Ten8tMultiProgress, Ten8tNoProgress, Ten8tProgress
 from .rc import Ten8tRC
@@ -25,6 +25,18 @@ from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
 
 ADHOC_MODULE_NAME = 'adhoc'
 """Name of the adhoc module"""
+
+# Modules can be defined many different ways.  This makes API calls much cleaner since there
+# is no data shaping required
+ModulesType: TypeAlias = (
+        list[Ten8tModule]  # List of `Ten8tModule` objects
+        | list[pathlib.Path | str]  # List of file paths (strings or pathlib.Path)
+        | Ten8tModule  # Single `Ten8tModule` object
+        | pathlib.Path  # Single file path as pathlib.Path
+        | str  # Single file path as string
+        | None  # None as no input
+)
+
 
 
 class Ten8tStatusStrategy:
@@ -331,17 +343,31 @@ class Ten8tChecker:
         raise Ten8tException('Packages must be a list of Ten8tPackage objects.')
 
     @staticmethod
-    def _process_modules(modules: list[Ten8tModule] | pathlib.Path | str | None) -> list[Ten8tModule]:
-        """ Allow modules to be in various forms"""
+    def _process_modules(modules: ModulesType) -> list[Ten8tModule]:
+        """ Allow modules to be in various forms
+        The modules type allows users to pass in many forms of modules that are all converted
+        to a list of Ten8tModule objects or the empty list.
+        """
         if not modules:
             return []
+
+        # Put in list form so it can be handled farther down
         if isinstance(modules, (pathlib.Path | str)):
-            return [Ten8tModule(module_file=modules)]
+            modules = [modules]
+
         if isinstance(modules, Ten8tModule):
             return [modules]
+
+        # They are already setup up.  This should be the standard case
         if isinstance(modules, list) and all(isinstance(m, Ten8tModule) for m in modules):
             return modules
-        raise Ten8tException('Modules must be a list of Ten8tModule objects.')
+
+        # This is very lenient.  You could give a list with string, Path and Ten8tModules.
+        if isinstance(modules, list) and all(isinstance(m, (pathlib.Path | str | Ten8tModule)) for m in modules):
+            return [module if isinstance(module, Ten8tModule) else Ten8tModule(module_file=module)
+                    for module in modules]
+
+        raise Ten8tException('Modules must be a list of Ten8tModule,str or pathlib objects.')
 
     @staticmethod
     def _process_check_funcs(check_functions: list[Ten8tFunction | Callable] | None) -> list[Ten8tFunction]:

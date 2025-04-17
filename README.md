@@ -240,12 +240,45 @@ results = Ten8tThread(checker=ch).run_all(max_workers=5)
 
 ```
 
-## How is `Ten8t` Used?
+## How is `Ten8t` Actually Used?
 
-Once you have your check functions written you need to set up a `Ten8tChecker` object to run them.
+Once you have your check functions written you need to set up a `Ten8tChecker` object to run them. All the
+preceding examples have the list of functions passed to the Checker class. In real projects the best way to
+handle setting up check functions is to use modules or packages.
 
 A common use case is to have check-functions saved in python source files that `ten8t` can discover via
-the import mechanism allowing check-functions in files to be auto-detected like `pytest`.
+the import mechanism allowing auto-detection of check-functions like `pytest`.
+
+This might look like:
+
+#### `check_rules.py`
+
+```python
+import ten8t as t8
+
+
+def rule1(cfg):
+    return 1 in cfg['data']
+
+
+def rule2(cfg):
+    return 2 in cfg['data']
+
+
+def rule3(cfg):
+    return 3 in cfg['data']
+
+
+def rule4(cfg):
+    return 4 in cfg['data']
+```
+
+```python
+import ten8t as t8
+
+checker = t8.Ten8tChecker(module='check_rule.py', env={'data': [1, 2, 3, 4]})
+results = checker.run_all()
+```
 
 Ten8t uses the following hierarchy:
 
@@ -254,16 +287,16 @@ Ten8t uses the following hierarchy:
             Ten8tFunction` (when called will return 0 or more `Ten8tResults`)
 
 Typically one works at the module or package level where you have python files that have 1 or more functions in them,
-and you have collections of files to make packages. Note that `ten8t` a module is 1 file and a package is a folder
-with at least one file that has a check function. Similar to python but not exact.
+and you have collections of python files (modules) to make packages. Note that `ten8t` a module is 1 file and a
+package is a folder with at least one file that has a check function. In real use cases this is almost always how
+`ten8t` is used. Auto discovery simplifies things.
 
 Each `Ten8tFunction` returns/yields 0-to-N results from its generator function. By convention, if None is returned, the
 rule was skipped.
 
 The rule functions that you write don't need to use generators. They can return a variety of output
 (e.g., Boolean, List of Boolean, `Ten8tResult`, List of `Ten8tResult`), or you can write a generator that yields
-results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant, but returning booleans
-and depending on using your function name and your docstrings for error messages is on you!
+results as they are checked. Canonical form is that you yield, but `ten8t` is tolerant.
 
 Alternatively you can ignore the file and folder discovery mechanism and provide a list of rules as regular python
 functions and `Ten8t` will happily run them for you from a list of check functions passed at `Ten8tChecker` object
