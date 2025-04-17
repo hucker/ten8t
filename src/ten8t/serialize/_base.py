@@ -82,6 +82,12 @@ class Ten8tDump(ABC):
             if self.config.output_file and output_file != sys.stdout:
                 output_file.close()
 
+    def _dump_pre_text(self, output_file: TextIO, title: str = None):
+        """Optional pre_text to render"""
+
+    def _dump_post_text(self, output_file: TextIO):
+        """Optional post_text to render"""
+
     @abstractmethod
     def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO) -> None:
         """

@@ -45,6 +45,9 @@ class Ten8tDumpConfig:
     result_title:str=None
     autobreak_headers: bool = True  # for multiword columns this forces a break to keep columns narrow
 
+    pre_text: str = ''  # Useful for formats like HTML that might need page setup "stuff"
+    post_text: str = ''  # useful for HTML that might need page setup stuff e.g., </body>\n</html>
+
     # Define valid columns
     VALID_SUMMARY_COLUMNS = ["pass", "fail", "skip",
                              'duration_seconds','start_time','end_time',
@@ -80,6 +83,19 @@ class Ten8tDumpConfig:
             show_results=True,
             summary_title="### Summary Information",
             result_title="### Raw Results",
+            **kwargs,
+        )
+
+    @classmethod
+    def html_default(cls, **kwargs):
+        """Creates a default configuration for Markdown output."""
+        return cls(
+            show_summary=True,
+            show_results=True,
+            summary_title="### Summary Information",
+            result_title="### Raw Results",
+            pre_text="",
+            post_text="",
             **kwargs,
         )
 

@@ -12,6 +12,7 @@ import pathlib
 import pytest
 
 from src import ten8t as t8
+from ten8t.serialize import Ten8tDumpHTML
 
 
 def get_file_size(file_path: pathlib.Path | str) -> int:
@@ -102,12 +103,21 @@ def test_output_formats(folder, checker_with_simple_check, output_format, save_f
     Parameterized test for different output formats (CSV, Markdown, Excel).
 
     Tests that each format can be saved properly and has the expected minimum file size.
+
+    This BARELY qualifies as a test and is just here to exercise that a file is created that
+    has the minimum amount of info.
+
+
     """
-    # Setup the output file path
+    # Set up the output file path
     output_file = f"{folder}/test_output.{file_extension}"
 
-    # Delete the file if it already exists
+    # Delete the file if it already exists.  Normally we might delete
+    # these as part of the test, but it is nice to be able to look at them
+    # to verify that they are correct.
     pathlib.Path(output_file).unlink(missing_ok=True)
+
+    assert pathlib.Path(output_file).exists() is False
 
     # Create the configuration for this format
     cfg = config_factory(output_file)
@@ -118,3 +128,19 @@ def test_output_formats(folder, checker_with_simple_check, output_format, save_f
     # Assert file existence and minimum size
     assert pathlib.Path(output_file).exists(), f"{output_format} file was not created"
     assert get_file_size(output_file) > min_size, f"{output_format} file size is too small"
+
+
+def test_html_format(checker_with_simple_check):
+    output_file = f"serialize_output/test_output.html"
+
+    # Delete the file if it already exists
+    pathlib.Path(output_file).unlink(missing_ok=True)
+
+    # Save using the appropriate function
+    cfg = t8.Ten8tDumpConfig.html_default(output_file=output_file)
+    html_out = Ten8tDumpHTML(config=cfg)
+    html_out.dump(checker_with_simple_check)
+
+    # Assert file existence and minimum size
+    assert pathlib.Path(output_file).exists(), f"HTML file was not created"
+    assert get_file_size(output_file) > 100, f"HTML file size is too small"

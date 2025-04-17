@@ -12,6 +12,12 @@ class Ten8tDumpHTML(Ten8tDump):
     Outputs test results as an HTML file with configurable columns and table formatting.
     Can include both summary and results tables.
     """
+    SPACE = ' '
+    INDENT_LVL_0 = ""  # Root level, no indentation
+    INDENT_LVL_1 = 1 * SPACE
+    INDENT_LVL_2 = 2 * SPACE
+    INDENT_LVL_3 = 3 * SPACE
+    INDENT_LVL_4 = 4 * SPACE
 
     def __init__(self, config: Ten8tDumpConfig = None):
         """
@@ -50,54 +56,52 @@ class Ten8tDumpHTML(Ten8tDump):
         """
         return [col.replace("_", " ").title() for col in cols]
 
-    def _dump_pre_text(self, output_file: TextIO, pre_text: str = None, title=None):
+    def _dump_pre_text(self, output_file: TextIO, title=None):
         """
-        For HTML setting the pretext allows you to dump a full page (or just pass in the current
-        state of the rendering page.
-        """
-        if self.config.pre_text:
+            Write pre-text containing the HTML boilerplate if not provided.
+
+            Using pre/post text allows you to make a valid standalone
+            web page.  If you omit this you get an HTML fragment.
+            Args:
+                output_file: The output text stream
+                pre_text: Custom pre-text to include instead of default boilerplate.
+                title: Title of the HTML document.
+            """
+        if self.config.pre_text is not None:
             title = title or "Ten8t Test Results"
-            if not pre_text:
-                # Start the HTML document
-                output_file.write("<!DOCTYPE html>\n")
-                output_file.write(f"<html>\n<head>\n<title>{title}</title>\n</head>\n<body>\n")
-                output_file.write("<h1>{title}</h1>\n")
-            else:
-                output_file.write(pre_text)
+            output_file.write("<!DOCTYPE html>\n")
+            output_file.write("<html>\n")
+            output_file.write(f"{self.INDENT_LVL_1}<head>\n")
+            output_file.write(f"{self.INDENT_LVL_2}<title>{title}</title>\n")
+            output_file.write(f"{self.INDENT_LVL_1}</head>\n")
+            output_file.write(f"{self.INDENT_LVL_1}<body>\n")
 
-    def _dump_post_text(self, output_file: TextIO, post_text: str = None):
+    def _dump_post_text(self, output_file: TextIO):
         """
-        For HTML setting the pretext allows you to dump a full page (or just pass in the current
-        state of the rendering page.
-        """
-        if self.config.post_text:
-            if not post_text:
-                output_file.write("</body>\n</html>")
-            else:
-                output_file.write(post_text)
+            Write post-text closing the HTML document structure if not provided.
 
-    def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO) -> None:
-        """
-        Implement HTML-specific dumping logic.
+            Args:
+                output_file: The output text stream
+                post_text: Custom post-text to include instead of default closing tags.
+            """
+        if self.config.post_text is not None:
+            output_file.write(f"{self.INDENT_LVL_1}</body>\n")
+            output_file.write("</html>\n")
 
-        Args:
-            checker: Ten8tChecker instance containing results
-            output_file: File handle for writing output
-        """
-
-        self._dump_pre_text(output_file)
-
-        # Add summary section if requested
+    def _dump_summary(self, checker: Ten8tChecker, output_file: TextIO, title='Summary'):
         if self.include_summary:
-            output_file.write("<h2>Summary</h2>\n")
-            output_file.write("<table border='1'>\n<thead>\n<tr>\n")
-            # Create table header for summary
+            output_file.write(f"{self.INDENT_LVL_1}<h2>{title}</h2>\n")
+            output_file.write(f"{self.INDENT_LVL_1}<table border='1'>\n")
+            output_file.write(f"{self.INDENT_LVL_2}<thead>\n")
+            output_file.write(f"{self.INDENT_LVL_3}<tr>\n")
             for col in self._format_header(self.summary_columns):
-                output_file.write(f"<th>{col}</th>\n")
-            output_file.write("</tr>\n</thead>\n<tbody>\n")
+                output_file.write(f"{self.INDENT_LVL_4}<th>{col}</th>\n")
+            output_file.write(f"{self.INDENT_LVL_3}</tr>\n")
+            output_file.write(f"{self.INDENT_LVL_2}</thead>\n")
+            output_file.write(f"{self.INDENT_LVL_2}<tbody>\n")
 
-            # Get summary data
-            output_file.write("<tr>\n")
+            # Populate summary content
+            output_file.write(f"{self.INDENT_LVL_3}<tr>\n")
             for col in self.summary_columns:
                 if col == "pass":
                     value = checker.pass_count
@@ -111,46 +115,65 @@ class Ten8tDumpHTML(Ten8tDump):
                     value = checker.warn_count
                 elif col == "duration_seconds":
                     value = f"{float(checker.duration_seconds):.03f}"
-                elif col == "end_time":
-                    t = checker.end_time
-                    value = t.strftime("%H:%M:%S.%f")[:-3]
                 elif col == "start_time":
-                    t = checker.start_time
-                    value = t.strftime("%H:%M:%S.%f")[:-3]
+                    value = checker.start_time.strftime("%H:%M:%S.%f")[:-3]
+                elif col == "end_time":
+                    value = checker.end_time.strftime("%H:%M:%S.%f")[:-3]
                 else:
                     value = ""
+                output_file.write(f"{self.INDENT_LVL_4}<td>{value}</td>\n")
+            output_file.write(f"{self.INDENT_LVL_3}</tr>\n")
+            output_file.write(f"{self.INDENT_LVL_2}</tbody>\n")
+            output_file.write(f"{self.INDENT_LVL_1}</table>\n")
 
-                # Add cell value
-                output_file.write(f"<td>{value}</td>\n")
-            output_file.write("</tr>\n</tbody>\n</table>\n")
-
-        # Add results section if requested
+    def _dump_results(self, checker: Ten8tChecker, output_file: TextIO):
+        # Add results section
         if self.include_results:
-            output_file.write("<h2>Results</h2>\n")
-            output_file.write("<table border='1'>\n<thead>\n<tr>\n")
-            # Create table header
+            output_file.write(f"{self.INDENT_LVL_1}<h2>Results</h2>\n")
+            output_file.write(f"{self.INDENT_LVL_1}<table border='1'>\n")
+            output_file.write(f"{self.INDENT_LVL_2}<thead>\n")
+            output_file.write(f"{self.INDENT_LVL_3}<tr>\n")
             for col in self._format_header(self.result_columns):
-                output_file.write(f"<th>{col}</th>\n")
-            output_file.write("</tr>\n</thead>\n<tbody>\n")
+                output_file.write(f"{self.INDENT_LVL_4}<th>{col}</th>\n")
+            output_file.write(f"{self.INDENT_LVL_3}</tr>\n")
+            output_file.write(f"{self.INDENT_LVL_2}</thead>\n")
+            output_file.write(f"{self.INDENT_LVL_2}<tbody>\n")
 
-            # Create rows for result data
+            # Populate results table
             for result in checker.results:
-                output_file.write("<tr>\n")
+                output_file.write(f"{self.INDENT_LVL_3}<tr>\n")
                 for col in self.result_columns:
-                    val = self._get_cell_value(result, col)
+                    value = self._get_cell_value(result, col)
+                    value = (
+                        value.replace("&", "&amp;")
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;")
+                        if isinstance(value, str) and value
+                        else value
+                    )
 
-                    # Escape special HTML characters
-                    if isinstance(val, str) and val:
-                        val = val.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                    # Add quotes around strings if configured
+                    if self.config.quoted_strings and isinstance(value, str) and value:
+                        value = f"<code>{value}</code>"
 
-                    # Add quotes to strings if configured
-                    if self.config.quoted_strings and isinstance(val, str) and val:
-                        val = f"<code>{val}</code>"
+                    output_file.write(f"{self.INDENT_LVL_4}<td>{value}</td>\n")
+                output_file.write(f"{self.INDENT_LVL_3}</tr>\n")
+            output_file.write(f"{self.INDENT_LVL_2}</tbody>\n")
+            output_file.write(f"{self.INDENT_LVL_1}</table>\n")
 
-                    # Write cell value
-                    output_file.write(f"<td>{val}</td>\n")
-                output_file.write("</tr>\n")
+    def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO) -> None:
+        """
+            Implement hierarchical HTML dump with flexible pre/post-text.
 
-            output_file.write("</tbody>\n</table>\n")
+            Args:
+                checker: Contains test result data.
+                output_file: File-like object to write the HTML.
+            """
 
+        # Write opening HTML elements
+        self._dump_pre_text(output_file)
+        self._dump_summary(checker, output_file)
+        self._dump_results(checker, output_file)
+
+        # Write closing HTML elements
         self._dump_post_text(output_file)

@@ -54,3 +54,17 @@ def ten8t_save_xls(ch: Ten8tChecker,
     config = config or Ten8tDumpConfig.excel_default()
     dumper = Ten8tDumpExcel(config)
     dumper.dump(ch)
+
+
+def ten8t_save_html(ch: Ten8tChecker,
+                    config: Ten8tDumpConfig = None):
+    """
+    Legacy function for backward compatibility.
+
+    Args:
+        ch: Ten8tChecker instance containing results
+        config: Configuration object for the dump process (None for default)
+    """
+    config = config or Ten8tDumpConfig.html_default()
+    dumper = Ten8DumpHTML(config)
+    dumper.dump(ch)
