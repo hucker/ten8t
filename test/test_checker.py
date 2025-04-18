@@ -867,3 +867,39 @@ def test_module_autothread2():
 
     # Since there is no filtering of functions the pre-collect and collect counts should be the same
     assert ch.collected_count == ch.pre_collected_count
+
+
+def test_checker_full_dicts(func1, func2, func3):
+    """If we compare the results of running the checker over a set of functions
+     back to back, you will find that they are different even if the tests are
+     deterministic.  That is because the result data has timing information down
+     to the sub microsecond.  ON this scale you can't compare for equality...this
+     test just makes sure that is the case"""
+
+    funcs = [func3, func1, func2]
+    ch = t8.Ten8tChecker(check_functions=funcs)
+
+    ch.run_all()
+    j1 = ch.as_dict()
+    ch.run_all()
+    j2 = ch.as_dict()
+
+    assert j1 != j2
+
+
+def test_checker_clean_dicts(func1, func2, func3):
+    """IN the previous case we ran tests and showed that the result data
+    would be different.  In this case we get clean  dictionaries back from
+    the checker object.  The clean function gets rid of records that record
+    date times or time differences.  IN this case the results should be the dame.
+    """
+
+    funcs = [func3, func1, func2]
+    ch = t8.Ten8tChecker(check_functions=funcs)
+
+    ch.run_all()
+    jc1 = ch.as_dict_clean()
+    ch.run_all()
+    jc2 = ch.as_dict_clean()
+
+    assert jc1 == jc2

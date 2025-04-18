@@ -21,7 +21,7 @@ from .ten8t_module import Ten8tModule
 from .ten8t_package import Ten8tPackage
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
-from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone
+from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone, clean_dict
 
 ADHOC_MODULE_NAME = 'adhoc'
 """Name of the adhoc module"""
@@ -896,14 +896,57 @@ class Ten8tChecker:
                   "abort_on_exception": self.abort_on_exception, }
         return header
 
-    def as_dict(self):
+    def as_dict(self, remove_nulls=False, keep_keys=None, remove_keys=None):
         """
-        Return a dictionary of the results which is a header and an array of results.
+        Converts the object's data into a dictionary containing a header and an array of results.
+
+        Args:
+            remove_nulls: If True, remove any null values from the dictionary.
+            keep_keys (list[str], optional): A list of keys that should not be modified or removed
+                                             during the cleaning process, even if their values are
+                                             empty. This argument is used when `remove_nulls` is True.
+                                             Defaults to None.
+            remove_keys (list[str], optional): A list of keys that must be removed during the cleaning
+                                               process. This argument is used when `remove_nulls` is True.
+                                             Defaults to None.
+
+        Returns:
+            dict: A dictionary containing:
+                - "header": Metadata or summary information about the results, retrieved using
+                  `get_header()`.
+                - "results": A list of dictionaries representing the individual results of the object.
+                  Each result is converted to a dictionary using its own `as_dict` method.
+                  If `light_weight` is True, this section is also cleaned of empty values.
+
         """
+
         report = {  # This is the less important header stuff.
 
             "header": self.get_header(),
             # the meat of the output lives here
             "results": [r.as_dict() for r in self.results], }
 
+        keep_keys = keep_keys or []
+        remove_keys = remove_keys or []
+
+        if keep_keys or remove_keys:
+            report = clean_dict(report, remove_nulls=remove_nulls, keep_keys=keep_keys, remove_keys=remove_keys)
+
         return report
+
+    def as_dict_clean(self, remove_keys=None):
+        """
+        Converts the object's data into a dictionary while cleaning up specific keys and excluding null values.
+
+        This method transforms the object's attributes into a dictionary format, ensuring that null values are excluded
+        and non-deterministic time fields keys are removed to provide a cleaner representation of the object's state.
+
+        This dictionary should be able to be used to directly compare runs showing records that have differences.
+
+        Returns:
+            dict: A dictionary representation of the object with specific keys removed and null values excluded.
+
+        """
+        remove_keys = remove_keys or "start_time end_time duration_seconds runtime_sec".split()
+        return self.as_dict(remove_nulls=True,
+                            remove_keys=remove_keys)

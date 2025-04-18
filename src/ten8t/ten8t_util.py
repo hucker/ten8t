@@ -5,6 +5,8 @@ import os
 import pathlib
 from typing import Sequence, TypeAlias
 
+from ten8t.ten8t_exception import Ten8tTypeError, Ten8tValueError
+
 # Type aliases.
 # Note: the *OrNone are meant to be constructors that allow a None value to be passed
 #       that code will take care to convert to a [] or a ''
@@ -218,3 +220,92 @@ def any_to_int_list(param: IntListOrNone, sep=' ') -> IntList:
         return [int(x) for x in param]
 
     raise ValueError(f'Invalid parameter type in {param}, expected all integers.')
+
+
+def clean_dict(d: dict, remove_nulls=True, keep_keys=None, remove_keys=None, empty_values=None):
+    """
+    Recursively processes a dictionary to remove keys based on specified rules.
+
+    Args:
+        d (dict): The input dictionary to process.
+        remove_nulls (bool, optional): If True, removes keys with "empty" values (as defined in `empty_values`),
+                                       unless the keys are in `keep_keys`. Defaults to True.
+        keep_keys (list[str], optional): A list of keys to preserve, ensuring they are not removed,
+                                         even if their values are defined as empty. Defaults to None.
+        remove_keys (list[str], optional): A list of keys to forcibly remove, regardless of their values.
+                                           Defaults to None.
+        empty_values (list, optional): A list of values that should be considered empty. By default,
+                                       this is `['', [], {}]`.
+
+    Returns:
+        dict: A new dictionary where keys are removed based on `remove_nulls`, `keep_keys`,
+              `remove_keys`, and `empty_values`.
+
+    Raises:
+        Ten8tTypeError: If the input is not a dictionary.
+        Ten8tValueError: If there are conflicts between `keep_keys` and `remove_keys`.
+    """
+    # Default to empty lists if keep_keys, remove_keys, or empty_values are not provided
+    keep_keys = keep_keys or []
+    remove_keys = remove_keys or []
+    empty_values = empty_values or ['', [], {}, set(), tuple()]
+
+    # Ensure the input is a dictionary
+    if not isinstance(d, dict):
+        raise Ten8tTypeError("Input must be a dictionary.")
+
+    # Check for conflicts between keep_keys and remove_keys
+    conflicting_keys = set(keep_keys).intersection(remove_keys)
+    if conflicting_keys:
+        raise Ten8tValueError(f"Conflicting keys between keep_keys and remove_keys: {conflicting_keys}")
+
+    def _clean(d):
+        """
+        This function does the work as a closure, allowing it to not need check and pass most parameters
+        on each recursive call.
+        """
+        result = {}
+        for key, value in d.items():
+            # Skip keys in remove_keys (unless they're also in keep_keys)
+            if key in remove_keys and key not in keep_keys:
+                continue
+
+            # Preserve keys in keep_keys, regardless of remove_nulls or empty_values
+            if key in keep_keys:
+                result[key] = value
+                continue
+
+            # Process nested dictionaries
+            if isinstance(value, dict):
+                cleaned_value = _clean(value)
+                if cleaned_value or not remove_nulls:  # Include non-empty nested dicts or if remove_nulls is False
+                    result[key] = cleaned_value
+
+            elif remove_nulls and value in empty_values:
+                # It is important for this case to go before the next two since this will
+                # eliminate a case for being empty
+                continue
+
+            elif isinstance(value, list):
+                # Process each element in the list, cleaning if it’s a dictionary; retain original value otherwise
+                result[key] = [
+                    _clean(item) if isinstance(item, dict) else item
+                    for item in value
+                ]
+            elif isinstance(value, tuple):
+                # Process each element in the list, cleaning if it’s a dictionary; retain original value otherwise
+                result[key] = tuple(
+                    _clean(item) if isinstance(item, dict) else item
+                    for item in value
+                )
+
+            # Iterate over values to remove empty lists or custom empty values
+
+            # Include all other valid values
+            else:
+                result[key] = value
+
+        return result
+
+    # Call the closure to clean the dict.
+    return _clean(d)
