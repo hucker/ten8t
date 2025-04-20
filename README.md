@@ -454,7 +454,7 @@ FastAPI example running some rules:
 
 ![FastAPI Demo](docs/_static/fastapi.png)
 
-## Streamlit Demo  (`ten8t/st_ten8t/st_demo.py`)
+## Streamlit Demo  (`ten8t/st_ten8t`)
 
 Integration with `streamlit` was important, so I made the way you interact with `ten8t` work well with the
 tools that `streamlit` exposes. Here is a non-trivial
@@ -480,7 +480,7 @@ of functions that have been registered, so progress is given in functions run no
 
 ![Rich Demo](docs/_static/rich_demo.png)
 
-## Textual Demo
+## Textual Demo (`ten8t/textual_ten8t`)
 
 The folder `textual_ten8t` has a demonstration app showing `ten8t` integration with `textual` by supporting
 the same `examples` folder used in other demos. This demo shows how logging, checking, and basic interactions with
@@ -496,17 +496,17 @@ just a demo, it is quite useful in that you can rapidly test your rule sets inte
 
 ![Textual Demo](docs/_static/textual_demo.png)
 
-## `uv` run Example
+## `uv` run Example (`uv_ten8t`)
 
 It wouldn't be an example unless we showed you that you can run this with `uv` without knowing anything beyond
 installing `uv` on your machine by taking advantage of support for [PEP 723](https://peps.python.org/pep-0723/). Note
-the use of the `cwd_here`
-function. This is a utility function in `ten8t` that makes the current working directly the current file. This
-is very useful for examples that are included with the baseline installation. This allows you to type
+the use of the `cwd_here` function. This is a utility function in `ten8t` that makes the current working
+directly the current file. This is very useful for examples that are included with the baseline installation.
+This allows you to type
 
-`python lib/site-ackages/ten8t/uv_ten8t/uv_ten8t.py`
+`python lib/site-packages/ten8t/uv_ten8t/uv_ten8t.py`
 
-And not worry about what folder you ran from.
+and not worry about what folder you ran from.
 
 <!--file ../src/ten8t/uv_ten8t/uv_ten8t.py-->
 ```python
