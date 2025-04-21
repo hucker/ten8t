@@ -97,7 +97,7 @@ def check_fum():
 
 
 # A checker object collections your functions up, runs them all and hands you back results.
-results = t8.Ten8tChecker(check_functions=[check_foo, check_fum]).run_all()
+results = t8.Ten8tChecker(check_f=[check_foo, check_fum]).run_all()
 
 
 ```
@@ -124,7 +124,7 @@ def check_yielded_values():
     yield TR(status=pathlib.Path("./fum").exists(), msg="Folder fum exists")
 ```
 
-As you might expect running this will also provide 3 passing test results with richer data using the TR object. Note
+Running these will also provide 3 passing test results with richer data using the TR object. Note
 that these functions yield results rather than return them and some tags have been added, foreshadowing that you
 will be able to run the "foo" tests or the "fum" tests because the check function has be tagged with `categories`.
 
@@ -204,8 +204,7 @@ of your check functions in a single file and all of those functions work with th
 and setup things will work nicely, if you give every function a unique thread id and try to run everything
 concurrently you may have issues.
 
-Test cases with things like ping or requests show very nice improvements. I have not yet tested
-free-threading to see how CPU bound operations are improved.
+Test cases with things like ping or requests show very nice improvements.
 
 ```python
 import datetime as dt
@@ -456,7 +455,7 @@ FastAPI example running some rules:
 
 ## Streamlit Demo  (`ten8t/st_ten8t`)
 
-Integration with `streamlit` was important, so I made the way you interact with `ten8t` work well with the
+Integration with `streamlit` was important, so the way you interact with `ten8t` works well with the
 tools that `streamlit` exposes. Here is a non-trivial
 example showing many of the features of `ten8t` in a `streamlit` app. In 200 lines of code you can select from
 packages folders, have a full streamlit UI to select the package, tags,levels, ruids and generate colored
@@ -620,16 +619,16 @@ stepping and that payback is huge...and then couple that with testing on differe
 testing becomes intractable.
 
 TDD complements YAGNI principles in my development approach. Rather than creating extensive object
-systems upfront, I build classes incrementally, only refactoring when the existing abstraction no
+systems upfront, classes were built incrementally, only refactoring when the existing abstraction no
 longer supports clean design. This contrasts with my early career tendency to build elaborate webs
 of interacting objects most of which would never be derived from and often times needed extensive
 coupling.
 
 ## Philosophy
 
-I designed the "API" to prioritize flexibility and dev. experience. Rather than requiring strict
+The general "API" to `ten8t` prioritizes flexibility and dev. experience. Rather than requiring strict
 parameter formats, the library "intelligently" handles various input types to save users time and
-reduce friction. Reverse JSON mindset.
+reduces friction.
 
 The API often times accepts data in multiple types:
 
@@ -637,14 +636,12 @@ The API often times accepts data in multiple types:
    conventional lists (`["foo"]`), or even empty values (`""`, `[]`, `None`)
 2) File paths work with both strings (`"file.txt"`) and `pathlib.Path` objects (`pathlib.Path("file.txt")`)
 3) When a list is expected but a single item is provided, the API automatically wraps it in a list
-4) When you pass a list of functions to the checker they can be regular python function or they can be
+4) When you pass a list of functions to the checker they can be regular python functions, or they can be
    of type `Ten8tFunction`...`ten8t` will generically wrap the function with no special attributes.
 
 This approach simplifies integration with configuration files and command-line options by reducing data
 transformation code. While this diverges from strict typing practices, it improves developer
 experience and speeds up implementation.
-
-If there's demand, I may introduce strict variants of these interfaces in the future.
 
 ### Class Hierarchy
 
@@ -655,7 +652,7 @@ functionality exposed to the application.
 
 ![Class Structure](docs/_static/class_struct.png)
 
-IN this example you can see there is a `_base.py`, `_factory.py`, `_protocol.py` and `_markup.py`
+In this example you can see there is a `_base.py`, `_factory.py`, `_protocol.py` and `_markup.py`
 classes that implement the base features of the object and then there are derived classes to support
 each of the rendering transformation for the target output.
 
@@ -715,7 +712,7 @@ __all__ = [
 
 ## Code Metrics (from `radon`)
 
-I track code quality using [Radon](https://github.com/rubik/radon) metrics across the `ten8t` package.
+Code quality is tracked using [Radon](https://github.com/rubik/radon) metrics across the `ten8t` package.
 In general, the codebase maintains good quality scores with mostly A's and B's.
 
 The columns below have been sorted worst to best. It can be seen that most of the complexity is in the
@@ -812,8 +809,8 @@ NOTE: This is by class. There is some function based code that is invisible (e.g
 
 ## WTH does `Ten8t` and what's with your wierd names?
 
-`Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). I chose this
-name after discovering that my initial choices were too similar to existing packages on PyPI.
+`Ten8t` is a [numeronym](https://en.wikipedia.org/wiki/Numeronym) for the word 1080 (ten-eighty). It was chosen
+after discovering that initial choices were too similar to existing packages on PyPI.
 The name refers to skiing or snowboarding tricks involving 3 rotations.
 
 The preferred way for using `ten8t` in code is to write:
