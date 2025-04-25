@@ -23,22 +23,32 @@ class Ten8tTomlRC(Ten8tRC):
     """
 
     def __init__(self, cfg: str, section: str):
-        super().__init__()
         section_data = self._load_config(cfg, section)
-        self.cfg = cfg
-        self.section = section
-        self.expand_attributes(section_data)
 
-    def _load_config(self, cfg: str, section: str) -> dict:
+        # Call the baseclass that knows how to deal with a dictionary
+        super().__init__(rc_d=section_data)
+        self.cfg = cfg
+
+    def _load_config(self, cfg: str, section: str = '', sep='.') -> dict:
         """
         Loads a specific section from a TOML configuration file.
 
         Reads a TOML configuration file and extracts the specified section. If issues
         occur during file reading or parsing, raises a `Ten8tException`.
 
+        Because we don't really know the structure of the TOML file this supports
+        a 'dotted-key' so you can say
+
+        section='config1.prerelease'
+
+        Which will do the same as giving you the data from this branch of the config file
+
+        cfg['config1']['prerelease']
+
         Args:
             cfg (str): File path to the TOML configuration file.
             section (str): Name of the section to retrieve.
+            sep (str): Separator character used to split dotted keys.  Should always be '.'
 
         Returns:
             dict: Key-value pairs from the specified section of the file.
@@ -55,4 +65,11 @@ class Ten8tTomlRC(Ten8tRC):
         except (FileNotFoundError, toml.TomlDecodeError, AttributeError, PermissionError) as error:
             raise Ten8tException(f"TOML config file {cfg} error: {error}") from error
 
-        return config_data.get(section, {})
+        if not section:
+            return config_data
+
+        # Handle nested sections using dotted keys with .get
+        keys = section.split(sep)
+        for key in keys:
+            config_data = config_data.get(key, {})
+        return config_data

@@ -38,7 +38,6 @@ ModulesType: TypeAlias = (
 )
 
 
-
 class Ten8tStatusStrategy:
     """This strategy formats a summary of the result of running all checks."""
 
@@ -76,7 +75,6 @@ class Ten8tResultStrategy:
         d["status"] = "<<green>>PASS<</green>>" if result.status else "<<red>>FAIL<</red>>"
         formatted = self.template.safe_substitute(**d)
         return self.renderer.render(formatted)
-
 
 
 def _param_str_list(params: StrListOrNone, disallowed=' ,!@#$%^&*(){}[]<>~`-+=\t\n\'"') -> StrList:
@@ -165,13 +163,20 @@ class Ten8tChecker:
 
     """
 
-    def __init__(self, packages: list[Ten8tPackage] | None = None, modules: list[Ten8tModule] | None = None,
-            check_functions: list[Ten8tFunction | Callable] | None = None,
-            progress_object: Ten8tProgress | list[Ten8tProgress] | None = None,
-                 score_strategy: ScoreStrategy | None = None, rc: Ten8tRC | None = None,
+    def __init__(self,
+                 packages: list[Ten8tPackage] | None = None,
+                 modules: list[Ten8tModule] | None = None,
+                 check_functions: list[Ten8tFunction | Callable] | None = None,
+                 progress_object: Ten8tProgress | list[Ten8tProgress] | None = None,
+                 score_strategy: ScoreStrategy | None = None,
+                 rc: Ten8tRC | None = None,
                  env: dict[str, Any] | None = None,
-                 renderer: Ten8tAbstractRenderer = None, abort_on_fail=False, abort_on_exception=False,
-                 auto_setup: bool = True, auto_ruid: bool = False, ):
+                 renderer: Ten8tAbstractRenderer = None,
+                 abort_on_fail=False,
+                 abort_on_exception=False,
+                 auto_setup: bool = True,
+                 auto_ruid: bool = False,
+                 name: str = "checker"):
         """
 
         
@@ -192,6 +197,7 @@ class Ten8tChecker:
             abort_on_exception: A bool flag indicating whether to abort on exceptions. def=False.
             auto_setup: A bool flag automatically invoke pre_collect/prepare. def=False.
             auto_ruid: A bool flag automatically generate rule_ids if they don't exist.
+            name: A name for the checker, def= "checker"
         Raises:
             Ten8tException: If the provided packages, modules, or check_functions 
                              are not in the correct format.
@@ -206,15 +212,7 @@ class Ten8tChecker:
         self.score_strategy = score_strategy or ScoreByResult()
         self.score = 0.0
 
-        # Allow an RC object to be specified.
-        self.rc = rc
 
-        # In order to support rendered output a render object must be provided
-        # if none are provided we create one
-        self.renderer = renderer or Ten8tTextRenderer()
-
-        # We always have a raw text version of messages for logs and exceptions.
-        self.text_renderer = Ten8tTextRenderer()
 
         # If we are provided with an environment we save it off but first wrap it in
         # a class that guards reasonably against writes to the underlying environment
@@ -223,6 +221,17 @@ class Ten8tChecker:
             self.env = self._make_immutable_env(env)
         else:
             self.env = {}
+
+        # Allow an RC object to be specified.
+        self.rc: Ten8tRC = None
+        self.import_rc(rc)
+
+        # In order to support rendered output a render object must be provided
+        # if none are provided we create one
+        self.renderer = renderer or Ten8tTextRenderer()
+
+        # We always have a raw text version of messages for logs and exceptions.
+        self.text_renderer = Ten8tTextRenderer()
 
         # THis dict has the environment values that are NULL
         self.env_nulls: dict[str, Any] = {}
@@ -262,6 +271,60 @@ class Ten8tChecker:
         if auto_setup:
             self.pre_collect()
             self.prepare_functions()
+
+    def import_rc(self, rc):
+        """
+        Imports runtime, configuration folders, and loads specific module objects. This method processes
+        the configuration data such as folders, modules, and environment variables. Additionally, this
+        method initializes package objects, module instances, and performs checks based on configuration
+        attributes such as prefix settings. The runtime configuration provides the necessary details to
+        instantiate the required modules and packages.
+
+        Args:
+            rc (object): A configuration object containing runtime settings and expected attributes.
+                Expected attributes include:
+                - folders: A string or list of folder paths containing package files.
+                - modules: A string or list of module names to be processed.
+                - env: A dictionary of environment variables used for the current setup.
+                - module_gl: Module-related configuration data, if any.
+                - check_prefix: Configuration prefix used for checks or matching during initialization.
+
+        Returns:
+            object: The runtime configuration object that contains initialized modules' and packages'
+            details.
+        """
+
+        self.rc = rc
+
+        if rc:
+
+            packages = getattr(self.rc, "packages", "")
+            modules = getattr(self.rc, "modules", "")
+
+            if isinstance(packages, str):
+                packages = packages.split()
+            if isinstance(modules, str):
+                modules = modules.split()
+
+            env = getattr(self.rc, "env", {})
+
+            # Override with config file
+            self.env = self.env | env
+
+            module_glob = getattr(self.rc, 'module_glob', 'check*.py')
+            check_prefix = getattr(self.rc, 'check_prefix', 'check_')
+
+            for package in packages:
+                pkg = Ten8tPackage(folder=package, module_glob=module_glob)
+                self.packages.append(pkg)
+
+            for module_file in modules:
+                module = Ten8tModule(module_file=module_file, check_prefix=check_prefix)
+                self.modules.append(module)
+
+        self.name = getattr(self.rc, "name", 'checker')
+
+        return rc
 
     def set_progress(self, progress_object: Ten8tProgress | list[Ten8tProgress]):
         # Connect the progress output to the checker object.  The NoProgress
@@ -770,7 +833,6 @@ class Ten8tChecker:
         """
         return sum(r.skipped for r in self.results)
 
-
     @property
     def warn_count(self):
         """
@@ -780,7 +842,6 @@ class Ten8tChecker:
             int: The number of results with warnings.
         """
         return sum(r.warn_msg for r in self.results if r.warn_msg is not None and len(r.warn_msg) > 0)
-
 
     @property
     def pass_count(self):

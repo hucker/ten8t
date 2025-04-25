@@ -27,7 +27,7 @@ class Ten8tXMLRC(Ten8tRC):
         super().__init__()
         package_data = self._load_config(cfg, section)
         # Convert the attributes in the configuration into inclusion/exclusion lists.
-        self.expand_attributes(package_data)
+        self.expand_category_attributes(package_data)
 
     def _load_config(self, cfg: str, section: str) -> dict:
         """

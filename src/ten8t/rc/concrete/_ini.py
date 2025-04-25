@@ -13,10 +13,10 @@ class Ten8tIniRC(Ten8tRC):
     """
 
     def __init__(self, cfg: str, section: str):
-        super().__init__()
-        section_data = self._load_config(cfg, section)
+        section_data = self._load_config(cfg)
+        super().__init__(section_data)
 
-        self.expand_attributes(section_data)
+        self.expand_category_attributes(section_data)
 
     def _load_config(self, cfg: str, section: str) -> dict:
         """Loads and returns the requested section from a TOML file."""

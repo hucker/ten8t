@@ -5,16 +5,17 @@ import re
 from typing import Sequence
 
 from ..ten8t_exception import Ten8tException
-from ..ten8t_util import IntList, StrList
+from ..ten8t_util import IntList, StrList, StrOrPathList
 
 
 class Ten8tRC:
     """
     The baseline configuration for ten8t is a simple dictionary.  Loading data
-    from file should be a straight forward conversion.
+    from file should be a straight forward conversion into the interal dict format.
 
-    Setting up a configuration involves setting up default values for in/exclusions
-    for ruids, phases, tags and levels.
+    Usually RC files are for things like tags,phases and levels, but a more complete
+    setup is possible since higher level "things" like folders, modles and environments
+    can be specified.
     """
 
     def __init__(self, *, rc_d: dict | None = None):
@@ -35,7 +36,17 @@ class Ten8tRC:
             'ruids': rc_d.get('ruids', []),
             'tags': rc_d.get('tags', []),
             'phases': rc_d.get('phases', []),
-            'levels': rc_d.get('levels', [])
+            'levels': rc_d.get('levels', []),
+            'modules': rc_d.get('modules', []),
+            'module_glob': rc_d.get('module_glob', ''),
+            'packages': rc_d.get('packages', []),
+            'check_prefix': rc_d.get('check_prefix', 'check_'),
+            'env_prefix': rc_d.get('env_prefix', 'env_'),
+            'env': rc_d.get('env', {}),
+            'renderer': rc_d.get('renderer', 'text'),
+            'serialize': rc_d.get('serialize', ''),
+            'display_name': rc_d.get('display_name', '') or rc_d.get('name', ''),
+
         }
 
         # These will get overwritten
@@ -48,14 +59,24 @@ class Ten8tRC:
         self.levels: IntList = []
         self.ex_levels: IntList = []
 
-        self.expand_attributes(rc_data)
-        self.name = rc_data['display_name']
+        # Populate the category data for inclusions and exclusions
+        self.expand_category_attributes(rc_data)
 
-        # This is a special case
+        # This is a special case for when nothing is specified by the user.
         self.is_inclusion_list_empty = all(not r for r in [self.ruids,
                                                            self.phases,
                                                            self.tags,
                                                            self.levels])
+        self.packages: StrOrPathList = rc_data['packages']
+        self.modules: StrOrPathList = rc_data['modules']
+        self.check_prefix = rc_data['check_prefix']
+
+        self.env: dict = rc_data['env']
+
+        # TODO:  Pick one of these.
+        self.name = rc_data['display_name']
+        self.display_name = rc_data['display_name']
+
 
     # def _not_int_list(self, lst):
     #    return [item for item in lst if not item.isdigit()]
@@ -64,9 +85,9 @@ class Ten8tRC:
         raise NotImplementedError
 
     @staticmethod
-    def _separate_values(data: str | Sequence[str]) -> tuple[Sequence[str], Sequence[str]]:
+    def _separate_category_values(data: str | Sequence[str]) -> tuple[Sequence[str], Sequence[str]]:
         """
-        Separate included and excluded values based on sign pre-fixes from the given data.
+        Separate included and excluded category values based on sign pre-fixes from the given data.
 
         This method receives a list of data values and splits it into two lists:
         included values and excluded values. A data value is considered as 'excluded'
@@ -85,7 +106,7 @@ class Ten8tRC:
                    (those starting with '-').
 
         Example:
-            separate_values(["+apple", "-banana", "+cherry", "-date", "elderberry"])
+            _separate_category_values(["+apple", "-banana", "+cherry", "-date", "elderberry"])
 
             Should return (['apple', 'cherry', 'elderberry'], ['banana', 'date']) as
             "elderberry" doesn't start with a "-" sign, it is also included in the 'included' list.
@@ -102,7 +123,7 @@ class Ten8tRC:
 
         return included, excluded
 
-    def expand_attributes(self, rc_data: dict):
+    def expand_category_attributes(self, rc_data: dict):
         """
         Convert the data from the configuration dictionary into a form that
         is useful for processing in code.
@@ -112,10 +133,11 @@ class Ten8tRC:
         Exception: If the levels list has an integer it throws an exception
         """
 
-        self.ruids, self.ex_ruids = self._separate_values(rc_data.get('ruids', []))
-        self.tags, self.ex_tags = self._separate_values(rc_data.get('tags', []))
-        self.phases, self.ex_phases = self._separate_values(rc_data.get('phases', []))
-        self.levels, self.ex_levels = self._separate_values(rc_data.get('levels', []))
+        self.ruids, self.ex_ruids = self._separate_category_values(rc_data.get('ruids', []))
+        self.tags, self.ex_tags = self._separate_category_values(rc_data.get('tags', []))
+        self.phases, self.ex_phases = self._separate_category_values(rc_data.get('phases', []))
+        self.levels, self.ex_levels = self._separate_category_values(rc_data.get('levels', []))
+
 
     def does_match(self, ruid: str = "", tag: str = "", phase: str = "", level: str = "") -> bool:
         """
@@ -150,17 +172,37 @@ class Ten8tRC:
 
         # Check if any of the inputs match an inclusion pattern
         if not self.is_inclusion_list_empty:
-            for pattern_list, attribute in patterns:
-                if not attribute:
+            for pattern_list, category in patterns:
+                if not category:
                     continue
-                if pattern_list and not any(re.fullmatch(pat, attribute) for pat in pattern_list):
+                if pattern_list and not any(re.fullmatch(pat, category) for pat in pattern_list):
                     return False
 
         # Check if any of the inputs match an exclusion pattern
-        for ex_pattern_list, attribute in ex_patterns:
-            if not attribute:
+        for ex_pattern_list, category in ex_patterns:
+            if not category:
                 continue
-            if any(re.fullmatch(exclusion, attribute) for exclusion in ex_pattern_list):
+            if any(re.fullmatch(exclusion, category) for exclusion in ex_pattern_list):
                 return False
 
         return True
+
+    def get_dotted(self, config: dict, key: str):
+        """
+        Retrieves a nested value from a dictionary using a dotted notation string.
+
+        Args:
+            config (dict): The configuration dictionary to search in.
+            key (str): The dotted notation key string (e.g., "setup.env.env_list").
+
+        Returns:
+            Any: The value corresponding to the dotted key, or None if a key is missing.
+        """
+        keys = key.split(".")
+        value = config
+        try:
+            for k in keys:
+                value = value[k]
+            return value
+        except (KeyError, TypeError):
+            return None  # Return None if any key in the hierarchy is missing

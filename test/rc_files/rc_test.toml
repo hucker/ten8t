@@ -1,0 +1,14 @@
+modules = "rc_env/check_rc_env.py"
+name = "TestTOMLRC"
+
+
+[env]
+env_num = 1
+env_str = "str1"
+
+env_list = [
+    1
+]
+
+[env.env_dict]
+1 = 1

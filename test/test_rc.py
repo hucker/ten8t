@@ -180,3 +180,101 @@ def test_neg():
 
     assert rc.does_match(phase='p1', ruid='r1', tag='t2') is False
     assert rc.does_match(phase='p1', ruid='r1', tag='t1') is True
+
+
+@pytest.mark.parametrize(
+    "modules, expected_status",
+    [
+        (['decorator1/check_dec.py'], True),
+        ('decorator1/check_dec.py', True),
+    ]
+)
+def test_modules(modules, expected_status):
+    """Verify that we can run checks from a module from an RC file."""
+    rc = t8.Ten8tRC(rc_d={'modules': modules})
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert len(results) == 1
+    assert results[0].status is expected_status
+    assert results[0].func_name == "check_dec"
+    assert results[0].msg == "Result check_dec"
+
+
+@pytest.mark.parametrize(
+    "packages, expected_status",
+    [
+        (['decorator1'], True),
+        ('decorator1', True),
+    ]
+)
+def test_package(packages, expected_status):
+    """Verify that we can run checks from a package specified in an RC file."""
+    rc = t8.Ten8tRC(rc_d={'packages': packages})
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert len(results) == 1
+    assert results[0].status is expected_status
+    assert results[0].msg == "Result check_dec"
+
+
+def test_module_prefix():
+    """Verify that we can run checks from a module from an RC file with alternative prefix."""
+    rc = t8.Ten8tRC(rc_d={'modules': 'decorator1/check_dec.py', 'check_prefix': 'rule_'})
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert len(results) == 1
+    assert results[0].status
+    assert results[0].func_name == "rule_dec"
+    assert results[0].msg == "Result rule_dec"
+
+
+def test_rc_env():
+    """Verify baseline environments can be read from rc file structure."""
+    env_dict = {"env_num": 1,
+                "env_str": 'str1',
+                "env_list": [1],
+                "env_dict": {"1": 1}}
+    rc = t8.Ten8tRC(rc_d={'modules': 'rc_env/check_rc_env.py', 'env': env_dict, 'name': 'TestRC'})
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert ch.name == 'TestRC'
+    assert len(results) == 4
+    assert all(r.status for r in results)
+    assert all(r.msg.startswith("Result") for r in results)
+    assert all(r.func_name == 'check_env' for r in results)
+
+
+def test_rc_toml_env():
+    """Verify baseline environments can be read from rc file structure."""
+    rc = t8.Ten8tTomlRC('rc_files/rc_test.toml', section='')
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert ch.name == 'TestTOMLRC'
+    assert len(results) == 4
+    assert all(r.status for r in results)
+    assert all(r.msg.startswith("Result") for r in results)
+    assert all(r.func_name == 'check_env' for r in results)
+
+
+def test_rc_json_env():
+    """Verify baseline environments can be read from rc xml file structure."""
+    rc = t8.Ten8tJsonRC('rc_files/rc_test.json', section='setup')
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert ch.name == 'TestJSONRC'
+    assert len(results) == 4
+    assert all(r.status for r in results)
+    assert all(r.msg.startswith("Result") for r in results)
+    assert all(r.func_name == 'check_env' for r in results)
+
+
+def test_rc_json_dotted_env():
+    """Verify baseline environments can be read from rc xml file structure."""
+    rc = t8.Ten8tJsonRC('rc_files/rc_test_dotted.json', section='pre.setup')
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert ch.name == 'TestJSONRCDotted'
+    assert len(results) == 4
+    assert all(r.status for r in results)
+    assert all(r.msg.startswith("Result") for r in results)
+    assert all(r.func_name == 'check_env' for r in results)

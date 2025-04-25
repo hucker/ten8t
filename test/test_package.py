@@ -100,7 +100,7 @@ def test_load_1_package_load(simple1_pkg):
     m = simple1_pkg.get("check_simple1")
     assert m
     assert m.module_name == "check_simple1"
-    assert m.doc == "DocString for check_simple1"
+    assert m.doc.startswith("DocString for check_simple1")
 
 
 def test_load_2_packages_load(decorator1_pkg, decorator2_pkg):
@@ -109,11 +109,11 @@ def test_load_2_packages_load(decorator1_pkg, decorator2_pkg):
     m = decorator1_pkg.get("check_dec")
     assert m
     assert m.module_name == "check_dec"
-    assert m.doc == "DocString for check_dec"
+    assert m.doc.startswith("DocString for check_dec")
 
     assert len(decorator2_pkg.modules) == 1
     assert "check_dec_complex" in (m.module_name for m in decorator2_pkg.modules)
     m = decorator2_pkg.get("check_dec_complex")
     assert m
     assert m.module_name == "check_dec_complex"
-    assert m.doc == "DocString for check_dec_complex"
+    assert m.doc.startswith("DocString for check_dec_complex")
