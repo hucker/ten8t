@@ -1,6 +1,6 @@
 modules = "rc_env/check_rc_env.py"
 name = "TestTOMLRC"
-
+tags = "all_types"    # RC File has two functions, this only runs the "all_types"
 
 [env]
 env_num = 1
@@ -10,5 +10,5 @@ env_list = [
     1
 ]
 
-[env.env_dict]
+[env.env_dict]  # This is how TOML puts a dict in a dict...hacky compared to JSON
 1 = 1

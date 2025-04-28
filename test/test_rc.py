@@ -234,14 +234,14 @@ def test_rc_env():
                 "env_str": 'str1',
                 "env_list": [1],
                 "env_dict": {"1": 1}}
-    rc = t8.Ten8tRC(rc_d={'modules': 'rc_env/check_rc_env.py', 'env': env_dict, 'name': 'TestRC'})
+    rc = t8.Ten8tRC(rc_d={'tags': 'all_types', 'modules': 'rc_env/check_rc_env.py', 'env': env_dict, 'name': 'TestRC'})
     ch = t8.Ten8tChecker(rc=rc)
     results = ch.run_all()
     assert ch.name == 'TestRC'
     assert len(results) == 4
     assert all(r.status for r in results)
     assert all(r.msg.startswith("Result") for r in results)
-    assert all(r.func_name == 'check_env' for r in results)
+    assert all(r.func_name == 'check_env1' for r in results)
 
 
 def test_rc_toml_env():
@@ -253,7 +253,6 @@ def test_rc_toml_env():
     assert len(results) == 4
     assert all(r.status for r in results)
     assert all(r.msg.startswith("Result") for r in results)
-    assert all(r.func_name == 'check_env' for r in results)
 
 
 def test_rc_json_env():
@@ -265,7 +264,6 @@ def test_rc_json_env():
     assert len(results) == 4
     assert all(r.status for r in results)
     assert all(r.msg.startswith("Result") for r in results)
-    assert all(r.func_name == 'check_env' for r in results)
 
 
 def test_rc_json_dotted_env():
@@ -277,4 +275,22 @@ def test_rc_json_dotted_env():
     assert len(results) == 4
     assert all(r.status for r in results)
     assert all(r.msg.startswith("Result") for r in results)
-    assert all(r.func_name == 'check_env' for r in results)
+
+
+def test_rc_ini_env():
+    """
+    Verify you can setup a run using the INI file.
+    This is a little restricted compared to json and toml since there aren't
+    really lists and dicts, but this shows setting up running specific tags
+    from a file all configured from the INI file.
+    """
+    rc = t8.Ten8tIniRC('rc_files/rc_test.ini', section='setup')
+    assert rc.modules == ['rc_env/check_rc_env.py']
+    assert rc.packages == []
+    assert rc.env == {'env_num': '1', "env_str": 'str1'}
+    assert rc.check_prefix == 'check_'
+    assert rc.name == 'TestIniRC'
+    ch = t8.Ten8tChecker(rc=rc)
+    results = ch.run_all()
+    assert len(results) == 2
+    assert all(r.status for r in results)

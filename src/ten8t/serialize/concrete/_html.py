@@ -12,6 +12,8 @@ class Ten8tDumpHTML(Ten8tDump):
     Outputs test results as an HTML file with configurable columns and table formatting.
     Can include both summary and results tables.
     """
+
+    # This indent stuff is the minimum possible indent that is useful
     SPACE = ' '
     INDENT_LVL_0 = ""  # Root level, no indentation
     INDENT_LVL_1 = 1 * SPACE

@@ -3,6 +3,9 @@
     "setup": {
       "modules": "rc_env/check_rc_env.py",
       "name": "TestJSONRCDotted",
+      "tags": [
+        "all_types"
+      ],
       "env": {
         "env_num": 1,
         "env_str": "str1",

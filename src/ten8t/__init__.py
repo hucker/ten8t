@@ -35,6 +35,7 @@ from .serialize import (Ten8tDump,
                         Ten8tDumpCSV,
                         Ten8tDumpConfig,
                         Ten8tDumpExcel,
+                        Ten8tDumpHTML,
                         Ten8tDumpMarkdown)
 from .serialize import ten8t_save_csv, ten8t_save_md, ten8t_save_xls
 # Import and re-export symbols from sub packages

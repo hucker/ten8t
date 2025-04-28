@@ -726,7 +726,7 @@ NOTE: Restructuring occurred recently made the flat architecture more hierarchic
 subclassed were made into subprojects and files were split up in to folders and sub folders
 (see folders progress/rc/render/score/serialize) At this time those files are not visible in this listing.
 
-__Halstead__
+__[Halstead Complexity](https://www.geeksforgeeks.org/software-metrics-halstead-metrics/)__
 <!--file snippets/radon_hal.csv-->
 
 | File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
@@ -750,7 +750,7 @@ __Halstead__
 
 <!--file end-->
 
-__Maintainability Index__
+__[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-maintainability-index/)__
 <!--file snippets/radon_mi.csv-->
 
 | File               | Maint.<br>Index | Rank |
@@ -774,8 +774,10 @@ __Maintainability Index__
 
 <!--file end-->
 
-__Complexity__
-NOTE: This is by class. There is some function based code that is invisible (e.g., decorators in `ten8t_attribute.py`).
+__[Cyclomatic Complexity](https://www.geeksforgeeks.org/cyclomatic-complexity/)__
+
+NOTE: This is by class. There is some function based code that is invisible
+(e.g., decorators in `ten8t_attribute.py`).
 <!--file snippets/radon_cc.csv-->
 
 | File               | Name                  | Rank | Complexity |

@@ -61,4 +61,8 @@ class Ten8tJsonRC(Ten8tRC):
         except (FileNotFoundError, json.JSONDecodeError, AttributeError, PermissionError) as error:
             raise Ten8tException(f"JSON config {cfg} error: {error}") from error
 
-        return config_data.get(section, {})
+        # Handle nested sections using dotted keys with .get
+        keys = section.split('.')
+        for key in keys:
+            config_data = config_data.get(key, {})
+        return config_data
