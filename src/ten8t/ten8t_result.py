@@ -3,7 +3,7 @@
 import itertools
 import traceback
 from collections import Counter
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from operator import attrgetter
 from typing import Any, Sequence
 
@@ -11,17 +11,40 @@ from .render import Ten8tMarkup
 from .ten8t_exception import Ten8tException
 
 
-@dataclass
+@dataclass(slots=True)
 class Ten8tResult:
     """
     Represents the outcome and metadata of a Ten8tFunction execution.
 
-    This information should be enough to perform all filtering, analysis, and reporting.
+    The `__slots__` feature is used in this class (via `@dataclass(slots=True)`) to optimize memory usage and
+    improve performance. By enabling `__slots__`, Python prevents the creation of a dynamic `__dict__` for
+    each instance, which not only reduces memory consumption but also improves attribute access speed.
 
-    NOTE: There are optimization opportunities for the data class.  The assumption is that we
-    will have 100's or 1000's of results and not millions.  As such, memory usage has not
-    been a concern...thus having complete and detailed information has outweighed
-    having small memory footprint.
+    ### Why use `__slots__`?
+    1. **Memory Optimization:**
+       - This is particularly useful for classes that expect to create a large number of instances.
+       - By reserving specific memory slots for each attribute (instead of storing them in a dictionary),
+         the memory footprint of each instance is lowered.
+
+    2. **Enforced Attribute Definitions:**
+       - The use of `__slots__` ensures that only predefined attributes can be set on an instance.
+       - This prevents accidental or unintended dynamic attribute assignments, improving both code clarity
+         and error prevention.
+
+    3. **Performance Improvement:**
+       - Attribute access is slightly faster with `__slots__`, as it avoids the lookup overhead in the usual
+         `__dict__` storage.
+
+    ### Limitations of `__slots__` in this class:
+    - `__slots__` does not allow dynamic addition of new attributes at runtime. All attributes must be
+      defined explicitly in the class definition.
+    - Since weak references are not used in this class, we do not include `"__weakref__"` in `__slots__`.
+    - With `slots=True` provided by the `dataclass`, the usage and initialization of default values
+      (e.g., `field(default_factory=...)`) are fully compatible.
+
+    This tradeoff ensures that the `Ten8tResult` class is efficient and aligns with its intended use case,
+    where potentially 100s or 1000s of instances may be created.
+
 
     Attributes:
         status (bool | None): Execution status indicator.
@@ -64,9 +87,6 @@ class Ten8tResult:
     module_name: str = ""
 
     # Output Message
-    #   _msg has markup tags suitable for rendering  in any supported format  <<code>>Hello<</code>>
-    #   _rendered has the text formated for the target format                 `Hello`
-    #   _text has the text with all formatting tags removed                   Hello
     msg: str = ""
     msg_rendered: str = ""
     msg_text: str = ""
@@ -92,7 +112,7 @@ class Ten8tResult:
 
     weight: float = 100.0
 
-    # Attribute Info - This needs to be factored out?
+    # Attribute Info
     tag: str = ""
     level: int = 1
     phase: str = ""
@@ -123,10 +143,9 @@ class Ten8tResult:
 
     def as_dict(self) -> dict:
         """Convert the Ten8tResult instance to a dictionary."""
-        d = asdict(self)
+        d = {slot: getattr(self, slot) for slot in self.__slots__ if hasattr(self, slot)}
 
-        # We want this dict to be hashable so we make this a string.
-        # Place any other unhashable things here (including deleting them).
+        # Make the except_ attribute a string for serialization/hashability
         d['except_'] = str(d['except_'])
         return d
 
