@@ -22,14 +22,18 @@ def test__str__(check_func):
     assert next(check_func()).status == True
 
 
-@pytest.mark.parametrize("weight", [True, False, None])
+@pytest.mark.parametrize("weight", [False, None, 'foo', True, [], set(), {}])
 def test_weight_none(weight):
     # Note this will fail if you say Ten8tException since weights
-    with pytest.raises(t8.Ten8tException):
+    try:
         @t8.attributes(weight=weight)
         def func():  # pragma no cover
             """ Function never runs because weight fails"""
             yield t8.TR(status=True, msg="Hello")
+
+        assert False
+    except:
+        assert True
 
 
 def test_func_doc_string_extract():

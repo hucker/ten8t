@@ -62,8 +62,6 @@ class Ten8tDumpHTML(Ten8tDump):
         """
             Write pre-text containing the HTML boilerplate if not provided.
 
-            Using pre/post text allows you to make a valid standalone
-            web page.  If you omit this you get an HTML fragment.
             Args:
                 output_file: The output text stream
                 pre_text: Custom pre-text to include instead of default boilerplate.
@@ -84,7 +82,6 @@ class Ten8tDumpHTML(Ten8tDump):
 
             Args:
                 output_file: The output text stream
-                post_text: Custom post-text to include instead of default closing tags.
             """
         if self.config.post_text is not None:
             output_file.write(f"{self.INDENT_LVL_1}</body>\n")

@@ -393,12 +393,18 @@ def attributes(*,
                fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
                thread_id: str = DEFAULT_THREAD_ID,
                disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:
-    """A comprehensive decorator that applies all Ten8t function attributes.
+    """
+    Comprehensive decorator for applying attributes to Ten8t functions.
 
-    Combines all functionality of the more specific decorators (categories, control,
-    threading, caching, score) into a single decorator. This decorator exists
-    primarily for legacy compatibility - using the more specific decorators is
-    generally preferred.
+    Combines and optimizes the behavior of all specialized attribute decorators,
+    ensuring attributes are initialized and assigned efficiently without redundant nesting.
+
+    NOTE: You might be inclined to just call each of the independent decorators here and
+          build this up from existing code.   Don't do this.  Each decorator makes a call to
+          check paramaters AND creates a funciton that does "stuff" and then calls another function.
+          If you make this call all the other decorators.  You will have russian dolls of functions
+          where there are 6 nested function calls each with redundant verifications.  This code
+          does everything once.
 
     Args:
         tag (str, optional): Function type identifier. Defaults to DEFAULT_TAG.
@@ -419,17 +425,35 @@ def attributes(*,
         Callable: Decorator function that applies all Ten8t attributes.
     """
 
+    # Validate category attributes upfront (like phase, tag, ruid)
     _validate_category_names(phase, tag, ruid, disallowed_chars)
 
+    # Validate thread_id attribute separately
+    validate_string("thread_id", thread_id, disallowed_chars=disallowed_chars)
+
+    # Parse and validate TTL (caching) attribute
+    parsed_ttl = _parse_ttl_string(str(ttl_minutes))
+
+    if not isinstance(weight, (int, float)) or weight <= 0:
+        raise Ten8tException("Weight must be numeric and > than 0.0. Nominal value is 100.0.")
+
     def decorator(func):
-        # Apply each specialized decorator in sequence
-        # Each will ensure all defaults are set and apply its specific validations
-        func = categories(tag=tag, phase=phase, level=level, ruid=ruid, disallowed_chars=disallowed_chars)(func)
-        func = control(skip_on_none=skip_on_none, fail_on_none=fail_on_none,
-                       finish_on_fail=finish_on_fail, skip=skip)(func)
-        func = threading(thread_id=thread_id, disallowed_chars=disallowed_chars)(func)
-        func = caching(ttl_minutes=ttl_minutes)(func)
-        func = score(weight=weight)(func)
+        # Ensure all attributes are set with defaults if needed
+        func = _ensure_defaults(func)
+
+        # Apply all attributes in a single step
+        func.tag = tag
+        func.phase = phase
+        func.level = level
+        func.weight = weight
+        func.skip = skip
+        func.ruid = ruid
+        func.ttl_minutes = parsed_ttl
+        func.finish_on_fail = finish_on_fail
+        func.skip_on_none = skip_on_none
+        func.fail_on_none = fail_on_none
+        func.thread_id = thread_id
+
         return func
 
     return decorator
