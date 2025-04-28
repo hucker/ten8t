@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testsuites>
-    <testsuite name="pytest" errors="0" failures="0" skipped="1" tests="983" time="20.974"
-               timestamp="2025-03-31T12:16:14.237609-07:00" hostname="Chucks-Mac-mini.local">
-        <testcase classname="test.test_async" name="test_function_collection[0-0-1]" time="0.001"/>
+    <testsuite name="pytest" errors="0" failures="2" skipped="1" tests="1021" time="18.435"
+               timestamp="2025-04-28T07:28:44.847720-07:00" hostname="Chucks-Mac-mini.local">
+        <testcase classname="test.test_async" name="test_function_collection[0-0-1]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[0-1-0]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[1-0-0]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[0-0-2]" time="0.000"/>
@@ -14,10 +14,10 @@
         <testcase classname="test.test_async" name="test_function_collection[0-0-3]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[0-1-2]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[0-2-1]" time="0.000"/>
-        <testcase classname="test.test_async" name="test_function_collection[0-3-0]" time="0.001"/>
+        <testcase classname="test.test_async" name="test_function_collection[0-3-0]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[1-0-2]" time="0.000"/>
-        <testcase classname="test.test_async" name="test_function_collection[1-1-1]" time="0.001"/>
-        <testcase classname="test.test_async" name="test_function_collection[1-2-0]" time="0.000"/>
+        <testcase classname="test.test_async" name="test_function_collection[1-1-1]" time="0.000"/>
+        <testcase classname="test.test_async" name="test_function_collection[1-2-0]" time="0.001"/>
         <testcase classname="test.test_async" name="test_function_collection[2-0-1]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[2-1-0]" time="0.000"/>
         <testcase classname="test.test_async" name="test_function_collection[3-0-0]" time="0.000"/>
@@ -35,7 +35,7 @@
         <testcase classname="test.test_attributes" name="test_attr_ttl[630-units11-10.5]" time="0.000"/>
         <testcase classname="test.test_attributes" name="test_attr_ttl[1-units12-1]" time="0.000"/>
         <testcase classname="test.test_attributes" name="test_attr_ttl[.5-units13-0.5]" time="0.000"/>
-        <testcase classname="test.test_attributes" name="test_attr_ttl[10-units14-10]" time="0.001"/>
+        <testcase classname="test.test_attributes" name="test_attr_ttl[10-units14-10]" time="0.000"/>
         <testcase classname="test.test_attributes" name="test_attr_ttl[101.5-units15-101.5]" time="0.000"/>
         <testcase classname="test.test_attributes" name="test_tag_attr_exc[!]" time="0.000"/>
         <testcase classname="test.test_attributes" name="test_tag_attr_exc[@]" time="0.000"/>
@@ -172,15 +172,15 @@
         <testcase classname="test.test_checker" name="test_bad_ruids" time="0.000"/>
         <testcase classname="test.test_checker" name="test_finish_on_fail" time="0.000"/>
         <testcase classname="test.test_checker" name="test_abort_on_fail" time="0.001"/>
-        <testcase classname="test.test_checker" name="test_abort_on_exception" time="0.003"/>
-        <testcase classname="test.test_checker" name="test_check_counts" time="0.001"/>
-        <testcase classname="test.test_checker" name="test_function_list" time="0.001"/>
-        <testcase classname="test.test_checker" name="test_filtered_function_list" time="0.002"/>
-        <testcase classname="test.test_checker" name="test_checker_overview" time="0.002"/>
-        <testcase classname="test.test_checker" name="test_checker_result_dict" time="0.001"/>
-        <testcase classname="test.test_checker" name="test_builtin_filter_ruids" time="0.001"/>
-        <testcase classname="test.test_checker" name="test_builtin_filter_phase" time="0.001"/>
-        <testcase classname="test.test_checker" name="test_builtin_filter_level" time="0.001"/>
+        <testcase classname="test.test_checker" name="test_abort_on_exception" time="0.004"/>
+        <testcase classname="test.test_checker" name="test_check_counts" time="0.000"/>
+        <testcase classname="test.test_checker" name="test_function_list" time="0.000"/>
+        <testcase classname="test.test_checker" name="test_filtered_function_list" time="0.000"/>
+        <testcase classname="test.test_checker" name="test_checker_overview" time="0.001"/>
+        <testcase classname="test.test_checker" name="test_checker_result_dict" time="0.000"/>
+        <testcase classname="test.test_checker" name="test_builtin_filter_ruids" time="0.000"/>
+        <testcase classname="test.test_checker" name="test_builtin_filter_phase" time="0.000"/>
+        <testcase classname="test.test_checker" name="test_builtin_filter_level" time="0.000"/>
         <testcase classname="test.test_checker" name="test_builtin_filter_tags" time="0.000"/>
         <testcase classname="test.test_checker" name="test_null_check" time="0.000"/>
         <testcase classname="test.test_checker" name="test_null_checker_types" time="0.000"/>
@@ -189,7 +189,7 @@
         <testcase classname="test.test_checker" name="test_progress" time="0.001"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags0-levels0-p1 p2 p3 p4-ruid_1-4-All parameters empty except 'phases' and 'ruids'.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags1-levels1-phases1-ruids1-1-Single tag match.]" time="0.000"/>
         <testcase classname="test.test_checker"
@@ -198,7 +198,7 @@
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags3-1-p1-ruids3-1-Duplicated matches give 1 output.]" time="0.000"/>
         <testcase classname="test.test_checker"
-                  name="test_include_by_attribute[tags4-1-p1-ruid_1-1-Duplicated matches give 1 output.]" time="0.001"/>
+                  name="test_include_by_attribute[tags4-1-p1-ruid_1-1-Duplicated matches give 1 output.]" time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags5-3-p2-ruids5-4-Single function 't4' with level, phase, and 'ruids']"
                   time="0.000"/>
@@ -207,16 +207,16 @@
                   time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags7-2-phases7-ruids7-4-Single function with level, phase array and 'ruids'.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[t1 t2 t3 t4-levels8-phases8-ruids8-4-All different tags without extra parameters.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags9-levels9-phases9-ruids9-4-All levels and no functions.]"
                   time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags10-levels10-p1 p2 p3 p4-ruids10-4-All phases and no functions.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags11-levels11-phases11-ruid_1 ruid_2 ruid_3 ruid_4-4-All 'ruids' and no functions.]"
                   time="0.000"/>
@@ -224,32 +224,32 @@
                   name="test_include_by_attribute[tags12-levels12-phases12-ruids12-2-Single function 't1' with level 2.]"
                   time="0.000"/>
         <testcase classname="test.test_checker"
-                  name="test_include_by_attribute[tags13-2-phases13-ruids13-2-Same function with level.]" time="0.001"/>
+                  name="test_include_by_attribute[tags13-2-phases13-ruids13-2-Same function with level.]" time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags14-2-p1-ruids14-2-Same function with level and single phase.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags15-2-p1-ruid_1-2-Same function with level, phase and 'ruid_1'.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags16-2-phases16-ruid_3-3-Single function array, with level and 'ruid_3'.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags17-2-p1-ruid_3-3-Single function array, with level, phase and 'ruid_3'.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_include_by_attribute[tags18-2-p4-ruid_1-3-Single function array, with level, phase and 'ruid_1'.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
-                  name="test_exclude_by_attribute[tags0-levels0-phases0-ruids0-0-All levels leave none.]" time="0.001"/>
+                  name="test_exclude_by_attribute[tags0-levels0-phases0-ruids0-0-All levels leave none.]" time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags1-levels1-p1 p2 p3 p4-ruids1-0-All phases leave none.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags2-levels2-phases2-ruid_1 ruid_2 ruid_3 ruid_4-0-All ruids leave none.]"
                   time="0.000"/>
         <testcase classname="test.test_checker"
-                  name="test_exclude_by_attribute[tags3-levels3-phases3-ruids3-2-Tag level leave 2]" time="0.001"/>
+                  name="test_exclude_by_attribute[tags3-levels3-phases3-ruids3-2-Tag level leave 2]" time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags4-levels4-phases4-ruids4-3-Tag only]" time="0.000"/>
         <testcase classname="test.test_checker"
@@ -257,22 +257,22 @@
                   time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[t1 t2 t3 t4-levels6-phases6-ruids6-0-All tags leave none]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker" name="test_exclude_by_attribute[tags7-1-phases7-ruids7-3-Tag and level]"
                   time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags8-1-p1-ruids8-3-Tag level and phase]" time="0.000"/>
         <testcase classname="test.test_checker"
-                  name="test_exclude_by_attribute[tags9-1-p1-ruid_1-3-Tag level phase and ruid]" time="0.001"/>
+                  name="test_exclude_by_attribute[tags9-1-p1-ruid_1-3-Tag level phase and ruid]" time="0.000"/>
         <testcase classname="test.test_checker"
-                  name="test_exclude_by_attribute[tags10-3-p2-ruids10-0-all phases leave none]" time="0.001"/>
+                  name="test_exclude_by_attribute[tags10-3-p2-ruids10-0-all phases leave none]" time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags11-2-phases11-ruids11-0-one of each leave none]" time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags12-2-phases12-ruids12-2-Tag level leave 2]" time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags13-2-p1-ruids13-2-Tag level and redundant phase leave 2]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_exclude_by_attribute[tags14-2-p1-ruid_1-2-Tag Level Phase and Ruid with 2 redundant leave 2]"
                   time="0.000"/>
@@ -282,7 +282,7 @@
                   name="test_exclude_by_attribute[tags16-2-p1-ruids16-1-Tag level phase with redundant tag/phase leave 1]"
                   time="0.000"/>
         <testcase classname="test.test_checker" name="test__get_str_list[-expect0-String with no values.]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker" name="test__get_str_list[p1-expect1-String with one value.]"
                   time="0.000"/>
         <testcase classname="test.test_checker" name="test__get_str_list[p1 p2 p3-expect2-String with multiple values]"
@@ -298,10 +298,10 @@
         <testcase classname="test.test_checker" name="test_bad_get_str_list_2[bad_list2]" time="0.000"/>
         <testcase classname="test.test_checker" name="test_bad_get_str_list_2[bad_list3]" time="0.000"/>
         <testcase classname="test.test_checker" name="test_bad_get_str_list_2[bad_list4]" time="0.000"/>
-        <testcase classname="test.test_checker" name="test_bad_get_str_list_2[bad_list5]" time="0.001"/>
+        <testcase classname="test.test_checker" name="test_bad_get_str_list_2[bad_list5]" time="0.000"/>
         <testcase classname="test.test_checker" name="test_bad_get_str_list_2[bad_list6]" time="0.000"/>
         <testcase classname="test.test_checker" name="test_bad_get_str_list_2[bad_list7]" time="0.000"/>
-        <testcase classname="test.test_checker" name="test_bad_tag_phase_ruid_strings" time="0.001"/>
+        <testcase classname="test.test_checker" name="test_bad_tag_phase_ruid_strings" time="0.000"/>
         <testcase classname="test.test_checker" name="test__get_int_list[params0-expect0-List with one value.]"
                   time="0.000"/>
         <testcase classname="test.test_checker" name="test__get_int_list[params1-expect1-List with multiple values]"
@@ -314,17 +314,17 @@
                   time="0.000"/>
         <testcase classname="test.test_checker" name="test__get_int_list[1 2 3-expect5-String with multiple values]"
                   time="0.000"/>
-        <testcase classname="test.test_checker" name="test__bad_int_list[params0-list of strings]" time="0.001"/>
+        <testcase classname="test.test_checker" name="test__bad_int_list[params0-list of strings]" time="0.000"/>
         <testcase classname="test.test_checker" name="test__bad_int_list[params1-list numbers and integers]"
                   time="0.000"/>
         <testcase classname="test.test_checker" name="test__bad_int_list[a-string list]" time="0.000"/>
         <testcase classname="test.test_checker" name="test__bad_int_list[1 a-string list]" time="0.000"/>
         <testcase classname="test.test_checker" name="test__bad_int_list[1 2 3 a-string list]" time="0.000"/>
-        <testcase classname="test.test_checker" name="test_env_nulls" time="0.002"/>
-        <testcase classname="test.test_checker" name="test_verify_version" time="0.002"/>
+        <testcase classname="test.test_checker" name="test_env_nulls" time="0.001"/>
+        <testcase classname="test.test_checker" name="test_verify_version" time="0.001"/>
         <testcase classname="test.test_checker" name="test_auto_ruids" time="0.000"/>
-        <testcase classname="test.test_checker" name="test_check_render_p[None-It works1 hello]" time="0.001"/>
-        <testcase classname="test.test_checker" name="test_check_render_p[renderer1-It works1 `hello`]" time="0.001"/>
+        <testcase classname="test.test_checker" name="test_check_render_p[None-It works1 hello]" time="0.000"/>
+        <testcase classname="test.test_checker" name="test_check_render_p[renderer1-It works1 `hello`]" time="0.000"/>
         <testcase classname="test.test_checker" name="test_check_render_p[renderer2-It works1 hello]" time="0.000"/>
         <testcase classname="test.test_checker" name="test_check_render_p[renderer3-It works1 `hello`]" time="0.000"/>
         <testcase classname="test.test_checker" name="test_check_render_p[renderer4-It works1 [bold]hello[/bold]]"
@@ -337,20 +337,22 @@
         <testcase classname="test.test_checker" name="test_check_render_color[renderer3-It works1 :red[hello]]"
                   time="0.000"/>
         <testcase classname="test.test_checker" name="test_check_render_color[renderer4-It works1 [red]hello[/red]]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_checker"
                   name="test_check_render_color[renderer5-It works1 &lt;span style=&quot;color:red&quot;&gt;hello&lt;/span&gt;]"
                   time="0.000"/>
         <testcase classname="test.test_checker" name="test_msg_renderer_simple" time="0.000"/>
         <testcase classname="test.test_checker" name="test_msg_renderer_complex" time="0.000"/>
         <testcase classname="test.test_checker" name="test_auto_ten8t_funct" time="0.000"/>
-        <testcase classname="test.test_checker" name="test_module_autothread2" time="0.002"/>
+        <testcase classname="test.test_checker" name="test_module_autothread2" time="0.001"/>
+        <testcase classname="test.test_checker" name="test_checker_full_dicts" time="0.002"/>
+        <testcase classname="test.test_checker" name="test_checker_clean_dicts" time="0.002"/>
         <testcase classname="test.test_env_func" name="test_funct_env_default" time="0.000"/>
         <testcase classname="test.test_env_func" name="test_func_no_defaults_used" time="0.000"/>
         <testcase classname="test.test_env_func" name="test_func_no_defaults_used_bad_order" time="0.000"/>
         <testcase classname="test.test_env_func" name="test_func_defaults_used" time="0.000"/>
         <testcase classname="test.test_env_func" name="test_funct_all_values" time="0.000"/>
-        <testcase classname="test.test_factory" name="test_factory" time="0.002"/>
+        <testcase classname="test.test_factory" name="test_factory" time="0.001"/>
         <testcase classname="test.test_factory" name="test_factory_exception[foo.txt]" time="0.000"/>
         <testcase classname="test.test_factory" name="test_factory_exception[1]" time="0.000"/>
         <testcase classname="test.test_factory" name="test_factory_exception[param2]" time="0.000"/>
@@ -359,13 +361,17 @@
         <testcase classname="test.test_factory" name="test_more_exceptions[./rc_files/good.ini-None]" time="0.000"/>
         <testcase classname="test.test_factory" name="test_more_exceptions[./rc_files/___.toml-None]" time="0.000"/>
         <testcase classname="test.test_factory" name="test_more_exceptions[./rc_files/___.xml-None]" time="0.000"/>
-        <testcase classname="test.test_factory" name="test_more_exceptions[./rc_files/___.json-None]" time="0.001"/>
-        <testcase classname="test.test_factory" name="test_more_exceptions[./rc_files/___.ini-package1]" time="0.001"/>
+        <testcase classname="test.test_factory" name="test_more_exceptions[./rc_files/___.json-None]" time="0.000"/>
+        <testcase classname="test.test_factory" name="test_more_exceptions[./rc_files/___.ini-package1]" time="0.000"/>
         <testcase classname="test.test_function" name="test__str__" time="0.000"/>
-        <testcase classname="test.test_function" name="test_weight_none[True]" time="0.000"/>
         <testcase classname="test.test_function" name="test_weight_none[False]" time="0.000"/>
         <testcase classname="test.test_function" name="test_weight_none[None]" time="0.000"/>
-        <testcase classname="test.test_function" name="test_func_doc_string_extract" time="0.001"/>
+        <testcase classname="test.test_function" name="test_weight_none[foo]" time="0.000"/>
+        <testcase classname="test.test_function" name="test_weight_none[True]" time="0.000"/>
+        <testcase classname="test.test_function" name="test_weight_none[weight4]" time="0.000"/>
+        <testcase classname="test.test_function" name="test_weight_none[weight5]" time="0.000"/>
+        <testcase classname="test.test_function" name="test_weight_none[weight6]" time="0.000"/>
+        <testcase classname="test.test_function" name="test_func_doc_string_extract" time="0.000"/>
         <testcase classname="test.test_function" name="test_function_attributes" time="0.000"/>
         <testcase classname="test.test_function" name="test_def_function_attributes" time="0.000"/>
         <testcase classname="test.test_function" name="test_bool_pass_with_docstring" time="0.000"/>
@@ -377,8 +383,8 @@
         <testcase classname="test.test_function" name="test_def_messages_with_tr_results" time="0.000"/>
         <testcase classname="test.test_function" name="test_basic_func_call" time="0.000"/>
         <testcase classname="test.test_function" name="test_basic_func_call_timing" time="0.711"/>
-        <testcase classname="test.test_function" name="test_info_warning_func_call" time="0.000"/>
-        <testcase classname="test.test_function" name="test_divide_by_zero" time="0.001"/>
+        <testcase classname="test.test_function" name="test_info_warning_func_call" time="0.001"/>
+        <testcase classname="test.test_function" name="test_divide_by_zero" time="0.003"/>
         <testcase classname="test.test_function" name="test_use_return_with_no_info" time="0.000"/>
         <testcase classname="test.test_function" name="test_weight_exception" time="0.000"/>
         <testcase classname="test.test_function" name="test_ruid_exception" time="0.000"/>
@@ -393,54 +399,60 @@
         <testcase classname="test.test_immutable" name="test_list_append" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_list_extend" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_list_insert" time="0.000"/>
-        <testcase classname="test.test_immutable" name="test_list_remove" time="0.001"/>
+        <testcase classname="test.test_immutable" name="test_list_remove" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_list_pop" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_list_clear" time="0.000"/>
-        <testcase classname="test.test_immutable" name="test_list_sort" time="0.001"/>
+        <testcase classname="test.test_immutable" name="test_list_sort" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_list_reverse" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_dict_setitem" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_dict_delitem" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_dict_pop" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_dict_popitem" time="0.000"/>
-        <testcase classname="test.test_immutable" name="test_clear" time="0.001"/>
+        <testcase classname="test.test_immutable" name="test_clear" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_dict_update" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_dict_setdefault" time="0.000"/>
         <testcase classname="test.test_immutable" name="test_ten8t_function_writing_to_env_dict" time="0.002"/>
         <testcase classname="test.test_immutable" name="test_ten8t_function_writing_to_env_list" time="0.001"/>
         <testcase classname="test.test_immutable" name="test_ten8t_function_writing_to_env_set" time="0.001"/>
-        <testcase classname="test.test_import" name="test_import_packages" time="0.001"/>
+        <testcase classname="test.test_import" name="test_import_packages" time="0.000"/>
         <testcase classname="test.test_import" name="test_import_version" time="0.000"/>
-        <testcase classname="test.test_inline_env_func" name="test_inline_env_func" time="0.005"/>
+        <testcase classname="test.test_inline_env_func" name="test_inline_env_func" time="0.004"/>
         <testcase classname="test.test_inline_env_func" name="test_module_not_in_list" time="0.001"/>
         <testcase classname="test.test_inline_env_func" name="test_fail_on_none" time="0.000"/>
         <testcase classname="test.test_inline_env_func" name="test_skip_on_none" time="0.000"/>
         <testcase classname="test.test_logging" name="test_stream_exception" time="0.000"/>
         <testcase classname="test.test_logging" name="test_file_exception" time="0.000"/>
-        <testcase classname="test.test_logging" name="test_file_logger" time="0.005"/>
+        <testcase classname="test.test_logging" name="test_file_logger" time="0.008"/>
         <testcase classname="test.test_logging" name="test_logger_after_reset" time="0.000"/>
         <testcase classname="test.test_logging" name="test_stream_logger_installed" time="0.000"/>
         <testcase classname="test.test_logging" name="test_log_progress" time="0.001"/>
-        <testcase classname="test.test_module" name="test_module_str" time="0.000"/>
+        <testcase classname="test.test_module" name="test_module_loading[./ruid/check_suid1_a.py]" time="0.000"/>
+        <testcase classname="test.test_module" name="test_module_loading[module_file1]" time="0.000"/>
         <testcase classname="test.test_module" name="test_module_autothread" time="0.000"/>
-        <testcase classname="test.test_module" name="test_multimodule" time="0.000"/>
-        <testcase classname="test.test_module" name="test_module_autothread2" time="0.000"/>
-        <testcase classname="test.test_output" name="test_json" time="0.002"/>
+        <testcase classname="test.test_module" name="test_multimodule[./ruid/check_suid1_a.py-./ruid/check_suid2_a.py]"
+                  time="0.001"/>
+        <testcase classname="test.test_module" name="test_multimodule[module_file11-module_file21]" time="0.000"/>
+        <testcase classname="test.test_module"
+                  name="test_module_autothread2[./ruid/check_suid1_a.py-./ruid/check_suid2_a.py]" time="0.000"/>
+        <testcase classname="test.test_module" name="test_module_autothread2[module_file11-module_file21]"
+                  time="0.000"/>
+        <testcase classname="test.test_output" name="test_json_ready_dict" time="0.001"/>
         <testcase classname="test.test_package" name="test_defaults" time="0.001"/>
-        <testcase classname="test.test_package" name="test_index_in_modules" time="0.003"/>
-        <testcase classname="test.test_package" name="test_noname_package" time="0.001"/>
+        <testcase classname="test.test_package" name="test_index_in_modules" time="0.001"/>
+        <testcase classname="test.test_package" name="test_noname_package" time="0.000"/>
         <testcase classname="test.test_package" name="test_2_package_count" time="0.001"/>
         <testcase classname="test.test_package" name="test_add_to_path_none" time="0.001"/>
         <testcase classname="test.test_package" name="test_no_package" time="0.001"/>
         <testcase classname="test.test_package" name="test_sugar" time="0.000"/>
-        <testcase classname="test.test_package" name="test_load_1_package_load" time="0.002"/>
-        <testcase classname="test.test_package" name="test_load_2_packages_load" time="0.003"/>
-        <testcase classname="test.test_pre_post_sr_hooks" name="test_result_pre_hook_result_only" time="0.001"/>
+        <testcase classname="test.test_package" name="test_load_1_package_load" time="0.001"/>
+        <testcase classname="test.test_package" name="test_load_2_packages_load" time="0.002"/>
+        <testcase classname="test.test_pre_post_sr_hooks" name="test_result_pre_hook_result_only" time="0.000"/>
         <testcase classname="test.test_pre_post_sr_hooks" name="test_result_pre_hook_use_class" time="0.000"/>
         <testcase classname="test.test_pre_post_sr_hooks" name="test_verify_post_changes_pre" time="0.000"/>
         <testcase classname="test.test_pre_post_sr_hooks" name="test_hook_except" time="0.000"/>
         <testcase classname="test.test_progress" name="test_multi_progress" time="0.000"/>
-        <testcase classname="test.test_progress" name="test_bad_result_level[invalid]" time="0.001"/>
-        <testcase classname="test.test_progress" name="test_bad_result_level[-1]" time="0.001"/>
+        <testcase classname="test.test_progress" name="test_bad_result_level[invalid]" time="0.000"/>
+        <testcase classname="test.test_progress" name="test_bad_result_level[-1]" time="0.000"/>
         <testcase classname="test.test_progress" name="test_bad_result_level[None]" time="0.000"/>
         <testcase classname="test.test_progress" name="test_bad_result_level[1.5]" time="0.000"/>
         <testcase classname="test.test_progress" name="test_bad_msg_level[invalid]" time="0.000"/>
@@ -457,10 +469,10 @@
                   time="0.000"/>
         <testcase classname="test.test_progress"
                   name="test_str_and_repr_methods[Ten8tNoProgress-args1-kwargs1-Ten8tNoProgress - No progress tracking (used primarily for testing)-&lt;Ten8tNoProgress&gt;]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_progress"
                   name="test_str_and_repr_methods[Ten8tDebugProgress-args2-kwargs2-Ten8tDebugProgress - Debug progress tracker displaying messages in stdout-&lt;Ten8tDebugProgress&gt;]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_progress"
                   name="test_str_and_repr_methods[Ten8tMultiProgress-args3-kwargs3-Ten8tMultiProgress - Manages Progress for 1 Sub-progress Handlers-&lt;Ten8tMultiProgress(progress_list=1 handlers)&gt;]"
                   time="0.000"/>
@@ -469,36 +481,36 @@
                   time="0.000"/>
         <testcase classname="test.test_progress"
                   name="test_str_and_repr_methods[Ten8tMultiProgress-args5-kwargs5-Ten8tMultiProgress - Manages Progress for 1 Sub-progress Handlers-&lt;Ten8tMultiProgress(progress_list=1 handlers)&gt;]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_rc" name="test_simple_summary" time="0.000"/>
         <testcase classname="test.test_rc" name="test_bad_rcd[bad_type0]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_bad_rcd[bad_type1]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_bad_rcd[bad_type2]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_bad_rcd[1]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_simple_rc" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_simple_rc" time="0.000"/>
         <testcase classname="test.test_rc" name="test_simple_fail_rc" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_rc" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules0-r1---True]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules1-r2---True]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules1-r2---True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules2-rasdfasdfasdf---True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules3-r1-p1--True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules4-r2-p2--True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules5-r22-p2--False]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules6-r2-p22--False]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules6-r2-p22--False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules7-r12-p1--True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules8-r2-p22--True]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules9---t1-True]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules9---t1-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules10---t_example-True]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules11---t1-True]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules11---t1-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules12---t-False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules13---tag-False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules14---tag1-True]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules15---1tag-False]" time="0.001"/>
-        <testcase classname="test.test_rc" name="test_regex_big_rc[rules0-r1---True]" time="0.001"/>
-        <testcase classname="test.test_rc" name="test_regex_big_rc[rules1-r2---True]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_fixture_rc[rules15---1tag-False]" time="0.000"/>
+        <testcase classname="test.test_rc" name="test_regex_big_rc[rules0-r1---True]" time="0.000"/>
+        <testcase classname="test.test_rc" name="test_regex_big_rc[rules1-r2---True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules2-rasdfasdfasdf---True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules3-r1---True]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_big_rc[rules4-r2---True]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_big_rc[rules4-r2---True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules5-r22---False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules6-r22---False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules7-r22---False]" time="0.000"/>
@@ -506,14 +518,14 @@
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules9--p2--True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules10--pasdfasdfasdf--True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules11--p1--True]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_big_rc[rules12--p2--True]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_big_rc[rules12--p2--True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules13--p22--False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules14--p22--False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules15---t1-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules16---t_example-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules17---t1-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules18---t-False]" time="0.000"/>
-        <testcase classname="test.test_rc" name="test_regex_big_rc[rules19---tag-False]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_regex_big_rc[rules19---tag-False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules20---tag1-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules21---1tag-False]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_big_rc[rules22---1tag-False]" time="0.000"/>
@@ -524,10 +536,20 @@
         <testcase classname="test.test_rc" name="test_regex_rc_2[rules0-1-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_regex_rc_2[rules1-2-True]" time="0.000"/>
         <testcase classname="test.test_rc" name="test_neg" time="0.000"/>
+        <testcase classname="test.test_rc" name="test_modules[modules0-True]" time="0.000"/>
+        <testcase classname="test.test_rc" name="test_modules[decorator1/check_dec.py-True]" time="0.000"/>
+        <testcase classname="test.test_rc" name="test_package[packages0-True]" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_package[decorator1-True]" time="0.000"/>
+        <testcase classname="test.test_rc" name="test_module_prefix" time="0.000"/>
+        <testcase classname="test.test_rc" name="test_rc_env" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_rc_toml_env" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_rc_json_env" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_rc_json_dotted_env" time="0.001"/>
+        <testcase classname="test.test_rc" name="test_rc_ini_env" time="0.001"/>
         <testcase classname="test.test_rc_checker" name="test_nothing_rc_file" time="0.000"/>
-        <testcase classname="test.test_rc_checker" name="test_check_with_rc" time="0.001"/>
+        <testcase classname="test.test_rc_checker" name="test_check_with_rc" time="0.000"/>
         <testcase classname="test.test_rc_checker" name="test_simple_check_regex1[rc_d0-3]" time="0.000"/>
-        <testcase classname="test.test_rc_checker" name="test_simple_check_regex1[rc_d1-2]" time="0.001"/>
+        <testcase classname="test.test_rc_checker" name="test_simple_check_regex1[rc_d1-2]" time="0.000"/>
         <testcase classname="test.test_rc_checker" name="test_simple_check_regex1[rc_d2-2]" time="0.000"/>
         <testcase classname="test.test_rc_checker" name="test_simple_check_regex1[rc_d3-3]" time="0.000"/>
         <testcase classname="test.test_rc_checker" name="test_simple_check_regex1[rc_d4-3]" time="0.000"/>
@@ -580,7 +602,7 @@
                   time="0.000"/>
         <testcase classname="test.test_render"
                   name="test_all_tags[purple-purple-Hello, World!-&lt;&lt;purple&gt;&gt;Hello, World!&lt;&lt;/purple&gt;&gt;]"
-                  time="0.000"/>
+                  time="0.002"/>
         <testcase classname="test.test_render"
                   name="test_all_tags[orange-orange-Hello, World!-&lt;&lt;orange&gt;&gt;Hello, World!&lt;&lt;/orange&gt;&gt;]"
                   time="0.000"/>
@@ -769,7 +791,7 @@
                   name="test_ten8t_basic_html_renderer[white-Hello, World!-&lt;span style=&quot;color:white&quot;&gt;Hello, World!&lt;/span&gt;]"
                   time="0.000"/>
         <testcase classname="test.test_render"
-                  name="test_ten8t_basic_streamlit_renderer[bold-Hello, World!-**Hello, World!**]" time="0.002"/>
+                  name="test_ten8t_basic_streamlit_renderer[bold-Hello, World!-**Hello, World!**]" time="0.000"/>
         <testcase classname="test.test_render"
                   name="test_ten8t_basic_streamlit_renderer[italic-Hello, World!-*Hello, World!*]" time="0.000"/>
         <testcase classname="test.test_render"
@@ -895,7 +917,7 @@
                   time="0.000"/>
         <testcase classname="test.test_render"
                   name="test_renderer_attributes[Ten8tBasicHTMLRenderer-html-expected_extensions5-.html]" time="0.000"/>
-        <testcase classname="test.test_render" name="test_singleton_behavior" time="0.001"/>
+        <testcase classname="test.test_render" name="test_singleton_behavior" time="0.000"/>
         <testcase classname="test.test_render" name="test_register_renderer_singleton_behavior" time="0.000"/>
         <testcase classname="test.test_render" name="test_list_available_renderers" time="0.000"/>
         <testcase classname="test.test_render" name="test_get_renderer" time="0.000"/>
@@ -903,7 +925,7 @@
         <testcase classname="test.test_render" name="test_get_supported_extensions" time="0.000"/>
         <testcase classname="test.test_render" name="test_custom_renderer_cleanup" time="0.000"/>
         <testcase classname="test.test_result" name="test_default_values" time="0.000"/>
-        <testcase classname="test.test_result" name="test_total_results" time="0.003"/>
+        <testcase classname="test.test_result" name="test_total_results" time="0.002"/>
         <testcase classname="test.test_result" name="test_fail_only_filter" time="0.000"/>
         <testcase classname="test.test_result" name="test_pass_only_filter" time="0.000"/>
         <testcase classname="test.test_result" name="test_no_info_filter" time="0.000"/>
@@ -914,36 +936,36 @@
         <testcase classname="test.test_result" name="test_group_by_tags_ruid" time="0.000"/>
         <testcase classname="test.test_result" name="test_group_by_empty_key" time="0.000"/>
         <testcase classname="test.test_result" name="test_group_by_ruids" time="0.000"/>
-        <testcase classname="test.test_result" name="test_bad_generator_type" time="0.002"/>
+        <testcase classname="test.test_result" name="test_bad_generator_type" time="0.001"/>
         <testcase classname="test.test_ruid" name="test_ruid1" time="0.001"/>
-        <testcase classname="test.test_ruid" name="test_ruids1_module_str" time="0.001"/>
+        <testcase classname="test.test_ruid" name="test_ruids1_module_str" time="0.000"/>
         <testcase classname="test.test_ruid" name="test_ruids1_module1" time="0.001"/>
         <testcase classname="test.test_ruid" name="test_ruids1_module2" time="0.001"/>
         <testcase classname="test.test_ruid" name="test_run_ruid_1" time="0.001"/>
-        <testcase classname="test.test_ruid" name="test_run_package_in_list" time="0.002"/>
-        <testcase classname="test.test_ruid" name="test_ruid_dup" time="0.002"/>
-        <testcase classname="test.test_ruid" name="test_no_ruid" time="0.002"/>
+        <testcase classname="test.test_ruid" name="test_run_package_in_list" time="0.001"/>
+        <testcase classname="test.test_ruid" name="test_ruid_dup" time="0.001"/>
+        <testcase classname="test.test_ruid" name="test_no_ruid" time="0.001"/>
         <testcase classname="test.test_ruid" name="test_missing_ruids" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_os_fs" time="0.002"/>
         <testcase classname="test.test_rule_fs" name="test_fs_fixture_exists" time="0.001"/>
         <testcase classname="test.test_rule_fs" name="test_fs_rule_exists" time="0.001"/>
         <testcase classname="test.test_rule_fs" name="test_fs_rule_files_exist" time="0.001"/>
-        <testcase classname="test.test_rule_fs" name="test_oldest_file_within_max_age" time="0.509"/>
-        <testcase classname="test.test_rule_fs" name="test_oldest_file_outside_max_age" time="1.105"/>
-        <testcase classname="test.test_rule_fs" name="test_oldest_file_inside_max_age_no_files" time="0.002"/>
+        <testcase classname="test.test_rule_fs" name="test_oldest_file_within_max_age" time="0.504"/>
+        <testcase classname="test.test_rule_fs" name="test_oldest_file_outside_max_age" time="1.109"/>
+        <testcase classname="test.test_rule_fs" name="test_oldest_file_inside_max_age_no_files" time="0.003"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[1.9996-2.0 seconds]" time="0.001"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[1.9991-1.999 seconds]" time="0.001"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[63072000-2.0 years]" time="0.001"/>
-        <testcase classname="test.test_rule_fs" name="test_sec_format[59616000-23.0 months]" time="0.001"/>
+        <testcase classname="test.test_rule_fs" name="test_sec_format[59616000-23.0 months]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[5184000-2.0 months]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[157680000-5.0 years]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[86400-24.0 hours0]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[86401-24.0 hours]" time="0.000"/>
-        <testcase classname="test.test_rule_fs" name="test_sec_format[86399-24.0 hours]" time="0.001"/>
+        <testcase classname="test.test_rule_fs" name="test_sec_format[86399-24.0 hours]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[164159.99999999997-45.6 hours]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[172800-2.0 days]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[872639.9999999999-10.1 days]" time="0.000"/>
-        <testcase classname="test.test_rule_fs" name="test_sec_format[5-5.0 seconds]" time="0.001"/>
+        <testcase classname="test.test_rule_fs" name="test_sec_format[5-5.0 seconds]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[1-1.000 seconds]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[60-60.0 seconds]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[119-119.0 seconds]" time="0.000"/>
@@ -953,7 +975,7 @@
         <testcase classname="test.test_rule_fs" name="test_sec_format[3601-60.0 minutes]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[7194.0-119.9 minutes]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[7200-2.0 hours]" time="0.000"/>
-        <testcase classname="test.test_rule_fs" name="test_sec_format[86400-24.0 hours1]" time="0.001"/>
+        <testcase classname="test.test_rule_fs" name="test_sec_format[86400-24.0 hours1]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[90000-25.0 hours]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[0-0.000 seconds]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[1e-05-0.000 seconds]" time="0.000"/>
@@ -962,7 +984,7 @@
         <testcase classname="test.test_rule_fs" name="test_sec_format[60.0001-60.0 seconds]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[1e-06-0.000 seconds]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_sec_format[-1e-06-0.000 seconds]" time="0.000"/>
-        <testcase classname="test.test_rule_fs" name="test_within_max_size[15-True]" time="0.002"/>
+        <testcase classname="test.test_rule_fs" name="test_within_max_size[15-True]" time="0.001"/>
         <testcase classname="test.test_rule_fs" name="test_within_max_size[25-True]" time="0.001"/>
         <testcase classname="test.test_rule_fs" name="test_within_max_size[26-True]" time="0.001"/>
         <testcase classname="test.test_rule_fs" name="test_within_max_size[40-False]" time="0.001"/>
@@ -983,7 +1005,7 @@
                   time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_human_readable_size_binary[1-1.0 Byte]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_human_readable_size_binary[1024-1.0 KiB]" time="0.000"/>
-        <testcase classname="test.test_rule_fs" name="test_human_readable_size_binary[1048576-1.0 MiB]" time="0.001"/>
+        <testcase classname="test.test_rule_fs" name="test_human_readable_size_binary[1048576-1.0 MiB]" time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_human_readable_size_binary[1073741824-1.0 GiB]"
                   time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_human_readable_size_binary[1099511627776-1.0 TiB]"
@@ -1001,7 +1023,7 @@
                   time="0.000"/>
         <testcase classname="test.test_rule_fs" name="test_human_readable_size_binary[500000000000000000-444.1 PiB]"
                   time="0.000"/>
-        <testcase classname="test.test_rule_ndf" name="test_rule_ndf" time="0.009"/>
+        <testcase classname="test.test_rule_ndf" name="test_rule_ndf" time="0.007"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_not_exact" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_missing" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_unexpected_null" time="0.002"/>
@@ -1021,7 +1043,7 @@
         <testcase classname="test.test_rule_ndf" name="test_extended_bool_truthy[YES]" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_extended_bool_truthy[Y]" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_extended_bool_falsy[0_0]" time="0.000"/>
-        <testcase classname="test.test_rule_ndf" name="test_extended_bool_falsy[0_1]" time="0.001"/>
+        <testcase classname="test.test_rule_ndf" name="test_extended_bool_falsy[0_1]" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_extended_bool_falsy[false]" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_extended_bool_falsy[fail]" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_extended_bool_falsy[f]" time="0.000"/>
@@ -1039,14 +1061,14 @@
         <testcase classname="test.test_rule_ndf" name="test_extended_bool_falsy[N]" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_expected_null" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_pf_columns_enabled[pass_dataframe-True-3]"
-                  time="0.002"/>
+                  time="0.001"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_pf_columns_enabled[fail_dataframe-False-3]"
                   time="0.001"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_pf_summary_enabled" time="0.001"/>
-        <testcase classname="test.test_rule_ndf" name="test_rule_ndf_pf_columns_no_enabed" time="0.001"/>
-        <testcase classname="test.test_rule_ndf" name="test_rule_ndf_pf_columns_empty" time="0.001"/>
+        <testcase classname="test.test_rule_ndf" name="test_rule_ndf_pf_columns_no_enabed" time="0.000"/>
+        <testcase classname="test.test_rule_ndf" name="test_rule_ndf_pf_columns_empty" time="0.000"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_missing_cols" time="0.000"/>
-        <testcase classname="test.test_rule_ndf" name="test_rule_ndf_columns" time="0.002"/>
+        <testcase classname="test.test_rule_ndf" name="test_rule_ndf_columns" time="0.001"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_columns_low" time="0.001"/>
         <testcase classname="test.test_rule_ndf" name="test_rule_ndf_columns_high" time="0.001"/>
         <testcase classname="test.test_rule_ndf" name="test_conv_to_tuple" time="0.000"/>
@@ -1066,12 +1088,12 @@
                   name="test_rule_files_as_string_pathlib_exist[rule_files_/nonexistent.txt rule_files_/nonexistent.txt-False]"
                   time="0.000"/>
         <testcase classname="test.test_rule_pathlib" name="test_rule_files_exist_no_files" time="0.000"/>
-        <testcase classname="test.test_rule_pathlib" name="test_rule_large_files" time="0.001"/>
+        <testcase classname="test.test_rule_pathlib" name="test_rule_large_files" time="0.000"/>
         <testcase classname="test.test_rule_pathlib" name="test_rule_large_file_bad_setup" time="0.001"/>
         <testcase classname="test.test_rule_pathlib" name="test_rule_large_files_parameterized[./rule_files_-True-True]"
-                  time="0.001"/>
+                  time="0.000"/>
         <testcase classname="test.test_rule_pathlib"
-                  name="test_rule_large_files_parameterized[./rule_files_-False-False]" time="0.001"/>
+                  name="test_rule_large_files_parameterized[./rule_files_-False-False]" time="0.000"/>
         <testcase classname="test.test_rule_pathlib"
                   name="test_rule_large_files_parameterized[./nonexistent_folder-True-True]" time="0.000"/>
         <testcase classname="test.test_rule_pathlib"
@@ -1081,9 +1103,9 @@
         <testcase classname="test.test_rule_pathlib" name="test_bad_stale_file_setup[0--1-0-0]" time="0.001"/>
         <testcase classname="test.test_rule_pathlib" name="test_bad_stale_file_setup[-1-0-0-0]" time="0.001"/>
         <testcase classname="test.test_rule_pathlib" name="test_bad_stale_file_setup[0-0-0-0]" time="0.001"/>
-        <testcase classname="test.test_rule_pathlib" name="test_stale_file_no_match" time="0.001"/>
+        <testcase classname="test.test_rule_pathlib" name="test_stale_file_no_match" time="0.000"/>
         <testcase classname="test.test_rule_pathlib" name="test_stale_files_noage" time="0.001"/>
-        <testcase classname="test.test_rule_pathlib" name="test_stale_files" time="2.416"/>
+        <testcase classname="test.test_rule_pathlib" name="test_stale_files" time="2.422"/>
         <testcase classname="test.test_rule_pathlib" name="test_stale_file_summary" time="0.001">
             <skipped type="pytest.xfail"
                      message="Reason, this feature will be fixed in a future branch and is caused by a single summary being elevated to non-summary."/>
@@ -1097,35 +1119,35 @@
         <testcase classname="test.test_rule_pathlib" name="test_bad_max_files" time="0.001"/>
         <testcase classname="test.test_rule_pathlib" name="test_max_file_summary" time="0.000"/>
         <testcase classname="test.test_rule_pdf"
-                  name="test_extract_tables[./rule_pdf/RuleId.pdf-Rule001-True-Test Result 92%]" time="0.045"/>
+                  name="test_extract_tables[./rule_pdf/RuleId.pdf-Rule001-True-Test Result 92%]" time="0.042"/>
         <testcase classname="test.test_rule_pdf"
-                  name="test_extract_tables[./rule_pdf/RuleId.pdf-Rule002-True-Test Result 91%]" time="0.042"/>
+                  name="test_extract_tables[./rule_pdf/RuleId.pdf-Rule002-True-Test Result 91%]" time="0.037"/>
         <testcase classname="test.test_rule_pdf"
-                  name="test_extract_tables[./rule_pdf/RuleId.pdf-Rule003-False-TestResult 61%]" time="0.039"/>
+                  name="test_extract_tables[./rule_pdf/RuleId.pdf-Rule003-False-TestResult 61%]" time="0.037"/>
         <testcase classname="test.test_rule_pdf"
-                  name="test_extract_tables_two_page[./rule_pdf/TwoPage.pdf-Rule036-True-TestResult 61%]" time="0.214"/>
+                  name="test_extract_tables_two_page[./rule_pdf/TwoPage.pdf-Rule036-True-TestResult 61%]" time="0.202"/>
         <testcase classname="test.test_rule_pdf"
                   name="test_extract_tables_two_page[./rule_pdf/TwoPage.pdf-Rule001-True-Test Result 92%]"
-                  time="0.204"/>
-        <testcase classname="test.test_rule_pdf" name="test_extract_tables_by_page[1-1-28]" time="0.073"/>
-        <testcase classname="test.test_rule_pdf" name="test_extract_tables_by_page[2-29-8]" time="0.025"/>
-        <testcase classname="test.test_rule_pdf" name="test_extract_tables_bad" time="0.008"/>
-        <testcase classname="test.test_rule_pdf" name="test_extract_pdf_with_no_table" time="0.015"/>
-        <testcase classname="test.test_rule_pdf" name="test_pdf_with_repeated_rules" time="0.188"/>
-        <testcase classname="test.test_rule_pdf" name="test_pdf_with_repeated_rules_2" time="0.096"/>
+                  time="0.199"/>
+        <testcase classname="test.test_rule_pdf" name="test_extract_tables_by_page[1-1-28]" time="0.069"/>
+        <testcase classname="test.test_rule_pdf" name="test_extract_tables_by_page[2-29-8]" time="0.022"/>
+        <testcase classname="test.test_rule_pdf" name="test_extract_tables_bad" time="0.007"/>
+        <testcase classname="test.test_rule_pdf" name="test_extract_pdf_with_no_table" time="0.014"/>
+        <testcase classname="test.test_rule_pdf" name="test_pdf_with_repeated_rules" time="0.177"/>
+        <testcase classname="test.test_rule_pdf" name="test_pdf_with_repeated_rules_2" time="0.088"/>
         <testcase classname="test.test_rule_ping" name="test_empty_rule_ping" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_empty_rule_ping_pass" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_skip_ping_true" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_skip_ping_false" time="0.000"/>
-        <testcase classname="test.test_rule_ping" name="test_rule_ping" time="0.040"/>
-        <testcase classname="test.test_rule_ping" name="test_rule_latency_fail_ping" time="0.003"/>
-        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[0]" time="0.001"/>
-        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[0.0]" time="0.001"/>
-        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[-1]" time="0.001"/>
-        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[-1.0]" time="0.001"/>
-        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[-9999]" time="0.001"/>
+        <testcase classname="test.test_rule_ping" name="test_rule_ping" time="0.019"/>
+        <testcase classname="test.test_rule_ping" name="test_rule_latency_fail_ping" time="0.002"/>
+        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[0]" time="0.000"/>
+        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[0.0]" time="0.000"/>
+        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[-1]" time="0.000"/>
+        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[-1.0]" time="0.000"/>
+        <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[-9999]" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_bad_non_positive_timeouts[-0.001]" time="0.000"/>
-        <testcase classname="test.test_rule_ping" name="test_rule_pings" time="0.047"/>
+        <testcase classname="test.test_rule_ping" name="test_rule_pings" time="0.066"/>
         <testcase classname="test.test_rule_ping" name="test_non_string_urls[None]" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_non_string_urls[123]" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_non_string_urls[invalid_url2]" time="0.000"/>
@@ -1134,70 +1156,172 @@
         <testcase classname="test.test_rule_ping" name="test_non_string_urls[3.14]" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_non_string_urls[example]" time="0.000"/>
         <testcase classname="test.test_rule_ping" name="test_non_string_urls[&lt;lambda&gt;]" time="0.000"/>
-        <testcase classname="test.test_rule_ping" name="test_ping_threading" time="0.245"/>
+        <testcase classname="test.test_rule_ping" name="test_ping_threading" time="0.274"/>
         <testcase classname="test.test_rule_ping"
-                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-True-True-False-1-2-0_0]" time="0.031"/>
+                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-True-True-False-1-2-0_0]" time="0.030"/>
         <testcase classname="test.test_rule_ping"
                   name="test_rule_ping_hosts_check[1.1.1.1 www.invalidurlthatdoesnotexist12345.com-True-False-True-1-0-1]"
-                  time="0.123"/>
+                  time="0.017"/>
         <testcase classname="test.test_rule_ping"
-                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-True-False-False-1-0-0]" time="0.030"/>
+                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-True-False-False-1-0-0]" time="0.034"/>
         <testcase classname="test.test_rule_ping"
-                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-False-True-False-0-2-0]" time="0.030"/>
+                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-False-True-False-0-2-0]" time="0.042"/>
         <testcase classname="test.test_rule_ping"
                   name="test_rule_ping_hosts_check[1.1.1.1 www.invalidurlthatdoesnotexist12345.com-False-False-True-0-0-1]"
-                  time="0.018"/>
+                  time="0.020"/>
         <testcase classname="test.test_rule_ping"
-                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-True-True-False-1-2-0_1]" time="0.031"/>
+                  name="test_rule_ping_hosts_check[1.1.1.1 8.8.8.8-True-True-False-1-2-0_1]" time="0.047"/>
         <testcase classname="test.test_rule_sqlalchemy"
-                  name="test_rule_sql_table_schema[expected_columns0-expected_results0]" time="0.037"/>
+                  name="test_rule_sql_table_schema[expected_columns0-expected_results0]" time="0.024"/>
         <testcase classname="test.test_rule_sqlalchemy"
-                  name="test_rule_sql_table_schema[expected_columns1-expected_results1]" time="0.002"/>
+                  name="test_rule_sql_table_schema[expected_columns1-expected_results1]" time="0.003"/>
         <testcase classname="test.test_rule_sqlalchemy"
-                  name="test_rule_sql_table_schema_with_extra[expected_columns0-expected_results0]" time="0.001"/>
+                  name="test_rule_sql_table_schema_with_extra[expected_columns0-expected_results0]" time="0.002"/>
         <testcase classname="test.test_rule_sqlalchemy"
-                  name="test_rule_sql_table_schema_with_extra[expected_columns1-expected_results1]" time="0.002"/>
+                  name="test_rule_sql_table_schema_with_extra[expected_columns1-expected_results1]" time="0.003"/>
         <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_table_bad_table" time="0.001"/>
         <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_table_bad_column" time="0.001"/>
         <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_table_bad_column_list" time="0.001"/>
         <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_table_bad_extra_columns" time="0.002"/>
-        <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_table_types" time="0.003"/>
+        <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_table_types" time="0.002"/>
         <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_all" time="0.002"/>
         <testcase classname="test.test_rule_sqlalchemy" name="test_rule_sql_schema_missing_cols" time="0.002"/>
         <testcase classname="test.test_rule_sqlalchemy" name="test_permutations_rule_sql_all" time="0.068"/>
-        <testcase classname="test.test_rule_webapi" name="test_urls" time="0.485"/>
-        <testcase classname="test.test_rule_webapi" name="test_urls_as_strings" time="0.245"/>
-        <testcase classname="test.test_rule_webapi" name="test_urls_summary_only" time="0.225"/>
-        <testcase classname="test.test_rule_webapi" name="test_bad_urls" time="0.177"/>
-        <testcase classname="test.test_rule_webapi" name="test_missing_web_api" time="0.874"/>
-        <testcase classname="test.test_rule_webapi" name="test_wrong_response" time="0.363"/>
-        <testcase classname="test.test_rule_webapi" name="test_web_api" time="1.851"/>
-        <testcase classname="test.test_rule_webapi" name="test_mismatch_fail" time="0.001"/>
-        <testcase classname="test.test_rule_webapi" name="test_get_difference" time="0.001"/>
+        <testcase classname="test.test_rule_webapi" name="test_urls" time="0.226"/>
+        <testcase classname="test.test_rule_webapi" name="test_urls_as_strings" time="0.259"/>
+        <testcase classname="test.test_rule_webapi" name="test_urls_summary_only" time="0.231"/>
+        <testcase classname="test.test_rule_webapi" name="test_bad_urls" time="0.189"/>
+        <testcase classname="test.test_rule_webapi" name="test_missing_web_api" time="0.380"/>
+        <testcase classname="test.test_rule_webapi" name="test_wrong_response" time="0.348">
+            <failure
+                    message="AssertionError: assert True is False&#10; +  where True = Ten8tResult(status=True, func_name='', pkg_name='', module_name='', msg='URL &lt;&lt;code&gt;&gt;https://httpbin.org/json&lt;&lt;/code&gt;&gt; returned &lt;&lt;code&gt;&gt;503&lt;&lt;/code&gt;&gt;, no JSON comparison needed.', msg_rendered='', msg_text='', info_msg='', info_msg_rendered='', info_msg_text='', warn_msg='', warn_msg_rendered='', warn_msg_text='', doc='', runtime_sec=0.0, except_=None, traceback='', skipped=False, weight=100.0, tag='', level=1, phase='', count=0, ruid='', ttl_minutes=0.0, mit_msg='', owner_list=[], skip_on_none=False, fail_on_none=False, summary_result=False, thread_id='').status">
+                expected_json = {'slideshow': {'author': 'Yours Truly', 'date': 'date of publication', 'slides':
+                [{'title': 'Wake up to WonderWidgets!...m&gt; are great', 'Who &lt;em&gt;buys&lt;/em&gt;
+                WonderWidgets'], 'title': 'Overview', 'type': 'all'}], 'title': 'Sample Slide Show'}}
+
+                def test_wrong_response(expected_json):
+                @t8.attributes(tag="tag")
+                def check_rule1():
+                yield from t8.rule_web_api(url='https://httpbin.org/json',
+                json_d=expected_json,
+                expected_response=[404, 502, 503],
+                # WARNING: This used to return 404, now sometimes is 502
+                timeout_sec=TIME_OUT_SEC)
+
+                for result in check_rule1():
+                &gt; assert result.status is False
+                E AssertionError: assert True is False
+                E + where True = Ten8tResult(status=True, func_name='', pkg_name='', module_name='', msg='URL &lt;&lt;code&gt;&gt;https://httpbin.org/json&lt;&lt;/code&gt;&gt;
+                returned &lt;&lt;code&gt;&gt;503&lt;&lt;/code&gt;&gt;, no JSON comparison needed.', msg_rendered='',
+                msg_text='', info_msg='', info_msg_rendered='', info_msg_text='', warn_msg='', warn_msg_rendered='',
+                warn_msg_text='', doc='', runtime_sec=0.0, except_=None, traceback='', skipped=False, weight=100.0,
+                tag='', level=1, phase='', count=0, ruid='', ttl_minutes=0.0, mit_msg='', owner_list=[],
+                skip_on_none=False, fail_on_none=False, summary_result=False, thread_id='').status
+
+                test_rule_webapi.py:103: AssertionError
+            </failure>
+        </testcase>
+        <testcase classname="test.test_rule_webapi" name="test_web_api" time="0.340">
+            <failure
+                    message="assert False&#10; +  where False = all(&lt;generator object test_web_api.&lt;locals&gt;.run_web_api_test.&lt;locals&gt;.&lt;genexpr&gt; at 0x142dcb940&gt;)">
+                expected_json = {'slideshow': {'author': 'Yours Truly', 'date': 'date of publication', 'slides':
+                [{'title': 'Wake up to WonderWidgets!...m&gt; are great', 'Who &lt;em&gt;buys&lt;/em&gt;
+                WonderWidgets'], 'title': 'Overview', 'type': 'all'}], 'title': 'Sample Slide Show'}}
+
+                def test_web_api(expected_json):
+                """This test can be a little flakey. Occasionally it will fail for odd reasons."""
+
+                @tenacity.retry(
+                reraise=True,
+                stop=tenacity.stop_after_attempt(3),
+                wait=tenacity.wait_fixed(2),
+                retry=tenacity.retry_if_exception_type((ConnectionError, TimeoutError))
+                )
+                def run_web_api_test():
+                @t8.attributes(tag="tag")
+                def check_rule1():
+                yield from t8.rule_web_api(url='https://httpbin.org/json',
+                json_d=expected_json,
+                timeout_sec=TIME_OUT_SEC)
+
+                results = list(check_rule1())
+                assert all(result.status for result in results)
+
+                # Now make it fail
+                expected_json["slideshow"]["author"] = "Chuck"
+                results = list(check_rule1())
+                assert not any(result.status for result in results)
+
+                &gt; run_web_api_test()
+
+                test_rule_webapi.py:130:
+                _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+                ../.venv/lib/python3.13/site-packages/tenacity/__init__.py:336: in wrapped_f
+                return copy(f, *args, **kw)
+                ../.venv/lib/python3.13/site-packages/tenacity/__init__.py:475: in __call__
+                do = self.iter(retry_state=retry_state)
+                ../.venv/lib/python3.13/site-packages/tenacity/__init__.py:376: in iter
+                result = action(retry_state)
+                ../.venv/lib/python3.13/site-packages/tenacity/__init__.py:398: in &lt;lambda&gt;
+                self._add_action_func(lambda rs: rs.outcome.result())
+                /Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:449: in
+                result
+                return self.__get_result()
+                /Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in
+                __get_result
+                raise self._exception
+                ../.venv/lib/python3.13/site-packages/tenacity/__init__.py:478: in __call__
+                result = fn(*args, **kwargs)
+                _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+                @tenacity.retry(
+                reraise=True,
+                stop=tenacity.stop_after_attempt(3),
+                wait=tenacity.wait_fixed(2),
+                retry=tenacity.retry_if_exception_type((ConnectionError, TimeoutError))
+                )
+                def run_web_api_test():
+                @t8.attributes(tag="tag")
+                def check_rule1():
+                yield from t8.rule_web_api(url='https://httpbin.org/json',
+                json_d=expected_json,
+                timeout_sec=TIME_OUT_SEC)
+
+                results = list(check_rule1())
+                &gt; assert all(result.status for result in results)
+                E assert False
+                E + where False = all(&lt;generator object test_web_api.&lt;locals&gt;.run_web_api_test.&lt;locals&gt;.&lt;genexpr&gt;
+                at 0x142dcb940&gt;)
+
+                test_rule_webapi.py:123: AssertionError
+            </failure>
+        </testcase>
+        <testcase classname="test.test_rule_webapi" name="test_mismatch_fail" time="0.000"/>
+        <testcase classname="test.test_rule_webapi" name="test_get_difference" time="0.000"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-2-True-Beginning-Passed]" time="0.011"/>
+                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-2-True-Beginning-Passed]" time="0.003"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-3-True-Middle-Passed]" time="0.007"/>
+                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-3-True-Middle-Passed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-4-False-Complete-Failed]" time="0.004"/>
+                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-4-False-Complete-Failed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-5-False-Post Mortem-Failed]" time="0.004"/>
+                  name="test_row_col_pass_fail_with_sheet[Sheet1-A-B-5-False-Post Mortem-Failed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
                   name="test_row_col_pass_fail_with_sheet[None-None-None-2-True--Passed]" time="0.003"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet[None-None-None-3-True--Passed]" time="0.004"/>
+                  name="test_row_col_pass_fail_with_sheet[None-None-None-3-True--Passed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet[None-None-None-4-False--Failed]" time="0.004"/>
+                  name="test_row_col_pass_fail_with_sheet[None-None-None-4-False--Failed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet[None-None-None-5-False--Failed]" time="0.003"/>
+                  name="test_row_col_pass_fail_with_sheet[None-None-None-5-False--Failed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_no_sheet[Sheet1-A-B-2-True-Beginning-Passed]" time="0.003"/>
+                  name="test_row_col_pass_fail_with_no_sheet[Sheet1-A-B-2-True-Beginning-Passed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
                   name="test_row_col_pass_fail_with_no_sheet[Sheet1-A-B-3-True-Middle-Passed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_no_sheet[Sheet1-A-B-4-False-Complete-Failed]" time="0.003"/>
+                  name="test_row_col_pass_fail_with_no_sheet[Sheet1-A-B-4-False-Complete-Failed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_no_sheet[Sheet1-A-B-5-False-Post Mortem-Failed]" time="0.003"/>
+                  name="test_row_col_pass_fail_with_no_sheet[Sheet1-A-B-5-False-Post Mortem-Failed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
                   name="test_row_col_pass_fail_with_no_sheet[None-None-None-2-True--Passed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
@@ -1207,7 +1331,7 @@
         <testcase classname="test.test_rule_xlsx"
                   name="test_row_col_pass_fail_with_no_sheet[None-None-None-5-False--Failed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
-                  name="test_row_col_pass_fail_with_sheet_from_env[Sheet1-A-B-2-True-Beginning-Passed]" time="0.003"/>
+                  name="test_row_col_pass_fail_with_sheet_from_env[Sheet1-A-B-2-True-Beginning-Passed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
                   name="test_row_col_pass_fail_with_sheet_from_env[Sheet1-A-B-3-True-Middle-Passed]" time="0.002"/>
         <testcase classname="test.test_rule_xlsx"
@@ -1226,7 +1350,7 @@
         <testcase classname="test.test_rule_xlsx" name="test_row_col_pass_fail_with_auto_detect" time="0.002"/>
         <testcase classname="test.test_rule_xlsx" name="test_row_col_pass_fail_bad_sheet" time="0.002"/>
         <testcase classname="test.test_rule_xlsx" name="test_row_col_pass_fail_with_hardcoded" time="0.002"/>
-        <testcase classname="test.test_rule_xlsx" name="test_row_col_df" time="0.008"/>
+        <testcase classname="test.test_rule_xlsx" name="test_row_col_df" time="0.004"/>
         <testcase classname="test.test_rule_xlsx" name="test_bad_skip_on_null_df" time="0.003"/>
         <testcase classname="test.test_rule_xlsx" name="test_bad_fail_on_null_df" time="0.003"/>
         <testcase classname="test.test_score" name="test_score_by_result" time="0.000"/>
@@ -1249,7 +1373,8 @@
         <testcase classname="test.test_serialize"
                   name="test_output_formats[Markdown-ten8t_save_md-md-1000-&lt;lambda&gt;]" time="0.001"/>
         <testcase classname="test.test_serialize"
-                  name="test_output_formats[Excel-ten8t_save_xls-xlsx-6000-&lt;lambda&gt;]" time="0.010"/>
+                  name="test_output_formats[Excel-ten8t_save_xls-xlsx-6000-&lt;lambda&gt;]" time="0.006"/>
+        <testcase classname="test.test_serialize" name="test_html_format" time="0.001"/>
         <testcase classname="test.test_threads" name="test_verify_no_threads" time="0.000"/>
         <testcase classname="test.test_threads" name="test_repr" time="0.000"/>
         <testcase classname="test.test_threads" name="test_verify_single_thread" time="0.000"/>
@@ -1261,26 +1386,26 @@
         <testcase classname="test.test_threads" name="test_sorted_threads[funcs_permutation4]" time="0.001"/>
         <testcase classname="test.test_threads" name="test_sorted_threads[funcs_permutation5]" time="0.001"/>
         <testcase classname="test.test_threads" name="test_timed_threads" time="4.012"/>
-        <testcase classname="test.test_threads" name="test_many_threads" time="1.033"/>
-        <testcase classname="test.test_threads" name="test_thread_execution[100]" time="0.231"/>
-        <testcase classname="test.test_threads" name="test_thread_execution[50]" time="0.424"/>
-        <testcase classname="test.test_threads" name="test_thread_execution[25]" time="0.831"/>
-        <testcase classname="test.test_ttl" name="test_ttl_func" time="1.019"/>
-        <testcase classname="test.test_ttl" name="test_ttl_func_boolean_return" time="1.018"/>
+        <testcase classname="test.test_threads" name="test_many_threads" time="1.037"/>
+        <testcase classname="test.test_threads" name="test_thread_execution[100]" time="0.241"/>
+        <testcase classname="test.test_threads" name="test_thread_execution[50]" time="0.428"/>
+        <testcase classname="test.test_threads" name="test_thread_execution[25]" time="0.836"/>
+        <testcase classname="test.test_ttl" name="test_ttl_func" time="1.020"/>
+        <testcase classname="test.test_ttl" name="test_ttl_func_boolean_return" time="1.019"/>
         <testcase classname="test.test_util" name="test_def_str_to_bool_true[true]" time="0.001"/>
-        <testcase classname="test.test_util" name="test_def_str_to_bool_true[t]" time="0.000"/>
-        <testcase classname="test.test_util" name="test_def_str_to_bool_true[yes]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_def_str_to_bool_true[t]" time="0.001"/>
+        <testcase classname="test.test_util" name="test_def_str_to_bool_true[yes]" time="0.001"/>
         <testcase classname="test.test_util" name="test_def_str_to_bool_true[y]" time="0.000"/>
-        <testcase classname="test.test_util" name="test_def_str_to_bool_true[1]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_def_str_to_bool_true[1]" time="0.001"/>
         <testcase classname="test.test_util" name="test_def_str_to_bool_true[on]" time="0.000"/>
-        <testcase classname="test.test_util" name="test_def_str_to_bool_false[false]" time="0.001"/>
+        <testcase classname="test.test_util" name="test_def_str_to_bool_false[false]" time="0.000"/>
         <testcase classname="test.test_util" name="test_def_str_to_bool_false[f]" time="0.000"/>
         <testcase classname="test.test_util" name="test_def_str_to_bool_false[no]" time="0.000"/>
         <testcase classname="test.test_util" name="test_def_str_to_bool_false[n]" time="0.000"/>
-        <testcase classname="test.test_util" name="test_def_str_to_bool_false[0]" time="0.001"/>
+        <testcase classname="test.test_util" name="test_def_str_to_bool_false[0]" time="0.000"/>
         <testcase classname="test.test_util" name="test_def_str_to_bool_false[off]" time="0.000"/>
-        <testcase classname="test.test_util" name="test_except[x]" time="0.001"/>
-        <testcase classname="test.test_util" name="test_except[foo]" time="0.001"/>
+        <testcase classname="test.test_util" name="test_except[x]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_except[foo]" time="0.000"/>
         <testcase classname="test.test_util" name="test_except[whatever]" time="0.000"/>
         <testcase classname="test.test_util" name="test_except[]" time="0.000"/>
         <testcase classname="test.test_util" name="test_except[ ]" time="0.000"/>
@@ -1340,11 +1465,37 @@
                   name="test_any_to_path_list_parametrized[  test.py   test2.py  -expected_output8]" time="0.000"/>
         <testcase classname="test.test_util" name="test_any_to_path_list_parametrized[None-expected_output9]"
                   time="0.000"/>
-        <testcase classname="test.test_yielder" name="test_yielder_do_something" time="0.001"/>
+        <testcase classname="test.test_util" name="test_clean_dict[data0-None-expected0]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict[data1-None-expected1]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict[data2-None-expected2]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict[data3-keep_keys3-expected3]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict[data4-None-expected4]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict[data5-None-expected5]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict[data6-keep_keys6-expected6]" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data0-remove_keys0-None-expected0]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data1-remove_keys1-None-expected1]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data2-remove_keys2-None-expected2]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data3-remove_keys3-None-expected3]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data4-remove_keys4-None-expected4]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data5-remove_keys5-None-expected5]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data6-remove_keys6-None-expected6]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_keys[data7-remove_keys7-None-expected7]"
+                  time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_exceptions" time="0.000"/>
+        <testcase classname="test.test_util" name="test_clean_dict_remove_nulls_behavior" time="0.000"/>
+        <testcase classname="test.test_util" name="test_tuple_cases" time="0.000"/>
+        <testcase classname="test.test_yielder" name="test_yielder_do_something" time="0.000"/>
         <testcase classname="test.test_yielder" name="test_result_yielder_counts" time="0.000"/>
         <testcase classname="test.test_yielder" name="test__call__yielder_counts" time="0.000"/>
-        <testcase classname="test.test_yielder" name="test_yielder_do_nothing" time="0.001"/>
-        <testcase classname="test.test_yielder" name="test_yielder_exc" time="0.003"/>
+        <testcase classname="test.test_yielder" name="test_yielder_do_nothing" time="0.000"/>
+        <testcase classname="test.test_yielder" name="test_yielder_exc" time="0.002"/>
         <testcase classname="test.test_yielder" name="test_yielder_result" time="0.000"/>
         <testcase classname="test.test_yielder" name="test_yielder_summary" time="0.000"/>
         <testcase classname="test.test_yielder" name="test_ten8t_yield[config0-expected_results0]" time="0.000"/>
@@ -1352,9 +1503,9 @@
         <testcase classname="test.test_yielder" name="test_ten8t_yield[config2-expected_results2]" time="0.000"/>
         <testcase classname="test.test_yielder" name="test_ten8t_yield[config3-expected_results3]" time="0.000"/>
         <testcase classname="test.test_yielder" name="test_bad_yield_setup" time="0.001"/>
-        <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldAll-3-True]" time="0.001"/>
-        <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldPassOnly-1-False]" time="0.001"/>
-        <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldFailOnly-1-False]" time="0.001"/>
+        <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldAll-3-True]" time="0.000"/>
+        <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldPassOnly-1-False]" time="0.000"/>
+        <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldFailOnly-1-False]" time="0.000"/>
         <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldSummaryOnly-1-True]" time="0.000"/>
         <testcase classname="test.test_yielder" name="test_yield_classes[Ten8tYieldPassFail-2-False]" time="0.000"/>
         <testcase classname="test.test_yielder"

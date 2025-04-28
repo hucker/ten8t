@@ -1,7 +1,7 @@
 # Ten8t: Observability for Filesystems, APIs, Databases, Documents and more.
 
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
-![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-983/983-brightgreen.svg)
+![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-1019/1021-red.svg)
 &nbsp;&nbsp;
 ![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
 &nbsp;&nbsp;
@@ -329,6 +329,70 @@ You can see here that data is provided externally, but programmatically via the 
 this parameter is directly loaded from a config file, or comes pre-populated with data frames and database
 connections.
 
+## RC Files
+
+One way to significantly improve the way checkers are set up, is to use resource files rather
+than filling out a bunch of parameters to initialize a checker. In a previous example we had a `check_rules.py`
+file and an environment setup. Below is how this could be handled using a resoure file (aka RC File) to store the
+configuration.  (JSON, TOML, XML, INI and plain python dicts are supported.)
+
+#### `check_rules.py`
+
+```python
+import ten8t as t8
+
+
+def rule1(cfg):
+    return 1 in cfg['data']
+
+
+def rule2(cfg):
+    return 2 in cfg['data']
+
+
+def rule3(cfg):
+    return 3 in cfg['data']
+
+
+def rule4(cfg):
+    return 4 in cfg['data']
+```
+
+#### `resource.json`
+
+```json
+{
+  "setup": {
+    "modules": "check_rules.py",
+    "env": {
+      "data": [1,2,3]
+    }
+  }
+}
+
+```
+
+```python
+import ten8t as t8
+
+checker = t8.Ten8tChecker(rc=t8.ten8t_rc_factory('resource.json', section='setup'))
+results = checker.run_all()
+```
+
+Resource files support:
+
+1. `tags`
+2. `levels`
+3. `phases`
+4. `modules`
+5. `packages`
+6. `module_glob`
+7. `check_prefix`
+8. `env`
+
+With this structure the details of the configuration are hidden in the resource file rather than requiring
+passing many parameters to
+
 ## Rule Integrations
 
 To simplify getting started, there are included rules you can call to check files and folders on your file system
@@ -381,7 +445,7 @@ print(ch.status_strategy.render(ch))
 
 ```
 
-<small>uv_rule_clip.py &nbsp;&nbsp; 05:41:36 2025-04-03</small>
+<small>uv_rule_clip.py &nbsp;&nbsp; 06:45:36 2025-04-03</small>
 
 <!--file end-->
 
@@ -559,7 +623,7 @@ print(f"Final result: {ch.pass_count=} {ch.fail_count=} ")
 
 ```
 
-<small>uv_ten8t.py &nbsp;&nbsp; 05:47:36 2025-04-03</small>
+<small>uv_ten8t.py &nbsp;&nbsp; 06:45:36 2025-04-03</small>
 
 <!--file end-->
 
@@ -640,7 +704,7 @@ The API often times accepts data in multiple types:
    of type `Ten8tFunction`...`ten8t` will generically wrap the function with no special attributes.
 
 This approach simplifies integration with configuration files and command-line options by reducing data
-transformation code. While this diverges from strict typing practices, it improves developer
+transformation code to align interfaces. While this diverges from strict typing practices, it improves developer
 experience and speeds up implementation.
 
 ### Class Hierarchy
@@ -729,24 +793,24 @@ subclassed were made into subprojects and files were split up in to folders and 
 __[Halstead Complexity](https://www.geeksforgeeks.org/software-metrics-halstead-metrics/)__
 <!--file snippets/radon_hal.csv-->
 
-| File               | Bugs | Difficulty | Effort  | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
-|--------------------|------|------------|---------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_checker.py   | 0.49 | 6.64       | 9704.10 | 539.12 | F            | A                  | D              | F            |
-| ten8t_function.py  | 0.18 | 6.68       | 3660.46 | 203.36 | C            | A                  | C              | D            |
-| ten8t_yield.py     | 0.17 | 4.67       | 2420.79 | 134.49 | C            | A                  | C              | C            |
-| ten8t_util.py      | 0.10 | 3.75       | 1180.78 | 65.60  | C            | A                  | B              | B            |
-| ten8t_attribute.py | 0.08 | 6.00       | 1483.05 | 82.39  | B            | A                  | B              | B            |
-| ten8t_module.py    | 0.06 | 5.36       | 1025.19 | 56.95  | B            | A                  | B              | B            |
-| ten8t_ruid.py      | 0.03 | 3.75       | 378.84  | 21.05  | A            | A                  | A              | A            |
-| ten8t_result.py    | 0.03 | 2.71       | 232.47  | 12.92  | A            | A                  | A              | A            |
-| ten8t_filter.py    | 0.03 | 2.00       | 159.45  | 8.86   | A            | A                  | A              | A            |
-| ten8t_package.py   | 0.03 | 1.64       | 124.60  | 6.92   | A            | A                  | A              | A            |
-| ten8t_thread.py    | 0.01 | 1.00       | 15.51   | 0.86   | A            | A                  | A              | A            |
-| ten8t_logging.py   | 0.00 | 0.50       | 1.00    | 0.06   | A            | A                  | A              | A            |
-| ten8t_exception.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
-| ten8t_immutable.py | 0.00 | 0.00       | 0.00    | 0.00   | A            | A                  | A              | A            |
+| File               | Bugs | Difficulty | Effort   | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
+|--------------------|------|------------|----------|--------|--------------|--------------------|----------------|--------------|
+| ten8t_checker.py   | 0.63 | 7.38       | 13955.29 | 775.29 | F            | A                  | F              | F            |
+| ten8t_util.py      | 0.19 | 6.20       | 3442.54  | 191.25 | C            | A                  | C              | C            |
+| ten8t_function.py  | 0.18 | 6.68       | 3660.46  | 203.36 | C            | A                  | C              | D            |
+| ten8t_yield.py     | 0.17 | 4.67       | 2420.79  | 134.49 | C            | A                  | C              | C            |
+| ten8t_attribute.py | 0.10 | 5.74       | 1717.43  | 95.41  | B            | A                  | B              | B            |
+| ten8t_module.py    | 0.06 | 5.36       | 1025.19  | 56.95  | B            | A                  | B              | B            |
+| ten8t_ruid.py      | 0.03 | 3.75       | 378.84   | 21.05  | A            | A                  | A              | A            |
+| ten8t_result.py    | 0.03 | 2.71       | 232.47   | 12.92  | A            | A                  | A              | A            |
+| ten8t_filter.py    | 0.03 | 2.00       | 159.45   | 8.86   | A            | A                  | A              | A            |
+| ten8t_package.py   | 0.03 | 1.64       | 124.60   | 6.92   | A            | A                  | A              | A            |
+| ten8t_thread.py    | 0.01 | 1.00       | 15.51    | 0.86   | A            | A                  | A              | A            |
+| ten8t_logging.py   | 0.00 | 0.50       | 1.00     | 0.06   | A            | A                  | A              | A            |
+| ten8t_exception.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
+| ten8t_immutable.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 06:12:42 2025-04-03</small>
+<small>radon_hal.csv &nbsp;&nbsp; 09:20:37 2025-04-28</small>
 
 <!--file end-->
 
@@ -755,12 +819,12 @@ __[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-mai
 
 | File               | Maint.<br>Index | Rank |
 |--------------------|-----------------|------|
-| ten8t_checker.py   | 24.40           | A    |
+| ten8t_checker.py   | 20.10           | A    |
 | ten8t_yield.py     | 47.50           | A    |
 | ten8t_function.py  | 51.80           | A    |
-| ten8t_attribute.py | 58.30           | A    |
+| ten8t_util.py      | 56.60           | A    |
+| ten8t_attribute.py | 57.00           | A    |
 | ten8t_result.py    | 61.70           | A    |
-| ten8t_util.py      | 61.90           | A    |
 | ten8t_module.py    | 62.80           | A    |
 | ten8t_thread.py    | 63.90           | A    |
 | ten8t_filter.py    | 68.20           | A    |
@@ -770,7 +834,7 @@ __[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-mai
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 06:12:42 2025-04-03</small>
+<small>radon_mi.csv &nbsp;&nbsp; 09:20:37 2025-04-28</small>
 
 <!--file end-->
 
@@ -783,9 +847,9 @@ NOTE: This is by class. There is some function based code that is invisible
 | File               | Name                  | Rank | Complexity |
 |--------------------|-----------------------|------|------------|
 | ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
+| ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
 | ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
 | ten8t_checker.py   | Ten8tResultStrategy   | A    | 4.00       |
-| ten8t_checker.py   | Ten8tChecker          | A    | 4.00       |
 | ten8t_module.py    | Ten8tModule           | A    | 4.00       |
 | ten8t_checker.py   | Ten8tStatusStrategy   | A    | 3.00       |
 | ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
@@ -805,7 +869,7 @@ NOTE: This is by class. There is some function based code that is invisible
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 06:12:42 2025-04-03</small>
+<small>radon_cc.csv &nbsp;&nbsp; 09:20:37 2025-04-28</small>
 
 <!--file end-->
 
@@ -846,7 +910,7 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 | **hucker**   |     132 |      2025-04-02      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 06:12:39 2025-04-03</small>
+<small>contribs.md &nbsp;&nbsp; 09:20:33 2025-04-28</small>
 
 <!--file end-->
 
