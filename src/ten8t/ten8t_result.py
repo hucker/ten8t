@@ -16,68 +16,81 @@ class Ten8tResult:
     """
     Represents the outcome and metadata of a Ten8tFunction execution.
 
-    The `__slots__` feature is used in this class (via `@dataclass(slots=True)`) to optimize memory usage and
-    improve performance. By enabling `__slots__`, Python prevents the creation of a dynamic `__dict__` for
-    each instance, which not only reduces memory consumption but also improves attribute access speed.
+    This class is designed to encapsulate detailed information about the execution
+    of a function or rule in the Ten8t framework, including its status, runtime
+    details, messages, and various metadata. It provides a structured way to handle
+    execution results while optimizing memory and performance through the use of
+    `__slots__`.
 
-    ### Why use `__slots__`?
-    1. **Memory Optimization:**
-       - This is particularly useful for classes that expect to create a large number of instances.
-       - By reserving specific memory slots for each attribute (instead of storing them in a dictionary),
-         the memory footprint of each instance is lowered.
+    ### Key Features:
+    - Captures detailed results, including status, messages (info, warnings, errors),
+      runtime, and exceptions.
+    - Supports efficient memory use and faster attribute access by enabling `__slots__`.
+      This is especially useful when managing large numbers of result objects.
+    - Prevents unintended dynamic attribute assignment, ensuring predictable behavior.
+    - Provides utility methods like `as_dict()` for easy serialization and integration.
 
-    2. **Enforced Attribute Definitions:**
-       - The use of `__slots__` ensures that only predefined attributes can be set on an instance.
-       - This prevents accidental or unintended dynamic attribute assignments, improving both code clarity
-         and error prevention.
+    ### Why Use `__slots__`?
+    - **Memory Efficiency**:
+      By defining a fixed set of attributes, memory overhead from per-instance dictionaries (`__dict__`) is avoided.
+    - **Performance Improvements**:
+      Attribute access and assignment are faster due to reduced indirection overhead.
+    - **Error Prevention**:
+      Ensures that only predefined attributes can be added, reducing potential runtime mistakes.
 
-    3. **Performance Improvement:**
-       - Attribute access is slightly faster with `__slots__`, as it avoids the lookup overhead in the usual
-         `__dict__` storage.
+    While `__slots__` is beneficial here, it limits dynamic attribute addition. If the need arises for dynamic attributes in the future, `__slots__` can be disabled by removing `slots=True` from the `@dataclass`.
 
-    ### Limitations of `__slots__` in this class:
-    - `__slots__` does not allow dynamic addition of new attributes at runtime. All attributes must be
-      defined explicitly in the class definition.
-    - Since weak references are not used in this class, we do not include `"__weakref__"` in `__slots__`.
-    - With `slots=True` provided by the `dataclass`, the usage and initialization of default values
-      (e.g., `field(default_factory=...)`) are fully compatible.
-
-    This tradeoff ensures that the `Ten8tResult` class is efficient and aligns with its intended use case,
-    where potentially 100s or 1000s of instances may be created.
-
-
-    Attributes:
-        status (bool | None): Execution status indicator.
-        func_name (str): Name of the executed function.
-        pkg_name (str): Package name containing the function.
-        module_name (str): Module name containing the function.
-        msg (str): Message intended for the user.
-        info_msg (str): Additional informational message.
-        warn_msg (str): Warning message from the execution.
-        doc (str): Docstring of the executed function.
-        runtime_sec (float): Runtime duration in seconds.
+    ### Attributes:
+        status (bool | None): Indicates the execution status (pass, fail, or None).
+        func_name (str): The name of the executed function.
+        pkg_name (str): Package where the function resides.
+        module_name (str): Module name where the function resides.
+        msg (str): User-facing message summarizing the result.
+        info_msg (str): Informational message about the execution.
+        warn_msg (str): Warning message, if applicable.
+        doc (str): Docstring of the executed function or rule.
+        runtime_sec (float): The runtime of the function in seconds.
         except_ (Exception | None): Exception raised during execution, if any.
-        traceback (str): Traceback of the exception, if raised.
-        skipped (bool): Indicates whether execution was skipped.
-        weight (float): Relative importance or weight assigned to this result.
-        tag (str): Tag to categorize or identify the function.
-        level (int): Level associated with the function's execution.
-        phase (str): Execution phase indicator.
-        count (int): Number of return values generated by the function.
-        ruid (str): Unique identifier for the result instance.
-        ttl_minutes (float): Result's time-to-live in minutes.
-        mit_msg (str): Mitigation message, if applicable.
-        owner_list (list[str]): List of owners or responsible parties.
-        skip_on_none (bool): Flag indicating skipping when encountering None.
-        fail_on_none (bool): Flag indicating failure when encountering None.
-        summary_result (bool): Flag if this result represents a summary outcome.
-        thread_id (str): Thread identifier where function executed.
+        traceback (str): String representation of the exception traceback.
+        skipped (bool): Indicates whether the execution was skipped.
+        weight (float): Relative importance or weight assigned to the result.
+        tag (str): Descriptive tag for grouping results (for example, HR, Ops, Engr, Production)
+        level (int): Numerical category for ordering results.
+        phase (str): "Phase" category, perhaps (r&d,proto,production).
+        count (int): Number of return values or individual steps.
+        ruid (str): Unique identifier for this result.
+        ttl_minutes (float): Time-to-live duration for the result, in minutes.
+        mit_msg (str): Mitigation suggestion or message, if applicable.
+        owner_list (list[str]): A list of owners or responsible parties.
+        skip_on_none (bool): Whether to skip function execution if encountering `None`.
+        fail_on_none (bool): Whether to fail function execution if encountering `None`.
+        summary_result (bool): Indicates this result is a summary of multiple outcomes.
+        thread_id (str): The identifier of the thread where this function ran.
 
-    Methods:
+    ### Methods:
         as_dict() -> dict:
-            Converts instance attributes to a dictionary suitable for hashing or serialization.
+            Converts the `Ten8tResult` instance into a dictionary representation
+            for serialization or hashing purposes.
 
-        """
+    ### Usage Example:
+        ```python
+        # Example instantiation
+        result = Ten8tResult(
+            status=True,
+            func_name="my_function",
+            msg="Function executed successfully",
+            runtime_sec=0.45,
+        )
+
+        # Accessing attributes
+        print(result.status)  # True
+        print(result.runtime_sec)  # 0.45
+
+        # Converting to dictionary
+        result_dict = result.as_dict()
+        print(result_dict)
+        ```
+    """
 
     status: bool | None = False
 

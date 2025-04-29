@@ -35,48 +35,55 @@ DEFAULT_NO_RESULT = Ten8tNoResultSummary.SummaryPassOnNone
 
 class Ten8tYield:
     """
-    This object allows you to write code that looks like it is yielding
-    all passes, fails, exceptions and summary results. The code looks
-    like it is yielding as it goes.  What happens under the covers is
-    the object looks at its configuration and only yields what it was
-    told to yield, and it tracks a summary.  The benefit of this is that
-    all code ONLY looks like the sunny day case and not top level
-    code is ever required to do all the checks and accounting.  This
-    allows all rules that process lists of "stuff" to work the same
-    way with clean code.
+    A utility class for managing and tracking results (pass, fail, exceptions, and summaries)
+    in a structured and consistent way while using Python's yield mechanism.
 
-    Check functions may be called to handle
-    many things rather than one thing.  Are all the files in this
-    folder smaller than 1kb, are all the modification times < 1hr
-    old. These situations raise the need to have counts, to
-    track pass/fail and to have (possibly only) summary messages.
-    There is a lot of messing around to track this "stuff".
+    This class simplifies the process of yielding intermediate results while maintaining
+    internal tracking of passes, fails, and summaries. It is designed to handle lists
+    or collections of "results" seamlessly without requiring the top-level code to manage
+    detailed state explicitly. It enables cleaner, more maintainable code.
 
-    This class allows you to create a yield object that
-    tracks every time you have yielded while tracking pass
-    fail counts.  You can have summary_only set to true so
-    that the intermediate results are not yielded allowing you
-    to have a single result rather than one for each constituent.
+    The `Ten8tYield` class can emit individual results (pass/fail) and provides an
+    optional summary result. Intermediate results can be suppressed by enabling summary-only mode.
 
-    This class is tightly coupled to the Ten8tResult class because
-    I want it to look like a result (because that is what is passed
-    every time it is used)
+    ## Key Features:
+    - Tracks pass, fail, and total counts.
+    - Option to emit (or skip) pass, fail, or summary results independently.
+    - Works seamlessly with the `Ten8tResult` class for consistent result representation.
+    - Provides an easy-to-use interface for summary generation.
 
-    These internal counts allow top level code to NOT manage that
-    state at the rule level.  Instead, you just report your passes
+    ## Example Usage:
+    **With Summary Enabled**:
+    ```python
+    y = Ten8tYield(summary_name="Generic Test", emit_summary=True)
+    y(status=True, msg="Test1")
+    y(status=True, msg="Test2")
+    y(status=False, msg="Test3")
+    yield from y.yield_summary()
+    # Output: TR(status=False, msg="Generic Test had 2 pass and 1 fail results for 66.7%")
+    ```
 
-    and fails and ask at the end how it played out.
+    **Without Summary**:
+    ```python
+    y = Ten8tYield(summary_name="Generic Test", emit_summary=False)
+    y(status=True, msg="Test1")
+    y(status=True, msg="Test2")
+    y(status=False, msg="Test3")
+    # Outputs individual results
+    ```
 
-    y = Ten8tYield()
+    Note: All arguments must be passed as keyword arguments unless using the `__call__` method.
 
-    if cond:
-        yield from y(TR(True,"Info...")
-    if not y.yielded:
-        yield from y(TR(False,"Nothing to do"))
-    if emit_summary:
-        yield TR(status=self.fail_count==0,msg=f"{self.pass_count} passes "
-                 f"and {self.fail_count} fails")
+    Args:
+        emit_pass (bool): Whether to emit pass results. Defaults to `True`.
+        emit_fail (bool): Whether to emit fail results. Defaults to `True`.
+        emit_summary (bool): Whether to emit a summary result. Defaults to `False`.
+        summary_name (str): An optional name for the summary. Defaults to an empty string.
+        no_results (Ten8tNoResultSummary): Determines behavior when no results are present.
+            Defaults to `DEFAULT_NO_RESULT`.
 
+    Raises:
+        Ten8tException: If no valid result configuration is provided (e.g., all emit flags are `False`).
     """
 
     def __init__(self, *,
