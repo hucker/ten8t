@@ -193,6 +193,34 @@ def check_file_age(csv_file):
         return TR(status=False, msg="The file is stale")
 ```
 
+## Attempts (Try,Retry,Retries??) Support
+
+OK, the description of `retry` can be confusing. Does the first try count as a retry? There is evidence
+that retry and try mean the same thing so 3 "retries" means 3 "tries". Hot take: this is just wrong.
+I decided that `ten8t` is going to allow you to specify how many `attempts` you want a check function to
+run before it fails with whatever result it has on the last attempt. This way if you say `attempts=3`
+you know it will run, at most, 3 times, the first attempt is just an attempt.
+
+Because check functions can yield multiple results, if ANY checks yield a `False` status, the entire check
+will run again. If you need granular attempts, then that needs to happen explicitly in the check
+function. The code is smart when the `attempt` decorator is used the function caches all yielded results
+and ONLY when they all pass are they yielded normally. The failing results are thrown away, but you
+can see how many attempts were made as the result dataclass as an attempt attribute which tells you which
+attempt the data is from (if you don't use the @attempt decorator, the value will be set to `1` since it
+is an attempt.
+
+```python
+from ten8t import attempts, Ten8tResult
+
+
+@attempts(max_attempts=3, delay=1.0)
+def flakey_func():
+    yield Ten8tResult(
+        status=flakey_func(),
+        msg="Attempting..."
+    )
+```
+
 ## Threading Support
 
 Threading is supported in various ways. The easiest way to enable threading is by setting

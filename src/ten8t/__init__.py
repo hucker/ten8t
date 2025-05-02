@@ -46,6 +46,7 @@ from .serialize import Ten8tDumpMarkdown  # noqa: F401
 from .serialize import ten8t_save_csv  # noqa: F401
 from .serialize import ten8t_save_md  # noqa: F401
 from .serialize import ten8t_save_xls  # noqa: F401
+from .ten8t_attribute import attempts  # noqa: F401
 # Import and re-export symbols from subpackages
 from .ten8t_attribute import attributes  # noqa: F401
 from .ten8t_attribute import caching  # noqa: F401

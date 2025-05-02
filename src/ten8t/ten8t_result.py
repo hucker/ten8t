@@ -137,6 +137,9 @@ class Ten8tResult:
     mit_msg: str = ""
     owner_list: list[str] = field(default_factory=list)
 
+    # Counts the number of times a check function was "attempted"
+    attempts: int = 1
+
     # Bad parameters
     skip_on_none: bool = False
     fail_on_none: bool = False

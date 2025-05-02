@@ -13,9 +13,12 @@ along way never using an attribute...and once you learn them you will use them a
 the time.
 """
 import re
+import time
+from functools import wraps
 from typing import Callable
 
 from .ten8t_exception import Ten8tException
+from .ten8t_logging import ten8t_logger
 
 DEFAULT_TAG = ""  # A string indicating the type of rule, used for grouping/filtering results
 DEFAULT_LEVEL = 1  #
@@ -236,7 +239,6 @@ def control(*, skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
         Callable: Decorator function that applies the control attributes.
     """
 
-
     def decorator(func):
         # Ensure all defaults are set first
         _ensure_defaults(func)
@@ -249,6 +251,71 @@ def control(*, skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
         return func
 
     return decorator
+
+
+def attempts(max_attempts=1, delay=0.5):
+    """
+    A decorator that wraps a generator and restarts it if any yielded item fails (item.status == False),
+    unless it is the last attempt, in which case all items (including failures) are emitted.
+
+    Additionally, it sets the `.attempt` attribute on each item, indicating which attempt
+    generated the result (1 for the first attempt, 2 for the second attempt, etc.).
+
+    It is anticipated that this mechanism will be used sparingly. Attempts really should only be
+    needed in cases where there is an unreliable entity in your system, ideally this would only
+    be used should an EXTERNAL entity be faulty.
+
+    NOTE: This breaks the way you usually think about yielding. It has to run the generator and
+          collect all the results, so from a progress standpoint everything happens at once.
+
+    Parameters:
+        max_attempts (int): Total number of attempts for the generator. Must be >= 1.
+        delay_sec (float): Optional delay (in seconds) between attempts.
+    """
+    if max_attempts < 1:
+        raise ValueError("The number of max_attempts must be at least 1.")
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            current_attempt = 1  # Track the current attempt (starts at 1, not 0)
+
+            while current_attempt <= max_attempts:
+                collected_items = []  # Store results for later retries if needed
+                last_attempt = current_attempt == max_attempts
+
+                if current_attempt > 1:
+                    ten8t_logger.info("Running attempt %d for %s...", current_attempt, func.__name__)
+
+                # Collect items yielded by the generator
+                for result in func(*args, **kwargs):  # Call the decorated function
+                    result.attempts = current_attempt  # Set the human-readable attempt number
+                    collected_items.append(result)
+
+                    # Stop early if a failure occurs and it's not the last attempt
+                    if not result.status and not last_attempt:
+                        break
+
+                # If successful or on the last attempt, yield the results
+                else:
+                    for result in collected_items:
+                        yield result  # Yield the collected results to the caller
+                    return  # Exit the loop and function when done
+
+                # Retry logic: increment the attempt counter
+                current_attempt += 1
+                if current_attempt <= max_attempts:
+                    time.sleep(delay)  # Optional delay before the next attempt
+
+            # If we've exhausted all max_attempts, yield the collected results (even if failures)
+            for result in collected_items:
+                yield result
+
+        return wrapper  # Return the wrapped function
+
+    return decorator  # Return the decorator
+
+
 
 
 def threading(*, thread_id: str = DEFAULT_THREAD_ID, disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:

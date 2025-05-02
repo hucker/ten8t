@@ -298,3 +298,79 @@ def test_multiple_decorators_different_orderings():
     function5 = ten8t_function.Ten8tFunction(check_override)
     assert function5.tag == "first_tag"  # Most recent wins
     assert function5.phase == "first_phase"
+
+
+def test_retry_no_retry():
+    """attempt attribute is set but doesn't need since it always works"""
+
+    @ten8t_attribute.attempts(max_attempts=4)
+    def retry_func():
+        yield ten8t_result.Ten8tResult(
+            status=True,
+            msg=f"Always pass"
+        )
+
+    results = list(ten8t_function.Ten8tFunction(retry_func)())
+    assert len(results) == 1
+    assert results[0].status is True
+    assert results[0].attempts == 1
+    assert results[0].msg == "Always pass"
+
+
+@pytest.mark.parametrize("max_attempts", range(2, 11))
+def test_retry_with_max_attempts(max_attempts):
+    """
+    Setup parameterization so we can test a bunch of attempts.  Overkill yes, but I want to
+    see this work correctly for reasonable-ish numbers of attempts
+    """
+
+    @ten8t_attribute.attempts(max_attempts=max_attempts,
+                              delay=0.05)  # Decorate the function with the current max_attempts
+    def retry_func():
+        yield ten8t_result.Ten8tResult(
+            status=False,
+            msg="Always fail"
+        )
+
+    results = list(ten8t_function.Ten8tFunction(retry_func)())
+
+    # Assertions to verify behavior
+    assert len(results) == 1  # Only one result should be returned (after all attempts)
+    assert results[0].status is False  # The status should always be False (since it always fails)
+    assert results[0].attempts == max_attempts  # The final result should have .attempt equal to max_attempts
+    assert results[0].msg == "Always fail"  # The message should remain the same
+
+
+@pytest.mark.parametrize(
+    "pass_attempt, expected_status",
+    [
+        (1, True),  # Passes on the 1st attempt
+        (2, True),  # Passes on the 2nd attempt
+        (3, True),  # Passes on the 3rd attempt
+        (4, False),  # Fails as pass_attempt exceeds max attempts
+    ],
+)
+def test_attempts_with_state(pass_attempt, expected_status):
+    """
+    Verify behavior when retry logic is applied. The function succeeds on the specified
+    pass_attempt. If pass_attempt exceeds max_attempts, it fails.
+    """
+
+    # Retry function that succeeds on the pass_attempt and tracks attempts
+    @ten8t_attribute.attempts(max_attempts=3, delay=0)
+    def retry_func():
+        retry_func.count += 1  # Increment the state
+        yield ten8t_result.Ten8tResult(
+            status=retry_func.count == pass_attempt,  # Passes if attempt matches pass_attempt
+            msg="Attempting..."
+        )
+
+    retry_func.count = 0  # Initialize attempt counter
+
+    # Execute the function and collect results
+    results = list(ten8t_function.Ten8tFunction(retry_func)())
+
+    # Assertions to verify result consistency
+    assert len(results) == 1  # Only one final result returned
+    assert results[0].status == expected_status  # Matches expected status
+    assert results[0].attempts == min(pass_attempt, 3)  # Reflects the actual number of attempts
