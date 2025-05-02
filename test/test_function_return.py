@@ -1,3 +1,5 @@
+import pytest
+
 from src import ten8t as t8
 
 
@@ -68,6 +70,7 @@ def test_boolean_only_return_function():
         assert result.count == 1
 
 
+@pytest.mark.skip(reason="You can non longer yield bools")
 def test_boolean_only_yield_function():
     """ Test cases that allows for only returning a boolean. """
 
@@ -89,6 +92,7 @@ def test_boolean_only_yield_function():
         assert result.count == 1
 
 
+@pytest.mark.skip(reason="You can non longer yield bools")
 def test_boolean_only_yield_function_fail():
     """ Test cases that allows for only returning a boolean. """
 

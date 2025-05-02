@@ -8,7 +8,8 @@ import inspect
 import re
 import time
 import traceback
-from typing import Any, Generator
+from functools import wraps
+from typing import Any, Callable, Generator
 
 from .ten8t_attribute import get_attribute
 from .ten8t_exception import Ten8tException
@@ -87,10 +88,12 @@ class Ten8tFunction:
                  post_sr_hooks: Any = None):
         self.env = env or {}
         self.module = module
-        self.function = function_
+
+        function_ = self._make_generator(function_)
         self.is_generator = inspect.isgeneratorfunction(function_)
         self.is_coroutine = inspect.iscoroutinefunction(function_)
         self.is_asyncgen = inspect.isasyncgenfunction(function_)
+        self.function = function_
 
         # if self.is_coroutine:
         #    raise Ten8tException(f"Coroutines are not YET supported for function {function_.__name__}")
@@ -152,6 +155,53 @@ class Ten8tFunction:
 
     def __str__(self):
         return f"Ten8tFunction({self.function_name=})"
+
+    def _make_generator(self, func: Callable) -> Callable:
+        """
+        Converts a function to a generator function.
+
+        This is the code that supports beginners making the easiest possible check functions.
+        Ideally we just get rid of this, but it can be useful for those dealing with the
+        learning curve of yielding rather than returning.
+
+        1. If the function is already a generator, coroutine, or async function, return it as-is.
+        2. If the function is a regular Python function:
+            a. Call the function.
+            b. Examine the return value:
+                i.   If it's a boolean: Wrap it in a Ten8tResult and return it as a list.
+                ii.  If it's a Ten8tResult: Return it in a list.
+                iii. If it's a list of Ten8tResults, return the list as-is.
+                iv.  If it's a list of booleans, convert each to a Ten8tResult and return the list.
+                v.   If it's none of the above, raise a TypeError.
+        """
+
+        if inspect.isfunction(func) and not inspect.isgeneratorfunction(func) and not inspect.iscoroutinefunction(func):
+
+            @wraps(func)  # Preserve original function's signature and metadata
+            def wrapper(*args, **kwargs) -> Generator:
+                # Wrap the synchronous function into a generator
+                result = func(*args, **kwargs)
+                # Result handling
+                if isinstance(result, bool):
+                    # Single boolean result
+                    yield Ten8tResult(status=result)
+                elif isinstance(result, Ten8tResult):
+                    # Single Ten8tResult
+                    yield result
+                elif isinstance(result, list) and all(isinstance(item, bool) for item in result):
+                    # List of booleans
+                    yield from (Ten8tResult(status=item) for item in result)
+                elif isinstance(result, list) and all(isinstance(item, Ten8tResult) for item in result):
+                    # List of Ten8tResults
+                    yield from result
+                else:
+                    # Unsupported result type
+                    raise TypeError(f"Unsupported return value type from function '{func.__name__}': {type(result)}")
+
+            return wrapper
+        else:
+            # Expected types just return
+            return func
 
     def _get_parameter_values(self):
         args = []

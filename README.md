@@ -3,7 +3,7 @@
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
 ![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-1019/1021-red.svg)
 &nbsp;&nbsp;
-![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
+![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-91%25-brightgreen.svg)
 &nbsp;&nbsp;
 [![Python](https://img.shields.io/pypi/pyversions/ten8t)](https://pypi.org/project/ten8t/)
 &nbsp;&nbsp;
@@ -822,10 +822,10 @@ __[Halstead Complexity](https://www.geeksforgeeks.org/software-metrics-halstead-
 | File               | Bugs | Difficulty | Effort   | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |--------------------|------|------------|----------|--------|--------------|--------------------|----------------|--------------|
 | ten8t_checker.py   | 0.63 | 7.38       | 13955.29 | 775.29 | F            | A                  | F              | F            |
+| ten8t_function.py  | 0.22 | 6.58       | 4290.53  | 238.36 | D            | A                  | C              | D            |
 | ten8t_util.py      | 0.19 | 6.20       | 3442.54  | 191.25 | C            | A                  | C              | C            |
-| ten8t_function.py  | 0.18 | 6.68       | 3660.46  | 203.36 | C            | A                  | C              | D            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79  | 134.49 | C            | A                  | C              | C            |
-| ten8t_attribute.py | 0.10 | 5.74       | 1717.43  | 95.41  | B            | A                  | B              | B            |
+| ten8t_attribute.py | 0.15 | 7.67       | 3531.80  | 196.21 | C            | A                  | C              | C            |
 | ten8t_module.py    | 0.06 | 5.36       | 1025.19  | 56.95  | B            | A                  | B              | B            |
 | ten8t_ruid.py      | 0.03 | 3.75       | 378.84   | 21.05  | A            | A                  | A              | A            |
 | ten8t_result.py    | 0.03 | 2.71       | 232.47   | 12.92  | A            | A                  | A              | A            |
@@ -836,7 +836,7 @@ __[Halstead Complexity](https://www.geeksforgeeks.org/software-metrics-halstead-
 | ten8t_exception.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 16:06:43 2025-04-28</small>
+<small>radon_hal.csv &nbsp;&nbsp; 20:57:58 2025-05-01</small>
 
 <!--file end-->
 
@@ -846,11 +846,11 @@ __[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-mai
 | File               | Maint.<br>Index | Rank |
 |--------------------|-----------------|------|
 | ten8t_checker.py   | 20.10           | A    |
-| ten8t_yield.py     | 47.50           | A    |
-| ten8t_function.py  | 51.80           | A    |
+| ten8t_yield.py     | 46.30           | A    |
+| ten8t_function.py  | 49.40           | A    |
+| ten8t_attribute.py | 54.30           | A    |
+| ten8t_result.py    | 55.60           | A    |
 | ten8t_util.py      | 56.60           | A    |
-| ten8t_attribute.py | 57.00           | A    |
-| ten8t_result.py    | 58.60           | A    |
 | ten8t_module.py    | 62.80           | A    |
 | ten8t_thread.py    | 63.90           | A    |
 | ten8t_filter.py    | 68.20           | A    |
@@ -860,7 +860,7 @@ __[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-mai
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 16:06:43 2025-04-28</small>
+<small>radon_mi.csv &nbsp;&nbsp; 20:57:58 2025-05-01</small>
 
 <!--file end-->
 
@@ -895,7 +895,7 @@ NOTE: This is by class. There is some function based code that is invisible
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 16:06:43 2025-04-28</small>
+<small>radon_cc.csv &nbsp;&nbsp; 20:57:58 2025-05-01</small>
 
 <!--file end-->
 
@@ -933,10 +933,10 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 | Username     | Commits | Last<br>Contribution |
 |--------------|--------:|:--------------------:|
-| **hucker**   |     132 |      2025-04-02      |
+| **hucker**   |     146 |      2025-04-28      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 16:06:40 2025-04-28</small>
+<small>contribs.md &nbsp;&nbsp; 20:57:54 2025-05-01</small>
 
 <!--file end-->
 
@@ -949,7 +949,7 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 ## Latest changes
 
+1. Added support for @attempt(max_attempts=3) decorator to enable retrying checks.
 1. Improved the decorator mechanism for setting up check functions.
 2. Added a textual demo.
 3. Added explicit error messages for async check functions
-4. Added support for csv/markdown/excel output from the checker.

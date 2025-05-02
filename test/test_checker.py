@@ -76,7 +76,9 @@ def test_no_attrs():
 
     ch = t8.Ten8tChecker(check_functions=[sfunc])
 
-    assert ch.check_func_list[0].function == func
+    # Note that the function has changed at this point since it is wrapped in a generator so we compare
+    # the name here.
+    assert ch.check_func_list[0].function_name == func.__name__
     assert ch.check_func_list[0] == sfunc
 
 
