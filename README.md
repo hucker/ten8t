@@ -430,6 +430,7 @@ few lines of code.
 These generally take the form of you wrapping them up with data specific to your system.
 
 The rules shown below trigger errors if there are any log files > 100k in length and if they haven't been updated
+The rules shown below trigger errors if there are any log files > 100k in length and if they haven't been updated
 in the last 5 minutes using rules from based on the `pathlib` packages
 
 <!--file ../src/ten8t/uv_ten8t/uv_rule_clip.py-->
@@ -670,6 +671,25 @@ Pass: Function:check_5 - URL https://www.microsoft.com returned 200
 NOTE: At this time, the installation of `ten8t` still has development and optional dependencies installed, that is why
 there are so many. The dependency list will be MUCH smaller soon.
 
+## Standard Python Interface
+
+`Ten8t` provides the standard `__main__.py` file to 'run' the contents of a single module (.py extension) or all of the
+files in a given packages (folder).
+
+```text
+>>> python -m ten8t examples/file_system
+Running Ten8t checks on the package (folder): examples/file_system
+Status:True Tag:folder Msg:The path examples/file_system/folder1/file1.txt does exist.
+Status:True Tag:folder Msg:The path examples/file_system/folder1/file2.txt does exist.
+Status:True Tag:folder Msg:The path examples/file_system/folder2/file1.txt does exist.
+Status:True Tag:folder Msg:The path examples/file_system/folder2/file2.txt does exist.
+Status:True Tag:folder Msg:The path examples/file_system/folder1 does exist.
+Status:True Tag:folder Msg:The path examples/file_system/folder2 does exist.
+Score = 100.0%
+```
+
+This, rather primitive, interface provides a quick way to verify your check functions.
+
 ## TOX
 
 `Ten8t` is tested under Python 3.10, 3.11, 3.12 and 3.13.
@@ -692,7 +712,7 @@ there are so many. The dependency list will be MUCH smaller soon.
 Your code has been rated at 9.79/10 (previous run: 9.79/10, +0.00)
 ```
 
-# Development Comments
+# Development Comments/Testing
 
 This project serves as both a practical tool and a playground for advanced Python features I don't
 encounter often in my day job: code inspection, advanced yielding, threading, strategy patterns, dynamic
@@ -706,31 +726,33 @@ as well as increasing the confidence in the code as you make changes...and if yo
 tests that would have caught it. A significant amount of testing can be thought of as automated debugging,
 sure it took a little more time upfront to write a test, but every time after that I'm not in the debugger
 stepping and that payback is huge...and then couple that with testing on different versions and manual
-testing becomes intractable.
+testing becomes intractable. The net is that tests SAVE time. Mucking around in the guts of the code
+and seeing 1000+ tests pass is a good feeling.
 
 TDD complements YAGNI principles in my development approach. Rather than creating extensive object
 systems upfront, classes were built incrementally, only refactoring when the existing abstraction no
 longer supports clean design. This contrasts with my early career tendency to build elaborate webs
-of interacting objects most of which would never be derived from and often times needed extensive
-coupling.
+of interacting objects most of which would never be derived from or used as intended.
 
 ## Philosophy
 
 The general "API" to `ten8t` prioritizes flexibility and dev. experience. Rather than requiring strict
 parameter formats, the library "intelligently" handles various input types to save users time and
-reduces friction.
+reduces friction for users of the library.
 
 The API often times accepts data in multiple types:
 
 1) Lists of strings can be passed as space-delimited strings (`"foo fum quux"`), single values (`"foo"`),
    conventional lists (`["foo"]`), or even empty values (`""`, `[]`, `None`)
-2) File paths work with both strings (`"file.txt"`) and `pathlib.Path` objects (`pathlib.Path("file.txt")`)
+2) File paths generally work with both strings (`"file.txt"`) and `pathlib.Path` objects (`pathlib.Path("file.txt")`)
 3) When a list is expected but a single item is provided, the API automatically wraps it in a list
 4) When you pass a list of functions to the checker they can be regular python functions, or they can be
    of type `Ten8tFunction`...`ten8t` will generically wrap the function with no special attributes.
 
 This approach simplifies integration with configuration files and command-line options by reducing data
-transformation code to align interfaces. While this diverges from strict typing practices, it improves developer
+transformation code to align interfaces. It was hard at first looking at lots of shaping code in the
+package, but that shaping is hidded at the application level. If there is a data type that makes sense
+`ten8t` tries to allow it. While this diverges from strict typing practices, it improves developer
 experience and speeds up implementation.
 
 ### Class Hierarchy
@@ -805,9 +827,9 @@ __all__ = [
 Code quality is tracked using [Radon](https://github.com/rubik/radon) metrics across the `ten8t` package.
 In general, the codebase maintains good quality scores with mostly A's and B's.
 
-The columns below have been sorted worst to best. It can be seen that most of the complexity is in the
+The columns below have been sorted *WORST* to best. It can be seen that most of the complexity is in the
 `ten8t_checker`/`function`/`yield` modules as those are the most complex functionality in the system, and
-they are reliably at the top of all of these metrics. This is where the pain is and where effort should
+they are reliably at the (bad) top of all of these metrics. This is where the pain is and where effort should
 be placed on improving the code.
 
 Pull requests addressing code quality in lower-scoring files are welcome...actually any PRs are welcome.
@@ -821,7 +843,7 @@ __[Halstead Complexity](https://www.geeksforgeeks.org/software-metrics-halstead-
 
 | File               | Bugs | Difficulty | Effort   | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |--------------------|------|------------|----------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_checker.py   | 0.63 | 7.38       | 13955.29 | 775.29 | F            | A                  | F              | F            |
+| ten8t_checker.py   | 0.65 | 7.36       | 14303.85 | 794.66 | F            | A                  | F              | F            |
 | ten8t_function.py  | 0.22 | 6.58       | 4290.53  | 238.36 | D            | A                  | C              | D            |
 | ten8t_util.py      | 0.19 | 6.20       | 3442.54  | 191.25 | C            | A                  | C              | C            |
 | ten8t_yield.py     | 0.17 | 4.67       | 2420.79  | 134.49 | C            | A                  | C              | C            |
@@ -836,7 +858,7 @@ __[Halstead Complexity](https://www.geeksforgeeks.org/software-metrics-halstead-
 | ten8t_exception.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 20:57:58 2025-05-01</small>
+<small>radon_hal.csv &nbsp;&nbsp; 23:43:00 2025-05-01</small>
 
 <!--file end-->
 
@@ -845,7 +867,7 @@ __[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-mai
 
 | File               | Maint.<br>Index | Rank |
 |--------------------|-----------------|------|
-| ten8t_checker.py   | 20.10           | A    |
+| ten8t_checker.py   | 18.50           | B    |
 | ten8t_yield.py     | 46.30           | A    |
 | ten8t_function.py  | 49.40           | A    |
 | ten8t_attribute.py | 54.30           | A    |
@@ -860,7 +882,7 @@ __[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-mai
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 20:57:58 2025-05-01</small>
+<small>radon_mi.csv &nbsp;&nbsp; 23:43:00 2025-05-01</small>
 
 <!--file end-->
 
@@ -895,7 +917,7 @@ NOTE: This is by class. There is some function based code that is invisible
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 20:57:58 2025-05-01</small>
+<small>radon_cc.csv &nbsp;&nbsp; 23:43:00 2025-05-01</small>
 
 <!--file end-->
 
@@ -933,10 +955,10 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 | Username     | Commits | Last<br>Contribution |
 |--------------|--------:|:--------------------:|
-| **hucker**   |     146 |      2025-04-28      |
+| **hucker**   |     149 |      2025-05-02      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 20:57:54 2025-05-01</small>
+<small>contribs.md &nbsp;&nbsp; 23:42:55 2025-05-01</small>
 
 <!--file end-->
 
@@ -946,6 +968,7 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 2. Improve ten8t_checker.py and ten8t_function.py to reduce their complexity numbers.
 3. Add support for handling coroutines and async generators, so `ten8t` can support all function types.
 4. Progress bars for using multithreading is broken.
+5. Fix warnings in the sphinx code. It is very annoyiung to see all that red.
 
 ## Latest changes
 

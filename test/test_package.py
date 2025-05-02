@@ -62,6 +62,21 @@ def test_index_in_modules(skip_pkg):
         assert count == func.index
 
 
+def test_package_string(skip_pkg):
+    """ Verify string based packag folder name """
+    ch = t8.Ten8tChecker(packages='skip')
+
+    for count, func in enumerate(ch.check_func_list, start=1):
+        assert count == func.index
+
+
+def test_package_pathlib(skip_pkg):
+    """ Verify pathlib package names """
+    ch = t8.Ten8tChecker(packages=pathlib.Path('skip'))
+
+    for count, func in enumerate(ch.check_func_list, start=1):
+        assert count == func.index
+
 def test_noname_package(skip_no_name_pkg):
     assert skip_no_name_pkg.name == 'skip'
     m = skip_no_name_pkg.get("check_skip")

@@ -399,6 +399,14 @@ class Ten8tChecker:
         """ Allow packages to be in various forms"""
         if not packages:
             return []
+        if isinstance(packages, list) and all(isinstance(p, pathlib.Path) for p in packages):
+            return [Ten8tPackage(folder=package) for package in packages]
+        if isinstance(packages, list) and all(isinstance(p, str) for p in packages):
+            return [Ten8tPackage(folder=package) for package in packages]
+        if isinstance(packages, pathlib.Path):
+            return [Ten8tPackage(folder=packages)]
+        if isinstance(packages, str):
+            return [Ten8tPackage(folder=package) for package in packages.split()]
         if isinstance(packages, Ten8tPackage):
             return [packages]
         if isinstance(packages, list) and all(isinstance(p, Ten8tPackage) for p in packages):
