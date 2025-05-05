@@ -168,10 +168,83 @@ def test_bad_generator_type(caplog) -> None:
     assert len(results) == 3
     assert results[2].except_
 
-    # This is a little bit tricky.  The log has the errors from each of the previous 3 tests
-    # the first one occurring at iteration 1, then 2 then 3.  So when you look in the log you should
-    # see the 3 errors in order.
-    # assert len(caplog.messages) == 3
-    # assert "iteration 1" in caplog.messages[0]
-    # assert "iteration 2" in caplog.messages[1]
-    # assert "iteration 3" in caplog.messages[2]
+
+def test_ten8t_result_from_dict():
+    # Create a sample Ten8tResult object with all attributes populated
+    original_result = ten8t.Ten8tResult(
+        status=True,
+        func_name="test_function",
+        pkg_name="test_pkg",
+        module_name="test_module",
+        msg="Execution completed successfully",
+        msg_rendered="Rendered execution message",
+        msg_text="Plain text execution message",
+        info_msg="Informational message",
+        info_msg_rendered="Rendered info message",
+        info_msg_text="Plain info message",
+        warn_msg="Warning message",
+        warn_msg_rendered="Rendered warning message",
+        warn_msg_text="Plain warning message",
+        doc="This is a docstring",
+        runtime_sec=123.456,
+        except_=None,
+        traceback="This is a traceback string",
+        skipped=True,
+        weight=5.5,
+        tag="TestingTag",
+        level=3,
+        phase="testing_phase",
+        count=42,
+        ruid="unique-1234-5678",
+        ttl_minutes=1440.0,
+        mit_msg="Suggested mitigation message",
+        owner_list=["owner1", "owner2", "owner3"],
+        attempts=3,
+        skip_on_none=True,
+        fail_on_none=False,
+        summary_result=True,
+        thread_id="thread-1234"
+    )
+
+    # Convert the original object to a dictionary
+    result_dict = original_result.as_dict()
+
+    # Reconstruct a Ten8tResult object using from_dict
+    reconstructed_result = ten8t.Ten8tResult.from_dict(result_dict)
+
+    # Assert that the reconstructed object matches the original
+    assert original_result == reconstructed_result
+
+    # Assert that every attribute is correctly reconstructed
+    assert reconstructed_result.status is True
+    assert reconstructed_result.func_name == "test_function"
+    assert reconstructed_result.pkg_name == "test_pkg"
+    assert reconstructed_result.module_name == "test_module"
+    assert reconstructed_result.msg == "Execution completed successfully"
+    assert reconstructed_result.msg_rendered == "Rendered execution message"
+    assert reconstructed_result.msg_text == "Plain text execution message"
+    assert reconstructed_result.info_msg == "Informational message"
+    assert reconstructed_result.info_msg_rendered == "Rendered info message"
+    assert reconstructed_result.info_msg_text == "Plain info message"
+    assert reconstructed_result.warn_msg == "Warning message"
+    assert reconstructed_result.warn_msg_rendered == "Rendered warning message"
+    assert reconstructed_result.warn_msg_text == "Plain warning message"
+    assert reconstructed_result.doc == "This is a docstring"
+    assert reconstructed_result.runtime_sec == 123.456
+    assert reconstructed_result.except_ is None
+    assert reconstructed_result.traceback == "This is a traceback string"
+    assert reconstructed_result.skipped is True
+    assert reconstructed_result.weight == 5.5
+    assert reconstructed_result.tag == "TestingTag"
+    assert reconstructed_result.level == 3
+    assert reconstructed_result.phase == "testing_phase"
+    assert reconstructed_result.count == 42
+    assert reconstructed_result.ruid == "unique-1234-5678"
+    assert reconstructed_result.ttl_minutes == 1440.0
+    assert reconstructed_result.mit_msg == "Suggested mitigation message"
+    assert reconstructed_result.owner_list == ["owner1", "owner2", "owner3"]
+    assert reconstructed_result.attempts == 3
+    assert reconstructed_result.skip_on_none is True
+    assert reconstructed_result.fail_on_none is False
+    assert reconstructed_result.summary_result is True
+    assert reconstructed_result.thread_id == "thread-1234"

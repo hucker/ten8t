@@ -243,7 +243,8 @@ class Ten8tFunction:
 
         # Function is tagged with skip attribute.  (Allows config files to disable tests)
         if self.skip:
-            yield Ten8tResult(status=None, skipped=True,
+            yield Ten8tResult(status=None,
+                              skipped=True,
                               msg=f"Skipped due to attribute in func='{self.function_name}'",
                               )
             return

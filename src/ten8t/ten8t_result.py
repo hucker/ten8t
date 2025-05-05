@@ -165,6 +165,30 @@ class Ten8tResult:
         d['except_'] = str(d['except_'])
         return d
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        """
+        Create a Ten8tResult instance from a dictionary (that presumably was saved with as_dict())
+
+        Args:
+            data (dict): Dictionary representation of a Ten8tResult instance.
+
+        Returns:
+            Ten8tResult: A new Ten8tResult instance populated with values from the dictionary.
+        """
+        # Handle exception reconstruction if it was serialized as a string
+        if 'except_' in data:
+            # If the `except_` was serialized, convert it appropriately
+            # Here we keep it as a string since full exception reconstruction requires additional handling
+            data['except_'] = None if data['except_'] == 'None' else data['except_']
+
+        # Handle attributes with default factories like `owner_list`
+        if 'owner_list' not in data:
+            data['owner_list'] = []
+
+        # Create a new instance by unpacking the dictionary
+        return cls(**data)
+
 
 # Shorthand
 TR = Ten8tResult
