@@ -32,6 +32,7 @@ DEFAULT_SKIP_ON_NONE = False
 DEFAULT_FAIL_ON_NONE = False
 DEFAULT_INDEX = 1  # All ten8t functions are given an index of 1 when created.
 DEFAULT_THREAD_ID = "main_thread__"
+DEFAULT_ATTEMPTS = 1
 
 # Define at module level.  This *could* be changed...
 DEFAULT_DISALLOWED_CHARS = ' ,!@#$%^&:?*<>\\/(){}[]<>~`-+=\t\n\'"'
@@ -121,6 +122,9 @@ def _ensure_defaults(func):
 
     # Score attributes
     func.weight = getattr(func, 'weight', DEFAULT_WEIGHT)
+
+    # Used for 'retry' mechanism
+    func.attempts = getattr(func, 'attempts', DEFAULT_ATTEMPTS)
 
     # Other attributes
     func.index = getattr(func, 'index', DEFAULT_INDEX)
@@ -422,6 +426,7 @@ ATTRIBUTE_DEFAULTS = {
     "fail_on_none": DEFAULT_FAIL_ON_NONE,
     "index": DEFAULT_INDEX,
     "thread_id": DEFAULT_THREAD_ID,
+    "attempts": DEFAULT_ATTEMPTS,
 }
 
 
@@ -459,6 +464,7 @@ def attributes(*,
                skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
                fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
                thread_id: str = DEFAULT_THREAD_ID,
+               attempts: str = DEFAULT_ATTEMPTS,
                disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:
     """
     Comprehensive decorator for applying attributes to Ten8t functions.
@@ -485,6 +491,7 @@ def attributes(*,
         skip_on_none (bool, optional): Skip if None result. Defaults to DEFAULT_SKIP_ON_NONE.
         fail_on_none (bool, optional): Fail if None result. Defaults to DEFAULT_FAIL_ON_NONE.
         thread_id (str, optional): Thread identifier. Defaults to DEFAULT_THREAD_ID.
+        attempts (int, optional): Number of attempts. Defaults to DEFAULT_ATTEMPTS.
         disallowed_chars (str, optional): Characters not allowed in attributes.
             Defaults to DEFAULT_DISALLOWED_CHARS.
 
@@ -520,6 +527,7 @@ def attributes(*,
         func.skip_on_none = skip_on_none
         func.fail_on_none = fail_on_none
         func.thread_id = thread_id
+        func.attempts = attempts
 
         return func
 

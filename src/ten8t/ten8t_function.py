@@ -125,7 +125,8 @@ class Ten8tFunction:
         else:
             raise Ten8tException("post_sr_hooks must be a list")
 
-        # This should be a class rather than having to repeat yourself.
+        # TODO:  This is bad coupling,is should be automatic for everything
+        #        Rather than copying
         self.tag: str = get_attribute(function_, "tag")
         self.level: int = get_attribute(function_, "level")
         self.phase: str = get_attribute(function_, "phase")
@@ -138,6 +139,7 @@ class Ten8tFunction:
         self.finish_on_fail: bool = get_attribute(function_, "finish_on_fail")
         self.index = get_attribute(function_, "index")
         self.thread_id = get_attribute(function_, "thread_id")
+        self.attempts = get_attribute(function_, "attempts")
 
         # Support Time To Live using the return value of time.time.  Resolution of this
         # is on the order of 10e-6 depending on OS.  In my case this is WAY more than I
