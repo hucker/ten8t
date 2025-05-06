@@ -41,8 +41,8 @@ class Ten8tDumpConfig:
     quoted_strings: bool = False  # Should strings be quoted.  CSV only?
     result_sheet_name: str = None  # Excel only?
     summary_sheet_name: str = None  # Excel only?
-    summary_title:str=None
-    result_title:str=None
+    summary_title: str = None
+    result_title: str = None
     autobreak_headers: bool = True  # for multiword columns this forces a break to keep columns narrow
 
     pre_text: str = ''  # Useful for formats like HTML that might need page setup "stuff"
@@ -50,7 +50,7 @@ class Ten8tDumpConfig:
 
     # Define valid columns
     VALID_SUMMARY_COLUMNS = ["pass", "fail", "skip",
-                             'duration_seconds','start_time','end_time',
+                             'duration_seconds', 'start_time', 'end_time',
                              'perfect_run']
 
     VALID_RESULT_COLUMNS = [

@@ -44,6 +44,7 @@ StrOrPathListOrNone: TypeAlias = StrOrPathList | None
 
 PathList: TypeAlias = Sequence[pathlib.Path]
 
+
 class NextIntValue:
     """
     I had to create this class in order to make mypy happy.

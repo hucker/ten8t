@@ -1,4 +1,3 @@
-
 """
 Markdown Ten8t Output Renderer
 

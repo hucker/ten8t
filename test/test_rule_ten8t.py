@@ -23,7 +23,7 @@ def test_rule_imports(rule_func):
     file_name = 'rule_ten8t_results/result1.json'
 
     def check_func():
-        yield from rule_func(file_name)
+        yield from rule_func(file_name, yielder=ten8t.Ten8tYieldPassFail())
 
     ch = ten8t.Ten8tChecker(check_functions=[check_func])
 
@@ -165,14 +165,83 @@ def test_rule_age_check(function_to_test, wait_time_sec, max_age_min, expected_s
 
 def test_rule_glob_import():
     """
-
+    Verify that the globbing mechanism works.
     """
 
     def check_func():
-        yield from rule_ten8t_json_files('rule_ten8t_results/result*.json')
+        yield from rule_ten8t_json_files('rule_ten8t_results/result*.json',
+                                         yielder=ten8t.Ten8tYieldPassFail())
 
     ch = ten8t.Ten8tChecker(check_functions=[check_func])
 
     results = ch.run_all()
     # Assertions for expected results
     assert len(results) == 8
+
+
+def test_rule_glob_ruid_check_import():
+    """
+    Verify that the globbing mechanism works.
+    """
+
+    @ten8t.categories(ruid='test')
+    def check_func():
+        yield from rule_ten8t_json_files('rule_ten8t_results/result*.json',
+                                         yielder=ten8t.Ten8tYieldPassFail(),
+                                         ruid_leader="")
+
+    ch = ten8t.Ten8tChecker(check_functions=[check_func])
+
+    results = ch.run_all()
+    # Assertions for expected results
+    assert len(results) == 8
+
+
+@pytest.mark.parametrize(
+    "filenames, expected_result_count",
+    [
+        # Single space-separated string
+        ("rule_ten8t_results/result1.json rule_ten8t_results/result2.json", 8),
+        # List of string paths
+        (["rule_ten8t_results/result1.json", "rule_ten8t_results/result2.json"], 8),
+        # List of pathlib.Path objects
+        ([pathlib.Path("rule_ten8t_results/result1.json"), pathlib.Path("rule_ten8t_results/result2.json")], 8),
+    ]
+)
+def test_rule_ten8t_json_files(filenames, expected_result_count):
+    """
+    Parameterized test to verify using rule_ten8t_json_files with various filename input formats.
+    """
+
+    def check_func():
+        yield from rule_ten8t_json_files(filenames, yielder=ten8t.Ten8tYieldPassFail())
+
+    # Create a checker with the check function
+    ch = ten8t.Ten8tChecker(check_functions=[check_func])
+
+    # Run all the checks
+    results = ch.run_all()
+
+    # Assertions for expected results
+    assert len(results) == expected_result_count, (
+        f"Expected {expected_result_count} results, but found {len(results)}. "
+        f"Filenames: {filenames}"
+    )
+
+
+def test_rule_ten8t_glob_import_with_summary():
+    """Make sure the summary works picking up the file name and the count."""
+
+    def check_func():
+        yield from rule_ten8t_json_files('rule_ten8t_results/result2.json',
+                                         yielder=ten8t.Ten8tYieldSummaryOnly())
+
+    ch = ten8t.Ten8tChecker(check_functions=[check_func])
+
+    results = ch.run_all()
+    # Assertions for expected results
+    assert len(results) == 1
+    assert results[0].status is True
+    assert 'result2.json' in results[0].msg
+    assert "1 pass and 0 fail" in results[0].msg
+    assert results[0].summary_result is True

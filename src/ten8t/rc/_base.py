@@ -77,7 +77,6 @@ class Ten8tRC:
         self.name = rc_data['display_name']
         self.display_name = rc_data['display_name']
 
-
     # def _not_int_list(self, lst):
     #    return [item for item in lst if not item.isdigit()]
 
@@ -137,7 +136,6 @@ class Ten8tRC:
         self.tags, self.ex_tags = self._separate_category_values(rc_data.get('tags', []))
         self.phases, self.ex_phases = self._separate_category_values(rc_data.get('phases', []))
         self.levels, self.ex_levels = self._separate_category_values(rc_data.get('levels', []))
-
 
     def does_match(self, ruid: str = "", tag: str = "", phase: str = "", level: str = "") -> bool:
         """

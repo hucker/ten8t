@@ -20,6 +20,7 @@ from .ten8t_yield import Ten8tYield
 EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)
 """Expected reasonable exceptions for these rules."""
 
+
 def rule_path_exists(path_: str) -> TR:
     """
     Checks whether a given file path exists on the filesystem and yields the result.
@@ -51,7 +52,7 @@ def rule_path_exists(path_: str) -> TR:
             return TR(status=False, msg=f"The path  {fail(path_str)} does {fail('NOT')} exist.")
     except EXPECTED_FILE_EXCEPTIONS as exc:
         return TR(status=False,
-                  msg=f"Exception occurred while checking for the path {path_str}",except_=exc)
+                  msg=f"Exception occurred while checking for the path {path_str}", except_=exc)
 
 
 def rule_paths_exist(paths: StrOrPathListOrNone,
@@ -356,7 +357,7 @@ def rule_max_files(folders: StrOrPathListOrNone,
         raise Ten8tException(f"Number of folders and max_files {max_files} must be the same.")
 
     # Possible undefined variable in case of exception
-    count =0
+    count = 0
 
     # Note that we perform an early exit to prevent us from walking entire file systems
     # at the cost of not returning the full count.  This could take a very long time
@@ -373,6 +374,6 @@ def rule_max_files(folders: StrOrPathListOrNone,
                 yield from y(status=True,
                              msg=f"Folder {code(folder)} contains {count} files <= to {code(max_file)} files.")
         except EXPECTED_FILE_EXCEPTIONS as e:
-            yield from y(status=False, msg=f"Error checking folder {code(folder)}: {str(e)}",except_=e)
+            yield from y(status=False, msg=f"Error checking folder {code(folder)}: {str(e)}", except_=e)
 
     yield from y.yield_summary()

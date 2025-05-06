@@ -100,7 +100,6 @@ def display_results(results: list[t8.Ten8tResult]):
     ]
 
     for count, r in enumerate(results, start=1):
-
         c_f = green if r.status else red if not r.skipped else orange
 
         # Append each row directly to the table, note that I'm using the "rendered" view
@@ -151,6 +150,7 @@ def display_overview(checker: t8.Ten8tChecker):
     with st.expander("Overview:", expanded=False):
         st.markdown(Ten8tMarkdownOverview(checker, "overview.md").generate())
 
+
 def display_json_results(checker: t8.Ten8tChecker):
     """
     Display the JSON results of the given `t8.Ten8tChecker` object.
@@ -171,13 +171,13 @@ class Ten8tStreamlitProgressBar(t8.Ten8tProgress):
         self.progress_bar = progress_bar
         self.last_percent = 0.0
 
-    def message(self,msg:str):
+    def message(self, msg: str):
         """Just overwrite the old message. """
         self.progress_bar.progress(self.last_percent, msg)
 
     def result_msg(self, current_iteration: int,
                    max_iteration: int,
-                   msg:StrOrNone='',
+                   msg: StrOrNone = '',
                    result: Ten8tResult | None = None):
         """
         Display a status message/progress update.  The progress bar goes from 0 to full
@@ -240,7 +240,7 @@ def main():
 
             if include_ui:
                 st.write(
-                    "All of these options are ANDed together, if you select everything " 
+                    "All of these options are ANDed together, if you select everything "
                     "from 1 of the lists all functions will be run.")
                 tags = left_col.multiselect("Include These Tags", options=checker.tags, default=checker.tags)
                 ruids = left_col.multiselect("Include These Rule Ids", options=checker.ruids, default=[])
@@ -249,7 +249,7 @@ def main():
             else:
 
                 st.write(
-                    "All of these options are ANDed together, if you select everything from 1 of " 
+                    "All of these options are ANDed together, if you select everything from 1 of "
                     "the lists no functions will be run.")
                 tags = left_col.multiselect("Exclude These Tags", options=checker.tags, default=None)
                 ruids = left_col.multiselect("Exclude These Rule Ids", options=checker.ruids, default=None)

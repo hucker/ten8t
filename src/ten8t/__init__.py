@@ -3,9 +3,9 @@ Public API for the Ten8t project.
 """
 from importlib.metadata import PackageNotFoundError, version
 
+# Checker Overview Output
 from .overview import Ten8tMarkdownOverview
 from .overview import Ten8tStreamlitOverview
-# Checker Overview Output
 from .overview import Ten8tTextOverview
 # Some simple progress indicators.
 from .progress import Ten8tDebugProgress  # noqa: F401
@@ -20,7 +20,7 @@ from .rc import Ten8tRC  # noqa: F401
 from .rc import Ten8tTomlRC  # noqa: F401
 from .rc import Ten8tXMLRC  # noqa: F401
 from .rc import ten8t_rc_factory  # noqa: F401
-# Built-in render engines.
+# Built-in render engines (single line results)
 from .render import TM  # noqa: F401
 from .render import Ten8tAbstractRenderer  # noqa: F401
 from .render import Ten8tBasicHTMLRenderer  # noqa: F401
@@ -33,6 +33,7 @@ from .render import Ten8tRendererFactory  # noqa: F401
 from .render import Ten8tRendererProtocol  # noqa: F401
 from .render import Ten8tTextRenderer  # noqa: F401
 from .score import ScoreBinaryFail  # noqa: F401
+# Scoring Support
 from .score import ScoreBinaryPass  # noqa: F401
 from .score import ScoreByFunctionBinary  # noqa: F401
 from .score import ScoreByFunctionMean  # noqa: F401
@@ -42,6 +43,7 @@ from .score import get_registered_strategies  # noqa: F401
 from .score import get_strategy_class  # noqa: F401
 from .score import register_score_class  # noqa: F401
 from .score import reset_score_strategy_registry  # noqa: F401
+# Serialization to file
 from .serialize import Ten8tDump  # noqa: F401
 from .serialize import Ten8tDumpCSV  # noqa: F401
 from .serialize import Ten8tDumpConfig  # noqa: F401
@@ -134,6 +136,12 @@ def whats_installed(sep: str = ",") -> str:
     """Generate a printable list of installed packages."""
     return sep.join(sorted(TEN8T_PACKAGES.keys()))
 
+
+# This set of rules has no dependencies, so it should always be available
+# it supports loading results using the json output from running a checker instance.
+from .rule_ten8t import rule_ten8t_json_file, rule_ten8t_json_files
+
+_install("ten8t_result")
 
 try:
     import pathlib  # noqa: F401

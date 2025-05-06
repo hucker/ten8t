@@ -8,8 +8,8 @@ from src import ten8t as t8
 def test_import_packages():
     """Crude test to verify that the built in rules are imported by default"""
     installstring=t8.whats_installed()
-       
-    assert installstring == 'fs,narwhals,openpyxl,pathlib,pdf,ping,requests,sqlalchemy'
+
+    assert installstring == 'fs,narwhals,openpyxl,pathlib,pdf,ping,requests,sqlalchemy,ten8t_result'
 
     assert t8.is_installed('fs')
     assert t8.is_installed('narwhals')
@@ -19,7 +19,7 @@ def test_import_packages():
     assert t8.is_installed('ping')
     assert t8.is_installed('requests')
     assert t8.is_installed('sqlalchemy')
-
+    assert t8.is_installed('ten8t_result')
     assert not t8.is_installed('ten8t')
 
 def test_import_version():

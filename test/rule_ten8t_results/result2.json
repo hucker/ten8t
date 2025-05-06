@@ -1,33 +1,21 @@
 {
   "package_count": 1,
-  "module_count": 2,
+  "module_count": 1,
   "modules": [
-    "check_module1",
-    "check_module2"
+    "check_module1"
   ],
   "function_count": 7,
   "tags": [
-    "tag1",
-    "tag2",
-    "tag3"
+    "tag1"
   ],
   "levels": [
-    1,
-    2,
-    3
+    1
   ],
   "phases": [
-    "production",
     "proto"
   ],
   "ruids": [
-    "m1_f1",
-    "m1_f2",
-    "m1_f3",
-    "m2_f1",
-    "m2_f2",
-    "m2_f3",
-    "m2_f4"
+    "m1_f1"
   ],
   "score": 66.66666666666667,
   "env_nulls": [],

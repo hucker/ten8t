@@ -14,11 +14,10 @@ class Ten8tGitHubMarkdownRenderer(Ten8tAbstractRenderer):
     GitHub Markdown supports HTML-based color styling and other GitHub-specific features.
     """
 
-
     def __init__(self):
         super().__init__()
         self.renderer_name = "github_markdown"
-        self.file_extensions = [".md",".markdown",".gfm"]
+        self.file_extensions = [".md", ".markdown", ".gfm"]
         self.default_extension = ".gfm"
 
         # Override and extend tag mappings with GitHub Markdown features
@@ -49,6 +48,6 @@ class Ten8tGitHubMarkdownRenderer(Ten8tAbstractRenderer):
             TAG_ACTUAL: ('<span style="color:green">Actual: ', '</span>'),
 
             # Better code formatting using GitHub syntax highlighting
-            TAG_CODE: ('<code>', '</code>'),  #('```python\n', '\n```'),
+            TAG_CODE: ('<code>', '</code>'),  # ('```python\n', '\n```'),
             TAG_DATA: ('<code>', '</code>'),
         }

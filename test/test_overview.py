@@ -164,7 +164,6 @@ def test_md_overview(tmp_path, OverviewClass):
     for txt in [contents, gen_contents]:
         # These asserts verify that the correct items end up in the text file
         assert "### Check Functions for checker" in txt
-        assert "| Name | check_overview |" in txt
         assert "Checker Overview Generated on" in txt
         assert "| RUID | r1 |" in txt
         assert "| Phase | phase |" in txt

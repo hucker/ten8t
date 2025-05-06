@@ -279,7 +279,7 @@ class Ten8tYield:
             if (self.emit_fail and not result.status) or (self.emit_pass and result.status):
                 yield result
 
-    def yield_summary(self, name="", msg="") -> Generator[Ten8tResult, None, None]:
+    def yield_summary(self, name="", msg="", vars: dict = {}) -> Generator[Ten8tResult, None, None]:
         """
         The yield summary should be the name of the summary followed information message
         about the summary.  The message should give a pass and fail count.  If no name
@@ -294,35 +294,40 @@ class Ten8tYield:
 
         yield from y.emit_summary()
 
+        Finally, in different use cases the msg may not
+
         Args:
             name: Provide a name for the yield summary to override the one at init time.
             msg: Provide a completely custom message
+            vars: Provide a dictionary of variables to be used in the message
 
         Returns:
 
         """
-        if self.emit_summary:
-            name = name or self.summary_name or self.original_func_name
-            msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
+        if not self.emit_summary:
+            return
 
-            if self.yielded:
-                yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)
+        name = name or self.summary_name or self.original_func_name
+        msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
+
+        if self.yielded:
+            yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)
+        else:
+
+            # This handles all the ways you might want to handle summary results
+            # when there are no results.
+            if self.no_results.name == Ten8tNoResultSummary.SummaryFailOnNone.name:
+                yield Ten8tResult(status=False, msg=msg, summary_result=True)
+            elif self.no_results.name == Ten8tNoResultSummary.SummaryPassOnNone.name:
+                yield Ten8tResult(status=True, msg=msg, summary_result=True)
+            elif self.no_results.name == Ten8tNoResultSummary.ResultPassOnNone.name:
+                yield Ten8tResult(status=True, msg=msg, summary_result=False)
+            elif self.no_results.name == Ten8tNoResultSummary.ResultFailOnNone.name:
+                yield Ten8tResult(status=False, msg=msg, summary_result=False)
+            elif self.no_results.name == Ten8tNoResultSummary.SkipOnNone.name:
+                yield Ten8tResult(status=None, msg=msg, skipped=True)
             else:
-
-                # This handles all the ways you might want to handle summary results
-                # when there are no results.
-                if self.no_results.name == Ten8tNoResultSummary.SummaryFailOnNone.name:
-                    yield Ten8tResult(status=False, msg=msg, summary_result=True)
-                elif self.no_results.name == Ten8tNoResultSummary.SummaryPassOnNone.name:
-                    yield Ten8tResult(status=True, msg=msg, summary_result=True)
-                elif self.no_results.name == Ten8tNoResultSummary.ResultPassOnNone.name:
-                    yield Ten8tResult(status=True, msg=msg, summary_result=False)
-                elif self.no_results.name == Ten8tNoResultSummary.ResultFailOnNone.name:
-                    yield Ten8tResult(status=False, msg=msg, summary_result=False)
-                elif self.no_results.name == Ten8tNoResultSummary.SkipOnNone.name:
-                    yield Ten8tResult(status=None, msg=msg, skipped=True)
-                else:
-                    raise Ten8tException("Unknown no_results value %s", self.no_results)
+                raise Ten8tException("Unknown no_results value %s", self.no_results)
 
 
 # These are useful subclasses that may be passed as the yield object inside of rule functions.

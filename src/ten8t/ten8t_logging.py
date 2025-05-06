@@ -55,7 +55,7 @@ def ten8t_setup_logging(
             file_handler.setFormatter(formatter)
             ten8t_logger.addHandler(file_handler)
         except (OSError, PermissionError) as e:
-            raise ValueError(f"Error setting up file handler for '{file_name}'. " 
+            raise ValueError(f"Error setting up file handler for '{file_name}'. "
                              f"Details: {e}") from e
 
     # Add a stream handler if stream is specified

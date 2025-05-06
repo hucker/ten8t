@@ -3,6 +3,7 @@ This class manages running the checker against a list of functions.
 There is also support for low level progress for functions/classes.
 """
 import datetime as dt
+import json
 import pathlib
 from importlib.metadata import version
 from string import Template
@@ -211,8 +212,6 @@ class Ten8tChecker:
         # If the user has not provided a score strategy then use the simple one
         self.score_strategy = score_strategy or ScoreByResult()
         self.score = 0.0
-
-
 
         # If we are provided with an environment we save it off but first wrap it in
         # a class that guards reasonably against writes to the underlying environment
@@ -1019,3 +1018,35 @@ class Ten8tChecker:
         remove_keys = remove_keys or "start_time end_time duration_seconds runtime_sec".split()
         return self.as_dict(remove_nulls=True,
                             remove_keys=remove_keys)
+
+    def to_json(self, json_file: str, remove_nulls=False, keep_keys=None, remove_keys=None) -> bool:
+        """
+        Converts the object's data into a JSON file.
+
+        This method serializes the object into a dictionary representation using its
+        `as_dict` method, and then writes the output to a specified JSON file. Optional
+        parameters allow for customization of the serialization process, such as
+        removing null values or specifying keys to include or exclude. The result of
+        this operation is a boolean indicating success or failure.
+
+        Args:
+            json_file (str): Path to the output JSON file.
+            remove_nulls (bool): Whether to exclude null values in the dictionary
+                representation. Defaults to False.
+            keep_keys (list | None): A list of keys to retain in the dictionary
+                representation. If None, all keys are retained. Defaults to None.
+            remove_keys (list | None): A list of keys to remove from the dictionary
+                representation. If None, no keys are removed. Defaults to None.
+
+        Returns:
+            bool: True if the JSON file was successfully created, False otherwise.
+        """
+        d = self.as_dict(remove_nulls=remove_nulls, keep_keys=keep_keys, remove_keys=remove_keys)
+
+        try:
+            with open(json_file, 'w', encoding='utf-8') as f:
+                json.dump(d, f, indent=2, default=str)
+            return True
+        except (IOError, OSError, PermissionError) as e:
+            ten8t_logger.error(f"Could not create json file {json_file}. Exception: {e}")
+            return False

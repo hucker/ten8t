@@ -158,7 +158,7 @@ def rule_web_api(url: str,
         elif isinstance(expected_response, str):
             expected_response = str.split(expected_response)
         elif not isinstance(expected_response, list):
-            raise Ten8tException(f"Expected integer or list of integers for " 
+            raise Ten8tException(f"Expected integer or list of integers for "
                                  f"'expected_response' for {url}")
 
         response = requests.get(url, timeout=timeout_sec)
@@ -172,7 +172,7 @@ def rule_web_api(url: str,
         # This handles an expected failure by return true but not checking the json
         if response.status_code != 200:
             yield from y(status=True,
-                         msg=f"URL {TM.code(url)} returned {TM.code(response.status_code)}, " 
+                         msg=f"URL {TM.code(url)} returned {TM.code(response.status_code)}, "
                              f"no JSON comparison needed.")
             return
 

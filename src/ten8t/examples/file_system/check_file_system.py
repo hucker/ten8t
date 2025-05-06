@@ -2,6 +2,7 @@
 from ten8t import attributes
 from ten8t import rule_path_exists
 
+
 @attributes(tag="folder", ruid="f1", level=1, phase="proto")
 def check_folder1():
     """ Simple always passing function"""

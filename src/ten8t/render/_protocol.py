@@ -41,7 +41,6 @@ class Ten8tRendererProtocol(Protocol):
             The rendered text in the appropriate format
         """
 
-
     def cleanup(self) -> None:
         """
         Perform any necessary cleanup operations after rendering.

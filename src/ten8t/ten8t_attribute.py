@@ -37,6 +37,7 @@ DEFAULT_ATTEMPTS = 1
 # Define at module level.  This *could* be changed...
 DEFAULT_DISALLOWED_CHARS = ' ,!@#$%^&:?*<>\\/(){}[]<>~`-+=\t\n\'"'
 
+
 def _parse_ttl_string(input_string: str) -> float:
     """
     Parses a time-to-live (TTL) string and converts it into a numeric value in minutes.
@@ -167,7 +168,6 @@ def _validate_category_names(tag, phase, ruid, disallowed_chars=DEFAULT_DISALLOW
     """
     for attr_name, attr_value in (('tag', tag), ('phase', phase), ('ruid', ruid)):
         validate_string(attr_name, attr_value, disallowed_chars)
-
 
 
 def categories(*, tag: str = DEFAULT_TAG,
@@ -320,8 +320,6 @@ def attempts(max_attempts=1, delay=0.5):
     return decorator  # Return the decorator
 
 
-
-
 def threading(*, thread_id: str = DEFAULT_THREAD_ID, disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:
     """Decorator for specifying thread-related attributes for Ten8t functions.
 
@@ -409,7 +407,6 @@ def score(*, weight: float = DEFAULT_WEIGHT) -> Callable:
         return func
 
     return decorator
-
 
 
 # Define defaults at module level since they're constant

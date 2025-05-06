@@ -79,13 +79,13 @@ class Ten8tDumpMarkdown(Ten8tDump):
             for col in self.summary_columns:
                 if col == "pass":
                     summary_values.append(checker.pass_count)
-                elif col =='fail':
+                elif col == 'fail':
                     summary_values.append(checker.fail_count)
-                elif col =='skip':
+                elif col == 'skip':
                     summary_values.append(checker.skip_count)
                 elif col == 'perfect_run':
                     summary_values.append(checker.perfect_run)
-                elif col =='warn':
+                elif col == 'warn':
                     summary_values.append(checker.warn_count)
                 elif col == 'duration_seconds':
                     summary_values.append(f'{float(checker.duration_seconds):.03f}')
@@ -98,7 +98,6 @@ class Ten8tDumpMarkdown(Ten8tDump):
                 else:
                     pass
             output_file.write("| " + " | ".join(str(value) for value in summary_values) + " |\n\n")
-
 
         # Add results section if requested
         if self.include_results:

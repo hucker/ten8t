@@ -10,6 +10,7 @@ from ten8t import Ten8tChecker, Ten8tResult, cwd_here
 
 cwd_here(__file__)
 
+
 def check_1():
     """ Always returns pass """
     return t8.Ten8tResult(status=True, msg="This test worked.")  # pragma no cover

@@ -1,3 +1,5 @@
+import json
+import pathlib
 import re
 
 import pytest
@@ -10,6 +12,7 @@ from ten8t import TM
 def func1():
     @t8.attributes(tag="t1", level=1, phase='p1', ruid="suid_1")
     def func1():
+        """Func 1 docstring"""
         yield t8.Ten8tResult(status=True, msg="It works1")
 
     return t8.Ten8tFunction(func1)
@@ -19,6 +22,7 @@ def func1():
 def func2():
     @t8.attributes(tag="t2", level=2, phase='p2', ruid="suid_2")
     def func2():
+        """Func 2 docstring"""
         yield t8.Ten8tResult(status=True, msg="It works2")
 
     return t8.Ten8tFunction(func2)
@@ -28,6 +32,7 @@ def func2():
 def func3():
     @t8.attributes(tag="t3", level=3, phase='p3', ruid="suid_3")
     def func3():
+        """Func 3 docstring"""
         yield t8.Ten8tResult(status=True, msg="It works3")
 
     return t8.Ten8tFunction(func3)
@@ -905,3 +910,85 @@ def test_checker_clean_dicts(func1, func2, func3):
     jc2 = ch.as_dict_clean()
 
     assert jc1 == jc2
+
+
+def test_checker_json(func1):
+    ch = t8.Ten8tChecker(check_functions=[func1])
+    ch.run_all()
+    json_file = "t8.json"
+    pathlib.Path(json_file).unlink(missing_ok=True)
+    status = ch.to_json(json_file)
+
+    assert status is True
+
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+
+    header = data['header']
+
+    assert header['package_count'] == 0
+    assert header['module_count'] == 0
+    assert header['function_count'] == 1
+    assert header['levels'] == [1]
+    assert header['tags'] == ['t1']
+    assert header['env_nulls'] == []
+    assert header['phases'] == ['p1']
+    assert header['ruids'] == ['suid_1']
+    assert header['pass_count'] == 1
+    assert header['fail_count'] == 0
+    assert header['warn_count'] == 0
+    assert header['skip_count'] == 0
+    assert header['total_count'] == 1
+    assert header['check_count'] == 1
+    assert header['result_count'] == 1
+    assert header['abort_on_fail'] is False
+    assert header['abort_on_exception'] is False
+    assert header['clean_run'] is True
+    assert header['perfect_run'] is True
+    assert header['__version__'] == t8.version("ten8t")
+
+    results = data['results']
+    assert len(results) == 1
+
+    result = results[0]
+
+    assert result['ruid'] == 'suid_1'
+    assert result['func_name'] == 'func1'
+    assert result['module_name'] == 'adhoc'
+    assert result['status'] is True
+    assert result['msg'] == 'It works1'
+    assert result['msg_rendered'] == 'It works1'
+    assert result['msg_text'] == 'It works1'
+    assert result['warn_msg'] == ''
+    assert result['warn_msg_rendered'] == ''
+    assert result['warn_msg_text'] == ''
+    assert result['info_msg'] == ''
+    assert result['info_msg_rendered'] == ''
+    assert result['info_msg_text'] == ''
+    assert result['runtime_sec']
+    assert result['mit_msg'] == ''
+    assert result['skipped'] is False
+    assert result['weight'] == 100
+    assert result['doc'] == 'Func 1 docstring'
+    assert result['phase'] == 'p1'
+    assert result['level'] == 1
+    assert result['tag'] == 't1'
+    assert result['ruid'] == 'suid_1'
+    assert result['ttl_minutes'] >= 0.0
+    assert result['count'] == 1
+    assert result['attempts'] == 1
+    assert result['summary_result'] is False
+    assert result['skip_on_none'] is False
+    assert result['fail_on_none'] is False
+    assert result['thread_id'] == 'main_thread__'
+
+
+def test_checker_json_fail(func1):
+    """Verify that a failing JSON save returns False"""
+    ch = t8.Ten8tChecker(check_functions=[func1])
+    ch.run_all()
+    json_file = "/bad/folder/bad_name.json"
+    pathlib.Path(json_file).unlink(missing_ok=True)
+    status = ch.to_json(json_file)
+
+    assert status is False

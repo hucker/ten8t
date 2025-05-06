@@ -58,7 +58,7 @@ class Ten8tDump(ABC):
         """
         filename = self.config.output_file
         if filename:
-            return open(filename, "w", newline="",encoding=encoding)
+            return open(filename, "w", newline="", encoding=encoding)
         return sys.stdout
 
     def dump(self, checker: Ten8tChecker) -> None:

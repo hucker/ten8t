@@ -60,6 +60,7 @@ class FilteredDirectoryTree(DirectoryTree):
 
         NOTE: You will need to change this if you change your file naming convention.
         """
+
         def valid_path(p):
             # The prefix is changeable, but for now check_ is good for demos.
             if p.is_file() and p.suffix == '.py' and p.name.startswith('check_'):

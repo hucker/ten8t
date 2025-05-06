@@ -29,7 +29,7 @@ def ten8t_save_csv(ch: Ten8tChecker, config: Ten8tDumpConfig = None):
 
 
 def ten8t_save_md(ch: Ten8tChecker,
-                  config:Ten8tDumpConfig=None):
+                  config: Ten8tDumpConfig = None):
     """
     Legacy function for backward compatibility.
 

@@ -56,30 +56,42 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
                          max_age_min: float = 10e20,
                          encoding: str = 'utf-8',
                          ruid_leader: str = '',
-                         pass_if_missing: bool = False):
+                         pass_if_missing: bool = False,
+                         yielder: t8.Ten8tYield = None):
     code = t8.Ten8tMarkup().code
     try:
+        if pathlib.Path(file_name).exists() is False:
+            yield t8.TR(status=pass_if_missing,
+                        msg=f"The file {code(file_name)} does not exist default status = {pass_if_missing}")
+            return
+
         with open(str(file_name), 'r', encoding=encoding) as f:
             data = json.load(f)
 
-            age_in_min = get_file_age_in_minutes(file_name)
+        age_in_min = get_file_age_in_minutes(file_name)
 
-            if age_in_min > max_age_min:
-                yield t8.TR(status=False,
-                            msg=f"The file {code(file_name)} is {code(age_in_min)} minutes older than the max allowable {max_age_min:0.1f} age."
-                            )
-                return
-    except (IOError, json.JSONDecodeError, PermissionError) as e:
-        if pass_if_missing:
-            yield t8.TR(status=pass_if_missing,
-                        msg=f"Could not find {code(msg=file_name)}, pass_if_missing=True"
+        if age_in_min > max_age_min:
+            yield t8.TR(status=False,
+                        msg=f"The file {code(file_name)} is {code(age_in_min)} minutes older than the max allowable {max_age_min:0.1f} age."
                         )
-        else:
-            yield t8.TR(status=pass_if_missing,
-                        msg=f"Exception {str(e)} loading file {code(msg=file_name)}",
-                        except_=e)
+            return
+
+
+    except (IOError, json.JSONDecodeError, PermissionError) as e:
+        yield t8.TR(status=False,
+                    msg=f"Exception {str(e)} loading file {code(msg=file_name)}",
+                    except_=e)
 
         return
+
+    # Let the user pass a yield object, this can make for cleaner code by reducing param counts
+    if yielder:
+        y = yielder
+    else:
+        y = t8.Ten8tYield(emit_summary=False,
+                          emit_pass=True,
+                          emit_fail=True,
+                          summary_name=f"Load results from {file_name}")
 
     results = data.get('results', None)
 
@@ -94,14 +106,17 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
         if ruid_leader:
             new_result.ruid = f"{ruid_leader}-{new_result.ruid}"
 
-        yield new_result
+        yield from y(new_result)
+
+    yield from y.yield_summary(msg=f"Result file {file_name} had {y.pass_count} pass and {y.fail_count} fail results.")
 
 
 def rule_ten8t_json_files(file_names: t8.StrOrPathList,
                           max_age_min: float = 10e20,
                           encoding='utf-8',
                           ruid_leader: str = '',
-                          pass_if_missing: bool = False):
+                          pass_if_missing: bool = False,
+                          yielder: t8.Ten8tYield = None):
     """
     Processes a list of JSON files based on certain criteria, including file age,
     encoding, and an optional unique identifier prefix. Supports file globbing
@@ -119,6 +134,7 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
             provided, it defaults to the stem of each file's name.
         pass_if_missing: A boolean flag. If set to True, missing files will not
             raise exceptions and will be skipped. Default is False.
+        yielder: Ten8tYielder object.  Defaults to SummaryOnly
 
     Yields:
         Iterable: Yields processed results from the `rule_ten8t_json_file` function
@@ -126,6 +142,8 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
     """
     if isinstance(file_names, str):
         file_names = file_names.split()
+
+    # Let the user pass a yield object, this can make for cleaner code by reducing param counts
 
     result_files = []
 
@@ -143,11 +161,19 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
         result_files = [pathlib.Path(f) for f in file_names]
 
     for result_file in result_files:
-        if not ruid_leader:
+        if ruid_leader == '':
             ruid_leader = result_file.stem
+        elif ruid_leader is None:
+            ruid_leader = ''
+
+        if yielder:
+            y = yielder
+        else:
+            y = t8.Ten8tYieldSummaryOnly(summary_name=f"Load results from {result_file}")
 
         yield from rule_ten8t_json_file(result_file,
                                         max_age_min=max_age_min,
                                         encoding=encoding,
                                         ruid_leader=ruid_leader,
-                                        pass_if_missing=pass_if_missing)
+                                        pass_if_missing=pass_if_missing,
+                                        yielder=y)

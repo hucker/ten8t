@@ -177,5 +177,4 @@ if __name__ == "__main__":
     except PermissionError as e:
         console.print(f"[red]Error setting up logging: {e}. Ensure you have write access to the directory.[/red]")
 
-
     main()
