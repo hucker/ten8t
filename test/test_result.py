@@ -8,7 +8,7 @@ from ten8t import Ten8tChecker, Ten8tMarkup
 @pytest.fixture(scope="module")
 def results():
     pkg = ten8t.Ten8tPackage(folder="./pkg_result")
-    chk = ten8t.Ten8tChecker(packages=pkg)
+    chk = ten8t.Ten8tChecker(packages=[pkg])
     return chk.run_all()
 
 
@@ -136,9 +136,10 @@ def test_bad_generator_type(caplog) -> None:
 
     @ten8t.attributes(tag="tag")
     def check_func1() -> None:
-        yield 123
+        yield 123  # type: ignore
+
         # This won't run!
-        yield ten8t.Ten8tResult(status=True, msg="Yield OK")  # pragma no cover
+        yield ten8t.Ten8tResult(status=True, msg="Yield OK")  # pragma no cover  # type: ignore
 
     ch = Ten8tChecker(check_functions=[check_func1], abort_on_exception=False)
     results = ch.run_all()

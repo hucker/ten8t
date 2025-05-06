@@ -26,7 +26,6 @@ class Ten8tRendererFactory:
     This factory registers and instantiates renderers
     that implement the Ten8tRendererProtocol.
     """
-
     _instance = None  # Single shared instance
 
     def __new__(cls, *args, **kwargs):

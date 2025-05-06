@@ -13,7 +13,7 @@ from collections import Counter
 
 from .ten8t_exception import Ten8tException
 from .ten8t_function import Ten8tFunction
-from .ten8t_util import next_int_value
+from .ten8t_util import StrOrNone, StrOrPath, next_int_value
 
 
 class Ten8tModule:
@@ -27,8 +27,8 @@ class Ten8tModule:
     def __init__(
             self,
             *,
-            module_file: pathlib.Path | str,
-            module_name: str | None = None,
+            module_file: StrOrPath,
+            module_name: StrOrNone = None,
             check_prefix="check_",
             env_prefix="env_",
             env_functions: list | None = None,

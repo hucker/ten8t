@@ -16,7 +16,7 @@ to use most of the major feature groups including:
 import streamlit as st
 
 import ten8t as t8
-from ten8t import StrOrNone, Ten8tMarkdownOverview, Ten8tResult
+from ten8t import StrOrNone, Ten8tResult
 
 st.set_page_config(layout='wide')
 
@@ -144,11 +144,6 @@ def display_package_info(pkg, checker):
 
     # Display the table
     st.markdown(markdown_table)
-
-
-def display_overview(checker: t8.Ten8tChecker):
-    with st.expander("Overview:", expanded=False):
-        st.markdown(Ten8tMarkdownOverview(checker, "overview.md").generate())
 
 
 def display_json_results(checker: t8.Ten8tChecker):

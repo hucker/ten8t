@@ -14,14 +14,14 @@ from typing import Generator
 from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrOrPathListOrNone, any_to_path_list
+from .ten8t_util import StrOrPath, StrOrPathListOrNone, any_to_path_list
 from .ten8t_yield import Ten8tYield
 
 EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)
 """Expected reasonable exceptions for these rules."""
 
 
-def rule_path_exists(path_: str) -> TR:
+def rule_path_exists(path_: StrOrPath) -> TR:
     """
     Checks whether a given file path exists on the filesystem and yields the result.
 

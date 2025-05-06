@@ -20,12 +20,6 @@ def test_text_overview(tmp_path):
         tmp_path: A pathlib.Path object provided by pytest, representing a temporary
             directory that is unique for each test function.
 
-    Attributes:
-        tag: The tag category associated with the check (`check_overview`), providing
-            a label for organizational purposes.
-        phase: The operational phase where the check is relevant.
-        level: The severity or descriptive level of the check.
-        ruid: A unique identifier for the check, aiding in tracking and reference.
     """
 
     @attributes(tag="tag", phase="phase", level=1, ruid='r1')

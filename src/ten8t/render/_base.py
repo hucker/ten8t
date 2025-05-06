@@ -40,6 +40,9 @@ class Ten8tAbstractRenderer(ABC):
     # This has all the markups that ten8t knows about, these shouldn't change
     markup = Ten8tMarkup()
 
+    # Used by factory
+    renderer_name = "base"
+
     def __init__(self):
 
         # Subclasses only need to fill in this mapping.

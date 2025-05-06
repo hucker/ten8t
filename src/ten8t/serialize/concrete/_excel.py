@@ -198,11 +198,11 @@ class Ten8tDumpExcel(Ten8tDump):
 
         # Save workbook
         try:
-            file_path = pathlib.Path(file_path)
-            if file_path.parent != pathlib.Path('.'):
-                file_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path_ = pathlib.Path(file_path)
+            if file_path_.parent != pathlib.Path('.'):
+                file_path_.parent.mkdir(parents=True, exist_ok=True)
 
-            workbook.save(file_path)
+            workbook.save(file_path_)
         except PermissionError as e:
             raise Ten8tException(
                 f"Could not write to Excel file: {file_path} - ensure it's not open in another application") from e

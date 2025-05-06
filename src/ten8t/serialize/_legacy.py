@@ -5,6 +5,7 @@ The functions in this module used to be hand coded, they not use the serialazati
 from ._config import Ten8tDumpConfig
 from .concrete._csv import Ten8tDumpCSV
 from .concrete._excel import Ten8tDumpExcel
+from .concrete._html import Ten8tDumpHTML
 from .concrete._markdown import Ten8tDumpMarkdown
 from ..ten8t_checker import Ten8tChecker
 
@@ -66,5 +67,5 @@ def ten8t_save_html(ch: Ten8tChecker,
         config: Configuration object for the dump process (None for default)
     """
     config = config or Ten8tDumpConfig.html_default()
-    dumper = Ten8DumpHTML(config)
+    dumper = Ten8tDumpHTML(config)
     dumper.dump(ch)

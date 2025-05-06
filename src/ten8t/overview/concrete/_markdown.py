@@ -24,7 +24,7 @@ class Ten8tMarkdownOverview(Ten8tAbstractOverview):
     def _generate_md_table(self,
                            key_header: str = 'Key',
                            value_header: str = 'Value',
-                           data: dict = {}) -> str:
+                           data: dict = None) -> str:
         """
         Generate a Markdown table from a dictionary.
 

@@ -37,9 +37,8 @@ def check_5():
 
 
 ch = Ten8tChecker(check_functions=[check_1, check_2, check_3, check_4, check_5])
-result: Ten8tResult = None
 
-for result in ch.yield_all():
+for result in ch.yield_all():  # type: Ten8tResult
     if result.status:
         print(f"Pass: Function:{result.func_name} - {result.msg_rendered}")
     else:
