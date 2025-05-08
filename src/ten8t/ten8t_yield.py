@@ -10,6 +10,8 @@ from typing import Generator
 from .ten8t_exception import Ten8tException
 from .ten8t_result import Ten8tResult
 
+DEFAULT_SUMMARY_MESSAGE = "{name} had {pass_count} pass and {fail_count} fail."
+
 
 class Ten8tNoResultSummary(Enum):
     """
@@ -222,7 +224,7 @@ class Ten8tYield:
         away.
 
 
-        y.results(BR(status=True,msg="Did it work?"))
+        y.results(TR(status=True,msg="Did it work?"))
 
         The __call_ override allows the following code to work correctly without having to manually
         instantiate a Ten8tResult.
@@ -308,7 +310,7 @@ class Ten8tYield:
             return
 
         name = name or self.summary_name or self.original_func_name
-        msg = msg or f"{name} had {self.pass_count} pass and {self.fail_count} fail."
+        msg = msg or DEFAULT_SUMMARY_MESSAGE.format(name=name, pass_count=self.pass_count, fail_count=self.fail_count)
 
         if self.yielded:
             yield Ten8tResult(status=self.fail_count == 0, msg=msg, summary_result=True)

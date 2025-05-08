@@ -53,9 +53,9 @@ def get_file_age_in_minutes(file_path: str | pathlib.Path) -> float:
 
 
 def rule_ten8t_json_file(file_name: t8.StrOrPath,
-                         max_age_min: float = 10e20,
+                         max_age_minutes: float = 10e20,
                          encoding: str = 'utf-8',
-                         ruid_leader: str = '',
+                         ruid: str = '',
                          pass_if_missing: bool = False,
                          yielder: t8.Ten8tYield = None):
     code = t8.Ten8tMarkup().code
@@ -68,11 +68,11 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
         with open(str(file_name), 'r', encoding=encoding) as f:
             data = json.load(f)
 
-        age_in_min = get_file_age_in_minutes(file_name)
+        age_in_minutes = get_file_age_in_minutes(file_name)
 
-        if age_in_min > max_age_min:
+        if age_in_minutes > max_age_minutes:
             yield t8.TR(status=False,
-                        msg=f"The file {code(file_name)} is {code(age_in_min)} minutes older than the max allowable {max_age_min:0.1f} age."
+                        msg=f"The file {code(file_name)} is {code(age_in_minutes)} minutes older than the max allowable {max_age_minutes:0.1f} age."
                         )
             return
 
@@ -101,10 +101,10 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
     for result in results:
         new_result = t8.Ten8tResult.from_dict(result)
 
-        # This mechanism allows you to modify incoming ruids by adding a leader for
-        # every ruid.  This could be used to reduce chances of collisions.
-        if ruid_leader:
-            new_result.ruid = f"{ruid_leader}-{new_result.ruid}"
+        # For cases where a result read from the file has a ruid AND the current function has
+        # a ruid, they are merged.
+        if ruid:
+            new_result.ruid = f'{ruid}-{new_result.ruid}'
 
         yield from y(new_result)
 
@@ -112,9 +112,9 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
 
 
 def rule_ten8t_json_files(file_names: t8.StrOrPathList,
-                          max_age_min: float = 10e20,
+                          max_age_minutes: float = 10e20,
                           encoding='utf-8',
-                          ruid_leader: str = '',
+                          ruid: str = '',
                           pass_if_missing: bool = False,
                           yielder: t8.Ten8tYield = None):
     """
@@ -125,13 +125,12 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
     Args:
         file_names: A string representing file paths separated by spaces or a list
             of file paths. Supports glob patterns if the input is a single string.
-        max_age_min: A float representing the maximum allowed file age in minutes.
+        max_age_minutes: A float representing the maximum allowed file age in minutes.
             Default is a very large number, effectively bypassing this check
             unless otherwise specified.
         encoding: A string specifying the encoding used to read the content of
             files. Default is 'utf-8'.
-        ruid_leader: A string prefix for unique identifier generation. If not
-            provided, it defaults to the stem of each file's name.
+
         pass_if_missing: A boolean flag. If set to True, missing files will not
             raise exceptions and will be skipped. Default is False.
         yielder: Ten8tYielder object.  Defaults to SummaryOnly
@@ -161,10 +160,6 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
         result_files = [pathlib.Path(f) for f in file_names]
 
     for result_file in result_files:
-        if ruid_leader == '':
-            ruid_leader = result_file.stem
-        elif ruid_leader is None:
-            ruid_leader = ''
 
         if yielder:
             y = yielder
@@ -172,8 +167,8 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
             y = t8.Ten8tYieldSummaryOnly(summary_name=f"Load results from {result_file}")
 
         yield from rule_ten8t_json_file(result_file,
-                                        max_age_min=max_age_min,
+                                        max_age_minutes=max_age_minutes,
                                         encoding=encoding,
-                                        ruid_leader=ruid_leader,
+                                        ruid=ruid,
                                         pass_if_missing=pass_if_missing,
                                         yielder=y)

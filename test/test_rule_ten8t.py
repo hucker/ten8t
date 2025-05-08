@@ -111,7 +111,7 @@ def test_get_file_age_in_minutes_file_not_found():
 
 
 @pytest.mark.parametrize(
-    "function_to_test, wait_time_sec, max_age_min, expected_status",
+    "function_to_test, wait_time_sec, max_age_minutes, expected_status",
     [
         (rule_ten8t_json_file, 0.1, 1.0 / 60.0, True),  # Single file, within age limit
         (rule_ten8t_json_file, 1.2, 1.0 / 60.0, False),  # Single file, exceeds age limit
@@ -119,7 +119,7 @@ def test_get_file_age_in_minutes_file_not_found():
         (rule_ten8t_json_files, 1.2, 1.0 / 60.0, False),  # Multiple files, exceeds age limit
     ]
 )
-def test_rule_age_check(function_to_test, wait_time_sec, max_age_min, expected_status):
+def test_rule_age_check(function_to_test, wait_time_sec, max_age_minutes, expected_status):
     """
     Verify that file aging is handled properly by both rule_ten8t_json_file and rule_ten8t_json_files,
     basically these functions are the same when only one file is passed in.  The tests verify that both
@@ -142,10 +142,10 @@ def test_rule_age_check(function_to_test, wait_time_sec, max_age_min, expected_s
 
     # Define the checking function based on the function being tested
     def check_func1():
-        yield from rule_ten8t_json_file(file_path, max_age_min=max_age_min)
+        yield from rule_ten8t_json_file(file_path, max_age_minutes=max_age_minutes)
 
     def check_func2():
-        yield from rule_ten8t_json_files([file_path], max_age_min=max_age_min)
+        yield from rule_ten8t_json_files([file_path], max_age_minutes=max_age_minutes)
 
     # Instantiate and run the checker
     if function_to_test == rule_ten8t_json_file:
@@ -159,7 +159,7 @@ def test_rule_age_check(function_to_test, wait_time_sec, max_age_min, expected_s
     assert len(results) == 1, "Expected exactly one result."
     assert results[0].status == expected_status, (
         f"Expected status {expected_status}, but got {results[0].status}. "
-        f"Wait time: {wait_time_sec}, Max age: {max_age_min}."
+        f"Wait time: {wait_time_sec}, Max age: {max_age_minutes}."
     )
 
 
@@ -188,7 +188,7 @@ def test_rule_glob_ruid_check_import():
     def check_func():
         yield from rule_ten8t_json_files('rule_ten8t_results/result*.json',
                                          yielder=ten8t.Ten8tYieldPassFail(),
-                                         ruid_leader="")
+                                         )
 
     ch = ten8t.Ten8tChecker(check_functions=[check_func])
 
@@ -245,3 +245,35 @@ def test_rule_ten8t_glob_import_with_summary():
     assert 'result2.json' in results[0].msg
     assert "1 pass and 0 fail" in results[0].msg
     assert results[0].summary_result is True
+
+
+def test_rule_ten8t_import_with_ruid_merge():
+    """
+    Verify the ruids are correctly merged.  If your load_json has a ruid and it loads data
+    from a file where each entry has a ruid, this code merges them so the resulting ruid
+    is something like;
+
+    current_ruid-loaded_ruid_from_file
+
+    In the below example the top level ruid is 'ruid_1' and the loaded ruid is 'm1_f1'
+
+    at this point the behavior is a bit experimental.
+
+    """
+
+    @ten8t.categories(ruid='ruid_1')
+    def check_func1():
+        yield from rule_ten8t_json_files('rule_ten8t_results/result2.json',
+                                         yielder=ten8t.Ten8tYieldPassFail(),
+                                         )
+
+    @ten8t.categories(ruid='ruid_2')
+    def check_func2():
+        yield from rule_ten8t_json_files('rule_ten8t_results/result1.json',
+                                         yielder=ten8t.Ten8tYieldPassFail(),
+                                         )
+
+    ch = ten8t.Ten8tChecker(check_functions=[check_func1, check_func2], auto_ruid=True)
+    results = ch.run_all()
+    assert results[0].ruid == "ruid_1-m1_f1"  # Show both ruids
+    assert results[1].ruid == "ruid_2-m1_f1"  # In this case there is no ruid so onyly the imported on is used.

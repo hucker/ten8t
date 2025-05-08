@@ -405,7 +405,10 @@ class Ten8tFunction:
         result.func_name = self.function_name
 
         # Assign the rest of the attributes directly
-        result.ruid = self.ruid
+        if self.ruid and result.ruid:
+            result.ruid = f"{self.ruid}-{result.ruid}"
+        else:
+            result.ruid = self.ruid or result.ruid
         result.doc = self.doc
         result.tag = self.tag
         result.level = self.level
