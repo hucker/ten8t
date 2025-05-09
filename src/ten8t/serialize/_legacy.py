@@ -7,6 +7,7 @@ from .concrete._csv import Ten8tDumpCSV
 from .concrete._excel import Ten8tDumpExcel
 from .concrete._html import Ten8tDumpHTML
 from .concrete._markdown import Ten8tDumpMarkdown
+from .concrete._sqlite import Ten8tDumpSQLite
 from ..ten8t_checker import Ten8tChecker
 
 
@@ -68,4 +69,18 @@ def ten8t_save_html(ch: Ten8tChecker,
     """
     config = config or Ten8tDumpConfig.html_default()
     dumper = Ten8tDumpHTML(config)
+    dumper.dump(ch)
+
+
+def ten8t_save_sqlite(ch: Ten8tChecker,
+                      config: Ten8tDumpConfig = None):
+    """
+    Legacy function for backward compatibility.
+
+    Args:
+        ch: Ten8tChecker instance containing results
+        config: Configuration object for the dump process (None for default)
+    """
+    config = config or Ten8tDumpConfig.html_default()
+    dumper = Ten8tDumpSQLite(config)
     dumper.dump(ch)

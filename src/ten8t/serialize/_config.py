@@ -88,7 +88,7 @@ class Ten8tDumpConfig:
 
     @classmethod
     def html_default(cls, **kwargs):
-        """Creates a default configuration for Markdown output."""
+        """Creates a default configuration for HTML output."""
         return cls(
             show_summary=True,
             show_results=True,
@@ -99,6 +99,14 @@ class Ten8tDumpConfig:
             **kwargs,
         )
 
+    @classmethod
+    def sqlite_default(cls, **kwargs):
+        """Creates a default configuration for SQLite output."""
+        return cls(
+            table_name="",
+            db_file="",
+            **kwargs,
+        )
     @classmethod
     def excel_default(cls, **kwargs):
         """Creates a default configuration for Excel output."""

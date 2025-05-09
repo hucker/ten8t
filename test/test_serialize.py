@@ -7,11 +7,14 @@ far but these tests could be MUCH better.
 
 """
 
+import json
 import pathlib
+import sqlite3
 
 import pytest
 
 from src import ten8t as t8
+from ten8t import Ten8tDumpSQLite
 from ten8t.serialize import Ten8tDumpHTML
 
 
@@ -144,3 +147,97 @@ def test_html_format(checker_with_simple_check):
     # Assert file existence and minimum size
     assert pathlib.Path(output_file).exists(), f"HTML file was not created"
     assert get_file_size(output_file) > 100, f"HTML file size is too small"
+
+
+def test_sqlite(checker_with_simple_check):
+    """
+    Verify that we can serialize to a SQLite database.
+
+    TODO: This test could be far more rigorous, but for now it verifies most of a round trip through the data
+          which lets you know that the residual error would be a missing field.
+
+    WARNING: THere is definitely an issue if the information in the database has an old schema that is not compatible.
+             At this time you should read the version field from the header and maker sure you are compatible.
+    """
+    db_file = f"serialize_output/test_output.sqlite"
+    pathlib.Path(db_file).unlink(missing_ok=True)
+    # cfg = t8.Ten8tDumpConfig.sqlite_default(sqlite_file=db_file)
+    sql_out = Ten8tDumpSQLite(db_file=db_file)
+    sql_out.dump(checker_with_simple_check)
+    assert pathlib.Path(db_file).exists(), f"SQL file was not created"
+
+    # Now verify the data exists.
+    try:
+        with sqlite3.connect(db_file) as conn:
+            cursor = conn.cursor()
+            # Query to get the latest timestamp from the table
+            cursor.execute(f"""
+                SELECT datetime,header,results 
+                FROM {sql_out.table_name} 
+                WHERE datetime = (SELECT MAX(datetime) FROM {sql_out.table_name});
+
+            """)
+
+            result = cursor.fetchone()
+            cols = [desc[0] for desc in cursor.description]
+            rec_dict = dict(zip(cols, result))
+
+    except sqlite3.Error as e:
+        assert False, f"Database error: {e}"
+        return None
+
+    assert len(rec_dict) == 3, f"Expected 3 columns in the results, got {len(rec_dict)}"
+    assert set(rec_dict.keys()) == set(['datetime', 'header', 'results'])
+
+    header = json.loads(rec_dict['header'])
+    results = json.loads(rec_dict['results'])
+
+    assert header['name'] == 'serialize_output/test_output.sqlite'
+    assert header['start_time']
+    assert header['end_time']
+    assert 0 < header['duration_seconds'] < 1, "Should be well under 1 second"
+    assert len(header['functions']) == 1
+    assert header['pass_count'] == 2
+    assert header['fail_count'] == 1
+    assert header['skip_count'] == 0
+    assert header['total_count'] == 3
+    assert header['clean_run'] is True
+    assert header['perfect_run'] is False
+
+    # At this point we can do ALOT of tests
+    assert len(results) == 3
+    assert results[0]['msg'] == "Tests Passes."
+    assert results[1]['msg'] == "Tests Fails."
+    assert results[2]['msg'] == "Tests Passes."
+
+    assert results[0]['msg_text'] == "Tests Passes."
+    assert results[1]['msg_text'] == "Tests Fails."
+    assert results[2]['msg_text'] == "Tests Passes."
+
+    assert results[0]['msg_rendered'] == "Tests Passes."
+    assert results[1]['msg_rendered'] == "Tests Fails."
+    assert results[2]['msg_rendered'] == "Tests Passes."
+
+    assert results[0]['func_name'] == "simple_check_function"
+    assert results[1]['func_name'] == "simple_check_function"
+    assert results[2]['func_name'] == "simple_check_function"
+
+    assert results[0]['status'] is True
+    assert results[1]['status'] is False
+    assert results[2]['status'] is True
+
+    assert results[0]['skipped'] is False
+    assert results[1]['skipped'] is False
+    assert results[2]['skipped'] is False
+
+    assert results[0]['attempts'] == 1
+    assert results[1]['attempts'] == 1
+    assert results[2]['attempts'] == 1
+
+    assert result[0]['count'] == 1
+    assert result[1]['count'] == 2
+    assert result[2]['count'] == 3
+
+    assert results[0]['doc'] == 'Simple check function that yields three values.'
+    assert results[1]['doc'] == 'Simple check function that yields three values.'
+    assert results[2]['doc'] == 'Simple check function that yields three values.'

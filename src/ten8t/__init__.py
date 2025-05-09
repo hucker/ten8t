@@ -50,6 +50,7 @@ from .serialize import Ten8tDumpConfig  # noqa: F401
 from .serialize import Ten8tDumpExcel  # noqa: F401
 from .serialize import Ten8tDumpHTML  # noqa: F401
 from .serialize import Ten8tDumpMarkdown  # noqa: F401
+from .serialize import Ten8tDumpSQLite  # noqa: F401
 from .serialize import ten8t_save_csv  # noqa: F401
 from .serialize import ten8t_save_md  # noqa: F401
 from .serialize import ten8t_save_xls  # noqa: F401
