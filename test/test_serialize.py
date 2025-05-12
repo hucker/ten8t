@@ -15,7 +15,7 @@ import pytest
 
 from src import ten8t as t8
 from ten8t import Ten8tDumpSQLite
-from ten8t.serialize import Ten8tDumpHTML
+from ten8t.serialize import Ten8tDumpHTML, ten8t_save_sqlite
 
 
 def get_file_size(file_path: pathlib.Path | str) -> int:
@@ -65,11 +65,11 @@ def checker_with_simple_check():
 
     def simple_check_function():
         """Simple check function that yields three values."""
-        yield t8.TR(status=True, msg="Tests Passes.")
-        yield t8.TR(status=False, msg="Tests Fails.")
-        yield t8.TR(status=True, msg="Tests Passes.")
+        yield t8.TR(status=True, msg="Tests Pass.")
+        yield t8.TR(status=False, msg="Tests Fail.")
+        yield t8.TR(status=True, msg="Tests Pass.")
 
-    checker = t8.Ten8tChecker(check_functions=[simple_check_function])
+    checker = t8.Ten8tChecker(check_functions=[simple_check_function], name="SimpleChecker")
     checker.run_all()
     return checker
 
@@ -159,13 +159,34 @@ def test_sqlite(checker_with_simple_check):
     WARNING: THere is definitely an issue if the information in the database has an old schema that is not compatible.
              At this time you should read the version field from the header and maker sure you are compatible.
     """
-    db_file = f"serialize_output/test_output.sqlite"
+    db_file = f"serialize_output/ten8t.sqlite"
     pathlib.Path(db_file).unlink(missing_ok=True)
     # cfg = t8.Ten8tDumpConfig.sqlite_default(sqlite_file=db_file)
     sql_out = Ten8tDumpSQLite(db_file=db_file)
     sql_out.dump(checker_with_simple_check)
     assert pathlib.Path(db_file).exists(), f"SQL file was not created"
+    validate_checker_with_simple_check(db_file=db_file, table_name=sql_out.table_name)
 
+
+def xxx_test_sqlite_legacy(checker_with_simple_check):
+    """
+    Verify that we can serialize to a SQLite database.
+
+    TODO: This test could be far more rigorous, but for now it verifies most of a round trip through the data
+          which lets you know that the residual error would be a missing field.
+
+    WARNING: THere is definitely an issue if the information in the database has an old schema that is not compatible.
+             At this time you should read the version field from the header and maker sure you are compatible.
+    """
+    db_file = f"serialize_output/ten8t.sqlite"
+    pathlib.Path(db_file).unlink(missing_ok=True)
+    # cfg = t8.Ten8tDumpConfig.sqlite_default(sqlite_file=db_file)
+    ten8t_save_sqlite(checker_with_simple_check)
+    assert pathlib.Path(db_file).exists(), f"SQL file was not created"
+    validate_checker_with_simple_check(db_file=db_file, table_name='ten8t_results')
+
+
+def validate_checker_with_simple_check(db_file: str, table_name: str = None):
     # Now verify the data exists.
     try:
         with sqlite3.connect(db_file) as conn:
@@ -173,8 +194,8 @@ def test_sqlite(checker_with_simple_check):
             # Query to get the latest timestamp from the table
             cursor.execute(f"""
                 SELECT datetime,header,results 
-                FROM {sql_out.table_name} 
-                WHERE datetime = (SELECT MAX(datetime) FROM {sql_out.table_name});
+                FROM {table_name} 
+                WHERE datetime = (SELECT MAX(datetime) FROM {table_name});
 
             """)
 
@@ -192,7 +213,7 @@ def test_sqlite(checker_with_simple_check):
     header = json.loads(rec_dict['header'])
     results = json.loads(rec_dict['results'])
 
-    assert header['name'] == 'serialize_output/test_output.sqlite'
+    assert header['name'] == 'SimpleChecker'
     assert header['start_time']
     assert header['end_time']
     assert 0 < header['duration_seconds'] < 1, "Should be well under 1 second"
@@ -203,20 +224,21 @@ def test_sqlite(checker_with_simple_check):
     assert header['total_count'] == 3
     assert header['clean_run'] is True
     assert header['perfect_run'] is False
+    assert header['__version__'] == t8.version("ten8t")
 
     # At this point we can do ALOT of tests
     assert len(results) == 3
-    assert results[0]['msg'] == "Tests Passes."
-    assert results[1]['msg'] == "Tests Fails."
-    assert results[2]['msg'] == "Tests Passes."
+    assert results[0]['msg'] == "Tests Pass."
+    assert results[1]['msg'] == "Tests Fail."
+    assert results[2]['msg'] == "Tests Pass."
 
-    assert results[0]['msg_text'] == "Tests Passes."
-    assert results[1]['msg_text'] == "Tests Fails."
-    assert results[2]['msg_text'] == "Tests Passes."
+    assert results[0]['msg_text'] == "Tests Pass."
+    assert results[1]['msg_text'] == "Tests Fail."
+    assert results[2]['msg_text'] == "Tests Pass."
 
-    assert results[0]['msg_rendered'] == "Tests Passes."
-    assert results[1]['msg_rendered'] == "Tests Fails."
-    assert results[2]['msg_rendered'] == "Tests Passes."
+    assert results[0]['msg_rendered'] == "Tests Pass."
+    assert results[1]['msg_rendered'] == "Tests Fail."
+    assert results[2]['msg_rendered'] == "Tests Pass."
 
     assert results[0]['func_name'] == "simple_check_function"
     assert results[1]['func_name'] == "simple_check_function"
@@ -234,9 +256,9 @@ def test_sqlite(checker_with_simple_check):
     assert results[1]['attempts'] == 1
     assert results[2]['attempts'] == 1
 
-    assert result[0]['count'] == 1
-    assert result[1]['count'] == 2
-    assert result[2]['count'] == 3
+    assert results[0]['count'] == 1
+    assert results[1]['count'] == 2
+    assert results[2]['count'] == 3
 
     assert results[0]['doc'] == 'Simple check function that yields three values.'
     assert results[1]['doc'] == 'Simple check function that yields three values.'

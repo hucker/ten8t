@@ -208,6 +208,7 @@ class Ten8tChecker:
         self.packages = self._process_packages(packages)
         self.modules = self._process_modules(modules)
         self.check_functions = self._process_check_funcs(check_functions)
+        self.name = name
 
         # If the user has not provided a score strategy then use the simple one
         self.score_strategy = score_strategy or ScoreByResult()
@@ -321,7 +322,7 @@ class Ten8tChecker:
                 module = Ten8tModule(module_file=module_file, check_prefix=check_prefix)
                 self.modules.append(module)
 
-        self.name = getattr(self.rc, "name", 'checker')
+            self.name = getattr(self.rc, "name", self.name or 'checker')
 
         return rc
 
@@ -943,25 +944,28 @@ class Ten8tChecker:
 
     def get_header(self) -> dict:
         """Make a header with the top level information about the checker run"""
-        header = {"package_count": self.package_count, "module_count": self.module_count, "modules": self.module_names,
-                  "function_count": self.function_count, "tags": self.tags, "levels": self.levels,
-                  "phases": self.phases,
-                  "ruids": self.ruids, "score": self.score, "env_nulls": self.env_nulls,
-                  "__version__": version("ten8t"), "start_time": self.start_time,
-                  "end_time": self.end_time,
-                  "duration_seconds": self.duration_seconds,
-                  "functions": [f.function_name for f in self.check_functions],
-                  "pass_count": self.pass_count,
-                  "warn_count": self.warn_count,
-                  "fail_count": self.fail_count,
-                  "skip_count": self.skip_count,
-                  "total_count": self.result_count,
-                  "check_count": self.function_count,
-                  "result_count": self.result_count,
-                  "clean_run": self.clean_run,
-                  "perfect_run": self.perfect_run,
-                  "abort_on_fail": self.abort_on_fail,
-                  "abort_on_exception": self.abort_on_exception, }
+        header = {
+            "name": self.name,
+            "package_count": self.package_count, "module_count": self.module_count, "modules": self.module_names,
+            "function_count": self.function_count, "tags": self.tags, "levels": self.levels,
+            "phases": self.phases,
+            "ruids": self.ruids, "score": self.score, "env_nulls": self.env_nulls,
+            "__version__": version("ten8t"), "start_time": self.start_time,
+            "end_time": self.end_time,
+            "duration_seconds": self.duration_seconds,
+            "functions": [f.function_name for f in self.check_functions],
+            "pass_count": self.pass_count,
+            "warn_count": self.warn_count,
+            "fail_count": self.fail_count,
+            "skip_count": self.skip_count,
+            "total_count": self.result_count,
+            "check_count": self.function_count,
+            "result_count": self.result_count,
+            "clean_run": self.clean_run,
+            "perfect_run": self.perfect_run,
+            "abort_on_fail": self.abort_on_fail,
+            "abort_on_exception": self.abort_on_exception,
+        }
         return header
 
     def as_dict(self, remove_nulls=False, keep_keys=None, remove_keys=None):

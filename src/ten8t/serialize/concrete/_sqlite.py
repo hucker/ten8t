@@ -1,3 +1,27 @@
+"""
+This is baseline implementation of serializing checker results to an sqlite database.
+
+It uses the serialization abstract base class from Ten8tDump.  This is an imperfect abstraction in that
+we aren't really writing to a text file and I only want to write as simple JSON header and results list.
+
+I'm assuming that to a first approximation this will mostly be used for stuff persistent caching of
+previous results.
+
+This could be dramatically improve for more generic database output by making a proper schema
+where all the fields were nicely mapped as first class entities.
+
+At this time each record is:
+
+    datetime  string (ISO 8601)
+    header    string (JSON)
+    results   string (JSON)
+
+Note that fields may be added or removed so you might want to check the __version__ string in
+the header to make sure you know what you are dealing with.
+
+"""
+
+
 import datetime as dt
 import json
 import sqlite3

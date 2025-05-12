@@ -3,7 +3,7 @@ from ten8t.serialize.concrete import Ten8tDumpCSV, Ten8tDumpExcel, Ten8tDumpHTML
 from ._base import Ten8tDump
 from ._config import Ten8tDumpConfig
 # from .excel import Ten8tDumpExcel  # If implemented
-from ._legacy import ten8t_save_csv, ten8t_save_html, ten8t_save_md, ten8t_save_xls
+from ._legacy import ten8t_save_csv, ten8t_save_html, ten8t_save_md, ten8t_save_sqlite, ten8t_save_xls
 
 # For backwards compatibility
 __all__ = [
@@ -18,4 +18,5 @@ __all__ = [
     'ten8t_save_md',
     'ten8t_save_xls',
     'ten8t_save_html',
+    'ten8t_save_sqlite',
 ]

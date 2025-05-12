@@ -103,10 +103,11 @@ class Ten8tDumpConfig:
     def sqlite_default(cls, **kwargs):
         """Creates a default configuration for SQLite output."""
         return cls(
-            table_name="",
-            db_file="",
+            table_name="ten8t",
+            db_file="ten8t.sqlite",
             **kwargs,
         )
+
     @classmethod
     def excel_default(cls, **kwargs):
         """Creates a default configuration for Excel output."""
