@@ -1,6 +1,8 @@
 """ This module contains the Ten8tResult class and some common result transformers. """
 
+import copy
 import itertools
+import re
 import traceback
 from collections import Counter
 from dataclasses import dataclass, field
@@ -9,6 +11,7 @@ from typing import Any, Sequence
 
 from .render import Ten8tMarkup
 from .ten8t_exception import Ten8tException
+from .ten8t_util import StrListOrNone, any_to_str_list
 
 
 @dataclass(slots=True)
@@ -320,3 +323,68 @@ def overview(results: list[Ten8tResult]) -> str:
 
     return f"Total: {total}, Passed: {passed}, Failed: {failed}, " \
            f"Errors: {errors}, Skipped: {skipped}, Warned: {warned}"
+
+
+class Ten8tResultDictFilter():
+    """
+    Advanced filter capable of filtering result dictionary on multiple fields (ruid, tag, and phase).
+
+    This class should be used to filter data read from JSON files or the to_dict data that the
+    checker can create.
+    """
+
+    def __init__(
+            self,
+            ruid_patterns: StrListOrNone = None,
+            tag_patterns: StrListOrNone = None,
+            phase_patterns: StrListOrNone = None,
+            func_name_patterns: StrListOrNone = None,
+            summary_results: bool = None,
+            status_results: bool = None,
+    ):
+        # Initialize patterns for each field
+        self.ruid_patterns = any_to_str_list(ruid_patterns)
+        self.tag_patterns = any_to_str_list(tag_patterns)
+        self.phase_patterns = any_to_str_list(phase_patterns)
+        self.func_name_patterns = any_to_str_list(func_name_patterns)
+        self.summary_results = summary_results
+        self.status_results = status_results
+
+    def filter(self, results: dict,
+               ruid_patterns: StrListOrNone = None,
+               tag_patterns: StrListOrNone = None,
+               phase_patterns: StrListOrNone = None,
+               func_name_patterns: StrListOrNone = None,
+               summary_results: bool = None,
+               status_results: bool = None) -> dict:
+        """
+        Filters data on ruid, tag, and phase fields using the provided patterns.
+        """
+
+        # Because we modify the dictionary I'm making a deep copy to assure that
+        # I don't break code.  This puts the onus on the caller if they decide
+        # they want the original mutated.
+        results = copy.deepcopy(results)
+
+        # Use instance-level patterns if method-level patterns are not provided
+        ruid_patterns = any_to_str_list(ruid_patterns or self.ruid_patterns)
+        tag_patterns = any_to_str_list(tag_patterns or self.tag_patterns)
+        phase_patterns = any_to_str_list(phase_patterns or self.phase_patterns)
+        func_name_patterns = any_to_str_list(func_name_patterns or self.func_name_patterns)
+        summary_results = summary_results if summary_results is not None else self.summary_results
+        status_results = status_results if status_results is not None else self.status_results
+        # Perform filtering
+        field_results = [
+            r for r in results["results"]
+            if (
+                    (not ruid_patterns or any(re.search(pattern, r["ruid"]) for pattern in ruid_patterns)) and
+                    (not tag_patterns or any(re.search(pattern, r["tag"]) for pattern in tag_patterns)) and
+                    (not phase_patterns or any(re.search(pattern, r["phase"]) for pattern in phase_patterns)) and
+                    (not func_name_patterns or any(
+                        re.search(pattern, r["func_name"]) for pattern in func_name_patterns)) and
+                    ((summary_results is None) or (r.get("summary_result") is summary_results)) and
+                    (r.get("status") is status_results)  # No need to check for None, those represent skipped checks.
+            )
+        ]
+        results["results"] = field_results
+        return results
