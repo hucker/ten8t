@@ -15,10 +15,14 @@ import datetime as dt
 import json
 import pathlib
 
-import ten8t as t8
+from .render import Ten8tMarkup
+from .ten8t_exception import Ten8tException
+from .ten8t_result import TR, Ten8tResult, Ten8tResultDictFilter
+from .ten8t_util import StrOrPath, StrOrPathList
+from .ten8t_yield import Ten8tYield, Ten8tYieldSummaryOnly
 
 
-def get_file_age_in_minutes(file_path: str | pathlib.Path) -> float:
+def get_file_age_in_minutes(file_path: StrOrPath) -> float:
     """
     Get the age of a file in minutes based on its last modification time.
 
@@ -52,19 +56,19 @@ def get_file_age_in_minutes(file_path: str | pathlib.Path) -> float:
     return age_in_minutes
 
 
-def rule_ten8t_json_file(file_name: t8.StrOrPath,
+def rule_ten8t_json_file(file_name: StrOrPath,
                          max_age_minutes: float = 10e20,
                          encoding: str = 'utf-8',
                          ruid: str = '',
                          ruid_sep: str = '.',
                          pass_if_missing: bool = False,
-                         filter: t8.Ten8tResultDictFilter = None,
-                         yielder: t8.Ten8tYield = None):
-    code = t8.Ten8tMarkup().code
+                         filter: Ten8tResultDictFilter = None,
+                         yielder: Ten8tYield = None):
+    code = Ten8tMarkup().code
     try:
         if pathlib.Path(file_name).exists() is False:
-            yield t8.TR(status=pass_if_missing,
-                        msg=f"The file {code(file_name)} does not exist default status = {pass_if_missing}")
+            yield TR(status=pass_if_missing,
+                     msg=f"The file {code(file_name)} does not exist default status = {pass_if_missing}")
             return
 
         with open(str(file_name), 'r', encoding=encoding) as f:
@@ -73,16 +77,16 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
         age_in_minutes = get_file_age_in_minutes(file_name)
 
         if age_in_minutes > max_age_minutes:
-            yield t8.TR(status=False,
-                        msg=f"The file {code(file_name)} is {code(age_in_minutes)} minutes older than the max allowable {max_age_minutes:0.1f} age."
-                        )
+            yield TR(status=False,
+                     msg=f"The file {code(file_name)} is {code(age_in_minutes)} minutes older than the max allowable {max_age_minutes:0.1f} age."
+                     )
             return
 
 
     except (IOError, json.JSONDecodeError, PermissionError) as e:
-        yield t8.TR(status=False,
-                    msg=f"Exception {str(e)} loading file {code(msg=file_name)}",
-                    except_=e)
+        yield TR(status=False,
+                 msg=f"Exception {str(e)} loading file {code(msg=file_name)}",
+                 except_=e)
 
         return
 
@@ -90,19 +94,19 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
     if yielder:
         y = yielder
     else:
-        y = t8.Ten8tYield(emit_summary=False,
-                          emit_pass=True,
-                          emit_fail=True,
-                          summary_name=f"Load results from {file_name}")
+        y = Ten8tYield(emit_summary=False,
+                       emit_pass=True,
+                       emit_fail=True,
+                       summary_name=f"Load results from {file_name}")
 
-    filter = filter or t8.Ten8tResultDictFilter()
+    filter = filter or Ten8tResultDictFilter()
     results = filter.filter(results)
 
     if 'results' not in results or not results['results']:
-        raise t8.Ten8tException(f"No results found for {file_name}")
+        raise Ten8tException(f"No results found for {file_name}")
 
     for result in results['results']:
-        new_result = t8.Ten8tResult.from_dict(result)
+        new_result = Ten8tResult.from_dict(result)
 
         # For cases where a result read from the file has a ruid AND the current function has
         # a ruid, they are merged.
@@ -129,14 +133,14 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
     yield from y.yield_summary(msg=f"Result file {file_name} had {y.pass_count} pass and {y.fail_count} fail results.")
 
 
-def rule_ten8t_json_files(file_names: t8.StrOrPathList,
+def rule_ten8t_json_files(file_names: StrOrPathList,
                           max_age_minutes: float = 10e20,
                           encoding='utf-8',
                           ruid: str = '',
                           ruid_sep: str = '.',
-                          filter: t8.Ten8tResultDictFilter = None,
+                          filter: Ten8tResultDictFilter = None,
                           pass_if_missing: bool = False,
-                          yielder: t8.Ten8tYield = None):
+                          yielder: Ten8tYield = None):
     """
     Processes a list of JSON files based on certain criteria, including file age,
     encoding, and an optional unique identifier prefix. Supports file globbing
@@ -182,7 +186,7 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
         if yielder:
             y = yielder
         else:
-            y = t8.Ten8tYieldSummaryOnly(summary_name=f"Load results from {result_file}")
+            y = Ten8tYieldSummaryOnly(summary_name=f"Load results from {result_file}")
 
         yield from rule_ten8t_json_file(result_file,
                                         max_age_minutes=max_age_minutes,
