@@ -1,4 +1,5 @@
 {
+  "header": {
   "package_count": 1,
   "module_count": 2,
   "modules": [
@@ -46,7 +47,8 @@
   "clean_run": true,
   "perfect_run": false,
   "abort_on_fail": false,
-  "abort_on_exception": false,
+    "abort_on_exception": false
+  },
   "results": [
     {
       "status": true,

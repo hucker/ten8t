@@ -32,6 +32,9 @@ from .render import Ten8tMarkup  # noqa: F401
 from .render import Ten8tRendererFactory  # noqa: F401
 from .render import Ten8tRendererProtocol  # noqa: F401
 from .render import Ten8tTextRenderer  # noqa: F401
+# This set of rules has no dependencies, so it should always be available
+# it supports loading results using the json output from running a checker instance.
+from .rule_ten8t import rule_ten8t_json_file, rule_ten8t_json_files
 from .score import ScoreBinaryFail  # noqa: F401
 # Scoring Support
 from .score import ScoreBinaryPass  # noqa: F401
@@ -55,7 +58,6 @@ from .serialize import ten8t_save_csv  # noqa: F401
 from .serialize import ten8t_save_md  # noqa: F401
 from .serialize import ten8t_save_xls  # noqa: F401
 from .ten8t_attribute import attempts  # noqa: F401
-# Import and re-export symbols from subpackages
 from .ten8t_attribute import attributes  # noqa: F401
 from .ten8t_attribute import caching  # noqa: F401
 from .ten8t_attribute import categories  # noqa: F401
@@ -77,6 +79,10 @@ from .ten8t_function import Ten8tFunction  # noqa: F401
 from .ten8t_immutable import Ten8tEnvDict  # noqa: F401
 from .ten8t_immutable import Ten8tEnvList  # noqa: F401
 from .ten8t_immutable import Ten8tEnvSet  # noqa: F401
+from .ten8t_import import _install  # noqa: F401
+from .ten8t_import import installed_ten8t_packages  # noqa: F401
+from .ten8t_import import is_installed  # noqa: F401
+from .ten8t_import import whats_installed  # noqa: F401
 from .ten8t_logging import ten8t_logger  # noqa: F401
 from .ten8t_logging import ten8t_reset_logging  # noqa: F401
 from .ten8t_logging import ten8t_setup_logging  # noqa: F401
@@ -84,6 +90,7 @@ from .ten8t_module import Ten8tModule  # noqa: F401
 from .ten8t_package import Ten8tPackage  # noqa: F401
 from .ten8t_result import TR  # noqa: F401
 from .ten8t_result import Ten8tResult  # noqa: F401
+from .ten8t_result import Ten8tResultDictFilter  # noqa: F401
 from .ten8t_result import group_by  # noqa: F401
 from .ten8t_result import overview  # noqa: F401
 from .ten8t_ruid import empty_ruids  # noqa: F401
@@ -116,31 +123,6 @@ from .ten8t_yield import Ten8tYieldFailOnly  # noqa: F401
 from .ten8t_yield import Ten8tYieldPassFail  # noqa: F401
 from .ten8t_yield import Ten8tYieldPassOnly  # noqa: F401
 from .ten8t_yield import Ten8tYieldSummaryOnly  # noqa: F401
-
-# Dictionary of standard package installs
-TEN8T_PACKAGES = {}
-
-
-def _install(name: str, installed: bool = True) -> None:
-    if installed:
-        TEN8T_PACKAGES[name] = "Installed"
-    else:
-        TEN8T_PACKAGES[name] = "Not Installed"
-
-
-def is_installed(name: str) -> bool:
-    """Is a given package installed?"""
-    return name in TEN8T_PACKAGES
-
-
-def whats_installed(sep: str = ",") -> str:
-    """Generate a printable list of installed packages."""
-    return sep.join(sorted(TEN8T_PACKAGES.keys()))
-
-
-# This set of rules has no dependencies, so it should always be available
-# it supports loading results using the json output from running a checker instance.
-from .rule_ten8t import rule_ten8t_json_file, rule_ten8t_json_files
 
 _install("ten8t_result")
 

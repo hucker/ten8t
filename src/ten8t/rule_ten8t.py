@@ -56,7 +56,9 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
                          max_age_minutes: float = 10e20,
                          encoding: str = 'utf-8',
                          ruid: str = '',
+                         ruid_sep: str = '.',
                          pass_if_missing: bool = False,
+                         filter: t8.Ten8tResultDictFilter = None,
                          yielder: t8.Ten8tYield = None):
     code = t8.Ten8tMarkup().code
     try:
@@ -66,7 +68,7 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
             return
 
         with open(str(file_name), 'r', encoding=encoding) as f:
-            data = json.load(f)
+            results = json.load(f)
 
         age_in_minutes = get_file_age_in_minutes(file_name)
 
@@ -93,18 +95,34 @@ def rule_ten8t_json_file(file_name: t8.StrOrPath,
                           emit_fail=True,
                           summary_name=f"Load results from {file_name}")
 
-    results = data.get('results', None)
+    filter = filter or t8.Ten8tResultDictFilter()
+    results = filter.filter(results)
 
-    if not results:
+    if 'results' not in results or not results['results']:
         raise t8.Ten8tException(f"No results found for {file_name}")
 
-    for result in results:
+    for result in results['results']:
         new_result = t8.Ten8tResult.from_dict(result)
 
         # For cases where a result read from the file has a ruid AND the current function has
         # a ruid, they are merged.
         if ruid:
-            new_result.ruid = f'{ruid}-{new_result.ruid}'
+            new_result.ruid = f'{ruid}{ruid_sep}{new_result.ruid}'
+
+        # This is a very important.  Marking the data as cached means that the low level code
+        # managing results will leave the result data untouched rather than copying the metadata
+        # from this function into the result.  Let that sink in.  We are currently loading a list
+        # of possibly hundreds of results, each of which has important metadata about the function
+        # called to create that result.  If we don't mark the result as coming from cache the metadata
+        # from THIS function would overwrite into those results.  That is NOT what we want.
+        # TODO: As is, this mechanism loses the information about where the result came from which is bad.
+        #       ideally, there would be a name field that is part of each result that indicates where the
+        #       data comes from and each time this mechanism is used a '.' or '-' notation is used similar
+        #       to what we do with ruids.
+        #       For example, say the json file came from Server1-diagnostic, ideally there would be a field in
+        #       this result indicating that the parent of this result was Server1-diagnostic.  That way
+        #       we could concatenate that with Facility1.Serever1-diagnostic to build up the history.
+        new_result.cached = True
 
         yield from y(new_result)
 
@@ -115,6 +133,8 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
                           max_age_minutes: float = 10e20,
                           encoding='utf-8',
                           ruid: str = '',
+                          ruid_sep: str = '.',
+                          filter: t8.Ten8tResultDictFilter = None,
                           pass_if_missing: bool = False,
                           yielder: t8.Ten8tYield = None):
     """
@@ -123,6 +143,8 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
     patterns for flexible input handling.
 
     Args:
+        filter: a filter object that can be used to remove unwanted results.
+        ruid: An additional ruid prefix to be added to each result.
         file_names: A string representing file paths separated by spaces or a list
             of file paths. Supports glob patterns if the input is a single string.
         max_age_minutes: A float representing the maximum allowed file age in minutes.
@@ -141,10 +163,6 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
     """
     if isinstance(file_names, str):
         file_names = file_names.split()
-
-    # Let the user pass a yield object, this can make for cleaner code by reducing param counts
-
-    result_files = []
 
     # Expand glob if the first element is a single pattern
     if len(file_names) == 1:  # Check if it's a single element
@@ -170,5 +188,7 @@ def rule_ten8t_json_files(file_names: t8.StrOrPathList,
                                         max_age_minutes=max_age_minutes,
                                         encoding=encoding,
                                         ruid=ruid,
+                                        ruid_sep=ruid_sep,
+                                        filter=filter,
                                         pass_if_missing=pass_if_missing,
                                         yielder=y)

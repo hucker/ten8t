@@ -392,13 +392,24 @@ class Ten8tFunction:
 
     def load_result(self, result: Ten8tResult, start_time, end_time, count=1):
         """
-        Provide a bunch of metadata about the function call, mostly hoisting
-        parameters from the functon to the result.
+        Provide metadata about the function call, mostly hoisting
+        parameters from the function to the result.
 
         A design decision was made to make the result data flat since there are more than
         1 possible hierarchy.  Tall-skinny data that can be transformed into wide or
         hierarchical.
         """
+
+        # If the result data is pulled from cache then none of the metadata load is required.
+        # Result data should pass through using data from the cache.  For context, the cache
+        # could be a previous run which means all the meta-data will be the same because
+        # the data is for the same function.  Alternatively, we could be loading a lot
+        # of results for a complete run of a checker run elsewhere, in this case we want ALL
+        # the cached metadata so we don't overwrite here. The module rule_ten8t.py requires
+        # this support.
+        if result.cached:
+            return result
+
         # Use getattr to avoid repeating the same pattern of checking if self.module exists
         result.pkg_name = getattr(self.module, "__package__", "")
         result.module_name = getattr(self.module, "__name__", "") or self.module

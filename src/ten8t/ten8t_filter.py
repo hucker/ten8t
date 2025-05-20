@@ -1,6 +1,7 @@
 """
 Functions useful for creating function for filtering check functions
 """
+
 from ten8t.ten8t_function import Ten8tFunction
 
 

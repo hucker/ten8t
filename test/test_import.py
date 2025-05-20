@@ -6,7 +6,7 @@ from src import ten8t as t8
 
 # @pytest.mark.run(order=-1)
 def test_import_packages():
-    """Crude test to verify that the built in rules are imported by default"""
+    """Crude test to verify that the built-in rules are imported by default"""
     installstring=t8.whats_installed()
 
     assert installstring == 'fs,narwhals,openpyxl,pathlib,pdf,ping,requests,sqlalchemy,ten8t_result'
@@ -29,3 +29,12 @@ def test_import_version():
     pattern = r"^\d{1,2}\.\d{1,2}\.\d{1,2}$"
     assert re.match(pattern,t8.__version__), f"Version '{t8.__version__}' does not match the expected format (e.g., '0.1.2', '10.11.12')"
 
+
+def test_import_installed_packages():
+    """
+    Installed_ten8t_packages is just a list version of whats_installed.  Order doesn't matter so
+    the check is with sets.
+    """
+    pkgs = t8.installed_ten8t_packages()
+    ipkgs = t8.whats_installed(',').split(',')
+    assert set(ipkgs) == set(pkgs)

@@ -17,6 +17,7 @@ from .score import ScoreByResult, ScoreStrategy
 from .ten8t_exception import Ten8tException
 from .ten8t_function import Ten8tFunction
 from .ten8t_immutable import Ten8tEnvDict, Ten8tEnvList, Ten8tEnvSet
+from .ten8t_import import installed_ten8t_packages
 from .ten8t_logging import ten8t_logger
 from .ten8t_module import Ten8tModule
 from .ten8t_package import Ten8tPackage
@@ -849,7 +850,7 @@ class Ten8tChecker:
         Returns:
             int: The number of results with warnings.
         """
-        return sum(r.warn_msg for r in self.results if r.warn_msg is not None and len(r.warn_msg) > 0)
+        return sum(1 for r in self.results if r.warn_msg is not None and len(r.warn_msg) > 0)
 
     @property
     def pass_count(self):
@@ -943,14 +944,35 @@ class Ten8tChecker:
         return len(self.packages)
 
     def get_header(self) -> dict:
-        """Make a header with the top level information about the checker run"""
+        """
+        Make a header with the top level information about the checker run
+
+        The header part of the checker result allows you to determine the state of the system
+        at the time the test ras run, the timing information for the run, configuration information for the
+        run and overview results of the run.
+
+        NOTE:  Functions related to start time, end time and duration refer to the run of the checks
+               configured for the current run.  The timing information refers to this time, it does NOT
+               look at time stamps for situations where cached values are used or results are aggregated
+               by importing results from other runs, possibly coming from other threads, processes or
+               machines.
+
+        """
         header = {
             "name": self.name,
-            "package_count": self.package_count, "module_count": self.module_count, "modules": self.module_names,
-            "function_count": self.function_count, "tags": self.tags, "levels": self.levels,
+            "package_count": self.package_count,
+            "module_count": self.module_count,
+            "modules": self.module_names,
+            "function_count": self.function_count,
+            "tags": self.tags,
+            "levels": self.levels,
             "phases": self.phases,
-            "ruids": self.ruids, "score": self.score, "env_nulls": self.env_nulls,
-            "__version__": version("ten8t"), "start_time": self.start_time,
+            "ruids": self.ruids,
+            "score": self.score,
+            "env_nulls": self.env_nulls,
+            "__version__": version("ten8t"),
+            "__installed__": installed_ten8t_packages(),
+            "start_time": self.start_time,
             "end_time": self.end_time,
             "duration_seconds": self.duration_seconds,
             "functions": [f.function_name for f in self.check_functions],

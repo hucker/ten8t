@@ -1,40 +1,42 @@
 {
-  "package_count": 1,
-  "module_count": 1,
-  "modules": [
-    "check_module1"
-  ],
-  "function_count": 7,
-  "tags": [
-    "tag1"
-  ],
-  "levels": [
-    1
-  ],
-  "phases": [
-    "proto"
-  ],
-  "ruids": [
-    "m1_f1"
-  ],
-  "score": 66.66666666666667,
-  "env_nulls": [],
-  "__version__": "0.0.21",
-  "start_time": "2025-03-25 19:37:27.533858",
-  "end_time": "2025-03-25 19:37:31.074825",
-  "duration_seconds": 3.540967,
-  "functions": [],
-  "passed_count": 1,
-  "warn_count": 0,
-  "fail_count": 0,
-  "skip_count": 0,
-  "total_count": 1,
-  "check_count": 1,
-  "result_count": 1,
-  "clean_run": true,
-  "perfect_run": false,
-  "abort_on_fail": false,
-  "abort_on_exception": false,
+  "header": {
+    "package_count": 1,
+    "module_count": 1,
+    "modules": [
+      "check_module1"
+    ],
+    "function_count": 7,
+    "tags": [
+      "tag1"
+    ],
+    "levels": [
+      1
+    ],
+    "phases": [
+      "proto"
+    ],
+    "ruids": [
+      "m1_f1"
+    ],
+    "score": 66.66666666666667,
+    "env_nulls": [],
+    "__version__": "0.0.21",
+    "start_time": "2025-03-25 19:37:27.533858",
+    "end_time": "2025-03-25 19:37:31.074825",
+    "duration_seconds": 3.540967,
+    "functions": [],
+    "passed_count": 1,
+    "warn_count": 0,
+    "fail_count": 0,
+    "skip_count": 0,
+    "total_count": 1,
+    "check_count": 1,
+    "result_count": 1,
+    "clean_run": true,
+    "perfect_run": false,
+    "abort_on_fail": false,
+    "abort_on_exception": false
+  },
   "results": [
     {
       "status": true,

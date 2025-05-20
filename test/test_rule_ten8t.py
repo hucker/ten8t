@@ -35,8 +35,7 @@ def test_rule_imports(rule_func):
     assert ch.pass_count == 4
     assert ch.fail_count == 2
     assert ch.skip_count == 1
-    assert results[0].func_name == 'check_func'
-    assert results[0].module_name == 'adhoc'
+    assert results[0].module_name == 'check_module1'  # Original module from JSON file.
 
 
 @pytest.mark.parametrize(
@@ -265,15 +264,44 @@ def test_rule_ten8t_import_with_ruid_merge():
     def check_func1():
         yield from rule_ten8t_json_files('rule_ten8t_results/result2.json',
                                          yielder=ten8t.Ten8tYieldPassFail(),
+                                         ruid=check_func1.ruid,
+                                         ruid_sep='_'
                                          )
 
     @ten8t.categories(ruid='ruid_2')
     def check_func2():
         yield from rule_ten8t_json_files('rule_ten8t_results/result1.json',
-                                         yielder=ten8t.Ten8tYieldPassFail(),
+                                         yielder=ten8t.Ten8tYieldAll(),
+                                         ruid=check_func2.ruid,
+                                         ruid_sep='.',
                                          )
 
     ch = ten8t.Ten8tChecker(check_functions=[check_func1, check_func2], auto_ruid=True)
     results = ch.run_all()
-    assert results[0].ruid == "ruid_1-m1_f1"  # Show both ruids
-    assert results[1].ruid == "ruid_2-m1_f1"  # In this case there is no ruid so onyly the imported on is used.
+    assert results[0].ruid == "ruid_1_m1_f1"
+    assert results[1].ruid == "ruid_2.m1_f1"
+
+    # Checkfunc2 has yields a summary which should also have the 'ruid_2' rather than the combined ruid.
+    summaray_results = [r for r in results if r.summary_result]
+    assert len(summaray_results) == 1
+    assert summaray_results[0].ruid == "ruid_2"
+
+
+def test_rule_ten8t_file_does_not_exist():
+    @ten8t.categories(ruid='ruid_1')
+    def check_func1():
+        yield from rule_ten8t_json_files('rule_ten8t_results/non_existing_file.json',
+                                         yielder=ten8t.Ten8tYieldPassFail(),
+                                         ruid=check_func1.ruid,
+                                         ruid_sep='_'
+                                         )
+
+    ch = ten8t.Ten8tChecker(check_functions=[check_func1], auto_ruid=True)
+
+    results = ch.run_all()
+
+    assert len(results) == 1
+    assert results[0].status is False
+    assert results[0].ruid == "ruid_1"
+    assert results[
+               0].msg_text == 'The file rule_ten8t_results/non_existing_file.json does not exist default status = False'

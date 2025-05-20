@@ -153,6 +153,9 @@ class Ten8tResult:
     # Thread id where function ran
     thread_id: str = ""
 
+    # Was this result pulled from cache
+    cached: bool = False
+
     mu = Ten8tMarkup()
 
     def __post_init__(self):
@@ -169,7 +172,7 @@ class Ten8tResult:
         return d
 
     @classmethod
-    def from_dict(cls, data: dict):
+    def from_dict(cls, data: dict) -> 'Ten8tResult':
         """
         Create a Ten8tResult instance from a dictionary (that presumably was saved with as_dict())
 
@@ -190,8 +193,8 @@ class Ten8tResult:
             data['owner_list'] = []
 
         # Create a new instance by unpacking the dictionary
-        return cls(**data)
-
+        result = cls(**data)
+        return result
 
 # Shorthand
 TR = Ten8tResult
@@ -328,9 +331,6 @@ def overview(results: list[Ten8tResult]) -> str:
 class Ten8tResultDictFilter():
     """
     Advanced filter capable of filtering result dictionary on multiple fields (ruid, tag, and phase).
-
-    This class should be used to filter data read from JSON files or the to_dict data that the
-    checker can create.
     """
 
     def __init__(
@@ -361,30 +361,72 @@ class Ten8tResultDictFilter():
         Filters data on ruid, tag, and phase fields using the provided patterns.
         """
 
-        # Because we modify the dictionary I'm making a deep copy to assure that
-        # I don't break code.  This puts the onus on the caller if they decide
-        # they want the original mutated.
+        # Make a deep copy to avoid mutating the original dictionary
         results = copy.deepcopy(results)
 
-        # Use instance-level patterns if method-level patterns are not provided
-        ruid_patterns = any_to_str_list(ruid_patterns or self.ruid_patterns)
-        tag_patterns = any_to_str_list(tag_patterns or self.tag_patterns)
-        phase_patterns = any_to_str_list(phase_patterns or self.phase_patterns)
-        func_name_patterns = any_to_str_list(func_name_patterns or self.func_name_patterns)
+        # Prepare patterns by combining instance-level and method-level inputs
+        ruid_patterns = self._prepare_patterns(ruid_patterns, self.ruid_patterns)
+        tag_patterns = self._prepare_patterns(tag_patterns, self.tag_patterns)
+        phase_patterns = self._prepare_patterns(phase_patterns, self.phase_patterns)
+        func_name_patterns = self._prepare_patterns(func_name_patterns, self.func_name_patterns)
         summary_results = summary_results if summary_results is not None else self.summary_results
         status_results = status_results if status_results is not None else self.status_results
-        # Perform filtering
-        field_results = [
-            r for r in results["results"]
-            if (
-                    (not ruid_patterns or any(re.search(pattern, r["ruid"]) for pattern in ruid_patterns)) and
-                    (not tag_patterns or any(re.search(pattern, r["tag"]) for pattern in tag_patterns)) and
-                    (not phase_patterns or any(re.search(pattern, r["phase"]) for pattern in phase_patterns)) and
-                    (not func_name_patterns or any(
-                        re.search(pattern, r["func_name"]) for pattern in func_name_patterns)) and
-                    ((summary_results is None) or (r.get("summary_result") is summary_results)) and
-                    (r.get("status") is status_results)  # No need to check for None, those represent skipped checks.
-            )
-        ]
-        results["results"] = field_results
+
+        # Filter results
+        results["results"] = self._filter_results(
+            results["results"],
+            ruid_patterns,
+            tag_patterns,
+            phase_patterns,
+            func_name_patterns,
+            summary_results,
+            status_results
+        )
+
         return results
+
+    def _prepare_patterns(self, input_patterns, default_patterns):
+        """Prepare patterns by combining the input and default ones."""
+        return any_to_str_list(input_patterns or default_patterns)
+
+    def _pattern_matches(self, result, key, patterns):
+        """
+        Generic match logic for any key and pattern list.
+
+        :param result: The current result dictionary being inspected.
+        :param key: The dictionary key to match the value of.
+        :param patterns: A list of regex patterns to match.
+        :returns: True if the key value matches any of the patterns or if patterns is empty.
+        """
+        if not patterns:
+            return True  # If no patterns provided, consider it a match
+        value = result.get(key, "")  # Get the value for the key, defaulting to an empty string
+        return any(re.search(pattern, value) for pattern in patterns)
+
+    def _filter_results(self, results, ruid_patterns, tag_patterns, phase_patterns,
+                        func_name_patterns, summary_results, status_results):
+        """Filter the data based on the provided patterns and filters."""
+        filtered_results = []
+
+        for r in results:
+            if self._pattern_matches(r, "ruid", ruid_patterns) \
+                    and self._pattern_matches(r, "tag", tag_patterns) \
+                    and self._pattern_matches(r, "phase", phase_patterns) \
+                    and self._pattern_matches(r, "func_name", func_name_patterns) \
+                    and self._match_summary_result(r, summary_results) \
+                    and self._match_status(r, status_results):
+                filtered_results.append(r)
+
+        return filtered_results
+
+    def _match_summary_result(self, result, summary_results):
+        """Check if summary_result matches the expected value."""
+        if summary_results is None:  # No filtering on this value
+            return True
+        return result.get("summary_result") == summary_results
+
+    def _match_status(self, result, status_results):
+        """Check if status matches the expected value."""
+        if status_results is None:  # No filtering on this value
+            return True
+        return result.get("status") == status_results
