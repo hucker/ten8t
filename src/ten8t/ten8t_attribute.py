@@ -19,6 +19,7 @@ from typing import Callable
 
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
+from .ten8t_schedule import Ten8tBaseSchedule
 
 DEFAULT_TAG = ""  # A string indicating the type of rule, used for grouping/filtering results
 DEFAULT_LEVEL = 1  #
@@ -33,6 +34,44 @@ DEFAULT_FAIL_ON_NONE = False
 DEFAULT_INDEX = 1  # All ten8t functions are given an index of 1 when created.
 DEFAULT_THREAD_ID = "main_thread__"
 DEFAULT_ATTEMPTS = 1
+DEFAULT_SCHEDULE = Ten8tBaseSchedule()
+
+# Used to set up a check funct to have full set of data.
+DEFAULT_ATTRIBUTES = {
+
+    # Category attributes
+    'tag': DEFAULT_TAG,
+    'phase': DEFAULT_PHASE,
+    'level': DEFAULT_LEVEL,
+    'ruid': DEFAULT_RUID,
+
+    # Control attributes
+    'skip_on_none': DEFAULT_SKIP_ON_NONE,
+    'fail_on_none': DEFAULT_FAIL_ON_NONE,
+    'finish_on_fail': DEFAULT_FINISH_ON_FAIL,
+    'skip': DEFAULT_SKIP,
+
+    # Threading attributes
+    'thread_id': DEFAULT_THREAD_ID,
+
+    # Caching attributes
+    'ttl_minutes': DEFAULT_TTL_MIN,
+
+    # Score attributes
+    'weight': DEFAULT_WEIGHT,
+
+    # Retry mechanism
+    'attempts': DEFAULT_ATTEMPTS,
+
+    # Scheduling Seutp
+    'schedule': DEFAULT_SCHEDULE,
+
+    # Other attributes
+    'index': DEFAULT_INDEX,
+}
+
+
+
 
 # Define at module level.  This *could* be changed...
 DEFAULT_DISALLOWED_CHARS = ' ,!@#$%^&:?*<>\\/(){}[]<>~`-+=\t\n\'"'
@@ -91,7 +130,7 @@ def _parse_ttl_string(input_string: str) -> float:
     return 0.0
 
 
-def _ensure_defaults(func):
+def _ensure_defaults(func: Callable):
     """Initialize Ten8t attributes with default values if not already set.
 
     Sets all Ten8t attributes on the function with their default values if they
@@ -103,33 +142,8 @@ def _ensure_defaults(func):
     Returns:
         Callable: The function with all default attributes set.
     """
-    # Category attributes
-    func.tag = getattr(func, 'tag', DEFAULT_TAG)
-    func.phase = getattr(func, 'phase', DEFAULT_PHASE)
-    func.level = getattr(func, 'level', DEFAULT_LEVEL)
-    func.ruid = getattr(func, 'ruid', DEFAULT_RUID)
-
-    # Control attributes
-    func.skip_on_none = getattr(func, 'skip_on_none', DEFAULT_SKIP_ON_NONE)
-    func.fail_on_none = getattr(func, 'fail_on_none', DEFAULT_FAIL_ON_NONE)
-    func.finish_on_fail = getattr(func, 'finish_on_fail', DEFAULT_FINISH_ON_FAIL)
-    func.skip = getattr(func, 'skip', DEFAULT_SKIP)
-
-    # Threading attributes
-    func.thread_id = getattr(func, 'thread_id', DEFAULT_THREAD_ID)
-
-    # Caching attributes
-    func.ttl_minutes = getattr(func, 'ttl_minutes', DEFAULT_TTL_MIN)
-
-    # Score attributes
-    func.weight = getattr(func, 'weight', DEFAULT_WEIGHT)
-
-    # Used for 'retry' mechanism
-    func.attempts = getattr(func, 'attempts', DEFAULT_ATTEMPTS)
-
-    # Other attributes
-    func.index = getattr(func, 'index', DEFAULT_INDEX)
-
+    for attr, default_value in DEFAULT_ATTRIBUTES.items():
+        setattr(func, attr, getattr(func, attr, default_value))
     return func
 
 

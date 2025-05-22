@@ -148,6 +148,9 @@ def any_to_str_list(param: StrListOrNone, sep=' ') -> StrList:
         param = param.strip()
         if param == '':
             return []
+        elif param == ' ':
+            # Coalesce spaces
+            return param.split()
         else:
             return param.split(sep)
     if isinstance(param, list):
