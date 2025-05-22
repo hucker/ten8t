@@ -17,9 +17,9 @@ import time
 from functools import wraps
 from typing import Callable
 
+from .schedule import Ten8tBaseSchedule
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
-from .ten8t_schedule import Ten8tBaseSchedule
 
 DEFAULT_TAG = ""  # A string indicating the type of rule, used for grouping/filtering results
 DEFAULT_LEVEL = 1  #

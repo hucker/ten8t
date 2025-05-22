@@ -35,6 +35,14 @@ from .render import Ten8tTextRenderer  # noqa: F401
 # This set of rules has no dependencies, so it should always be available
 # it supports loading results using the json output from running a checker instance.
 from .rule_ten8t import rule_ten8t_json_file, rule_ten8t_json_files
+from .schedule import Ten8tBaseSchedule  # noqa: F401
+from .schedule import Ten8tCompositeSchedule  # noqa: F401
+from .schedule import Ten8tCronSchedule  # noqa: F401
+from .schedule import Ten8tIntersectionSchedule  # noqa: F401
+# Schedule Support
+from .schedule import Ten8tInverseSchedule  # noqa: F401
+from .schedule import Ten8tWeekdaySchedule  # noqa: F401
+from .schedule import Ten8tWeekendSchedule  # noqa: F401
 from .score import ScoreBinaryFail  # noqa: F401
 # Scoring Support
 from .score import ScoreBinaryPass  # noqa: F401
@@ -98,11 +106,6 @@ from .ten8t_ruid import module_ruids  # noqa: F401
 from .ten8t_ruid import package_ruids  # noqa: F401
 from .ten8t_ruid import ruid_issues  # noqa: F401
 from .ten8t_ruid import valid_ruids  # noqa: F401
-from .ten8t_schedule import Ten8tBaseSchedule  # noqa: F401
-from .ten8t_schedule import Ten8tCompositeSchedule  # noqa: F401
-from .ten8t_schedule import Ten8tCronSchedule  # noqa: F401
-from .ten8t_schedule import Ten8tIntersectionSchedule  # noqa: F401
-from .ten8t_schedule import Ten8tNonHolidaySchedule  # noqa: F401
 from .ten8t_thread import Ten8tThread  # noqa: F401
 from .ten8t_util import IntList  # noqa: F401
 from .ten8t_util import IntListOrNone  # noqa: F401

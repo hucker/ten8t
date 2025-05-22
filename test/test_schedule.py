@@ -3,9 +3,9 @@ import random
 
 import pytest
 
+from ten8t.schedule import Ten8tBaseSchedule, Ten8tCronSchedule, Ten8tNonHolidaySchedule
+from ten8t.schedule import Ten8tIntersectionSchedule
 from ten8t.ten8t_exception import Ten8tException
-from ten8t.ten8t_schedule import Ten8tBaseSchedule, Ten8tCronSchedule, Ten8tNonHolidaySchedule
-from ten8t.ten8t_schedule import Ten8tIntersectionSchedule
 
 
 # =======================
