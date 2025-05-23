@@ -13,42 +13,128 @@ class Ten8tBaseSchedule:
         ALL_DAYS_OF_WEEK (set[int]): Represents all days of the week (Sunday=0 through Saturday=6).
     """
 
+    GRANULARITY_MAP = {
+        "day": {"day", "days", "d"},
+        "hour": {"hour", "hours", "hr", "h"},
+        "minute": {"minute", "minutes", "min", "m"},
+        "second": {"second", "seconds", "sec", "s"},
+    }
+
+
     # Class-level constants for days
     ALL_DAYS_OF_MONTH = set(range(1, 32))  # Represents all days of the month (1-31)
     ALL_DAYS_OF_WEEK = set(range(0, 7))  # Represents all days of the week (0=Sunday, ... 6=Saturday)
 
-    def __init__(self, name='base') -> None:
+    def __init__(self, name="base", granularity: str = "minute") -> None:
+        """
+        Initializes the schedule with an optional name and granularity level.
+
+        Granularity is what allows you to say things happen at the same time and thus
+        allowing you to skip repeated checks.  The system currently supports day, hour minute
+        and second granularity.   Each one of these "zeros out" values in the datetime object
+        so if you set granularity to hours, the minute and second values will be zeroed out.
+
+
+        Args:
+            name (str): The name of the schedule. Defaults to "base".
+            granularity (str): The time granularity to use ("minute" or "second").
+                               Defaults to "minute".
+        """
+        if name:
+            name = name.strip()
+
         if not name:
             raise Ten8tException(f"Name must be provided for schedule by {self.__class__.__name__})")
 
         self.last_execution_time: dt.datetime | None = None
-        self.name = name or 'unknown'
+        self.name = name or "unknown"
+
+        self.granularity = self._normalize_granularity(granularity)
+
+    def _normalize_granularity(self, granularity: str) -> str:
+        """
+        Normalizes the provided granularity to a standard format (e.g., 'minute').
+
+        Args:
+            granularity (str): The user-provided granularity input.
+
+        Returns:
+            str: The normalized granularity (e.g., "hour", "minute").
+
+        Raises:
+            ValueError: If the granularity is invalid.
+        """
+        granularity = granularity.lower().strip()  # case-insensitive, remove whitespace
+        for standard, aliases in self.GRANULARITY_MAP.items():
+            if granularity in aliases:
+                return standard
+        raise Ten8tException(
+            f"Invalid granularity: '{granularity}'. "
+            f"Supported values are: {', '.join(self.GRANULARITY_MAP.keys())}."
+        )
+
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(name={self.name!r}, last_execution_time={self.last_execution_time!r})"
+        return (
+            f"{self.__class__.__name__}(name={self.name!r}, "
+            f"last_execution_time={self.last_execution_time})"
+        )
 
     def is_time_in_schedule(self, time: dt.datetime) -> bool:
         """
-        Always returns True, allowing tasks to run at any time.
+        Alwaysbazbaz123
+         returns True, allowing tasks to run at any time.
         """
         return True
 
     def run_now(self, execution_time: dt.datetime | None = None) -> bool:
         """
-        Updates the last execution state and prevents duplicate runs within the same minute.
+        Updates the last execution state and prevents duplicate runs
+        based on a specified granularity (hour, minute, or second).
+
+        Supported granularities:
+            - "day": Ensures tasks run only once per day.
+            - "hour": Ensures tasks run only once per hour.
+            - "minute": Ensures tasks run only once per minute (default).
+            - "second": Ensures tasks run only once per second.
 
         Args:
-            execution_time (datetime, optional): The current execution time. Defaults to `datetime.now()`.
+            execution_time (datetime, optional): The current execution time.
+                                                Defaults to `datetime.now()`.
 
         Returns:
             bool: True if the task was recorded to run now, False if it's a duplicate.
+
+        Raises:
+            Ten8tException: If an unsupported granularity is specified.
         """
         execution_time = execution_time or dt.datetime.now()
 
-        if self.last_execution_time is None or self.last_execution_time != execution_time:
-            self.last_execution_time = execution_time
+        # Define replacement parameters for each granularity
+        replacement_params = {
+            "day": {"hour": 0, "minute": 0, "second": 0, "microsecond": 0},
+            "hour": {"minute": 0, "second": 0, "microsecond": 0},
+            "minute": {"second": 0, "microsecond": 0},
+            "second": {"microsecond": 0}
+        }
+
+        if self.granularity not in replacement_params:
+            raise Ten8tException(
+                f"Granularity must be one of {', '.join(replacement_params.keys())}, "
+                f"not {self.granularity}"
+            )
+
+        # Get the specific kwargs for the current granularity
+        replace_kwargs = replacement_params[self.granularity]
+
+        # Apply the appropriate replacements based on granularity
+        current_time_value = execution_time.replace(**replace_kwargs)
+
+        # Compare and update the last execution time
+        if self.last_execution_time != current_time_value:
+            self.last_execution_time = current_time_value
             return True  # Task is scheduled to run
-        return False  # Duplicate execution
+        return False  # Task execution is a duplicate
 
     def __or__(self, other: "Ten8tBaseSchedule") -> "Ten8tCompositeSchedule":
         """
@@ -67,7 +153,7 @@ class Ten8tBaseSchedule:
             TypeError: If the other object is not a Ten8tBaseSchedule.
         """
         if not isinstance(other, Ten8tBaseSchedule):
-            raise TypeError("Can only combine schedules with another Ten8tBaseSchedule")
+            raise Ten8tException("Can only combine schedules with another Ten8tBaseSchedule")
         return Ten8tCompositeSchedule(schedules=[self, other])
 
     def __and__(self, other: "Ten8tBaseSchedule") -> "Ten8tIntersectionSchedule":
@@ -86,7 +172,7 @@ class Ten8tBaseSchedule:
             TypeError: If the other object is not a Ten8tBaseSchedule.
         """
         if not isinstance(other, Ten8tBaseSchedule):
-            raise TypeError(f"Can only combine schedules with another Ten8tBaseSchedule")
+            raise Ten8tException(f"Can only combine schedules with another Ten8tBaseSchedule")
         return Ten8tIntersectionSchedule(schedules=[self, other])
 
     def __invert__(self) -> "Ten8tInverseSchedule":
@@ -123,8 +209,9 @@ class Ten8tCompositeSchedule(Ten8tBaseSchedule):
 
 
 class Ten8tIntersectionSchedule(Ten8tBaseSchedule):
-    def __init__(self, schedules):
+    def __init__(self, schedules: list[Ten8tBaseSchedule], name="and_composite"):
         """Combine multiple schedules with logical AND."""
+        super().__init__(name=name)
         self.schedules = schedules
 
     def __repr__(self):

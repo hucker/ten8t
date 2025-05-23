@@ -8,7 +8,7 @@ class Ten8tWeekendSchedule(Ten8tBaseSchedule):
     A schedule that allows tasks to run on weekends
     """
 
-    def __init__(self, name: str = "weekday_schedule"):
+    def __init__(self, name: str = "weekend_schedule"):
         """
         Initialize the schedule.
 

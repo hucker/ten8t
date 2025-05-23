@@ -63,7 +63,7 @@ DEFAULT_ATTRIBUTES = {
     # Retry mechanism
     'attempts': DEFAULT_ATTEMPTS,
 
-    # Scheduling Seutp
+    # Scheduling Setup
     'schedule': DEFAULT_SCHEDULE,
 
     # Other attributes
@@ -438,6 +438,7 @@ ATTRIBUTE_DEFAULTS = {
     "index": DEFAULT_INDEX,
     "thread_id": DEFAULT_THREAD_ID,
     "attempts": DEFAULT_ATTEMPTS,
+    "schedule": DEFAULT_SCHEDULE,
 }
 
 

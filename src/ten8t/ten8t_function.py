@@ -11,6 +11,7 @@ import traceback
 from functools import wraps
 from typing import Any, Callable, Generator
 
+from .schedule import Ten8tBaseSchedule
 from .ten8t_attribute import get_attribute
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
@@ -137,9 +138,10 @@ class Ten8tFunction:
         self.fail_on_none: bool = get_attribute(function_, "fail_on_none")
         self.ttl_minutes: float = get_attribute(function_, "ttl_minutes")
         self.finish_on_fail: bool = get_attribute(function_, "finish_on_fail")
-        self.index = get_attribute(function_, "index")
-        self.thread_id = get_attribute(function_, "thread_id")
-        self.attempts = get_attribute(function_, "attempts")
+        self.index: int = get_attribute(function_, "index")
+        self.thread_id: str = get_attribute(function_, "thread_id")
+        self.attempts: int = get_attribute(function_, "attempts")
+        self.schedule: Ten8tBaseSchedule = get_attribute(function_, "schedule")
 
         # Support Time To Live using the return value of time.time.  Resolution of this
         # is on the order of 10e-6 depending on OS.  In my case this is WAY more than I
@@ -198,7 +200,8 @@ class Ten8tFunction:
                     yield from result
                 else:
                     # Unsupported result type
-                    raise TypeError(f"Unsupported return value type from function '{func.__name__}': {type(result)}")
+                    raise Ten8tException(
+                        f"Unsupported return value type from function '{func.__name__}': {type(result)}")
 
             return wrapper
         else:
@@ -206,6 +209,24 @@ class Ten8tFunction:
             return func
 
     def _get_parameter_values(self):
+        """
+        Resolve and retrieve parameter values from the function's signature.
+
+        This method inspects the function's signature (via `inspect.signature(func).parameters`)
+        to determine the required parameter values. Each parameter is resolved using
+        one of the following methods:
+        1. If the parameter's name exists in the `env` attribute, its value is taken from `env`.
+        2. If not in `env`, but the parameter has a default value, the default is used.
+        3. Parameters without a match in `env` or a default value are omitted.
+
+        This ensures that all parameters for the function have corresponding values
+        before invocation.
+
+        Returns:
+            list: A list of values corresponding to the function's parameters,
+                  resolved from `env` or defaults.
+        """
+
         args = []
         for param in self.parameters.values():
             if param.name in self.env:
@@ -280,6 +301,16 @@ class Ten8tFunction:
         if self.ttl_minutes * 60 + self.last_ttl_start > time.time():
             yield from self.last_results
             return
+
+        if not self.schedule.is_time_in_schedule(start_time):
+            if self.last_results:
+                yield from self.last_results
+                return
+            else:
+                yield Ten8tResult(status=None, skipped=True,
+                                  msg=f"Skipped waiting for schedule start {self.function_name}")
+                return
+
 
         try:
             self.last_results = []

@@ -1,10 +1,27 @@
+"""
+Module: _base.py
+
+This module provides the core classes for schedule composition in the Ten8t framework. These classes allow
+schedules to be combined, intersected, or inverted, enabling the creation of complex scheduling logic.
+
+### Classes
+1. **Ten8tBaseSchedule**: The foundation for all schedules, supporting logical operations like union (`|`),
+   intersection (`&`), and inversion (`~`).
+2. **Ten8tCompositeSchedule**: Combines multiple schedules into a single schedule (union).
+3. **Ten8tIntersectionSchedule**: Evaluates the intersection of multiple schedules.
+4. **Ten8tInverseSchedule**: Represents the inverse of a given schedule, matching times outside it.
+
+This design ensures that these classes work together cohesively while avoiding circular import issues.
+"""
+
 import datetime as dt
 import random
 
 import pytest
 
 from ten8t.schedule import Ten8tBaseSchedule, Ten8tCronSchedule, Ten8tNonHolidaySchedule
-from ten8t.schedule import Ten8tIntersectionSchedule
+from ten8t.schedule import Ten8tCompositeSchedule, Ten8tIntersectionSchedule, Ten8tInverseSchedule
+from ten8t.schedule import Ten8tTTLSchedule, Ten8tWeekdaySchedule, Ten8tWeekendSchedule
 from ten8t.ten8t_exception import Ten8tException
 
 
@@ -175,8 +192,10 @@ def test_ten8t_base_schedule_repr():
     # Case 3: Custom name and a specific last execution time
     last_exec_time = dt.datetime(2023, 10, 1, 12, 0, 0)
     base_schedule.last_execution_time = last_exec_time
-    assert repr(
-        base_schedule) == f"Ten8tBaseSchedule(name='custom_schedule', last_execution_time={repr(last_exec_time)})"
+    assert repr(base_schedule) == (
+        "Ten8tBaseSchedule(name='custom_schedule', last_execution_time=2023-10-01 12:00:00)"
+    )
+
 
 
 def test_ten8t_cron_schedule_repr1():
@@ -198,9 +217,9 @@ def test_ten8t_cron_schedule_repr2():
     )
     cron_schedule.last_execution_time = dt.datetime(2023, 10, 2, 9, 0, 0)
     assert repr(cron_schedule) == (
-        f"Ten8tCronSchedule(name='weekday_mornings', "
-        f"last_execution_time={cron_schedule.last_execution_time!r})"
+        "Ten8tCronSchedule(name='weekday_mornings', last_execution_time=2023-10-02 09:00:00)"
     )
+
 
 
 @pytest.fixture
@@ -239,7 +258,7 @@ def specific_time_schedule():
 
 @pytest.fixture
 def divisible_by_15_schedule():
-    """A schedule allowing times where the minute is divisible by 15."""
+    """A schedule allowing times when the minute is divisible by 15."""
 
     class DivisibleBy15Schedule(Ten8tBaseSchedule):
         def is_time_in_schedule(self, time: dt.datetime) -> bool:
@@ -247,6 +266,20 @@ def divisible_by_15_schedule():
 
     return DivisibleBy15Schedule(name="divisible_by_15")
 
+
+def test_inverse_repr(divisible_by_15_schedule):
+    ndiv_15 = ~divisible_by_15_schedule
+    assert repr(ndiv_15).startswith("Ten8tInverseSchedule")
+
+
+def test_or_repr(specific_time_schedule, divisible_by_15_schedule):
+    or_sched = specific_time_schedule | divisible_by_15_schedule
+    assert repr(or_sched).startswith("Ten8tCompositeSchedule")
+
+
+def test_and_repr(specific_time_schedule, divisible_by_15_schedule):
+    and_sched = specific_time_schedule & divisible_by_15_schedule
+    assert repr(and_sched).startswith("Ten8tIntersectionSchedule")
 
 def test_or_logic_with_always_true_and_false(
         always_true_schedule, always_false_schedule
@@ -428,16 +461,6 @@ class SpecificWeekdaySchedule(Ten8tBaseSchedule):
         return time_.weekday() == self.valid_weekday
 
 
-class MidnightSchedule(Ten8tBaseSchedule):
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
-        return time_.hour == 0 and time_.minute == 0
-
-
-class EndOfDaySchedule(Ten8tBaseSchedule):
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
-        return time_.hour == 23 and time_.minute == 59 and time_.second == 59
-
-
 def test_and_operator_with_mixed_schedules():
     """
     Test intersecting schedules where one is always valid and the
@@ -532,3 +555,337 @@ def test_complex_combination_of_operators(test_time, expected):
     assert combined_schedule.is_time_in_schedule(test_time) == expected, (
         f"Failed for time: {test_time}, expected: {expected}"
     )
+
+
+def test_invalid_granularity():
+    """Test initialization raises error for negative TTL minutes."""
+    with pytest.raises(Ten8tException, match="Invalid granularity"):
+        Ten8tBaseSchedule(name="test_schedule", granularity='foo')
+
+
+def test_invalid_name():
+    """Test initialization raises error for negative TTL minutes."""
+    for name_ in ['', ' ', None]:
+        with pytest.raises(Ten8tException, match="Name must be provided"):
+            Ten8tBaseSchedule(name=name_)
+
+
+def test_day_granularity():
+    # Test schedule with "day" granularity
+    schedule = Ten8tBaseSchedule(name="day_schedule", granularity="day")
+    time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
+
+    # First execution: should succeed
+    assert schedule.run_now(time_now) is True
+
+    # Second execution within the same day: should fail
+    same_day = time_now + dt.timedelta(hours=5)
+    assert schedule.run_now(same_day) is False
+
+    # Execution on the next day: should succeed
+    next_day = time_now + dt.timedelta(days=1)
+    assert schedule.run_now(next_day) is True
+
+
+def test_hour_granularity():
+    # Test schedule with "hour" granularity
+    schedule = Ten8tBaseSchedule(name="hour_schedule", granularity="hour")
+    time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
+
+    # First execution: should succeed
+    assert schedule.run_now(time_now) is True
+
+    # Second execution within the same hour: should fail
+    same_hour = time_now + dt.timedelta(minutes=30)
+    assert schedule.run_now(same_hour) is False
+
+    # Execution in the next hour: should succeed
+    next_hour = time_now + dt.timedelta(hours=1)
+    assert schedule.run_now(next_hour) is True
+
+
+def test_minute_granularity():
+    # Test schedule with "minute" granularity
+    schedule = Ten8tBaseSchedule(name="minute_schedule", granularity="minute")
+    time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
+
+    # First execution: should succeed
+    assert schedule.run_now(time_now) is True
+
+    # Second execution within the same minute: should fail
+    same_minute = time_now + dt.timedelta(seconds=30)
+    assert schedule.run_now(same_minute) is False
+
+    # Execution in the next minute: should succeed
+    next_minute = time_now + dt.timedelta(minutes=1)
+    assert schedule.run_now(next_minute) is True
+
+
+def test_second_granularity():
+    # Test schedule with "second" granularity
+    schedule = Ten8tBaseSchedule(name="second_schedule", granularity="second")
+    time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
+
+    # First execution: should succeed
+    assert schedule.run_now(time_now) is True
+
+    # Second execution within the same second: should fail
+    same_second = time_now + dt.timedelta(milliseconds=500)
+    assert schedule.run_now(same_second) is False
+
+    # Execution in the next second: should succeed
+    next_second = time_now + dt.timedelta(seconds=1)
+    assert schedule.run_now(next_second) is True
+
+
+def test_initialize_with_seconds():
+    """Test initialization with a valid TTL in seconds."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_sec=30)
+    assert schedule.ttl_sec == 30
+    assert schedule.name == "test_schedule"
+
+
+def test_initialize_with_minutes():
+    """Test initialization with a valid TTL in minutes."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_min=1)
+    assert schedule.ttl_sec == 60  # Should convert minutes to seconds
+
+
+def test_initialize_with_no_ttl():
+    """Test initialization raises error if no TTL is provided."""
+    with pytest.raises(Ten8tException, match="You must provide either ttl_sec or ttl_min."):
+        Ten8tTTLSchedule(name="test_schedule")
+
+
+def test_initialize_with_negative_ttl_seconds():
+    """Test initialization raises error for negative TTL seconds."""
+    with pytest.raises(Ten8tException, match="TTL in seconds must be greater than zero."):
+        Ten8tTTLSchedule(name="test_schedule", ttl_sec=-10)
+
+
+def test_initialize_with_negative_ttl_minutes():
+    """Test initialization raises error for negative TTL minutes."""
+    with pytest.raises(Ten8tException, match="TTL in minutes must be greater than zero."):
+        Ten8tTTLSchedule(name="test_schedule", ttl_min=-5)
+
+
+def test_first_execution_runs_immediately():
+    """Test that the first execution always runs immediately."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_sec=30)
+    result = schedule.run_now(execution_time=dt.datetime(2023, 1, 1, 12, 0, 0))
+    assert result is True
+    assert schedule.last_execution_time == dt.datetime(2023, 1, 1, 12, 0, 0)
+
+
+def test_execution_blocks_within_ttl():
+    """Test that executions block if within TTL threshold."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_sec=30)
+    schedule.run_now(execution_time=dt.datetime(2023, 1, 1, 12, 0, 0))  # Initial execution
+    result = schedule.run_now(execution_time=dt.datetime(2023, 1, 1, 12, 0, 15))
+    assert result is False  # Should block since only 15s have passed
+    # Last execution time should remain unchanged
+    assert schedule.last_execution_time == dt.datetime(2023, 1, 1, 12, 0, 0)
+
+
+def test_execution_allows_after_ttl():
+    """Test that executions allow after TTL threshold."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_sec=30)
+    schedule.run_now(execution_time=dt.datetime(2023, 1, 1, 12, 0, 0))  # Initial execution
+    result = schedule.run_now(execution_time=dt.datetime(2023, 1, 1, 12, 0, 31))
+    assert result is True  # Should allow since 31s have passed
+    assert schedule.last_execution_time == dt.datetime(2023, 1, 1, 12, 0, 31)
+
+
+def test_execution_at_exact_ttl_boundary():
+    """Test behavior exactly at the TTL boundary."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_sec=30)
+    schedule.run_now(execution_time=dt.datetime(2023, 1, 1, 12, 0, 0))  # Initial execution
+    result = schedule.run_now(execution_time=dt.datetime(2023, 1, 1, 12, 0, 30))
+    assert result is True  # Should allow at exactly 30s
+    assert schedule.last_execution_time == dt.datetime(2023, 1, 1, 12, 0, 30)
+
+
+def test_ttl_default_execution_time():
+    """Test that run_now uses current time when no execution_time is provided."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_sec=0)  # Zero TTL for testing
+    result = schedule.run_now()  # No execution_time provided
+    assert result is True
+    assert schedule.last_execution_time is not None  # Should have set a timestamp
+
+
+def test_ttl_repr():
+    """Test the string representation (repr) for debugging."""
+    schedule = Ten8tTTLSchedule(name="test_schedule", ttl_sec=60)
+    execution_time = dt.datetime(2023, 1, 1, 12, 0, 0)
+    schedule.run_now(execution_time=execution_time)
+
+    expected_repr = (
+        f"Ten8tTTLSchedule(name='test_schedule', "
+        f"last_execution_time={execution_time}, "
+        f"ttl_sec=60)"
+    )
+    assert repr(schedule) == expected_repr
+
+
+def test_multiple_invalid_operations():
+    """Test a combination of invalid operations."""
+    schedule = Ten8tBaseSchedule()
+
+    # Test that operations with non-schedule objects raise exceptions
+    with pytest.raises(Ten8tException):
+        schedule | "not a schedule"
+
+    with pytest.raises(Ten8tException):
+        schedule & 42
+
+    with pytest.raises(Ten8tException):
+        schedule | None
+
+    with pytest.raises(Ten8tException):
+        schedule & {}
+
+
+def test_weekday_schedule_initialization():
+    """Test initialization of the weekday schedule."""
+    # Test default name
+    schedule = Ten8tWeekdaySchedule()
+    assert schedule.name == "weekday_schedule"
+
+    # Test custom name
+    custom_schedule = Ten8tWeekdaySchedule(name="custom_weekday")
+    assert custom_schedule.name == "custom_weekday"
+
+    # Test empty name should raise an exception
+    with pytest.raises(Ten8tException):
+        Ten8tWeekdaySchedule(name="")
+
+
+def test_weekday_schedule_is_time_in_schedule():
+    """Test the is_time_in_schedule method for weekdays."""
+    schedule = Ten8tWeekdaySchedule()
+
+    # Test weekdays (Monday through Friday)
+    monday = dt.datetime(2023, 7, 3)  # A Monday
+    assert monday.weekday() == 0
+    assert schedule.is_time_in_schedule(monday)
+
+    wednesday = dt.datetime(2023, 7, 5)  # A Wednesday
+    assert wednesday.weekday() == 2
+    assert schedule.is_time_in_schedule(wednesday)
+
+    friday = dt.datetime(2023, 7, 7)  # A Friday
+    assert friday.weekday() == 4
+    assert schedule.is_time_in_schedule(friday)
+
+    # Test weekends (should return False)
+    saturday = dt.datetime(2023, 7, 8)  # A Saturday
+    assert saturday.weekday() == 5
+    assert not schedule.is_time_in_schedule(saturday)
+
+    sunday = dt.datetime(2023, 7, 9)  # A Sunday
+    assert sunday.weekday() == 6
+    assert not schedule.is_time_in_schedule(sunday)
+
+
+def test_weekend_schedule_initialization():
+    """Test initialization of the weekend schedule."""
+    # Test default name
+    schedule = Ten8tWeekendSchedule()
+    assert schedule.name == "weekend_schedule"
+
+    # Test custom name
+    custom_schedule = Ten8tWeekendSchedule(name="weekend_only")
+    assert custom_schedule.name == "weekend_only"
+
+    # Test empty name should raise an exception
+    with pytest.raises(Ten8tException):
+        Ten8tWeekendSchedule(name="")
+
+
+def test_weekend_schedule_is_time_in_schedule():
+    """Test the is_time_in_schedule method for weekends."""
+    schedule = Ten8tWeekendSchedule()
+
+    # Test weekdays (Monday through Friday) - should return False
+    monday = dt.datetime(2023, 7, 3)  # A Monday
+    assert monday.weekday() == 0
+    assert not schedule.is_time_in_schedule(monday)
+
+    wednesday = dt.datetime(2023, 7, 5)  # A Wednesday
+    assert wednesday.weekday() == 2
+    assert not schedule.is_time_in_schedule(wednesday)
+
+    friday = dt.datetime(2023, 7, 7)  # A Friday
+    assert friday.weekday() == 4
+    assert not schedule.is_time_in_schedule(friday)
+
+    # Test weekends (should return True)
+    saturday = dt.datetime(2023, 7, 8)  # A Saturday
+    assert saturday.weekday() == 5
+    assert schedule.is_time_in_schedule(saturday)
+
+    sunday = dt.datetime(2023, 7, 9)  # A Sunday
+    assert sunday.weekday() == 6
+    assert schedule.is_time_in_schedule(sunday)
+
+
+def test_weekday_and_weekend_schedules_are_complementary():
+    """Test that weekday and weekend schedules are complementary."""
+    weekday_schedule = Ten8tWeekdaySchedule()
+    weekend_schedule = Ten8tWeekendSchedule()
+
+    # Test for a full week that the schedules are complementary
+    start_date = dt.datetime(2023, 7, 3)  # A Monday
+    for days in range(7):
+        test_date = start_date + dt.timedelta(days=days)
+        # For any given day, exactly one of these schedules should return True
+        assert weekday_schedule.is_time_in_schedule(test_date) != weekend_schedule.is_time_in_schedule(test_date)
+        # Both schedules together should cover every day
+        assert weekday_schedule.is_time_in_schedule(test_date) or weekend_schedule.is_time_in_schedule(test_date)
+
+
+def test_operator_classes_coverage():
+    """Test to ensure coverage of the operator overloading classes."""
+    # Create two base schedules
+    schedule1 = Ten8tBaseSchedule(name="schedule1")
+    schedule2 = Ten8tBaseSchedule(name="schedule2")
+
+    # Get a specific time for consistent testing
+    test_time = dt.datetime(2023, 7, 10, 12, 0, 0)
+
+    # Test OR operator (__or__) directly
+    result_or = schedule1.__or__(schedule2)
+    assert isinstance(result_or, Ten8tCompositeSchedule)
+    assert result_or.is_time_in_schedule(test_time) == True  # Base schedule always returns True
+    assert (schedule1 | schedule2).is_time_in_schedule(test_time) == result_or.is_time_in_schedule(test_time)
+
+    # Test AND operator (__and__) directly
+    result_and = schedule1.__and__(schedule2)
+    assert isinstance(result_and, Ten8tIntersectionSchedule)
+    assert result_and.is_time_in_schedule(test_time) == True  # Base schedule always returns True
+    assert (schedule1 & schedule2).is_time_in_schedule(test_time) == result_and.is_time_in_schedule(test_time)
+
+    # Test NOT operator (__invert__) directly
+    result_invert = schedule1.__invert__()
+    assert isinstance(result_invert, Ten8tInverseSchedule)
+    assert result_invert.is_time_in_schedule(test_time) == False  # Inverse of True is False
+    assert (~schedule1).is_time_in_schedule(test_time) == result_invert.is_time_in_schedule(test_time)
+
+    # Additional tests to exercise methods within each class
+
+    # Test composite schedule with multiple inputs
+    composite = Ten8tCompositeSchedule(schedules=[schedule1, schedule2], name="composite_test")
+    assert composite.is_time_in_schedule(test_time) == True
+
+    # Test intersection schedule with multiple inputs
+    intersection = Ten8tIntersectionSchedule(schedules=[schedule1, schedule2], name="intersection_test")
+    assert intersection.is_time_in_schedule(test_time) == True
+
+    # Test inverse schedule
+    inverse = Ten8tInverseSchedule(schedule=schedule1)
+    assert inverse.is_time_in_schedule(test_time) == False
+
+    # Test repr methods for coverage
+    assert "Ten8tCompositeSchedule" in repr(composite)
+    assert "Ten8tIntersectionSchedule" in repr(intersection)
+    assert "Ten8tInverseSchedule" in repr(inverse)

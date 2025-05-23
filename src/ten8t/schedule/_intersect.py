@@ -4,6 +4,7 @@ from ._base import Ten8tBaseSchedule
 class Ten8tIntersectionSchedule(Ten8tBaseSchedule):
     def __init__(self, schedules):
         """Combine multiple schedules with logical AND."""
+        super().__init__(name="and composite")
         self.schedules = schedules
 
     def __repr__(self):
