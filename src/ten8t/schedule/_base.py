@@ -1,4 +1,5 @@
 import datetime as dt
+from contextlib import contextmanager
 
 from ..ten8t_exception import Ten8tException
 
@@ -82,12 +83,11 @@ class Ten8tBaseSchedule:
 
     def is_time_in_schedule(self, time: dt.datetime) -> bool:
         """
-        Alwaysbazbaz123
-         returns True, allowing tasks to run at any time.
+        Always returns True, allowing tasks to run at any time.
         """
         return True
 
-    def run_now(self, execution_time: dt.datetime | None = None) -> bool:
+    def mark_executed(self, execution_time: dt.datetime | None = None) -> bool:
         """
         Updates the last execution state and prevents duplicate runs
         based on a specified granularity (hour, minute, or second).
@@ -135,6 +135,39 @@ class Ten8tBaseSchedule:
             self.last_execution_time = current_time_value
             return True  # Task is scheduled to run
         return False  # Task execution is a duplicate
+
+    @contextmanager
+    def execution_context(self, execution_time: dt.datetime | None = None):
+        """
+        A context manager that checks if execution should proceed and automatically
+        marks it as executed upon successful completion.
+
+        Args:
+            execution_time (datetime, optional): The time to check. Defaults to datetime.now().
+
+        Yields:
+            bool: True if execution should proceed, False otherwise.
+
+        Example:
+            with schedule.execution_context() as should_run:
+                if should_run:
+                    # Do the actual work
+                    do_something()
+                    # No need to call mark_executed - happens automatically
+        """
+        execution_time = execution_time or dt.datetime.now()
+        should_execute = self.can_execute(execution_time)
+
+        try:
+            # Yield whether execution should proceed
+            yield should_execute
+
+            # Only mark as executed if execution was allowed and completed successfully
+            if should_execute:
+                self.mark_executed(execution_time)
+        except Exception:
+            # If an exception occurs, don't mark as executed
+            raise
 
     def __or__(self, other: "Ten8tBaseSchedule") -> "Ten8tCompositeSchedule":
         """
