@@ -21,6 +21,14 @@ class Ten8tBaseSchedule:
         "second": {"second", "seconds", "sec", "s"},
     }
 
+    # Define replacement parameters for each granularity
+    GRANULARITY_REPLACEMENTS = {
+        "day": {"hour": 0, "minute": 0, "second": 0, "microsecond": 0},
+        "hour": {"minute": 0, "second": 0, "microsecond": 0},
+        "minute": {"second": 0, "microsecond": 0},
+        "second": {"microsecond": 0}
+    }
+
 
     # Class-level constants for days
     ALL_DAYS_OF_MONTH = set(range(1, 32))  # Represents all days of the month (1-31)
@@ -74,6 +82,33 @@ class Ten8tBaseSchedule:
             f"Supported values are: {', '.join(self.GRANULARITY_MAP.keys())}."
         )
 
+    def _normalize_time(self, time: dt.datetime) -> dt.datetime:
+        """
+        Normalizes a datetime according to the schedule's granularity.
+
+        This method handles applying the appropriate replacements to zero out
+        smaller time units based on the configured granularity.
+
+        Args:
+            time (dt.datetime): The time to normalize.
+
+        Returns:
+            dt.datetime: The normalized time with appropriate values zeroed out.
+
+        Raises:
+            Ten8tException: If an unsupported granularity is specified.
+        """
+        if self.granularity not in self.GRANULARITY_REPLACEMENTS:
+            raise Ten8tException(
+                f"Granularity must be one of {', '.join(self.GRANULARITY_REPLACEMENTS.keys())}, "
+                f"not {self.granularity}"
+            )
+
+        # Get the specific kwargs for the current granularity
+        replace_kwargs = self.GRANULARITY_REPLACEMENTS[self.granularity]
+
+        # Apply the appropriate replacements based on granularity
+        return time.replace(**replace_kwargs)
 
     def __repr__(self) -> str:
         return (
@@ -87,86 +122,72 @@ class Ten8tBaseSchedule:
         """
         return True
 
+    def can_execute(self, execution_time: dt.datetime | None = None) -> bool:
+        """
+        Checks if execution is allowed at the current time based on schedule and
+        previous execution history, without modifying state.
+
+        Args:
+            execution_time (dt.datetime, optional): The time to check. Defaults to datetime.now().
+
+        Returns:
+            bool: True if execution is allowed, False otherwise.
+        """
+        execution_time = execution_time or dt.datetime.now()
+        normalized_time = self._normalize_time(execution_time)
+
+        # First check if the time is in the schedule
+        if not self.is_time_in_schedule(execution_time):
+            return False
+
+        # Then check if we've already executed at this time unit
+        return self.last_execution_time != normalized_time
+
+
     def mark_executed(self, execution_time: dt.datetime | None = None) -> bool:
         """
         Updates the last execution state and prevents duplicate runs
-        based on a specified granularity (hour, minute, or second).
-
-        Supported granularities:
-            - "day": Ensures tasks run only once per day.
-            - "hour": Ensures tasks run only once per hour.
-            - "minute": Ensures tasks run only once per minute (default).
-            - "second": Ensures tasks run only once per second.
+        based on the specified granularity.
 
         Args:
-            execution_time (datetime, optional): The current execution time.
-                                                Defaults to `datetime.now()`.
+            execution_time (dt.datetime, optional): The current execution time.
+                                                  Defaults to `datetime.now()`.
 
         Returns:
             bool: True if the task was recorded to run now, False if it's a duplicate.
-
-        Raises:
-            Ten8tException: If an unsupported granularity is specified.
         """
         execution_time = execution_time or dt.datetime.now()
-
-        # Define replacement parameters for each granularity
-        replacement_params = {
-            "day": {"hour": 0, "minute": 0, "second": 0, "microsecond": 0},
-            "hour": {"minute": 0, "second": 0, "microsecond": 0},
-            "minute": {"second": 0, "microsecond": 0},
-            "second": {"microsecond": 0}
-        }
-
-        if self.granularity not in replacement_params:
-            raise Ten8tException(
-                f"Granularity must be one of {', '.join(replacement_params.keys())}, "
-                f"not {self.granularity}"
-            )
-
-        # Get the specific kwargs for the current granularity
-        replace_kwargs = replacement_params[self.granularity]
-
-        # Apply the appropriate replacements based on granularity
-        current_time_value = execution_time.replace(**replace_kwargs)
+        normalized_time = self._normalize_time(execution_time)
 
         # Compare and update the last execution time
-        if self.last_execution_time != current_time_value:
-            self.last_execution_time = current_time_value
+        if self.last_execution_time != normalized_time:
+            self.last_execution_time = normalized_time
             return True  # Task is scheduled to run
         return False  # Task execution is a duplicate
 
     @contextmanager
-    def execution_context(self, execution_time: dt.datetime | None = None):
+    def once_per_interval(self, execution_time: dt.datetime | None = None):
         """
-        A context manager that checks if execution should proceed and automatically
-        marks it as executed upon successful completion.
+        Context manager that tracks execution at most once per time interval.
+
+        Yields whether this is the first execution in this interval (True)
+        or a duplicate (False). Only marks as executed if yielded True and
+        the with block completes successfully.
 
         Args:
-            execution_time (datetime, optional): The time to check. Defaults to datetime.now().
-
-        Yields:
-            bool: True if execution should proceed, False otherwise.
-
-        Example:
-            with schedule.execution_context() as should_run:
-                if should_run:
-                    # Do the actual work
-                    do_something()
-                    # No need to call mark_executed - happens automatically
+            execution_time: Time to check, defaults to current time
         """
         execution_time = execution_time or dt.datetime.now()
         should_execute = self.can_execute(execution_time)
 
         try:
-            # Yield whether execution should proceed
+            # Yield whether this execution should be tracked
             yield should_execute
-
-            # Only mark as executed if execution was allowed and completed successfully
+            # Only mark as executed if it should have executed
             if should_execute:
                 self.mark_executed(execution_time)
         except Exception:
-            # If an exception occurs, don't mark as executed
+            # Don't mark as executed if an exception occurs
             raise
 
     def __or__(self, other: "Ten8tBaseSchedule") -> "Ten8tCompositeSchedule":
@@ -185,6 +206,10 @@ class Ten8tBaseSchedule:
         Raises:
             TypeError: If the other object is not a Ten8tBaseSchedule.
         """
+
+        # Break circular import
+        from ._composite import Ten8tCompositeSchedule
+
         if not isinstance(other, Ten8tBaseSchedule):
             raise Ten8tException("Can only combine schedules with another Ten8tBaseSchedule")
         return Ten8tCompositeSchedule(schedules=[self, other])
@@ -204,6 +229,10 @@ class Ten8tBaseSchedule:
         Raises:
             TypeError: If the other object is not a Ten8tBaseSchedule.
         """
+
+        # Break circular import
+        from ._intersect import Ten8tIntersectionSchedule
+
         if not isinstance(other, Ten8tBaseSchedule):
             raise Ten8tException(f"Can only combine schedules with another Ten8tBaseSchedule")
         return Ten8tIntersectionSchedule(schedules=[self, other])
@@ -217,64 +246,9 @@ class Ten8tBaseSchedule:
         Returns:
             Ten8tInverseSchedule: A new schedule representing the inverse logic.
         """
+
+        # Break circular import
+        from ._inverse import Ten8tInverseSchedule
+
         return Ten8tInverseSchedule(schedule=self)
 
-
-class Ten8tCompositeSchedule(Ten8tBaseSchedule):
-    """
-    A composite schedule that evaluates multiple schedules and allows a time
-    if it matches any of the constituent schedules (logical OR).
-    """
-
-    def __init__(self, schedules: list[Ten8tBaseSchedule], name="or_composite") -> None:
-        super().__init__(name=name)
-        self.schedules = schedules
-
-    def __repr__(self) -> str:
-        # Include the list of schedules in the representation
-        return f"{self.__class__.__name__}(schedules={self.schedules!r}, name={self.name!r}, last_execution_time={self.last_execution_time!r})"
-
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
-        """
-        Returns True if the given time matches any schedule in the list.
-        """
-        return any(schedule.is_time_in_schedule(time_) for schedule in self.schedules)
-
-
-class Ten8tIntersectionSchedule(Ten8tBaseSchedule):
-    def __init__(self, schedules: list[Ten8tBaseSchedule], name="and_composite"):
-        """Combine multiple schedules with logical AND."""
-        super().__init__(name=name)
-        self.schedules = schedules
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(schedules={self.schedules!r}, name={self.name!r}, last_execution_time={self.last_execution_time!r})"
-
-    def is_time_in_schedule(self, dt):
-        """Check if all the schedules include the given time."""
-        return all(schedule.is_time_in_schedule(dt) for schedule in self.schedules)
-
-
-class Ten8tInverseSchedule(Ten8tBaseSchedule):
-    """
-    Represents an inverse schedule that returns True only when the original schedule returns False.
-    """
-
-    def __init__(self, schedule: Ten8tBaseSchedule):
-        super().__init__(name=f"not({schedule.name})")
-        self.schedule = schedule
-
-    def is_time_in_schedule(self, time: dt.datetime) -> bool:
-        """
-        Inverts the result of the original schedule's `is_time_in_schedule` method.
-
-        Args:
-            time (datetime): The time to check against the schedule.
-
-        Returns:
-            bool: True if the original schedule is False, otherwise False.
-        """
-        return not self.schedule.is_time_in_schedule(time)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(original_schedule={self.schedule!r})"

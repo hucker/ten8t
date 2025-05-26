@@ -37,7 +37,7 @@ class Ten8tTTLSchedule(Ten8tBaseSchedule):
 
         self.ttl_sec = ttl_sec if ttl_sec is not None else ttl_min * 60  # Always store TTL in seconds
 
-    def run_now(self, execution_time: dt.datetime | None = None) -> bool:
+    def mark_executed(self, execution_time: dt.datetime | None = None) -> bool:
         """
         Executes the task if it's not within the debounce duration.
 

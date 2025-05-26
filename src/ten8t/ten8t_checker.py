@@ -224,8 +224,7 @@ class Ten8tChecker:
             self.env = {}
 
         # Allow an RC object to be specified.
-        self.rc: Ten8tRC = None
-        self.import_rc(rc)
+        self.rc: Ten8tRC = self.import_rc(rc)
 
         # In order to support rendered output a render object must be provided
         # if none are provided we create one
@@ -238,6 +237,7 @@ class Ten8tChecker:
         self.env_nulls: dict[str, Any] = {}
 
         # If they have a progress object then set it up.
+        self.progress_object: Ten8tProgress | None = None
         self.set_progress(progress_object)
 
         # If any fail result occurs stop processing.
@@ -273,7 +273,7 @@ class Ten8tChecker:
             self.pre_collect()
             self.prepare_functions()
 
-    def import_rc(self, rc):
+    def import_rc(self, rc: Ten8tRC | None) -> Ten8tRC:
         """
         Imports runtime, configuration folders, and loads specific module objects. This method processes
         the configuration data such as folders, modules, and environment variables. Additionally, this
@@ -334,7 +334,6 @@ class Ten8tChecker:
         # and a UI and perhaps the terminal.  A bit overkill but it works nicely
         # if you need it with very little cost.
         if isinstance(progress_object, list):
-            progress_object = Ten8tMultiProgress(progress_list=progress_object)
             progress_object = Ten8tMultiProgress(progress_list=progress_object)
         elif progress_object is None:
             progress_object = Ten8tNoProgress()
@@ -754,6 +753,10 @@ class Ten8tChecker:
 
                 # Lots of magic here
                 function_.env = env
+
+                # This time stamp is the same for function and allows scheduling to for each function to
+                # correctly determine if the function should run according to the schedule.
+                function_.checker_start_time = self.start_time
 
                 self.progress_object.message(f"Function Start {function_.function_name}")
                 for result in function_():

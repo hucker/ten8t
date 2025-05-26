@@ -4,6 +4,7 @@ deal of metadata is stored in the function and extracted from information about 
 its signature, its generator status etc.  This information is used so users do not need to
 configure functions in multiple places.  Design elements from fastapi and pytest are obvious.
 """
+import datetime as dt
 import inspect
 import re
 import time
@@ -11,7 +12,7 @@ import traceback
 from functools import wraps
 from typing import Any, Callable, Generator
 
-from .schedule import Ten8tBaseSchedule
+from .schedule import Ten8tBaseSchedule, Ten8tTTLSchedule
 from .ten8t_attribute import get_attribute
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
@@ -142,6 +143,19 @@ class Ten8tFunction:
         self.thread_id: str = get_attribute(function_, "thread_id")
         self.attempts: int = get_attribute(function_, "attempts")
         self.schedule: Ten8tBaseSchedule = get_attribute(function_, "schedule")
+
+        # This is a very important state variable that is used for scheduling functions to
+        # run.  IF a schedule is active it is important that all functions use the same time
+        # base for a given run rather than current clock time.  This fixes clock bugs that
+        # are caused by different parts of the code using different time bases.  In the case
+        # of scheduling, everything in a given checker run should use the same base, in the case
+        # of timing how long functions take to run a different time base should be used.
+        self.checker_start_time: dt.datetime | None = None
+        if self.ttl_minutes:
+            self.schedule = Ten8tTTLSchedule(ttl_min=self.ttl_minutes)
+        else:
+            # Always runs
+            self.schedule = self.schedule or Ten8tBaseSchedule()
 
         # Support Time To Live using the return value of time.time.  Resolution of this
         # is on the order of 10e-6 depending on OS.  In my case this is WAY more than I

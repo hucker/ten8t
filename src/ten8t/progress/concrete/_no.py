@@ -4,6 +4,8 @@ from ...ten8t_result import Ten8tResult
 from ...ten8t_util import StrOrNone
 
 
+# TODO:  Rename this to Ten8tNullProgress
+
 # pylint: disable=R0903
 class Ten8tNoProgress(Ten8tProgress):
     """
@@ -14,10 +16,11 @@ class Ten8tNoProgress(Ten8tProgress):
     """
 
     def __str__(self):
-        return "Ten8tNoProgress - No progress tracking (used primarily for testing)"
+        return f"{self.__class__.__name__} - No progress tracking (used primarily for testing)"
 
     def __repr__(self):
-        return "<Ten8tNoProgress>"
+        return f"<{self.__class__.__name__}>"
+
 
     def message(self, msg: str):
         """ Do Nothing"""
