@@ -7,11 +7,17 @@ The markup is a simple search and replace on tags that look like:
 
 About 20 such tags are supported.  The expectation is that the tags will be used to format
 single lines of text where each line represents a test result of some kind.  Thus, all
-the formatting is setting color and font.
+the formatting is setting color and font and not spacing and tables and other advanced
+features.  It is built to allow easy direct output into many formats.
 
 The code requires each new formatter to provide a dictionary of mappings that it supports.
 Once the mapping is provided the output from a checker run can be formatted for display in
 the supported formats.
+
+The intent of this markup is NOT to create yet another text format. The
+idea is to have a simple markup that can easily be translated into any of the supported
+output formats.  Streamlit, markdown, rich, textual, html, all have their own
+details that need to be mapped.
 
 """
 from ..ten8t_exception import Ten8tValueError
