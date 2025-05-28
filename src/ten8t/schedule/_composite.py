@@ -17,8 +17,8 @@ class Ten8tCompositeSchedule(Ten8tBaseSchedule):
         # Include the list of schedules in the representation
         return f"{self.__class__.__name__}(schedules={self.schedules!r}, name={self.name!r}, last_execution_time={self.last_execution_time!r})"
 
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
+    def is_due(self, time_: dt.datetime) -> bool:
         """
         Returns True if the given time matches any schedule in the list.
         """
-        return any(schedule.is_time_in_schedule(time_) for schedule in self.schedules)
+        return any(schedule.is_due(time_) for schedule in self.schedules)

@@ -59,7 +59,7 @@ class Ten8tNonHolidaySchedule(Ten8tBaseSchedule):
         except ValueError:
             raise Ten8tException(f"Invalid holiday date format: {holidays}")
 
-    def is_time_in_schedule(self, time: dt.datetime) -> bool:
+    def is_due(self, time: dt.datetime) -> bool:
         """Checks whether the given datetime falls within the schedule.
 
         Args:

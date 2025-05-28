@@ -111,9 +111,9 @@ def test_nth_weekday_schedule(test_name, n, weekday, year, month, expected_day):
     day_after = expected_date + dt.timedelta(days=1)
 
     # Assert that the expected date is in schedule
-    assert schedule.is_time_in_schedule(expected_date), f"Failed: {test_name} should be in schedule on {expected_date}"
+    assert schedule.is_due(expected_date), f"Failed: {test_name} should be in schedule on {expected_date}"
 
     # Assert that day before and after are not in schedule
-    assert not schedule.is_time_in_schedule(
+    assert not schedule.is_due(
         day_before), f"Failed: {test_name} should not be in schedule on {day_before}"
-    assert not schedule.is_time_in_schedule(day_after), f"Failed: {test_name} should not be in schedule on {day_after}"
+    assert not schedule.is_due(day_after), f"Failed: {test_name} should not be in schedule on {day_after}"

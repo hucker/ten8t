@@ -12,7 +12,7 @@ class Ten8tInverseSchedule(Ten8tBaseSchedule):
         super().__init__(name=f"not({schedule.name})")
         self.schedule = schedule
 
-    def is_time_in_schedule(self, time: dt.datetime) -> bool:
+    def is_due(self, time: dt.datetime) -> bool:
         """
         Inverts the result of the original schedule's `is_time_in_schedule` method.
 
@@ -22,7 +22,7 @@ class Ten8tInverseSchedule(Ten8tBaseSchedule):
         Returns:
             bool: True if the original schedule is False, otherwise False.
         """
-        return not self.schedule.is_time_in_schedule(time)
+        return not self.schedule.is_due(time)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(original_schedule={self.schedule!r})"

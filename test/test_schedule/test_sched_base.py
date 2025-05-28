@@ -47,7 +47,7 @@ def test_base_schedule_fuzzing():
             random_datetime = base_date.replace(hour=hour, minute=minute, second=second)
 
             # Assert that the schedule always "runs" (returns True)
-            assert schedule.is_time_in_schedule(random_datetime) is True, f"Failed for {random_datetime}"
+            assert schedule.is_due(random_datetime) is True, f"Failed for {random_datetime}"
 
 
 def test_base_schedule_no_duplicate_runs():
@@ -58,14 +58,14 @@ def test_base_schedule_no_duplicate_runs():
     now = dt.datetime.now()
 
     # First run should succeed
-    assert schedule.mark_executed(now) is True
+    assert schedule.record_execution(now) is True
 
     # Same time should result in no new run
-    assert schedule.mark_executed(now) is False
+    assert schedule.record_execution(now) is False
 
     # Future time should allow a new run
     future_time = now + dt.timedelta(minutes=1)
-    assert schedule.mark_executed(future_time) is True
+    assert schedule.record_execution(future_time) is True
 
 
 def test_normalize_time(schedule):
@@ -100,7 +100,7 @@ def test_execution_context_success_flow(schedule):
     assert schedule.last_execution_time is None
 
     # Use the context manager with explicit time
-    with schedule.once_per_interval(execution_time=test_time) as first_time:
+    with schedule.execute_once(execution_time=test_time) as first_time:
         assert first_time
 
     # Verify execution was marked (with granularity of minute)
@@ -111,18 +111,18 @@ def test_execution_context_duplicate_execution(schedule):
     """Test that the context manager correctly skips duplicate executions."""
 
     test_time = dt.datetime(2023, 1, 1, 12, 34, 10)
-    with schedule.once_per_interval(execution_time=test_time) as first_time:
+    with schedule.execute_once(execution_time=test_time) as first_time:
         pass
     assert first_time
 
     # Second execution at the same minute should be skipped, even with different seconds
     different_seconds = dt.datetime(2023, 1, 1, 12, 34, 20)
-    with schedule.once_per_interval(execution_time=different_seconds) as first_time:
+    with schedule.execute_once(execution_time=different_seconds) as first_time:
         assert not first_time
 
     # Execution at a different minute should run
     different_minute = dt.datetime(2023, 1, 1, 12, 35, 0)
-    with schedule.once_per_interval(execution_time=different_minute) as first_time:
+    with schedule.execute_once(execution_time=different_minute) as first_time:
         assert first_time
 
     # Verify the latest execution time is recorded
@@ -136,7 +136,7 @@ def test_different_granularities():
     hour_schedule = Ten8tBaseSchedule(name="hour_schedule", granularity="hour")
     test_time = dt.datetime(2023, 1, 1, 12, 30, 45)
 
-    with hour_schedule.once_per_interval(execution_time=test_time) as first_time:
+    with hour_schedule.execute_once(execution_time=test_time) as first_time:
         assert first_time
 
     # Last execution time should have minutes and seconds zeroed out
@@ -144,7 +144,7 @@ def test_different_granularities():
 
     # Test with day granularity
     day_schedule = Ten8tBaseSchedule(name="day_schedule", granularity="day")
-    with day_schedule.once_per_interval(execution_time=test_time) as first_time:
+    with day_schedule.execute_once(execution_time=test_time) as first_time:
         assert first_time
 
     # Last execution time should have hours, minutes and seconds zeroed out
@@ -159,7 +159,7 @@ def test_consecutive_days(schedule):
     # Execution on first day
     day1 = dt.datetime(2023, 1, 1, 15, 30, 0)
     assert schedule.can_execute(execution_time=day1) is True
-    schedule.mark_executed(execution_time=day1)
+    schedule.record_execution(execution_time=day1)
 
     # Check that another execution on the same day is rejected
     same_day_later = dt.datetime(2023, 1, 1, 18, 45, 0)
@@ -177,7 +177,7 @@ def test_rollover_at_midnight(schedule):
 
     # Execution before midnight
     before_midnight = dt.datetime(2023, 1, 1, 23, 45, 0)
-    schedule.mark_executed(execution_time=before_midnight)
+    schedule.record_execution(execution_time=before_midnight)
 
     # Last execution time should be at the hour boundary
     assert schedule.last_execution_time == dt.datetime(2023, 1, 1, 23, 0, 0)
@@ -203,7 +203,7 @@ def test_manual_execution_tracking(schedule):
     assert can_run is True
 
     # Mark as executed
-    result = schedule.mark_executed(execution_time=test_time)
+    result = schedule.record_execution(execution_time=test_time)
     assert result is True
     assert schedule.last_execution_time == dt.datetime(2023, 1, 1, 12, 30, 0, 0)
 
@@ -224,34 +224,34 @@ def test_operator_classes_coverage():
     # Test OR operator (__or__) directly
     result_or = schedule1.__or__(schedule2)
     assert isinstance(result_or, Ten8tCompositeSchedule)
-    assert result_or.is_time_in_schedule(test_time) == True  # Base schedule always returns True
-    assert (schedule1 | schedule2).is_time_in_schedule(test_time) == result_or.is_time_in_schedule(test_time)
+    assert result_or.is_due(test_time) == True  # Base schedule always returns True
+    assert (schedule1 | schedule2).is_due(test_time) == result_or.is_due(test_time)
 
     # Test AND operator (__and__) directly
     result_and = schedule1.__and__(schedule2)
     assert isinstance(result_and, Ten8tIntersectionSchedule)
-    assert result_and.is_time_in_schedule(test_time) == True  # Base schedule always returns True
-    assert (schedule1 & schedule2).is_time_in_schedule(test_time) == result_and.is_time_in_schedule(test_time)
+    assert result_and.is_due(test_time) == True  # Base schedule always returns True
+    assert (schedule1 & schedule2).is_due(test_time) == result_and.is_due(test_time)
 
     # Test NOT operator (__invert__) directly
     result_invert = schedule1.__invert__()
     assert isinstance(result_invert, Ten8tInverseSchedule)
-    assert result_invert.is_time_in_schedule(test_time) == False  # Inverse of True is False
-    assert (~schedule1).is_time_in_schedule(test_time) == result_invert.is_time_in_schedule(test_time)
+    assert result_invert.is_due(test_time) == False  # Inverse of True is False
+    assert (~schedule1).is_due(test_time) == result_invert.is_due(test_time)
 
     # Additional tests to exercise methods within each class
 
     # Test composite schedule with multiple inputs
     composite = Ten8tCompositeSchedule(schedules=[schedule1, schedule2], name="composite_test")
-    assert composite.is_time_in_schedule(test_time) == True
+    assert composite.is_due(test_time) == True
 
     # Test intersection schedule with multiple inputs
     intersection = Ten8tIntersectionSchedule(schedules=[schedule1, schedule2])
-    assert intersection.is_time_in_schedule(test_time) == True
+    assert intersection.is_due(test_time) == True
 
     # Test inverse schedule
     inverse = Ten8tInverseSchedule(schedule=schedule1)
-    assert inverse.is_time_in_schedule(test_time) == False
+    assert inverse.is_due(test_time) == False
 
     # Test repr methods for coverage
     assert "Ten8tCompositeSchedule" in repr(composite)
@@ -296,15 +296,15 @@ def test_day_granularity():
     time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
 
     # First execution: should succeed
-    assert schedule.mark_executed(time_now) is True
+    assert schedule.record_execution(time_now) is True
 
     # Second execution within the same day: should fail
     same_day = time_now + dt.timedelta(hours=5)
-    assert schedule.mark_executed(same_day) is False
+    assert schedule.record_execution(same_day) is False
 
     # Execution on the next day: should succeed
     next_day = time_now + dt.timedelta(days=1)
-    assert schedule.mark_executed(next_day) is True
+    assert schedule.record_execution(next_day) is True
 
 
 def test_hour_granularity():
@@ -313,15 +313,15 @@ def test_hour_granularity():
     time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
 
     # First execution: should succeed
-    assert schedule.mark_executed(time_now) is True
+    assert schedule.record_execution(time_now) is True
 
     # Second execution within the same hour: should fail
     same_hour = time_now + dt.timedelta(minutes=30)
-    assert schedule.mark_executed(same_hour) is False
+    assert schedule.record_execution(same_hour) is False
 
     # Execution in the next hour: should succeed
     next_hour = time_now + dt.timedelta(hours=1)
-    assert schedule.mark_executed(next_hour) is True
+    assert schedule.record_execution(next_hour) is True
 
 
 def test_minute_granularity():
@@ -330,15 +330,15 @@ def test_minute_granularity():
     time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
 
     # First execution: should succeed
-    assert schedule.mark_executed(time_now) is True
+    assert schedule.record_execution(time_now) is True
 
     # Second execution within the same minute: should fail
     same_minute = time_now + dt.timedelta(seconds=30)
-    assert schedule.mark_executed(same_minute) is False
+    assert schedule.record_execution(same_minute) is False
 
     # Execution in the next minute: should succeed
     next_minute = time_now + dt.timedelta(minutes=1)
-    assert schedule.mark_executed(next_minute) is True
+    assert schedule.record_execution(next_minute) is True
 
 
 def test_second_granularity():
@@ -347,15 +347,15 @@ def test_second_granularity():
     time_now = dt.datetime(2023, 10, 1, 10, 0, 0)
 
     # First execution: should succeed
-    assert schedule.mark_executed(time_now) is True
+    assert schedule.record_execution(time_now) is True
 
     # Second execution within the same second: should fail
     same_second = time_now + dt.timedelta(milliseconds=500)
-    assert schedule.mark_executed(same_second) is False
+    assert schedule.record_execution(same_second) is False
 
     # Execution in the next second: should succeed
     next_second = time_now + dt.timedelta(seconds=1)
-    assert schedule.mark_executed(next_second) is True
+    assert schedule.record_execution(next_second) is True
 
 
 def test_ten8t_base_schedule_repr():
@@ -380,7 +380,7 @@ def always_true_schedule():
     """A schedule that always returns True."""
 
     class AlwaysTrueSchedule(Ten8tBaseSchedule):
-        def is_time_in_schedule(self, time: dt.datetime) -> bool:
+        def is_due(self, time: dt.datetime) -> bool:
             return True
 
     return AlwaysTrueSchedule(name="always_true")
@@ -391,7 +391,7 @@ def always_false_schedule():
     """A schedule that always returns False."""
 
     class AlwaysFalseSchedule(Ten8tBaseSchedule):
-        def is_time_in_schedule(self, time: dt.datetime) -> bool:
+        def is_due(self, time: dt.datetime) -> bool:
             return False
 
     return AlwaysFalseSchedule(name="always_false")
@@ -402,7 +402,7 @@ def specific_time_schedule():
     """A schedule that matches only a specific time."""
 
     class SpecificTimeSchedule(Ten8tBaseSchedule):
-        def is_time_in_schedule(self, time: dt.datetime) -> bool:
+        def is_due(self, time: dt.datetime) -> bool:
             # Returns True only for 12:30
             return time.hour == 12 and time.minute == 30
 
@@ -414,7 +414,7 @@ def divisible_by_15_schedule():
     """A schedule allowing times when the minute is divisible by 15."""
 
     class DivisibleBy15Schedule(Ten8tBaseSchedule):
-        def is_time_in_schedule(self, time: dt.datetime) -> bool:
+        def is_due(self, time: dt.datetime) -> bool:
             return time.minute % 15 == 0
 
     return DivisibleBy15Schedule(name="divisible_by_15")
@@ -443,10 +443,10 @@ def test_or_logic_with_always_true_and_false(
 
     # Test with arbitrary times - always_true should dominate the OR logic
     test_time = dt.datetime(2023, 10, 20, 14, 0)
-    assert composite_schedule.is_time_in_schedule(test_time)
+    assert composite_schedule.is_due(test_time)
 
     test_time2 = dt.datetime(2023, 10, 20, 14, 30)
-    assert composite_schedule.is_time_in_schedule(test_time2)
+    assert composite_schedule.is_due(test_time2)
 
 
 def test_or_logic_with_specific_and_false(
@@ -457,11 +457,11 @@ def test_or_logic_with_specific_and_false(
 
     # Test time that matches specific_time_schedule
     matching_time = dt.datetime(2023, 10, 20, 12, 30)
-    assert composite_schedule.is_time_in_schedule(matching_time)
+    assert composite_schedule.is_due(matching_time)
 
     # Test arbitrary time (does not match specific_time_schedule)
     non_matching_time = dt.datetime(2023, 10, 20, 14, 0)
-    assert not composite_schedule.is_time_in_schedule(non_matching_time)
+    assert not composite_schedule.is_due(non_matching_time)
 
 
 def test_exhaustive_or_logic_with_two_schedules(specific_time_schedule, divisible_by_15_schedule):
@@ -481,7 +481,7 @@ def test_exhaustive_or_logic_with_two_schedules(specific_time_schedule, divisibl
         expected_result = is_in_specific_schedule or is_in_divisible_schedule
 
         # Assert that the composite schedule matches the expected result
-        assert composite_schedule.is_time_in_schedule(current_time) == expected_result
+        assert composite_schedule.is_due(current_time) == expected_result
 
 
 def test_chained_or_logic(
@@ -494,15 +494,15 @@ def test_chained_or_logic(
 
     # Test an arbitrary time - always_true should dominate
     random_time = dt.datetime(2023, 10, 20, 8, 45)
-    assert composite_schedule.is_time_in_schedule(random_time)
+    assert composite_schedule.is_due(random_time)
 
     # Test time matching the specific_time_schedule
     specific_time = dt.datetime(2023, 10, 20, 12, 30)
-    assert composite_schedule.is_time_in_schedule(specific_time)
+    assert composite_schedule.is_due(specific_time)
 
     # Test time matching the divisible_by_15_schedule
     divisible_time = dt.datetime(2023, 10, 20, 9, 15)
-    assert composite_schedule.is_time_in_schedule(divisible_time)
+    assert composite_schedule.is_due(divisible_time)
 
 
 def test_flatten_nested_or_composites(specific_time_schedule, divisible_by_15_schedule):
@@ -512,19 +512,19 @@ def test_flatten_nested_or_composites(specific_time_schedule, divisible_by_15_sc
 
     # Test time that DOES match specific_time_schedule
     specific_time = dt.datetime(2023, 10, 20, 12, 30)
-    assert composite2.is_time_in_schedule(specific_time)
+    assert composite2.is_due(specific_time)
 
     # Test time that DOES match divisible_by_15_schedule
     divisible_time = dt.datetime(2023, 10, 20, 11, 45)
-    assert composite2.is_time_in_schedule(divisible_time)
+    assert composite2.is_due(divisible_time)
 
     # Test time that matches NEITHER schedule
     non_matching_time = dt.datetime(2023, 10, 20, 8, 13)
-    assert not composite2.is_time_in_schedule(non_matching_time)
+    assert not composite2.is_due(non_matching_time)
 
 
 class AlwaysTrueSchedule(Ten8tBaseSchedule):
-    def is_time_in_schedule(self, time: dt.datetime) -> bool:
+    def is_due(self, time: dt.datetime) -> bool:
         return True  # Always valid for any time
 
 
@@ -533,7 +533,7 @@ class SpecificHourSchedule(Ten8tBaseSchedule):
         super().__init__(name)
         self.valid_hour = valid_hour
 
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
+    def is_due(self, time_: dt.datetime) -> bool:
         return time_.hour == self.valid_hour and time_.minute == 0
 
 
@@ -542,7 +542,7 @@ class SpecificMinuteSchedule(Ten8tBaseSchedule):
         super().__init__(name)
         self.valid_minute = valid_minute
 
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
+    def is_due(self, time_: dt.datetime) -> bool:
         return time_.minute == self.valid_minute
 
 
@@ -551,7 +551,7 @@ class SpecificWeekdaySchedule(Ten8tBaseSchedule):
         super().__init__(name=name)
         self.valid_weekday = valid_weekday  # Python weekday: 0=Monday, ..., 6=Sunday
 
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
+    def is_due(self, time_: dt.datetime) -> bool:
         return time_.weekday() == self.valid_weekday
 
 
@@ -571,8 +571,8 @@ def test_and_operator_with_mixed_schedules():
     valid_time = dt.datetime(2023, 12, 25, 10, 15)  # 10:15 is valid for both
     invalid_time = dt.datetime(2023, 12, 25, 10, 30)  # 10:30 is invalid for schedule2
 
-    assert combined_schedule.is_time_in_schedule(valid_time) is True
-    assert combined_schedule.is_time_in_schedule(invalid_time) is False
+    assert combined_schedule.is_due(valid_time) is True
+    assert combined_schedule.is_due(invalid_time) is False
 
 
 def test_and_operator_with_all_invalid():
@@ -584,7 +584,7 @@ def test_and_operator_with_all_invalid():
     combined_schedule = schedule1 & schedule2
 
     test_time = dt.datetime(2023, 12, 25, 10, 0)  # 10:00 is only valid in schedule1
-    assert combined_schedule.is_time_in_schedule(test_time) is False
+    assert combined_schedule.is_due(test_time) is False
 
 
 def test_and_operator_with_all_valid():
@@ -601,11 +601,11 @@ def test_and_operator_with_all_valid():
 
     # Test a valid time that matches both schedule conditions
     valid_time = dt.datetime(2023, 12, 25, 12, 0, 0)
-    assert combined_schedule.is_time_in_schedule(valid_time) is True
+    assert combined_schedule.is_due(valid_time) is True
 
     # Test an invalid time that does not match the conditions
     invalid_time = dt.datetime(2023, 12, 25, 13, 0, 0)
-    assert combined_schedule.is_time_in_schedule(invalid_time) is False
+    assert combined_schedule.is_due(invalid_time) is False
 
 
 # Define parameterized test cases
@@ -646,6 +646,34 @@ def test_complex_combination_of_operators(test_time, expected):
     combined_schedule = ~weekday_schedule | (weekday_schedule & hour_schedule)
 
     # Evaluate if the test_time matches the combined_schedule
-    assert combined_schedule.is_time_in_schedule(test_time) == expected, (
+    assert combined_schedule.is_due(test_time) == expected, (
         f"Failed for time: {test_time}, expected: {expected}"
     )
+
+
+@pytest.mark.parametrize("invalid_granularity", [
+    "monthly",
+    "weekly",
+    "yearly",
+    "fortnight",
+    "",  # Empty string
+    "mins",  # Close but not in the aliases
+    "hourz",  # Typo
+])
+def test_invalid_granularity_exception(invalid_granularity):
+    """
+    Test that providing an invalid granularity raises the appropriate exception.
+
+    Args:
+        invalid_granularity: A string value that is not a valid granularity
+    """
+    # Verify that Ten8tException is raised with the correct error message
+    with pytest.raises(Ten8tException) as excinfo:
+        Ten8tBaseSchedule(name="test_schedule", granularity=invalid_granularity)
+
+    # Check the error message content
+    expected_message = (
+        f"Invalid granularity: '{invalid_granularity}'. "
+        f"Supported values are: day, hour, minute, second."
+    )
+    assert str(excinfo.value) == expected_message

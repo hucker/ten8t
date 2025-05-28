@@ -17,7 +17,7 @@ class Ten8tBaseSchedule:
     GRANULARITY_MAP = {
         "day": {"day", "days", "d"},
         "hour": {"hour", "hours", "hr", "h"},
-        "minute": {"minute", "minutes", "min", "m"},
+        "minute": {"minute", "minutes", "min", "mn", "m"},
         "second": {"second", "seconds", "sec", "s"},
     }
 
@@ -57,12 +57,15 @@ class Ten8tBaseSchedule:
 
         self.last_execution_time: dt.datetime | None = None
         self.name = name or "unknown"
-
         self.granularity = self._normalize_granularity(granularity)
 
     def _normalize_granularity(self, granularity: str) -> str:
         """
         Normalizes the provided granularity to a standard format (e.g., 'minute').
+
+        This allows users to use anyting value specified in the map, like
+        minute, minutes, min, or m for minutes.  This is ONLY provided to simplify
+        the user experience for data read from config files.
 
         Args:
             granularity (str): The user-provided granularity input.
@@ -98,7 +101,7 @@ class Ten8tBaseSchedule:
         Raises:
             Ten8tException: If an unsupported granularity is specified.
         """
-        if self.granularity not in self.GRANULARITY_REPLACEMENTS:
+        if self.granularity not in self.GRANULARITY_REPLACEMENTS:  # pragma no cover
             raise Ten8tException(
                 f"Granularity must be one of {', '.join(self.GRANULARITY_REPLACEMENTS.keys())}, "
                 f"not {self.granularity}"
@@ -116,7 +119,7 @@ class Ten8tBaseSchedule:
             f"last_execution_time={self.last_execution_time})"
         )
 
-    def is_time_in_schedule(self, time: dt.datetime) -> bool:
+    def is_due(self, time: dt.datetime) -> bool:
         """
         Always returns True, allowing tasks to run at any time.
         """
@@ -137,14 +140,13 @@ class Ten8tBaseSchedule:
         normalized_time = self._normalize_time(execution_time)
 
         # First check if the time is in the schedule
-        if not self.is_time_in_schedule(execution_time):
+        if not self.is_due(execution_time):
             return False
 
         # Then check if we've already executed at this time unit
         return self.last_execution_time != normalized_time
 
-
-    def mark_executed(self, execution_time: dt.datetime | None = None) -> bool:
+    def record_execution(self, execution_time: dt.datetime | None = None) -> bool:
         """
         Updates the last execution state and prevents duplicate runs
         based on the specified granularity.
@@ -166,7 +168,7 @@ class Ten8tBaseSchedule:
         return False  # Task execution is a duplicate
 
     @contextmanager
-    def once_per_interval(self, execution_time: dt.datetime | None = None):
+    def execute_once(self, execution_time: dt.datetime | None = None):
         """
         Context manager that tracks execution at most once per time interval.
 
@@ -176,7 +178,32 @@ class Ten8tBaseSchedule:
 
         Args:
             execution_time: Time to check, defaults to current time
-        """
+
+        Example:
+
+            # Create a schedule with minute granularity
+            schedule = Ten8tBaseSchedule(name="my_task", granularity="minute")
+
+            # Use the context manager to prevent duplicate executions
+            with schedule.run_once_in_period() as should_execute:
+                if should_execute:
+                    # This code will run at most once per minute
+                    print("Performing task...")
+                    process_data()
+                else:
+                    print("Skipping duplicate execution in this time interval")
+
+            # If an exception occurs inside the with block, the interval
+            # won't be marked as executed
+            try:
+                with schedule.run_once_in_period() as should_execute:
+                    if should_execute:
+                        risky_operation()  # If this fails, won't mark as executed
+            except Exception as e:
+                log_error(e)
+
+    """
+
         execution_time = execution_time or dt.datetime.now()
         should_execute = self.can_execute(execution_time)
 
@@ -185,7 +212,7 @@ class Ten8tBaseSchedule:
             yield should_execute
             # Only mark as executed if it should have executed
             if should_execute:
-                self.mark_executed(execution_time)
+                self.record_execution(execution_time)
         except Exception:
             # Don't mark as executed if an exception occurs
             raise

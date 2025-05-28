@@ -27,24 +27,24 @@ def test_weekday_schedule_is_time_in_schedule():
     # Test weekdays (Monday through Friday)
     monday = dt.datetime(2023, 7, 3)  # A Monday
     assert monday.weekday() == 0
-    assert schedule.is_time_in_schedule(monday)
+    assert schedule.is_due(monday)
 
     wednesday = dt.datetime(2023, 7, 5)  # A Wednesday
     assert wednesday.weekday() == 2
-    assert schedule.is_time_in_schedule(wednesday)
+    assert schedule.is_due(wednesday)
 
     friday = dt.datetime(2023, 7, 7)  # A Friday
     assert friday.weekday() == 4
-    assert schedule.is_time_in_schedule(friday)
+    assert schedule.is_due(friday)
 
     # Test weekends (should return False)
     saturday = dt.datetime(2023, 7, 8)  # A Saturday
     assert saturday.weekday() == 5
-    assert not schedule.is_time_in_schedule(saturday)
+    assert not schedule.is_due(saturday)
 
     sunday = dt.datetime(2023, 7, 9)  # A Sunday
     assert sunday.weekday() == 6
-    assert not schedule.is_time_in_schedule(sunday)
+    assert not schedule.is_due(sunday)
 
 
 def test_weekend_schedule_initialization():
@@ -69,24 +69,24 @@ def test_weekend_schedule_is_time_in_schedule():
     # Test weekdays (Monday through Friday) - should return False
     monday = dt.datetime(2023, 7, 3)  # A Monday
     assert monday.weekday() == 0
-    assert not schedule.is_time_in_schedule(monday)
+    assert not schedule.is_due(monday)
 
     wednesday = dt.datetime(2023, 7, 5)  # A Wednesday
     assert wednesday.weekday() == 2
-    assert not schedule.is_time_in_schedule(wednesday)
+    assert not schedule.is_due(wednesday)
 
     friday = dt.datetime(2023, 7, 7)  # A Friday
     assert friday.weekday() == 4
-    assert not schedule.is_time_in_schedule(friday)
+    assert not schedule.is_due(friday)
 
     # Test weekends (should return True)
     saturday = dt.datetime(2023, 7, 8)  # A Saturday
     assert saturday.weekday() == 5
-    assert schedule.is_time_in_schedule(saturday)
+    assert schedule.is_due(saturday)
 
     sunday = dt.datetime(2023, 7, 9)  # A Sunday
     assert sunday.weekday() == 6
-    assert schedule.is_time_in_schedule(sunday)
+    assert schedule.is_due(sunday)
 
 
 def test_weekday_and_weekend_schedules_are_complementary():
@@ -99,6 +99,6 @@ def test_weekday_and_weekend_schedules_are_complementary():
     for days in range(7):
         test_date = start_date + dt.timedelta(days=days)
         # For any given day, exactly one of these schedules should return True
-        assert weekday_schedule.is_time_in_schedule(test_date) != weekend_schedule.is_time_in_schedule(test_date)
+        assert weekday_schedule.is_due(test_date) != weekend_schedule.is_due(test_date)
         # Both schedules together should cover every day
-        assert weekday_schedule.is_time_in_schedule(test_date) or weekend_schedule.is_time_in_schedule(test_date)
+        assert weekday_schedule.is_due(test_date) or weekend_schedule.is_due(test_date)

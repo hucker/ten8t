@@ -316,7 +316,7 @@ class Ten8tFunction:
             yield from self.last_results
             return
 
-        if not self.schedule.is_time_in_schedule(start_time):
+        if not self.schedule.is_due(start_time):
             if self.last_results:
                 yield from self.last_results
                 return

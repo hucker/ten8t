@@ -25,11 +25,11 @@ def test_all_days_in_year_with_holidays():
 
         # Check if the current date is a holiday
         if current_date in holidays:
-            assert not schedule.is_time_in_schedule(
+            assert not schedule.is_due(
                 dt.datetime.combine(current_date, dt.time(12, 0))
             ), f"Failed for holiday {current_date}"
         else:
-            assert schedule.is_time_in_schedule(
+            assert schedule.is_due(
                 dt.datetime.combine(current_date, dt.time(12, 0))
             ), f"Failed for non-holiday {current_date}"
 
@@ -52,12 +52,12 @@ def test_holidays_parsed_from_config():
 
     # Check if each expected holiday is actually excluded
     for holiday in expected_holidays:
-        assert not schedule.is_time_in_schedule(
+        assert not schedule.is_due(
             dt.datetime.combine(holiday, dt.time(12, 0))
         ), f"Failed to exclude holiday {holiday}"
 
     # Check a non-holiday date to ensure it's included
     non_holiday = dt.date(2023, 1, 2)  # Day after New Year's Day
-    assert schedule.is_time_in_schedule(
+    assert schedule.is_due(
         dt.datetime.combine(non_holiday, dt.time(12, 0))
     ), f"Incorrectly excluded non-holiday {non_holiday}"

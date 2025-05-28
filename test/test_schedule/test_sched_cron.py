@@ -32,7 +32,7 @@ def test_cron_schedule(minute, hour, day_of_month, month, day_of_week, test_time
     """
     schedule = Ten8tCronSchedule(minute=minute, hour=hour, day_of_month=day_of_month, month=month,
                                  day_of_week=day_of_week)
-    assert schedule.is_time_in_schedule(test_time) == expected
+    assert schedule.is_due(test_time) == expected
 
 
 def test_cron_schedule_execution_tracking():
@@ -43,19 +43,19 @@ def test_cron_schedule_execution_tracking():
     test_time = dt.datetime(2023, 10, 9, 9, 0)  # Monday, 9:00
 
     # First execution should succeed
-    assert schedule.is_time_in_schedule(test_time) is True
-    assert schedule.mark_executed(test_time) is True  # First run
-    assert schedule.mark_executed(test_time) is False  # Duplicate should not run again
+    assert schedule.is_due(test_time) is True
+    assert schedule.record_execution(test_time) is True  # First run
+    assert schedule.record_execution(test_time) is False  # Duplicate should not run again
 
     # A different valid time should allow execution
     new_time = dt.datetime(2023, 10, 9, 9, 1)  # One minute later
-    assert schedule.is_time_in_schedule(new_time) is True
-    assert schedule.mark_executed(new_time) is True  # This is a valid new execution
-    assert schedule.mark_executed(new_time) is False  # This is a valid new execution
+    assert schedule.is_due(new_time) is True
+    assert schedule.record_execution(new_time) is True  # This is a valid new execution
+    assert schedule.record_execution(new_time) is False  # This is a valid new execution
 
     # A different valid time should allow execution
     new_time = dt.datetime(2023, 10, 9, 9, 2)  # One minute later
-    assert schedule.is_time_in_schedule(new_time) is False
+    assert schedule.is_due(new_time) is False
 
 
 def test_invalid_cron_schedules():
@@ -98,12 +98,12 @@ def test_cron_schedule_no_day_of_week_and_day_of_month():
     # Only `day_of_month` defined
     schedule = Ten8tCronSchedule(minute="0", hour="9", day_of_month="15")
     test_time = dt.datetime(2023, 10, 15, 9, 0)
-    assert schedule.is_time_in_schedule(test_time) is True
+    assert schedule.is_due(test_time) is True
 
     # Only `day_of_week` defined
     schedule = Ten8tCronSchedule(minute="0", hour="9", day_of_week="1")
     test_time = dt.datetime(2023, 10, 16, 9, 0)  # A Monday
-    assert schedule.is_time_in_schedule(test_time) is True
+    assert schedule.is_due(test_time) is True
 
 
 def test_ten8t_cron_schedule_repr1():

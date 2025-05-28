@@ -18,7 +18,7 @@ class Ten8tWeekendSchedule(Ten8tBaseSchedule):
         """
         super().__init__(name=name)
 
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
+    def is_due(self, time_: dt.datetime) -> bool:
         """
         Check if the given time is during a weekday.
 

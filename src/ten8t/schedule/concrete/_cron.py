@@ -37,9 +37,9 @@ class Ten8tCronSchedule(Ten8tBaseSchedule):
     Example:
         >>> from datetime import datetime
         >>> cron_schedule = Ten8tCronSchedule(minute="*/15", hour="9-17", day_of_week="1-5")
-        >>> cron_schedule.is_time_in_schedule(datetime(2023, 11, 7, 9, 15))  # Tuesday, 9:15 AM
+        >>> cron_schedule.is_due(datetime(2023, 11, 7, 9, 15))  # Tuesday, 9:15 AM
         True
-        >>> cron_schedule.is_time_in_schedule(datetime(2023, 11, 7, 9, 10))  # Tuesday, 9:10 AM
+        >>> cron_schedule.is_due(datetime(2023, 11, 7, 9, 10))  # Tuesday, 9:10 AM
         False
     """
 
@@ -123,7 +123,7 @@ class Ten8tCronSchedule(Ten8tBaseSchedule):
         except (ValueError, TypeError) as e:
             raise Ten8tException(f"Invalid data for {field_name}: {field}. Error: {e}")
 
-    def is_time_in_schedule(self, time_: dt.datetime) -> bool:
+    def is_due(self, time_: dt.datetime) -> bool:
         """
         Determines whether the given datetime matches the defined schedule.
 
