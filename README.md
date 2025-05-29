@@ -3,7 +3,7 @@
 <!-- Pytest status is honor system based on running pytest/tox prior to push to GitHub -->
 ![Ten8t PyTest Status](https://img.shields.io/badge/PyTest-1019/1021-red.svg)
 &nbsp;&nbsp;
-![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)
+![Ten8t Coverage Status](https://img.shields.io/badge/Coverage-91%25-brightgreen.svg)
 &nbsp;&nbsp;
 [![Python](https://img.shields.io/pypi/pyversions/ten8t)](https://pypi.org/project/ten8t/)
 &nbsp;&nbsp;
@@ -492,6 +492,7 @@ Status:FAIL Skip:False Msg:Stale file `../examples/file_system/folder1/file1.txt
 `age = 54949.40 minutes age_in_seconds=300.0` <br>
 3 Pass/2 Fail of **5** Total ten8t:0.0.21 runtime=0.001 sec <br>
 
+
 <small>uv_rule_clip.md &nbsp;&nbsp; 09:02:53 2025-05-06</small>
 
 <!--file end-->
@@ -720,7 +721,6 @@ for result in ch.yield_all():  # type: Ten8tResult
 print(f"Final result: {ch.pass_count=} {ch.fail_count=} ")
 
 ```
-
 <small>uv_ten8t.py &nbsp;&nbsp; 10:58:12 2025-05-06</small>
 
 <!--file end-->
@@ -914,22 +914,23 @@ __[Halstead Complexity](https://www.geeksforgeeks.org/software-metrics-halstead-
 
 | File               | Bugs | Difficulty | Effort   | Time   | Bugs<br>Rank | Difficulty<br>Rank | Effort<br>Rank | Time<br>Rank |
 |--------------------|------|------------|----------|--------|--------------|--------------------|----------------|--------------|
-| ten8t_checker.py   | 0.65 | 7.36       | 14303.85 | 794.66 | F            | A                  | F              | F            |
-| ten8t_function.py  | 0.22 | 6.58       | 4290.53  | 238.36 | D            | A                  | C              | D            |
-| ten8t_util.py      | 0.19 | 6.20       | 3442.54  | 191.25 | C            | A                  | C              | C            |
-| ten8t_yield.py     | 0.18 | 4.64       | 2472.41  | 137.36 | C            | A                  | C              | C            |
+| ten8t_checker.py   | 0.67 | 7.33       | 14653.74 | 814.10 | F            | A                  | F              | F            |
+| ten8t_function.py  | 0.25 | 7.47       | 5619.86  | 312.21 | D            | A                  | D              | D            |
+| ten8t_util.py      | 0.21 | 6.42       | 3949.52  | 219.42 | D            | A                  | C              | D            |
+| ten8t_yield.py     | 0.17 | 4.67       | 2447.39  | 135.97 | C            | A                  | C              | C            |
 | ten8t_attribute.py | 0.15 | 7.67       | 3531.80  | 196.21 | C            | A                  | C              | C            |
+| ten8t_result.py    | 0.11 | 5.71       | 1882.92  | 104.61 | C            | A                  | B              | C            |
 | ten8t_module.py    | 0.06 | 5.36       | 1025.19  | 56.95  | B            | A                  | B              | B            |
-| ten8t_result.py    | 0.05 | 4.47       | 622.82   | 34.60  | A            | A                  | A              | A            |
 | ten8t_ruid.py      | 0.03 | 3.75       | 378.84   | 21.05  | A            | A                  | A              | A            |
 | ten8t_filter.py    | 0.03 | 2.00       | 159.45   | 8.86   | A            | A                  | A              | A            |
 | ten8t_package.py   | 0.03 | 1.64       | 124.60   | 6.92   | A            | A                  | A              | A            |
 | ten8t_thread.py    | 0.01 | 1.00       | 15.51    | 0.86   | A            | A                  | A              | A            |
+| ten8t_import.py    | 0.00 | 0.50       | 2.38     | 0.13   | A            | A                  | A              | A            |
 | ten8t_logging.py   | 0.00 | 0.50       | 1.00     | 0.06   | A            | A                  | A              | A            |
 | ten8t_exception.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
 | ten8t_immutable.py | 0.00 | 0.00       | 0.00     | 0.00   | A            | A                  | A              | A            |
 
-<small>radon_hal.csv &nbsp;&nbsp; 11:06:57 2025-05-06</small>
+<small>radon_hal.csv &nbsp;&nbsp; 13:14:18 2025-05-29</small>
 
 <!--file end-->
 
@@ -938,22 +939,23 @@ __[Maintainability Index](https://www.geeksforgeeks.org/software-engineering-mai
 
 | File               | Maint.<br>Index | Rank |
 |--------------------|-----------------|------|
-| ten8t_checker.py   | 17.80           | B    |
+| ten8t_checker.py   | 17.60           | B    |
 | ten8t_yield.py     | 46.10           | A    |
-| ten8t_function.py  | 49.40           | A    |
+| ten8t_function.py  | 46.40           | A    |
 | ten8t_result.py    | 52.60           | A    |
-| ten8t_attribute.py | 54.40           | A    |
-| ten8t_util.py      | 56.60           | A    |
+| ten8t_attribute.py | 55.80           | A    |
+| ten8t_util.py      | 55.90           | A    |
 | ten8t_module.py    | 62.80           | A    |
 | ten8t_thread.py    | 63.90           | A    |
 | ten8t_filter.py    | 68.20           | A    |
 | ten8t_package.py   | 71.70           | A    |
 | ten8t_ruid.py      | 78.20           | A    |
+| ten8t_import.py    | 85.80           | A    |
 | ten8t_logging.py   | 89.50           | A    |
 | ten8t_exception.py | 100.00          | A    |
 | ten8t_immutable.py | 100.00          | A    |
 
-<small>radon_mi.csv &nbsp;&nbsp; 11:06:57 2025-05-06</small>
+<small>radon_mi.csv &nbsp;&nbsp; 13:14:18 2025-05-29</small>
 
 <!--file end-->
 
@@ -965,12 +967,13 @@ NOTE: This is by class. There is some function based code that is invisible
 
 | File               | Name                  | Rank | Complexity |
 |--------------------|-----------------------|------|------------|
-| ten8t_function.py  | Ten8tFunction         | B    | 7.00       |
+| ten8t_function.py  | Ten8tFunction         | B    | 8.00       |
 | ten8t_checker.py   | Ten8tChecker          | A    | 5.00       |
 | ten8t_yield.py     | Ten8tYield            | A    | 5.00       |
 | ten8t_checker.py   | Ten8tResultStrategy   | A    | 4.00       |
 | ten8t_module.py    | Ten8tModule           | A    | 4.00       |
 | ten8t_result.py    | Ten8tResult           | A    | 4.00       |
+| ten8t_result.py    | Ten8tResultDictFilter | A    | 4.00       |
 | ten8t_checker.py   | Ten8tStatusStrategy   | A    | 3.00       |
 | ten8t_package.py   | Ten8tPackage          | A    | 3.00       |
 | ten8t_thread.py    | Ten8tThread           | A    | 3.00       |
@@ -988,7 +991,7 @@ NOTE: This is by class. There is some function based code that is invisible
 | ten8t_immutable.py | Ten8tEnvSet           | A    | 1.00       |
 | ten8t_yield.py     | Ten8tNoResultSummary  | A    | 1.00       |
 
-<small>radon_cc.csv &nbsp;&nbsp; 11:06:57 2025-05-06</small>
+<small>radon_cc.csv &nbsp;&nbsp; 13:14:18 2025-05-29</small>
 
 <!--file end-->
 
@@ -1026,10 +1029,10 @@ that is a derogatory name for someone who isn't very good at skiing. I'll call i
 
 | Username     | Commits | Last<br>Contribution |
 |--------------|--------:|:--------------------:|
-| **hucker**   |     150 |      2025-05-02      |
+| **hucker**   |     161 |      2025-05-20      |
 | _dependabot_ |       2 |         N/A          |
 
-<small>contribs.md &nbsp;&nbsp; 11:06:54 2025-05-06</small>
+<small>contribs.md &nbsp;&nbsp; 13:14:13 2025-05-29</small>
 
 <!--file end-->
 
