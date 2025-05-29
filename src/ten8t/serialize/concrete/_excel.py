@@ -36,7 +36,7 @@ class Ten8tDumpExcel(Ten8tDump):
     COLOR_INFO = COLOR_BLUE
     COLOR_HEADER = COLOR_GRAY
 
-    def __init__(self, config: Ten8tDumpConfig = None):
+    def __init__(self, config: Ten8tDumpConfig | None = None):
         if config is None:
             config = Ten8tDumpConfig.excel_default()
 
@@ -88,7 +88,7 @@ class Ten8tDumpExcel(Ten8tDump):
         return col.title().replace("_", "")
 
     @staticmethod
-    def _fix_excel(value: Any) -> str:
+    def _fix_excel(value: Any) -> Any:
         """Make excel compatible value."""
         if isinstance(value, list):
             value = [str(value) for value in value]

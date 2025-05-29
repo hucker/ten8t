@@ -3,6 +3,7 @@ from typing import Any, TextIO
 from ten8t.serialize._base import Ten8tDump
 from ten8t.serialize._config import Ten8tDumpConfig
 from ten8t.ten8t_checker import Ten8tChecker
+from ten8t.ten8t_util import StrOrNone
 
 
 class Ten8tDumpHTML(Ten8tDump):
@@ -21,7 +22,7 @@ class Ten8tDumpHTML(Ten8tDump):
     INDENT_LVL_3 = 3 * SPACE
     INDENT_LVL_4 = 4 * SPACE
 
-    def __init__(self, config: Ten8tDumpConfig = None):
+    def __init__(self, config: Ten8tDumpConfig | None = None):
         """
         Initialize HTML serializer with options.
 
@@ -58,7 +59,7 @@ class Ten8tDumpHTML(Ten8tDump):
         """
         return [col.replace("_", " ").title() for col in cols]
 
-    def _dump_pre_text(self, output_file: TextIO, title=None):
+    def _dump_pre_text(self, output_file: TextIO, title: StrOrNone = None):
         """
             Write pre-text containing the HTML boilerplate if not provided.
 

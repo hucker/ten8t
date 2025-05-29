@@ -36,7 +36,7 @@ class ToMarkdown(ABC):
 
 
     def file_time_stamp_md(self,
-                           file_path:str=None,
+                           file_path: str | None = None,
                            tag:str='small',
                            tfmt="%H:%M:%S",
                            dfmt="%Y-%m-%d") -> str:
@@ -82,7 +82,7 @@ class ToMarkdown(ABC):
             # Other OS-related errors
             return f"{open_tag}{path.name} (WARNING: {str(e)}){close_tag}"
 
-    def load_file(self,file_name:str=None):
+    def load_file(self, file_name: str | None = None):
         file_name = file_name or self.file_name
         try:
             with open(file_name, 'r') as file:

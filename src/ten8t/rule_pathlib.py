@@ -14,7 +14,7 @@ from typing import Generator
 from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrOrPath, StrOrPathListOrNone, any_to_path_list
+from .ten8t_util import StrOrNone, StrOrPath, StrOrPathListOrNone, any_to_path_list
 from .ten8t_yield import Ten8tYield
 
 EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)
@@ -57,10 +57,10 @@ def rule_path_exists(path_: StrOrPath) -> TR:
 
 def rule_paths_exist(paths: StrOrPathListOrNone,
                      summary_only=False,
-                     summary_name=None,
+                     summary_name: StrOrNone = None,
                      name="Path Check",
                      no_paths_pass_status=False,
-                     yielder: Ten8tYield = None) -> Generator[TR, None, None]:
+                     yielder: Ten8tYield | None = None) -> Generator[TR, None, None]:
     """
     Generator function to verify the existence of provided file paths. The function
     iterates over the given paths, checks their presence, and yields results for each
@@ -86,7 +86,7 @@ def rule_paths_exist(paths: StrOrPathListOrNone,
 
     """
 
-    y = yielder if yielder else Ten8tYield(emit_summary=summary_only, summary_name=summary_name)
+    y = yielder or Ten8tYield(emit_summary=summary_only, summary_name=summary_name)
 
     paths = any_to_path_list(paths)
 
@@ -106,7 +106,7 @@ def rule_stale_file(
         hours: float = 0,
         minutes: float = 0,
         seconds: float = 0,
-        current_time=None
+        current_time: float | None = None
 ) -> TR:
     """
     Checks whether a given file is stale based on its modification time and the
@@ -180,9 +180,9 @@ def rule_stale_files(
         seconds: float = 0,
         recursive=False,
         no_files_pass_status: bool = True,
-        yielder: Ten8tYield = None,
-        summary_only=False,
-        summary_name=None,
+        yielder: Ten8tYield | None = None,
+        summary_only: bool = False,
+        summary_name: StrOrNone = None,
 
 ) -> Generator[TR, None, None]:
     """
@@ -212,8 +212,8 @@ def rule_stale_files(
         Generator[TR, None, None]: Provides results or a summary of the stale file evaluations,
             indicating whether files matched the criteria and detailing their respective status.
     """
-    y = yielder if yielder else Ten8tYield(emit_summary=summary_only,
-                                           summary_name=summary_name or "Rule_stale_files")
+    y = yielder or Ten8tYield(emit_summary=summary_only,
+                              summary_name=summary_name or "Rule_stale_files")
     code = TM.code
     current_time = time.time()
 
@@ -243,10 +243,10 @@ def rule_large_files(folders: StrOrPathListOrNone,
                      pattern: str,
                      max_size: float,
                      no_files_pass_status: bool = True,
-                     summary_only=False,
-                     summary_name=None,
-                     recursive=False,
-                     yielder: Ten8tYield = None) -> Generator[TR, None, None]:
+                     summary_only: bool = False,
+                     summary_name: str | None = None,
+                     recursive: bool = False,
+                     yielder: Ten8tYield | None = None) -> Generator[TR, None, None]:
     """
     Checks for any large files exceeding the specified maximum size in a folder
     matching a given pattern and generates corresponding status messages.
@@ -310,7 +310,7 @@ def rule_max_files(folders: StrOrPathListOrNone,
                    pattern: str = '*',
                    summary_only=False,
                    summary_name=None,
-                   yielder: Ten8tYield = None) -> Generator[TR, None, None]:
+                   yielder: Ten8tYield | None = None) -> Generator[TR, None, None]:
     """
     Checks if the number of files in specified folders is within the provided maximum limit,
     based on a pattern.

@@ -12,7 +12,7 @@ from ..ten8t_checker import Ten8tChecker
 
 
 # Backward compatibility functions
-def ten8t_save_csv(ch: Ten8tChecker, config: Ten8tDumpConfig = None) -> None:
+def ten8t_save_csv(ch: Ten8tChecker, config: Ten8tDumpConfig | None = None) -> None:
     """
     Legacy function for backward compatibility.
 
@@ -31,7 +31,7 @@ def ten8t_save_csv(ch: Ten8tChecker, config: Ten8tDumpConfig = None) -> None:
 
 
 def ten8t_save_md(ch: Ten8tChecker,
-                  config: Ten8tDumpConfig = None) -> None:
+                  config: Ten8tDumpConfig | None = None) -> None:
     """
     Legacy function for backward compatibility.
 
@@ -45,7 +45,7 @@ def ten8t_save_md(ch: Ten8tChecker,
 
 
 def ten8t_save_xls(ch: Ten8tChecker,
-                   config: Ten8tDumpConfig = None) -> None:
+                   config: Ten8tDumpConfig | None = None) -> None:
     """
     Legacy function for backward compatibility.
 
@@ -59,7 +59,7 @@ def ten8t_save_xls(ch: Ten8tChecker,
 
 
 def ten8t_save_html(ch: Ten8tChecker,
-                    config: Ten8tDumpConfig = None) -> None:
+                    config: Ten8tDumpConfig | None = None) -> None:
     """
     Legacy function for backward compatibility.
 
@@ -73,7 +73,7 @@ def ten8t_save_html(ch: Ten8tChecker,
 
 
 def ten8t_save_sqlite(ch: Ten8tChecker,
-                      config: Ten8tDumpConfig = None) -> None:
+                      config: Ten8tDumpConfig | None = None) -> None:
     """
     Legacy function for backward compatibility.
 

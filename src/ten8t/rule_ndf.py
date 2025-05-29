@@ -13,21 +13,21 @@ from narwhals.typing import FrameT
 from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrList, StrListOrNone, any_to_str_list
+from .ten8t_util import StrList, StrListOrNone, StrOrNone, any_to_str_list
 from .ten8t_yield import Ten8tYield
 
 
 @nw.narwhalify()
 def rule_validate_ndf_schema(df: FrameT,
-                             int_cols: StrList = None,
-                             float_cols: StrList = None,
-                             str_cols: StrList = None,
-                             number_cols: StrList = None,
-                             no_null_cols: StrList = None,
+                             int_cols: StrListOrNone = None,
+                             float_cols: StrListOrNone = None,
+                             str_cols: StrListOrNone = None,
+                             number_cols: StrListOrNone = None,
+                             no_null_cols: StrListOrNone = None,
                              summary_name: StrList = '',
                              summary_only: bool = False,
                              name=None,
-                             yielder: Ten8tYield = None) -> Generator[TR, None, None]:
+                             yielder: Ten8tYield | None = None) -> Generator[TR, None, None]:
     """
         Validates the schema of a DataFrame according to the specified rules.
 
@@ -377,7 +377,7 @@ def extended_bool(value) -> bool:
 def rule_ndf_pf_columns(df: FrameT,
                         pf_col: str = "Status",
                         desc_col: str = "Description",
-                        enabled_col: str = None,
+                        enabled_col: StrOrNone = None,
                         name: str = '',
                         summary_only: bool = False) -> Generator[TR, None, None]:
     """

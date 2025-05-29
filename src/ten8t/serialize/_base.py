@@ -3,8 +3,8 @@ import sys
 from abc import ABC, abstractmethod
 from typing import List, TextIO
 
-from ._config import Ten8tDumpConfig
 from ..ten8t_checker import Ten8tChecker
+from ..ten8t_util import StrOrNone
 
 
 class Ten8tDump(ABC):
@@ -14,13 +14,14 @@ class Ten8tDump(ABC):
     Provides the interface and common functionality for all serialization formats.
     """
 
-    def __init__(self, config: Ten8tDumpConfig = None):
+    def __init__(self, config=None):
         """
         Initialize the Ten8tDump with configuration.
 
         Args:
             config: Configuration object for the dump process
         """
+        from ._config import Ten8tDumpConfig
         self.config = config or Ten8tDumpConfig()
 
         # Process columns to get valid lists
@@ -36,6 +37,7 @@ class Ten8tDump(ABC):
         columns = self.config.summary_columns
 
         if not columns or columns == 'all':
+            from ._config import Ten8tDumpConfig
             return Ten8tDumpConfig.VALID_SUMMARY_COLUMNS.copy()
 
         return columns if isinstance(columns, list) else [columns]
@@ -45,6 +47,7 @@ class Ten8tDump(ABC):
         columns = self.config.result_columns
 
         if not columns or columns == 'all':
+            from ._config import Ten8tDumpConfig
             return Ten8tDumpConfig.VALID_RESULT_COLUMNS.copy()
 
         return columns if isinstance(columns, list) else [columns]
@@ -82,7 +85,7 @@ class Ten8tDump(ABC):
             if self.config.output_file and output_file != sys.stdout:
                 output_file.close()
 
-    def _dump_pre_text(self, output_file: TextIO, title: str = None):
+    def _dump_pre_text(self, output_file: TextIO, title: StrOrNone = None):
         """Optional pre_text to render"""
 
     def _dump_post_text(self, output_file: TextIO):

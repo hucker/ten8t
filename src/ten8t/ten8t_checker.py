@@ -43,7 +43,7 @@ ModulesType: TypeAlias = (
 class Ten8tStatusStrategy:
     """This strategy formats a summary of the result of running all checks."""
 
-    def __init__(self, fmt="", renderer: Ten8tAbstractRenderer = None):
+    def __init__(self, fmt="", renderer: Ten8tAbstractRenderer | None = None):
         self.renderer: Ten8tAbstractRenderer = renderer or Ten8tTextRenderer()
         # Default template string clearly defined explicitly:
         self.fmt: str = fmt or (
@@ -66,7 +66,7 @@ class Ten8tStatusStrategy:
 class Ten8tResultStrategy:
     """This strategy formats a single line of text."""
 
-    def __init__(self, fmt="", renderer: Ten8tAbstractRenderer = None):
+    def __init__(self, fmt="", renderer: Ten8tAbstractRenderer | None = None):
         self.renderer: Ten8tAbstractRenderer = renderer or Ten8tTextRenderer()
         # Default template clearly shown using $placeholders explicitly:
         self.fmt: str = fmt or "Status:$status Skip:$skipped Msg:$msg_rendered <<br>><</br>>"
@@ -173,7 +173,7 @@ class Ten8tChecker:
                  score_strategy: ScoreStrategy | None = None,
                  rc: Ten8tRC | None = None,
                  env: dict[str, Any] | None = None,
-                 renderer: Ten8tAbstractRenderer = None,
+                 renderer: Ten8tAbstractRenderer | None = None,
                  abort_on_fail=False,
                  abort_on_exception=False,
                  auto_setup: bool = True,
@@ -993,7 +993,10 @@ class Ten8tChecker:
         }
         return header
 
-    def as_dict(self, remove_nulls=False, keep_keys=None, remove_keys=None):
+    def as_dict(self,
+                remove_nulls: bool = False,
+                keep_keys: list | None = None,
+                remove_keys: list | None = None):
         """
         Converts the object's data into a dictionary containing a header and an array of results.
 
@@ -1048,7 +1051,10 @@ class Ten8tChecker:
         return self.as_dict(remove_nulls=True,
                             remove_keys=remove_keys)
 
-    def to_json(self, json_file: str, remove_nulls=False, keep_keys=None, remove_keys=None) -> bool:
+    def to_json(self, json_file: str,
+                remove_nulls=False,
+                keep_keys=None,
+                remove_keys=None) -> bool:
         """
         Converts the object's data into a JSON file.
 

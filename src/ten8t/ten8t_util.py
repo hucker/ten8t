@@ -1,6 +1,7 @@
 """
 This is the sad place for lonely functions that don't have a place
 """
+import datetime as dt
 import os
 import pathlib
 from typing import Sequence, TypeAlias
@@ -10,6 +11,11 @@ from ten8t.ten8t_exception import Ten8tTypeError, Ten8tValueError
 # Type aliases.
 # Note: the *OrNone are meant to be constructors that allow a None value to be passed
 #       that code will take care to convert to a [] or a ''
+BoolOrNone: TypeAlias = bool | None
+"""Type alias for a boolean or None."""
+
+DateTimeOrNone: TypeAlias = dt.datetime | None
+
 StrOrNone: TypeAlias = str | None
 """Type alias for a string or None."""
 

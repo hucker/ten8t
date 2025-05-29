@@ -16,7 +16,7 @@ class Ten8tDumpCSV(Ten8tDump):
     Outputs test results as a CSV file with configurable columns and quoting options.
     """
 
-    def __init__(self, config: Ten8tDumpConfig = None):
+    def __init__(self, config: Ten8tDumpConfig | None = None):
         """
         Initialize CSV serializer with options.
 

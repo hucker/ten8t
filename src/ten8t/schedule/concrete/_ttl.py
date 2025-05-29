@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import cast
 
 from .._base import Ten8tBaseSchedule
 from .._base import Ten8tException
@@ -35,7 +36,12 @@ class Ten8tTTLSchedule(Ten8tBaseSchedule):
         if ttl_sec is None and ttl_min is None:
             raise Ten8tException("You must provide either ttl_sec or ttl_min.")
 
-        self.ttl_sec = ttl_sec if ttl_sec is not None else ttl_min * 60  # Always store TTL in seconds
+        # Use a type cast to make it clear to the type checker
+        if ttl_sec is not None:
+            self.ttl_sec = ttl_sec
+        else:
+            # We know ttl_min is not None at this point
+            self.ttl_sec = cast(int, ttl_min) * 60
 
     def record_execution(self, execution_time: dt.datetime | None = None) -> bool:
         """

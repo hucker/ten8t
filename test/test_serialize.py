@@ -16,6 +16,7 @@ import pytest
 from src import ten8t as t8
 from ten8t import Ten8tDumpSQLite
 from ten8t.serialize import Ten8tDumpHTML, ten8t_save_sqlite
+from ten8t.ten8t_util import StrOrNone
 
 
 def get_file_size(file_path: pathlib.Path | str) -> int:
@@ -186,7 +187,7 @@ def xxx_test_sqlite_legacy(checker_with_simple_check):
     validate_checker_with_simple_check(db_file=db_file, table_name='ten8t_results')
 
 
-def validate_checker_with_simple_check(db_file: str, table_name: str = None):
+def validate_checker_with_simple_check(db_file: str, table_name: StrOrNone = None):
     # Now verify the data exists.
     try:
         with sqlite3.connect(db_file) as conn:

@@ -123,7 +123,7 @@ def rule_ping_hosts_check(
         emit_summary: bool = False,
         emit_pass: bool = True,
         emit_fail: bool = True,
-        yielder: ten8t.Ten8tYield = None,
+        yielder: ten8t.Ten8tYield | None = None,
 ) -> Generator[TR, None, None]:
     """
     Perform ping checks for a list of hosts or a single host.  This supports he

@@ -476,7 +476,7 @@ def attributes(*,
                skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
                fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
                thread_id: str = DEFAULT_THREAD_ID,
-               attempts: str = DEFAULT_ATTEMPTS,
+               attempts: int = DEFAULT_ATTEMPTS,
                disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:
     """
     Comprehensive decorator for applying attributes to Ten8t functions.

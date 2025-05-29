@@ -17,7 +17,7 @@ class Ten8tDumpMarkdown(Ten8tDump):
     Can include both summary and results tables.
     """
 
-    def __init__(self, config: Ten8tDumpConfig = None):
+    def __init__(self, config: Ten8tDumpConfig | None = None):
         """
         Initialize Markdown serializer with options.
 

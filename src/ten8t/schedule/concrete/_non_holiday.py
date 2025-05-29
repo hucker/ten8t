@@ -15,7 +15,7 @@ class Ten8tNonHolidaySchedule(Ten8tBaseSchedule):
         holidays (list[datetime.date]): A list of `datetime.date` objects representing holidays to exclude.
     """
 
-    def __init__(self, name="holiday_schedule", holidays: list[dt.datetime] = None, config=None):
+    def __init__(self, name="holiday_schedule", holidays: list[dt.datetime] | None = None, config=None):
         """Initializes the holiday-excluding schedule.
 
         If no holidays are explicitly provided, the schedule defaults to no holidays (all dates included).

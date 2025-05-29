@@ -84,8 +84,8 @@ class Ten8tFunction:
 
     def __init__(self, function_: Any,
                  module: str = '',
-                 allowed_exceptions: tuple[type[BaseException], ...] = None,
-                 env: dict[Any, Any] = None,
+                 allowed_exceptions: tuple[type[BaseException], ...] | None = None,
+                 env: dict[Any, Any] | None = None,
                  pre_sr_hooks: Any = None,
                  post_sr_hooks: Any = None):
         self.env = env or {}

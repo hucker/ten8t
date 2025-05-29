@@ -39,10 +39,10 @@ class Ten8tDumpConfig:
     result_columns: StrListOrNone = 'all'
     output_file: StrOrNone = None  # None will default to stdout
     quoted_strings: bool = False  # Should strings be quoted.  CSV only?
-    result_sheet_name: str = None  # Excel only?
-    summary_sheet_name: str = None  # Excel only?
-    summary_title: str = None
-    result_title: str = None
+    result_sheet_name: StrOrNone = None  # Excel only?
+    summary_sheet_name: StrOrNone = None  # Excel only?
+    summary_title: StrOrNone = None
+    result_title: StrOrNone = None
     autobreak_headers: bool = True  # for multiword columns this forces a break to keep columns narrow
 
     pre_text: str = ''  # Useful for formats like HTML that might need page setup "stuff"

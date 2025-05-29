@@ -11,7 +11,7 @@ from typing import Any, Sequence
 
 from .render import Ten8tMarkup
 from .ten8t_exception import Ten8tException
-from .ten8t_util import StrListOrNone, any_to_str_list
+from .ten8t_util import BoolOrNone, StrListOrNone, any_to_str_list
 
 
 @dataclass(slots=True)
@@ -339,8 +339,8 @@ class Ten8tResultDictFilter():
             tag_patterns: StrListOrNone = None,
             phase_patterns: StrListOrNone = None,
             func_name_patterns: StrListOrNone = None,
-            summary_results: bool = None,
-            status_results: bool = None,
+            summary_results: BoolOrNone = None,
+            status_results: BoolOrNone = None,
     ):
         # Initialize patterns for each field
         self.ruid_patterns = any_to_str_list(ruid_patterns)
@@ -355,8 +355,8 @@ class Ten8tResultDictFilter():
                tag_patterns: StrListOrNone = None,
                phase_patterns: StrListOrNone = None,
                func_name_patterns: StrListOrNone = None,
-               summary_results: bool = None,
-               status_results: bool = None) -> dict:
+               summary_results: BoolOrNone = None,
+               status_results: BoolOrNone = None) -> dict:
         """
         Filters data on ruid, tag, and phase fields using the provided patterns.
         """

@@ -62,8 +62,8 @@ def rule_ten8t_json_file(file_name: StrOrPath,
                          ruid: str = '',
                          ruid_sep: str = '.',
                          pass_if_missing: bool = False,
-                         filter: Ten8tResultDictFilter = None,
-                         yielder: Ten8tYield = None):
+                         filter: Ten8tResultDictFilter | None = None,
+                         yielder: Ten8tYield | None = None):
     code = Ten8tMarkup().code
     try:
         if pathlib.Path(file_name).exists() is False:
@@ -135,12 +135,12 @@ def rule_ten8t_json_file(file_name: StrOrPath,
 
 def rule_ten8t_json_files(file_names: StrOrPathList,
                           max_age_minutes: float = 10e20,
-                          encoding='utf-8',
+                          encoding: str = 'utf-8',
                           ruid: str = '',
                           ruid_sep: str = '.',
-                          filter: Ten8tResultDictFilter = None,
+                          filter: Ten8tResultDictFilter | None = None,
                           pass_if_missing: bool = False,
-                          yielder: Ten8tYield = None):
+                          yielder: Ten8tYield | None = None):
     """
     Processes a list of JSON files based on certain criteria, including file age,
     encoding, and an optional unique identifier prefix. Supports file globbing

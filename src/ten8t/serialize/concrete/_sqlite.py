@@ -28,7 +28,9 @@ import sqlite3
 from typing import TextIO
 
 from .._base import Ten8tDump
+from .._config import Ten8tDumpConfig
 from ...ten8t_checker import Ten8tChecker
+from ...ten8t_util import DateTimeOrNone
 
 
 class Ten8tDumpSQLite(Ten8tDump):
@@ -43,7 +45,10 @@ class Ten8tDumpSQLite(Ten8tDump):
         - results: Test results in JSON format (as a string)
     """
 
-    def __init__(self, db_file: str, table_name: str = "ten8t_results", config=None):
+    def __init__(self,
+                 db_file: str,
+                 table_name: str = "ten8t_results",
+                 config: Ten8tDumpConfig | None = None):
         """
         Initializes the SQLiteTen8tDump class.
 
@@ -123,7 +128,8 @@ class Ten8tDumpSQLite(Ten8tDump):
     def get_output_file(self):
         return self.db_file
 
-    def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO, timestamp: dt.datetime = None) -> None:
+    def _dump_implementation(self, checker: Ten8tChecker, output_file: TextIO,
+                             timestamp: DateTimeOrNone = None) -> None:
         """
         Dumps the checker results into the SQLite database.
 
@@ -158,9 +164,9 @@ class Ten8tDumpSQLite(Ten8tDump):
             conn.commit()
 
     def _get_summary(self, checker: Ten8tChecker) -> str:
-        results = checker.to_json()
+        results = checker.as_dict()
         return results['header']
 
     def _get_results(self, checker: Ten8tChecker) -> str:
-        results = checker.to_json()
+        results = checker.as_dict()
         return results['results']
