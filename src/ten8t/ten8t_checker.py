@@ -23,7 +23,7 @@ from .ten8t_module import Ten8tModule
 from .ten8t_package import Ten8tPackage
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
-from .ten8t_util import IntList, IntListOrNone, StrList, StrListOrNone, clean_dict
+from .ten8t_util import IntList, IntListOrNone, ListOrNone, StrList, StrListOrNone, clean_dict
 
 ADHOC_MODULE_NAME = 'adhoc'
 """Name of the adhoc module"""
@@ -995,8 +995,8 @@ class Ten8tChecker:
 
     def as_dict(self,
                 remove_nulls: bool = False,
-                keep_keys: list | None = None,
-                remove_keys: list | None = None):
+                keep_keys: ListOrNone = None,
+                remove_keys: ListOrNone = None):
         """
         Converts the object's data into a dictionary containing a header and an array of results.
 
@@ -1053,8 +1053,8 @@ class Ten8tChecker:
 
     def to_json(self, json_file: str,
                 remove_nulls=False,
-                keep_keys=None,
-                remove_keys=None) -> bool:
+                keep_keys=ListOrNone,
+                remove_keys=ListOrNone) -> bool:
         """
         Converts the object's data into a JSON file.
 
@@ -1068,17 +1068,16 @@ class Ten8tChecker:
             json_file (str): Path to the output JSON file.
             remove_nulls (bool): Whether to exclude null values in the dictionary
                 representation. Defaults to False.
-            keep_keys (list | None): A list of keys to retain in the dictionary
+            keep_keys (ListOrNone): A list of keys to retain in the dictionary
                 representation. If None, all keys are retained. Defaults to None.
-            remove_keys (list | None): A list of keys to remove from the dictionary
+            remove_keys (ListOrNone): A list of keys to remove from the dictionary
                 representation. If None, no keys are removed. Defaults to None.
 
         Returns:
             bool: True if the JSON file was successfully created, False otherwise.
         """
-        d = self.as_dict(remove_nulls=remove_nulls, keep_keys=keep_keys, remove_keys=remove_keys)
-
         try:
+            d = self.as_dict(remove_nulls=remove_nulls, keep_keys=keep_keys, remove_keys=remove_keys)
             with open(json_file, 'w', encoding='utf-8') as f:
                 json.dump(d, f, indent=2, default=str)
             return True

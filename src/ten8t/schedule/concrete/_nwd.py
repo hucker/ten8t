@@ -2,6 +2,7 @@ import datetime as dt
 
 from .._base import Ten8tBaseSchedule
 from .._base import Ten8tException
+from ...ten8t_util import StrOrNone
 
 
 class Ten8tNthWeekdaySchedule(Ten8tBaseSchedule):
@@ -27,7 +28,7 @@ class Ten8tNthWeekdaySchedule(Ten8tBaseSchedule):
             self,
             n: int,
             weekday: int,
-            name: str | None = None
+            name: StrOrNone = None
     ):
         """
         Initialize the schedule.

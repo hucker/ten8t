@@ -62,7 +62,7 @@ class Ten8tLogProgress(Ten8tProgress):
             current_iteration: int,
             max_iteration: int,
             msg: StrOrNone = "",
-            result: Ten8tResult | None = None,
+            result: Ten8tResultNone = None,
     ):
 
         # Log the result object if available and level is set

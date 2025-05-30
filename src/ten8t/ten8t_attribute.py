@@ -17,9 +17,10 @@ import time
 from functools import wraps
 from typing import Callable
 
-from .schedule import Ten8tBaseSchedule
+from .schedule import Ten8tBaseSchedule, Ten8tCronSchedule, Ten8tTTLSchedule
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
+from .ten8t_util import StrOrNone
 
 DEFAULT_TAG = ""  # A string indicating the type of rule, used for grouping/filtering results
 DEFAULT_LEVEL = 1  #
@@ -364,7 +365,10 @@ def threading(*, thread_id: str = DEFAULT_THREAD_ID, disallowed_chars=DEFAULT_DI
     return decorator
 
 
-def caching(*, ttl_minutes: str | int | float = DEFAULT_TTL_MIN) -> Callable:
+def caching(*,
+            ttl_minutes: str | int | float | None = DEFAULT_TTL_MIN,
+            cron: StrOrNone = None,
+            user_schedule: Ten8tBaseSchedule | None = None) -> Callable:
     """Decorator for specifying caching behavior for Ten8t functions.
 
     This decorator sets attributes that control how results from the function
@@ -379,7 +383,21 @@ def caching(*, ttl_minutes: str | int | float = DEFAULT_TTL_MIN) -> Callable:
         Callable: Decorator function that applies the caching attributes.
     """
 
-    parsed_ttl = _parse_ttl_string(str(ttl_minutes))
+    params_provided = sum(x is not None for x in (ttl_minutes, cron, user_schedule))
+
+    if params_provided == 0:
+        raise ValueError("At least one of ttl_minutes, cron, or schedule must be provided")
+
+    if params_provided > 1:
+        raise ValueError("Only one of ttl_minutes, cron, or schedule can be provided")
+
+    if ttl_minutes is not None:
+        parsed_ttl = _parse_ttl_string(str(ttl_minutes))
+        schedule = Ten8tTTLSchedule(ttl_minutes=parsed_ttl)
+    elif user_schedule is not None:
+        schedule = user_schedule
+    else:
+        schedule = Ten8tCronSchedule(cron)
 
     def decorator(func):
         # Ensure all defaults are set first
@@ -477,6 +495,7 @@ def attributes(*,
                fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
                thread_id: str = DEFAULT_THREAD_ID,
                attempts: int = DEFAULT_ATTEMPTS,
+               schedule: Ten8tBaseSchedule = DEFAULT_SCHEDULE,
                disallowed_chars=DEFAULT_DISALLOWED_CHARS) -> Callable:
     """
     Comprehensive decorator for applying attributes to Ten8t functions.
@@ -504,6 +523,7 @@ def attributes(*,
         fail_on_none (bool, optional): Fail if None result. Defaults to DEFAULT_FAIL_ON_NONE.
         thread_id (str, optional): Thread identifier. Defaults to DEFAULT_THREAD_ID.
         attempts (int, optional): Number of attempts. Defaults to DEFAULT_ATTEMPTS.
+        schedule (str, optional): Schedule identifier. Defaults to DEFAULT_SCHEDULE.
         disallowed_chars (str, optional): Characters not allowed in attributes.
             Defaults to DEFAULT_DISALLOWED_CHARS.
 
@@ -519,6 +539,9 @@ def attributes(*,
 
     # Parse and validate TTL (caching) attribute
     parsed_ttl = _parse_ttl_string(str(ttl_minutes))
+
+    if parsed_ttl > 0:
+        schedule = Ten8tTTLSchedule(ttl_minutes=parsed_ttl)
 
     if not isinstance(weight, (int, float)) or weight <= 0:
         raise Ten8tException("Weight must be numeric and > than 0.0. Nominal value is 100.0.")
@@ -540,6 +563,7 @@ def attributes(*,
         func.fail_on_none = fail_on_none
         func.thread_id = thread_id
         func.attempts = attempts
+        func.schedule = schedule
 
         return func
 

@@ -17,6 +17,7 @@ from .ten8t_attribute import get_attribute
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
 from .ten8t_result import Ten8tResult
+from .ten8t_util import BoolOrNone
 
 
 def result_hook_fix_blank_msg(sfunc: "Ten8tFunction",
@@ -492,7 +493,7 @@ class Ten8tFunction:
         return result
 
     @staticmethod
-    def make_default_message(func, status=bool | None, message=""):
+    def make_default_message(func, status=BoolOrNone, message=""):
         """
         Returns the first line of the docstring if it exists,
         or a default message in the format 'Pass/Fail from function {func}'.

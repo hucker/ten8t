@@ -3,6 +3,7 @@ from typing import Set
 
 from .._base import Ten8tBaseSchedule
 from ...ten8t_exception import Ten8tException
+from ...ten8t_util import StrOrNone
 
 
 class Ten8tCronSchedule(Ten8tBaseSchedule):
@@ -45,11 +46,11 @@ class Ten8tCronSchedule(Ten8tBaseSchedule):
 
     def __init__(
             self,
-            minute: str | None = None,
-            hour: str | None = None,
-            day_of_month: str | None = None,
-            month: str | None = None,
-            day_of_week: str | None = None,
+            minute: StrOrNone = None,
+            hour: StrOrNone = None,
+            day_of_month: StrOrNone = None,
+            month: StrOrNone = None,
+            day_of_week: StrOrNone = None,
             cfg: dict[str, str] | None = None,
             name: str = 'cron',
     ) -> None:

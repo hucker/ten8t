@@ -13,7 +13,7 @@ from collections import Counter
 
 from .ten8t_exception import Ten8tException
 from .ten8t_function import Ten8tFunction
-from .ten8t_util import StrOrNone, StrOrPath, next_int_value
+from .ten8t_util import ListOrNone, StrOrNone, StrOrPath, next_int_value
 
 
 class Ten8tModule:
@@ -31,7 +31,7 @@ class Ten8tModule:
             module_name: StrOrNone = None,
             check_prefix="check_",
             env_prefix="env_",
-            env_functions: list | None = None,
+            env_functions: ListOrNone = None,
             auto_load=True,
             auto_thread=False
     ) -> None:
@@ -43,7 +43,7 @@ class Ten8tModule:
 
         Args:
             module_file (str): Path to the Python file containing the module's functions.
-            module_name (str | None, optional): Name of the module. If None, will be derived from the file name.
+            module_name (StrOrNone, optional): Name of the module. If None, will be derived from the file name.
                 Defaults to None.
             check_prefix (str, optional): Prefix used to identify check functions in the module.
                 Defaults to "check_".

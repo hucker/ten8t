@@ -95,7 +95,7 @@ class Ten8tResult:
         ```
     """
 
-    status: bool | None = False
+    status: BoolOrNone = False
 
     # Name hierarchy
     func_name: str = ""
@@ -430,3 +430,4 @@ class Ten8tResultDictFilter():
         if status_results is None:  # No filtering on this value
             return True
         return result.get("status") == status_results
+

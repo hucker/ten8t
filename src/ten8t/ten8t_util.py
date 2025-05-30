@@ -7,6 +7,7 @@ import pathlib
 from typing import Sequence, TypeAlias
 
 from ten8t.ten8t_exception import Ten8tTypeError, Ten8tValueError
+from ten8t.ten8t_result import Ten8tResult
 
 # Type aliases.
 # Note: the *OrNone are meant to be constructors that allow a None value to be passed
@@ -15,6 +16,13 @@ BoolOrNone: TypeAlias = bool | None
 """Type alias for a boolean or None."""
 
 DateTimeOrNone: TypeAlias = dt.datetime | None
+""" Type alias for a datetime or None. """
+
+Ten8tResultOrNone: TypeAlias = Ten8tResult | None
+""" Type alias for Ten8tResult or None """
+
+ListOrNone: TypeAlias = list | None
+"""Type alias for a list or None."""
 
 StrOrNone: TypeAlias = str | None
 """Type alias for a string or None."""

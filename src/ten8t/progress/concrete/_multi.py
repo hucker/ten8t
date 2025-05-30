@@ -1,7 +1,6 @@
 """Adapter class to allow multiple progress bars. """
 from .._base import Ten8tProgress
-from ...ten8t_result import Ten8tResult
-from ...ten8t_util import StrOrNone
+from ...ten8t_util import StrOrNone, Ten8tResultOrNone
 
 
 class Ten8tMultiProgress(Ten8tProgress):
@@ -51,6 +50,6 @@ class Ten8tMultiProgress(Ten8tProgress):
                 progress.message(msg)
 
     def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
-                   result: Ten8tResult | None = None):
+                   result: Ten8tResultOrNone = None):
         for progress in self.progress_list:
             progress.result_msg(current_iteration, max_iteration, msg=msg, result=result)

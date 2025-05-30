@@ -244,7 +244,7 @@ def rule_large_files(folders: StrOrPathListOrNone,
                      max_size: float,
                      no_files_pass_status: bool = True,
                      summary_only: bool = False,
-                     summary_name: str | None = None,
+                     summary_name: StrOrNone = None,
                      recursive: bool = False,
                      yielder: Ten8tYield | None = None) -> Generator[TR, None, None]:
     """
