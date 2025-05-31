@@ -2,6 +2,7 @@ import datetime as dt
 from contextlib import contextmanager
 
 from ..ten8t_exception import Ten8tException
+from ..ten8t_types import DateTimeOrNone
 
 
 class Ten8tBaseSchedule:
@@ -55,7 +56,7 @@ class Ten8tBaseSchedule:
         if not name:
             raise Ten8tException(f"Name must be provided for schedule by {self.__class__.__name__})")
 
-        self.last_execution_time: dt.datetime | None = None
+        self.last_execution_time: DateTimeOrNone = None
         self.name = name or "unknown"
         self.granularity = self._normalize_granularity(granularity)
 
@@ -125,7 +126,7 @@ class Ten8tBaseSchedule:
         """
         return True
 
-    def can_execute(self, execution_time: dt.datetime | None = None) -> bool:
+    def can_execute(self, execution_time: DateTimeOrNone = None) -> bool:
         """
         Checks if execution is allowed at the current time based on schedule and
         previous execution history, without modifying state.
@@ -146,7 +147,7 @@ class Ten8tBaseSchedule:
         # Then check if we've already executed at this time unit
         return self.last_execution_time != normalized_time
 
-    def record_execution(self, execution_time: dt.datetime | None = None) -> bool:
+    def record_execution(self, execution_time: DateTimeOrNone = None) -> bool:
         """
         Updates the last execution state and prevents duplicate runs
         based on the specified granularity.
@@ -168,7 +169,7 @@ class Ten8tBaseSchedule:
         return False  # Task execution is a duplicate
 
     @contextmanager
-    def execute_once(self, execution_time: dt.datetime | None = None):
+    def execute_once(self, execution_time: DateTimeOrNone = None):
         """
         Context manager that tracks execution at most once per time interval.
 

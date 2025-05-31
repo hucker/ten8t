@@ -15,7 +15,8 @@ import pandas as pd
 
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrOrNone, str_to_bool
+from .ten8t_types import StrOrNone
+from .ten8t_util import str_to_bool
 
 
 def extract_tables_from_pdf(file_path: str,

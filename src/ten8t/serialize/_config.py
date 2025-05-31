@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from ..ten8t_util import StrListOrNone, StrOrNone
+from ..ten8t_types import StrListOrNone, StrOrNone
 
 
 @dataclass

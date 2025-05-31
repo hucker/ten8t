@@ -1,7 +1,8 @@
 """    Abstract base class for tracking and managing progress.  """
 from abc import ABC
 
-from ..ten8t_util import StrOrNone, Ten8tResultOrNone
+from ..ten8t_result import Ten8tResult
+from ..ten8t_types import StrOrNone
 
 
 # pylint: disable=R0903
@@ -40,7 +41,7 @@ class Ten8tProgress(ABC):
         """
 
     def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
-                   result: Ten8tResultOrNone = None):
+                   result: Ten8tResult | None = None):
         """
         Report a result.
         This should report progress with the results of a check function.  Note that

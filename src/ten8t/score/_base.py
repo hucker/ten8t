@@ -4,7 +4,7 @@ Ten8t scoring package - mechanisms for evaluating and scoring results.
 import abc
 
 from ..ten8t_result import Ten8tResult
-from ..ten8t_util import StrOrNone
+from ..ten8t_types import StrOrNone
 
 
 class ScoreStrategy(abc.ABC):

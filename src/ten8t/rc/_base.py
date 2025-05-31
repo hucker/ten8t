@@ -5,7 +5,7 @@ import re
 from typing import Sequence
 
 from ..ten8t_exception import Ten8tException
-from ..ten8t_util import IntList, StrList, StrOrPathList
+from ..ten8t_types import IntList, StrList, StrOrPathList
 
 
 class Ten8tRC:

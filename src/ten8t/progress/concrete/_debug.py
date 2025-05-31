@@ -1,6 +1,7 @@
 """Trival logger that just print pass fail status with . """
 from .._base import Ten8tProgress
-from ...ten8t_util import StrOrNone, Ten8tResultOrNone
+from ...ten8t_result import Ten8tResult
+from ...ten8t_types import StrOrNone
 
 
 # pylint: disable=R0903
@@ -29,6 +30,6 @@ class Ten8tDebugProgress(Ten8tProgress):
             print(msg)
 
     def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
-                   result: Ten8tResultOrNone = None):
+                   result: Ten8tResult | None = None):
         if result:
             print("+" if result.status else "-", end="")

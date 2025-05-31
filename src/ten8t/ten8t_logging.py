@@ -16,7 +16,7 @@ that should be used by all the ten8t modules.
 """
 import logging
 
-from .ten8t_util import StrOrNone
+from .ten8t_types import StrOrNone
 
 # Create a library-specific logger
 ten8t_logger = logging.getLogger("ten8t")

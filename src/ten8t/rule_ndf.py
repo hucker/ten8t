@@ -13,7 +13,8 @@ from narwhals.typing import FrameT
 from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrList, StrListOrNone, StrOrNone, any_to_str_list
+from .ten8t_types import StrList, StrListOrNone, StrOrNone
+from .ten8t_util import any_to_str_list
 from .ten8t_yield import Ten8tYield
 
 

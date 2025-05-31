@@ -4,7 +4,7 @@ from .._base import Ten8tProgress
 from ...ten8t_exception import Ten8tException
 from ...ten8t_logging import ten8t_logger
 from ...ten8t_result import Ten8tResult
-from ...ten8t_util import IntOrNone, StrOrNone
+from ...ten8t_types import IntOrNone, StrOrNone
 
 
 # pylint: disable=R0903
@@ -62,7 +62,7 @@ class Ten8tLogProgress(Ten8tProgress):
             current_iteration: int,
             max_iteration: int,
             msg: StrOrNone = "",
-            result: Ten8tResultNone = None,
+            result: Ten8tResult | None = None,
     ):
 
         # Log the result object if available and level is set

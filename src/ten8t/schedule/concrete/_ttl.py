@@ -3,6 +3,7 @@ from typing import cast
 
 from .._base import Ten8tBaseSchedule
 from .._base import Ten8tException
+from ...ten8t_types import DateTimeOrNone
 
 
 class Ten8tTTLSchedule(Ten8tBaseSchedule):
@@ -43,7 +44,7 @@ class Ten8tTTLSchedule(Ten8tBaseSchedule):
             # We know ttl_min is not None at this point
             self.ttl_sec = cast(int, ttl_min) * 60
 
-    def record_execution(self, execution_time: dt.datetime | None = None) -> bool:
+    def record_execution(self, execution_time: DateTimeOrNone = None) -> bool:
         """
         Executes the task if it's not within the debounce duration.
 

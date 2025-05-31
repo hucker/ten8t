@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List, TextIO
 
 from ..ten8t_checker import Ten8tChecker
-from ..ten8t_util import StrOrNone
+from ..ten8t_types import StrOrNone
 
 
 class Ten8tDump(ABC):

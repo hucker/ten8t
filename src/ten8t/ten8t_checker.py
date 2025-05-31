@@ -23,7 +23,8 @@ from .ten8t_module import Ten8tModule
 from .ten8t_package import Ten8tPackage
 from .ten8t_result import Ten8tResult
 from .ten8t_ruid import empty_ruids, ruid_issues, valid_ruids
-from .ten8t_util import IntList, IntListOrNone, ListOrNone, StrList, StrListOrNone, clean_dict
+from .ten8t_types import IntList, IntListOrNone, ListOrNone, StrList, StrListOrNone
+from .ten8t_util import clean_dict
 
 ADHOC_MODULE_NAME = 'adhoc'
 """Name of the adhoc module"""
@@ -995,8 +996,8 @@ class Ten8tChecker:
 
     def as_dict(self,
                 remove_nulls: bool = False,
-                keep_keys: ListOrNone = None,
-                remove_keys: ListOrNone = None):
+                keep_keys=None,
+                remove_keys=None):
         """
         Converts the object's data into a dictionary containing a header and an array of results.
 
@@ -1053,8 +1054,8 @@ class Ten8tChecker:
 
     def to_json(self, json_file: str,
                 remove_nulls=False,
-                keep_keys=ListOrNone,
-                remove_keys=ListOrNone) -> bool:
+                keep_keys: ListOrNone = None,
+                remove_keys: ListOrNone = None) -> bool:
         """
         Converts the object's data into a JSON file.
 

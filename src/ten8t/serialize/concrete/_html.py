@@ -3,7 +3,7 @@ from typing import Any, TextIO
 from ten8t.serialize._base import Ten8tDump
 from ten8t.serialize._config import Ten8tDumpConfig
 from ten8t.ten8t_checker import Ten8tChecker
-from ten8t.ten8t_util import StrOrNone
+from ten8t.ten8t_types import StrOrNone
 
 
 class Ten8tDumpHTML(Ten8tDump):

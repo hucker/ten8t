@@ -12,7 +12,8 @@ import pandas as pd
 from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrOrNone, str_to_bool
+from .ten8t_types import StrOrNone
+from .ten8t_util import str_to_bool
 
 SHEET1 = "Sheet1"
 AUTO = "auto"

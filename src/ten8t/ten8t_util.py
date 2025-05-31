@@ -1,62 +1,12 @@
 """
 This is the sad place for lonely functions that don't have a place
 """
-import datetime as dt
 import os
 import pathlib
-from typing import Sequence, TypeAlias
 
 from ten8t.ten8t_exception import Ten8tTypeError, Ten8tValueError
-from ten8t.ten8t_result import Ten8tResult
-
-# Type aliases.
-# Note: the *OrNone are meant to be constructors that allow a None value to be passed
-#       that code will take care to convert to a [] or a ''
-BoolOrNone: TypeAlias = bool | None
-"""Type alias for a boolean or None."""
-
-DateTimeOrNone: TypeAlias = dt.datetime | None
-""" Type alias for a datetime or None. """
-
-Ten8tResultOrNone: TypeAlias = Ten8tResult | None
-""" Type alias for Ten8tResult or None """
-
-ListOrNone: TypeAlias = list | None
-"""Type alias for a list or None."""
-
-StrOrNone: TypeAlias = str | None
-"""Type alias for a string or None."""
-
-StrList: TypeAlias = Sequence[str]
-"""Type alias for a sequence of strings."""
-
-StrListOrNone: TypeAlias = StrList | StrOrNone
-"""Type alias for a sequence of strings or None."""
-
-IntOrNone: TypeAlias = int | None
-"""Type alias for an integer or None."""
-
-IntList: TypeAlias = Sequence[int]
-"""Type alias for a sequence of integers."""
-
-IntListOrNone: TypeAlias = IntList | IntOrNone
-"""Type alias for a sequence of integers or None."""
-
-FloatOrNone: TypeAlias = float | None
-"""Type alias for a float or None."""
-
-FloatList: TypeAlias = Sequence[float]
-"""Type alias for a sequence of floats."""
-
-FloatListOrNone: TypeAlias = FloatList | FloatOrNone
-"""Type alias for a sequence of floats or None."""
-
-StrOrPath: TypeAlias = str | pathlib.Path
-StrOrPathOrNone: TypeAlias = StrOrPath | None
-StrOrPathList: TypeAlias = Sequence[StrOrPath]
-StrOrPathListOrNone: TypeAlias = StrOrPathList | None
-
-PathList: TypeAlias = Sequence[pathlib.Path]
+from ten8t.ten8t_types import IntList, IntListOrNone, PathList, StrList
+from ten8t.ten8t_types import StrListOrNone, StrOrPathListOrNone, StrOrPathOrNone
 
 
 class NextIntValue:

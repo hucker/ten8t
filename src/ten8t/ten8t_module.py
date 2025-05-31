@@ -13,7 +13,8 @@ from collections import Counter
 
 from .ten8t_exception import Ten8tException
 from .ten8t_function import Ten8tFunction
-from .ten8t_util import ListOrNone, StrOrNone, StrOrPath, next_int_value
+from .ten8t_types import ListOrNone, StrOrNone, StrOrPath
+from .ten8t_util import next_int_value
 
 
 class Ten8tModule:
@@ -29,11 +30,11 @@ class Ten8tModule:
             *,
             module_file: StrOrPath,
             module_name: StrOrNone = None,
-            check_prefix="check_",
-            env_prefix="env_",
+            check_prefix: str = "check_",
+            env_prefix: str = "env_",
             env_functions: ListOrNone = None,
-            auto_load=True,
-            auto_thread=False
+            auto_load: bool = True,
+            auto_thread: bool = False
     ) -> None:
         """
         Initialize a Ten8tModule instance that manages a collection of functions from a specified module file.

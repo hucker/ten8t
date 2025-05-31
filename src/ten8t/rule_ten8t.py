@@ -18,7 +18,7 @@ import pathlib
 from .render import Ten8tMarkup
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR, Ten8tResult, Ten8tResultDictFilter
-from .ten8t_util import StrOrPath, StrOrPathList
+from .ten8t_types import StrOrPath, StrOrPathList
 from .ten8t_yield import Ten8tYield, Ten8tYieldSummaryOnly
 
 

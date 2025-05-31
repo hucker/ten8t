@@ -3,7 +3,7 @@ from typing import Set
 
 from .._base import Ten8tBaseSchedule
 from ...ten8t_exception import Ten8tException
-from ...ten8t_util import StrOrNone
+from ...ten8t_types import StrOrNone
 
 
 class Ten8tCronSchedule(Ten8tBaseSchedule):

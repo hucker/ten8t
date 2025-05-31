@@ -30,7 +30,7 @@ from typing import TextIO
 from .._base import Ten8tDump
 from .._config import Ten8tDumpConfig
 from ...ten8t_checker import Ten8tChecker
-from ...ten8t_util import DateTimeOrNone
+from ...ten8t_types import DateTimeOrNone
 
 
 class Ten8tDumpSQLite(Ten8tDump):

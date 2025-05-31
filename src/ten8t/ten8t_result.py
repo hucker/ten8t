@@ -11,7 +11,8 @@ from typing import Any, Sequence
 
 from .render import Ten8tMarkup
 from .ten8t_exception import Ten8tException
-from .ten8t_util import BoolOrNone, StrListOrNone, any_to_str_list
+from .ten8t_types import BoolOrNone, StrListOrNone
+from .ten8t_util import any_to_str_list
 
 
 @dataclass(slots=True)

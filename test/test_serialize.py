@@ -16,7 +16,7 @@ import pytest
 from src import ten8t as t8
 from ten8t import Ten8tDumpSQLite
 from ten8t.serialize import Ten8tDumpHTML, ten8t_save_sqlite
-from ten8t.ten8t_util import StrOrNone
+from ten8t.ten8t_types import StrOrNone
 
 
 def get_file_size(file_path: pathlib.Path | str) -> int:

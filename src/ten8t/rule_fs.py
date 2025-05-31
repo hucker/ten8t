@@ -11,6 +11,7 @@ import humanize
 
 from .render import TM
 from .ten8t_result import TR
+from .ten8t_types import DateTimeOrNone
 
 # Suppress DeprecationWarning only during `fs` module import
 with warnings.catch_warnings():
@@ -177,7 +178,7 @@ def rule_fs_oldest_file_age(filesys: FS, max_age_minutes: float = 0,
                             patterns=None,
                             no_files_stat=True,
                             no_files_skip=True,
-                            now__: dt.datetime | None = None):
+                            now__: DateTimeOrNone = None):
     """
     Checks the age of the oldest file in a filesystem against a specified maximum
     age. It determines whether the oldest file satisfies the required age limit
@@ -204,7 +205,7 @@ def rule_fs_oldest_file_age(filesys: FS, max_age_minutes: float = 0,
             Defaults to True.
         no_files_skip (bool, Optional[bool]): Indicates whether the check for file age
             should be skipped if no files are found. Defaults to True.
-        now__ (datetime.datetime | None, Optional): A specific point in time to
+        now__ (DateTimeOrNone): A specific point in time to
             use as the current time for comparison. If None, the current system
             time is used. Defaults to None.
 

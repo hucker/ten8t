@@ -4,7 +4,8 @@ import ten8t
 from ten8t.progress import Ten8tDebugProgress, Ten8tLogProgress, Ten8tMultiProgress, Ten8tNoProgress, \
     Ten8tProgress
 from ten8t.ten8t_exception import Ten8tException
-from ten8t.ten8t_util import StrOrNone
+from ten8t.ten8t_result import Ten8tResult
+from ten8t.ten8t_types import StrOrNone
 
 
 class DummyProgress(ten8t.Ten8tProgress):
@@ -15,7 +16,7 @@ class DummyProgress(ten8t.Ten8tProgress):
         self.result_count = 0
 
     def result_msg(self, current_iteration: int, max_iteration: int, msg: StrOrNone = '',
-                   result: Ten8tResultOrNone = None):
+                   result: Ten8tResult | None = None):
         self.result_count += 1
 
     def message(self, msg: StrOrNone):

@@ -4,7 +4,6 @@ deal of metadata is stored in the function and extracted from information about 
 its signature, its generator status etc.  This information is used so users do not need to
 configure functions in multiple places.  Design elements from fastapi and pytest are obvious.
 """
-import datetime as dt
 import inspect
 import re
 import time
@@ -17,7 +16,7 @@ from .ten8t_attribute import get_attribute
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
 from .ten8t_result import Ten8tResult
-from .ten8t_util import BoolOrNone
+from .ten8t_types import BoolOrNone, DateTimeOrNone
 
 
 def result_hook_fix_blank_msg(sfunc: "Ten8tFunction",
@@ -151,7 +150,7 @@ class Ten8tFunction:
         # are caused by different parts of the code using different time bases.  In the case
         # of scheduling, everything in a given checker run should use the same base, in the case
         # of timing how long functions take to run a different time base should be used.
-        self.checker_start_time: dt.datetime | None = None
+        self.checker_start_time: DateTimeOrNone = None
         if self.ttl_minutes:
             self.schedule = Ten8tTTLSchedule(ttl_min=self.ttl_minutes)
         else:

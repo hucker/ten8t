@@ -20,7 +20,7 @@ from typing import Callable
 from .schedule import Ten8tBaseSchedule, Ten8tCronSchedule, Ten8tTTLSchedule
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
-from .ten8t_util import StrOrNone
+from .ten8t_types import StrOrNone
 
 DEFAULT_TAG = ""  # A string indicating the type of rule, used for grouping/filtering results
 DEFAULT_LEVEL = 1  #
@@ -393,10 +393,10 @@ def caching(*,
 
     if ttl_minutes is not None:
         parsed_ttl = _parse_ttl_string(str(ttl_minutes))
-        schedule = Ten8tTTLSchedule(ttl_minutes=parsed_ttl)
+        schedule = Ten8tTTLSchedule(ttl_min=parsed_ttl)
     elif user_schedule is not None:
         schedule = user_schedule
-    else:
+    elif cron is not None:
         schedule = Ten8tCronSchedule(cron)
 
     def decorator(func):
@@ -405,6 +405,7 @@ def caching(*,
 
         # Now override the specific attributes this decorator manages
         func.ttl_minutes = parsed_ttl
+        func.schedule = schedule
         return func
 
     return decorator
@@ -541,7 +542,7 @@ def attributes(*,
     parsed_ttl = _parse_ttl_string(str(ttl_minutes))
 
     if parsed_ttl > 0:
-        schedule = Ten8tTTLSchedule(ttl_minutes=parsed_ttl)
+        schedule = Ten8tTTLSchedule(ttl_min=parsed_ttl)
 
     if not isinstance(weight, (int, float)) or weight <= 0:
         raise Ten8tException("Weight must be numeric and > than 0.0. Nominal value is 100.0.")

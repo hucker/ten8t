@@ -14,7 +14,8 @@ from typing import Generator
 from .render import TM
 from .ten8t_exception import Ten8tException
 from .ten8t_result import TR
-from .ten8t_util import StrOrNone, StrOrPath, StrOrPathListOrNone, any_to_path_list
+from .ten8t_types import StrOrNone, StrOrPath, StrOrPathListOrNone
+from .ten8t_util import any_to_path_list
 from .ten8t_yield import Ten8tYield
 
 EXPECTED_FILE_EXCEPTIONS = (FileNotFoundError, PermissionError, IOError)

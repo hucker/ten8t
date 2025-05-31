@@ -2,7 +2,7 @@ import datetime as dt
 
 from .._base import Ten8tBaseSchedule
 from .._base import Ten8tException
-from ...ten8t_util import StrOrNone
+from ...ten8t_types import StrOrNone
 
 
 class Ten8tNthWeekdaySchedule(Ten8tBaseSchedule):
