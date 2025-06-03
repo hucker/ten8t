@@ -54,7 +54,7 @@ class FilteredDirectoryTree(DirectoryTree):
 
     def filter_paths(self, paths: Iterable[pathlib.Path]) -> Iterable[pathlib.Path]:
         """
-        Given list of paths, filter out unwanted files and directories.
+        Given list of paths, dfilter out unwanted files and directories.
         IN this context we ignore '.' folders, and we look for files that start
         with "check_" and end in py.
 

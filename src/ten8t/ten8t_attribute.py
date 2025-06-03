@@ -27,7 +27,6 @@ DEFAULT_LEVEL = 1  #
 DEFAULT_PHASE = ""  # String indicating what phase of the dev process a rule is best suited for
 DEFAULT_WEIGHT = 100  # The nominal weight for a rule should be a positive number
 DEFAULT_SKIP = False  # Set to true to skip a rule
-DEFAULT_TTL_MIN = 0  # Time to live for check functions.
 DEFAULT_RUID = ""
 DEFAULT_FINISH_ON_FAIL = False  # If a ten8t function yields fail result stop processing
 DEFAULT_SKIP_ON_NONE = False
@@ -54,9 +53,6 @@ DEFAULT_ATTRIBUTES = {
 
     # Threading attributes
     'thread_id': DEFAULT_THREAD_ID,
-
-    # Caching attributes
-    'ttl_minutes': DEFAULT_TTL_MIN,
 
     # Score attributes
     'weight': DEFAULT_WEIGHT,
@@ -366,7 +362,7 @@ def threading(*, thread_id: str = DEFAULT_THREAD_ID, disallowed_chars=DEFAULT_DI
 
 
 def caching(*,
-            ttl_minutes: str | int | float | None = DEFAULT_TTL_MIN,
+            ttl_minutes: str | int | float | None = None,
             cron: StrOrNone = None,
             user_schedule: Ten8tBaseSchedule | None = None) -> Callable:
     """Decorator for specifying caching behavior for Ten8t functions.
@@ -404,7 +400,6 @@ def caching(*,
         _ensure_defaults(func)
 
         # Now override the specific attributes this decorator manages
-        func.ttl_minutes = parsed_ttl
         func.schedule = schedule
         return func
 
@@ -450,7 +445,6 @@ ATTRIBUTE_DEFAULTS = {
     "weight": DEFAULT_WEIGHT,
     "skip": DEFAULT_SKIP,
     "ruid": DEFAULT_RUID,
-    "ttl_minutes": DEFAULT_TTL_MIN,
     "finish_on_fail": DEFAULT_FINISH_ON_FAIL,
     "skip_on_none": DEFAULT_SKIP_ON_NONE,
     "fail_on_none": DEFAULT_FAIL_ON_NONE,
@@ -490,7 +484,7 @@ def attributes(*,
                weight: float = DEFAULT_WEIGHT,
                skip: bool = DEFAULT_SKIP,
                ruid: str = DEFAULT_RUID,
-               ttl_minutes: str | int | float = DEFAULT_TTL_MIN,
+               ttl_minutes: str | int | float = None,
                finish_on_fail: bool = DEFAULT_FINISH_ON_FAIL,
                skip_on_none: bool = DEFAULT_SKIP_ON_NONE,
                fail_on_none: bool = DEFAULT_FAIL_ON_NONE,
@@ -538,11 +532,12 @@ def attributes(*,
     # Validate thread_id attribute separately
     validate_string("thread_id", thread_id, disallowed_chars=disallowed_chars)
 
-    # Parse and validate TTL (caching) attribute
+    # Parse and validate TTL (caching) attribute.  This is a special case of a schedule that
+    # lets you think of the schedule as a cache invalidation period.  If provided a TTL schedule
+    # is created.
     parsed_ttl = _parse_ttl_string(str(ttl_minutes))
 
-    if parsed_ttl > 0:
-        schedule = Ten8tTTLSchedule(ttl_min=parsed_ttl)
+    schedule = Ten8tTTLSchedule(ttl_min=parsed_ttl) if parsed_ttl else schedule
 
     if not isinstance(weight, (int, float)) or weight <= 0:
         raise Ten8tException("Weight must be numeric and > than 0.0. Nominal value is 100.0.")

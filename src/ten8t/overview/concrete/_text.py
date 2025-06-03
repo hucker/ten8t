@@ -62,7 +62,6 @@ class Ten8tTextOverview(Ten8tAbstractOverview):
                 "Weight": check.weight,
                 "Thread ID": check.thread_id,
                 "Attempts": check.attempts,
-                "TTL Minutes": check.ttl_minutes,
                 "Skip on None": check.skip_on_none,
                 "Fail on None": check.fail_on_none,
                 "Finish on Fail": check.finish_on_fail,

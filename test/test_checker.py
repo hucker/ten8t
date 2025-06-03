@@ -224,7 +224,7 @@ def test_function_list(func1, func2):
 
 
 def test_filtered_function_list(func1, func2):
-    """Test building a custom filter function"""
+    """Test building a custom dfilter function"""
 
     ch = t8.Ten8tChecker(check_functions=[func1, func2])
 
@@ -243,7 +243,7 @@ def test_filtered_function_list(func1, func2):
     assert results[0].msg == "It works1"
     assert results[0].ruid == "suid_1"
 
-    # Rerun with second filter
+    # Rerun with second dfilter
     ch.prepare_functions(filter_functions=[filter2])
 
     results = ch.run_all()
@@ -974,7 +974,6 @@ def test_checker_json(func1):
     assert result['level'] == 1
     assert result['tag'] == 't1'
     assert result['ruid'] == 'suid_1'
-    assert result['ttl_minutes'] >= 0.0
     assert result['count'] == 1
     assert result['attempts'] == 1
     assert result['summary_result'] is False

@@ -6,7 +6,7 @@ from ten8t.ten8t_function import Ten8tFunction
 
 
 def exclude_ruids(ruids: list[str]):
-    """Return a filter function that will exclude the ruids from the list."""
+    """Return a dfilter function that will exclude the ruids from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.ruid not in ruids
@@ -15,7 +15,7 @@ def exclude_ruids(ruids: list[str]):
 
 
 def exclude_tags(tags: list[str]):
-    """Return a filter function that will exclude the tags from the list."""
+    """Return a dfilter function that will exclude the tags from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.tag not in tags
@@ -24,7 +24,7 @@ def exclude_tags(tags: list[str]):
 
 
 def exclude_levels(levels: list[int]):
-    """Return a filter function that will exclude the levels from the list."""
+    """Return a dfilter function that will exclude the levels from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.level not in levels
@@ -33,7 +33,7 @@ def exclude_levels(levels: list[int]):
 
 
 def exclude_phases(phases: list[str]):
-    """Return a filter function that will exclude the phases from the list."""
+    """Return a dfilter function that will exclude the phases from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.phase not in phases
@@ -42,7 +42,7 @@ def exclude_phases(phases: list[str]):
 
 
 def keep_ruids(ruids: list[str]):
-    """Return a filter function that will keep the ruids from the list."""
+    """Return a dfilter function that will keep the ruids from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.ruid in ruids
@@ -51,7 +51,7 @@ def keep_ruids(ruids: list[str]):
 
 
 def keep_tags(tags: list[str]):
-    """Return a filter function that will keep the tags from the list."""
+    """Return a dfilter function that will keep the tags from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.tag in tags
@@ -60,7 +60,7 @@ def keep_tags(tags: list[str]):
 
 
 def keep_levels(levels: list[int]):
-    """Return a filter function that will keep the levels from the list."""
+    """Return a dfilter function that will keep the levels from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.level in levels
@@ -69,7 +69,7 @@ def keep_levels(levels: list[int]):
 
 
 def keep_phases(phases: list[str]):
-    """Return a filter function that will keep the phases from the list."""
+    """Return a dfilter function that will keep the phases from the list."""
 
     def filter_func(s_func: Ten8tFunction):
         return s_func.phase in phases

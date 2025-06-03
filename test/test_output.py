@@ -68,6 +68,5 @@ def test_json_ready_dict(simple1, simple2):
             assert result['count'] == 1
             assert result['weight'] == 100
             assert result['ruid'] == 'ruid_1'
-            assert result['ttl_minutes'] == 0.0
             assert result['mit_msg'] == ''
             assert result['doc'] == 'my doc string'

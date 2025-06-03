@@ -58,7 +58,6 @@
       "phase": "proto",
       "count": 1,
       "ruid": "m1_f1",
-      "ttl_minutes": 0.0,
       "mit_msg": "",
       "owner_list": [],
       "skip_on_none": false,

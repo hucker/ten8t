@@ -55,7 +55,7 @@ class Ten8tDumpConfig:
 
     VALID_RESULT_COLUMNS = [
         "status", "msg_rendered", "ruid", "tag", "level", "phase",
-        "skipped", "count", "thread_id", "runtime_sec", "ttl_minutes",
+        "skipped", "count", "thread_id", "runtime_sec",
         "summary_result", "msg", "func_name", "module_name", "pkg_name", "doc",
         "skip_on_none", "fail_on_none", "mit_msg", "owner_list"
     ]

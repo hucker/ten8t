@@ -63,7 +63,6 @@ class Ten8tResult:
         phase (str): "Phase" category, perhaps (r&d,proto,production).
         count (int): Number of return values or individual steps.
         ruid (str): Unique identifier for this result.
-        ttl_minutes (float): Time-to-live duration for the result, in minutes.
         mit_msg (str): Mitigation suggestion or message, if applicable.
         owner_list (list[str]): A list of owners or responsible parties.
         skip_on_none (bool): Whether to skip function execution if encountering `None`.
@@ -135,7 +134,6 @@ class Ten8tResult:
     phase: str = ""
     count: int = 0
     ruid: str = ""
-    ttl_minutes: float = 0.0
 
     # Mitigations
     mit_msg: str = ""
@@ -331,7 +329,7 @@ def overview(results: list[Ten8tResult]) -> str:
 
 class Ten8tResultDictFilter():
     """
-    Advanced filter capable of filtering result dictionary on multiple fields (ruid, tag, and phase).
+    Advanced dfilter capable of filtering result dictionary on multiple fields (ruid, tag, and phase).
     """
 
     def __init__(

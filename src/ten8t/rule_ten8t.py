@@ -62,8 +62,9 @@ def rule_ten8t_json_file(file_name: StrOrPath,
                          ruid: str = '',
                          ruid_sep: str = '.',
                          pass_if_missing: bool = False,
-                         filter: Ten8tResultDictFilter | None = None,
+                         dfilter: Ten8tResultDictFilter | None = None,
                          yielder: Ten8tYield | None = None):
+
     code = Ten8tMarkup().code
     try:
         if pathlib.Path(file_name).exists() is False:
@@ -99,8 +100,8 @@ def rule_ten8t_json_file(file_name: StrOrPath,
                        emit_fail=True,
                        summary_name=f"Load results from {file_name}")
 
-    filter = filter or Ten8tResultDictFilter()
-    results = filter.filter(results)
+    dfilter = dfilter or Ten8tResultDictFilter()
+    results = dfilter.filter(results)
 
     if 'results' not in results or not results['results']:
         raise Ten8tException(f"No results found for {file_name}")
@@ -138,7 +139,7 @@ def rule_ten8t_json_files(file_names: StrOrPathList,
                           encoding: str = 'utf-8',
                           ruid: str = '',
                           ruid_sep: str = '.',
-                          filter: Ten8tResultDictFilter | None = None,
+                          dfilter: Ten8tResultDictFilter | None = None,
                           pass_if_missing: bool = False,
                           yielder: Ten8tYield | None = None):
     """
@@ -147,7 +148,7 @@ def rule_ten8t_json_files(file_names: StrOrPathList,
     patterns for flexible input handling.
 
     Args:
-        filter: a filter object that can be used to remove unwanted results.
+        dfilter: a dfilter object that can be used to remove unwanted results.
         ruid: An additional ruid prefix to be added to each result.
         file_names: A string representing file paths separated by spaces or a list
             of file paths. Supports glob patterns if the input is a single string.
@@ -156,7 +157,7 @@ def rule_ten8t_json_files(file_names: StrOrPathList,
             unless otherwise specified.
         encoding: A string specifying the encoding used to read the content of
             files. Default is 'utf-8'.
-
+        ruid_sep: A string used to separate the ruid prefix from the result ruid.
         pass_if_missing: A boolean flag. If set to True, missing files will not
             raise exceptions and will be skipped. Default is False.
         yielder: Ten8tYielder object.  Defaults to SummaryOnly
@@ -193,6 +194,6 @@ def rule_ten8t_json_files(file_names: StrOrPathList,
                                         encoding=encoding,
                                         ruid=ruid,
                                         ruid_sep=ruid_sep,
-                                        filter=filter,
+                                        dfilter=dfilter,
                                         pass_if_missing=pass_if_missing,
                                         yielder=y)

@@ -4,14 +4,14 @@ deal of metadata is stored in the function and extracted from information about 
 its signature, its generator status etc.  This information is used so users do not need to
 configure functions in multiple places.  Design elements from fastapi and pytest are obvious.
 """
+import datetime as dt
 import inspect
 import re
-import time
 import traceback
 from functools import wraps
 from typing import Any, Callable, Generator
 
-from .schedule import Ten8tBaseSchedule, Ten8tTTLSchedule
+from .schedule import Ten8tBaseSchedule
 from .ten8t_attribute import get_attribute
 from .ten8t_exception import Ten8tException
 from .ten8t_logging import ten8t_logger
@@ -25,6 +25,9 @@ def result_hook_fix_blank_msg(sfunc: "Ten8tFunction",
 
     This is an example of a result hook used by ten8t to write
     a useful message if the user did not provide one.
+
+    This is ONLY useful for cases where people are not really using the
+    system correctly.
 
     Args:
         sfunc (Ten8tFunction): The function to fix       
@@ -56,7 +59,7 @@ def result_hook_fix_blank_msg(sfunc: "Ten8tFunction",
 
 
 ATTRIBUTES = ("tag", "level", "phase", "weight", "skip", "ruid", "skip_on_none",
-              "fail_on_none", "ttl_minutes", "finish_on_fail", "index", "thread_id")
+              "fail_on_none", "finish_on_fail", "index", "thread_id")
 
 
 class Ten8tFunction:
@@ -137,7 +140,6 @@ class Ten8tFunction:
         self.ruid: str = get_attribute(function_, "ruid")
         self.skip_on_none: bool = get_attribute(function_, "skip_on_none")
         self.fail_on_none: bool = get_attribute(function_, "fail_on_none")
-        self.ttl_minutes: float = get_attribute(function_, "ttl_minutes")
         self.finish_on_fail: bool = get_attribute(function_, "finish_on_fail")
         self.index: int = get_attribute(function_, "index")
         self.thread_id: str = get_attribute(function_, "thread_id")
@@ -151,17 +153,12 @@ class Ten8tFunction:
         # of scheduling, everything in a given checker run should use the same base, in the case
         # of timing how long functions take to run a different time base should be used.
         self.checker_start_time: DateTimeOrNone = None
-        if self.ttl_minutes:
-            self.schedule = Ten8tTTLSchedule(ttl_min=self.ttl_minutes)
-        else:
-            # Always runs
-            self.schedule = self.schedule or Ten8tBaseSchedule()
 
         # Support Time To Live using the return value of time.time.  Resolution of this
         # is on the order of 10e-6 depending on OS.  In my case this is WAY more than I
         # need, and I'm assuming you aren't building a trading system with this, so you don't
         # care about microseconds.
-        self.last_ttl_start: float = 0.0  # this will be compared to time.time() for ttl caching
+        self.last_ttl_start: DateTimeOrNone = None  # this will be compared to time.time() for ttl caching
         self.last_results: list[Ten8tResult] = []
 
         # This allows the library user to control how lenient the underlying code is
@@ -251,9 +248,8 @@ class Ten8tFunction:
         return args
 
     def _cache_result(self, result):
-        """Simple caching saves results if ttl_minutes is not 0"""
-        if self.ttl_minutes:
-            self.last_results.append(result)
+        """Cache results so we can handle cases where scheduled checks required old values"""
+        self.last_results.append(result)
 
     def __call__(self, *args, **kwargs) -> Generator[Ten8tResult, None, None]:
         """Call the user provided function and collect information about the result.
@@ -274,7 +270,7 @@ class Ten8tFunction:
             Iterator[Ten8tResult]:
         """
         # Call the stored function and collect information about the result
-        start_time: float = time.time()
+        start_time: float = dt.datetime.now()
 
         # Function is tagged with skip attribute.  (Allows config files to disable tests)
         if self.skip:
@@ -312,9 +308,9 @@ class Ten8tFunction:
         count = 1
 
         # If we need values from the result cache, then we can just yield them back
-        if self.ttl_minutes * 60 + self.last_ttl_start > time.time():
-            yield from self.last_results
-            return
+        # if self.ttl_minutes * 60 + self.last_ttl_start > time.time():
+        #    yield from self.last_results
+        #    return
 
         if not self.schedule.is_due(start_time):
             if self.last_results:
@@ -335,7 +331,7 @@ class Ten8tFunction:
             if not self.is_generator:
                 # If the function is not a generator, then just call it
                 results = self.function(*args)
-                end_time = time.time()
+                end_time = dt.datetime.now()
                 if isinstance(results, Ten8tResult):
                     results = [results]
 
@@ -357,7 +353,7 @@ class Ten8tFunction:
             else:
                 # Functions can return multiple results, track them with a count attribute.
                 for count, result in enumerate(self.function(*args, **kwargs), start=1):
-                    end_time = time.time()
+                    end_time = dt.datetime.now()
 
                     if isinstance(result, bool):
                         result = Ten8tResult(status=result)
@@ -378,7 +374,7 @@ class Ten8tFunction:
 
                     self._cache_result(result)
 
-                    start_time = time.time()
+                    start_time = dt.datetime.now()
 
         except self.allowed_exceptions as e:
             # These exceptions ARE not expected and indicative of a bug so we abort from the loop.
@@ -389,7 +385,7 @@ class Ten8tFunction:
 
             # Generically handle exceptions here so we can keep running.
             result = Ten8tResult(status=False)
-            result = self.load_result(result, 0, 0, count)
+            result = self.load_result(result, start_time, dt.datetime.now(), count)
             result.except_ = e
             result.traceback = traceback.format_exc()
             mod_msg = "" if not self.module else f"{self.module}"
@@ -435,7 +431,11 @@ class Ten8tFunction:
         # If the header wasn't found, return the text before the first header
         return ""
 
-    def load_result(self, result: Ten8tResult, start_time, end_time, count=1):
+    def load_result(self,
+                    result: Ten8tResult,
+                    start_time: dt.datetime,
+                    end_time: dt.datetime,
+                    count=1):
         """
         Provide metadata about the function call, mostly hoisting
         parameters from the function to the result.
@@ -469,8 +469,7 @@ class Ten8tFunction:
         result.tag = self.tag
         result.level = self.level
         result.phase = self.phase
-        result.runtime_sec = end_time - start_time
-        result.ttl_minutes = self.ttl_minutes
+        result.runtime_sec = (end_time - start_time).total_seconds()
         result.count = count
         result.thread_id = self.thread_id
         result.fail_on_none = self.fail_on_none

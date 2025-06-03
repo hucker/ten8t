@@ -51,25 +51,25 @@ def test_total_results(results) -> None:
 
 
 def test_fail_only_filter(results) -> None:
-    """ Test to verify the fail_only filter function """
+    """ Test to verify the fail_only dfilter function """
     fail_only = [r for r in results if ten8t.ten8t_result.fails_only(r)]
     assert len(fail_only) == 2
 
 
 def test_pass_only_filter(results) -> None:
-    """ Test to verify the pass_only filter function """
+    """ Test to verify the pass_only dfilter function """
     pass_only = [r for r in results if ten8t.ten8t_result.passes_only(r)]
     assert len(pass_only) == 5
 
 
 def test_no_info_filter(results) -> None:
-    """ Test to verify the remove_info filter function """
+    """ Test to verify the remove_info dfilter function """
     no_info = [r for r in results if ten8t.ten8t_result.remove_info(r)]
     assert len(no_info) == 6
 
 
 def test_warn_is_fail_filter(results) -> None:
-    """ Test to verify the warn_as_fail filter function """
+    """ Test to verify the warn_as_fail dfilter function """
     warn_is_fail = [r for r in results if ten8t.ten8t_result.warn_as_fail(r)]
     assert len(warn_is_fail) == 7
 
@@ -197,7 +197,6 @@ def test_ten8t_result_from_dict():
         phase="testing_phase",
         count=42,
         ruid="unique-1234-5678",
-        ttl_minutes=1440.0,
         mit_msg="Suggested mitigation message",
         owner_list=["owner1", "owner2", "owner3"],
         attempts=3,
@@ -241,7 +240,6 @@ def test_ten8t_result_from_dict():
     assert reconstructed_result.phase == "testing_phase"
     assert reconstructed_result.count == 42
     assert reconstructed_result.ruid == "unique-1234-5678"
-    assert reconstructed_result.ttl_minutes == 1440.0
     assert reconstructed_result.mit_msg == "Suggested mitigation message"
     assert reconstructed_result.owner_list == ["owner1", "owner2", "owner3"]
     assert reconstructed_result.attempts == 3

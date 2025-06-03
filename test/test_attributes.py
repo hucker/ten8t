@@ -164,7 +164,8 @@ def test_caching_decorator_with_string():
         return ten8t_result.Ten8tResult(status=True, msg="It works")
 
     function = ten8t_function.Ten8tFunction(check_caching_string)
-    assert function.ttl_minutes == 30.0
+    assert function.schedule.name == "debounce_schedule"
+    assert function.schedule.ttl_sec == 1800
 
 
 def test_caching_decorator_with_number():
@@ -173,7 +174,7 @@ def test_caching_decorator_with_number():
         return ten8t_result.Ten8tResult(status=True, msg="It works")
 
     function = ten8t_function.Ten8tFunction(check_caching_number)
-    assert function.ttl_minutes == 45.0
+    assert function.schedule.ttl_sec == 45 * 60
 
 
 def test_score_decorator():
@@ -211,7 +212,7 @@ def test_attributes_comprehensive_decorator():
     assert function.weight == 150.0
     assert function.skip == True
     assert function.ruid == "unique_id"
-    assert function.ttl_minutes == 60.0
+    assert function.schedule.ttl_sec == 3600
     assert function.finish_on_fail == True
     assert function.skip_on_none == True
     assert function.fail_on_none == False
@@ -286,7 +287,7 @@ def test_multiple_decorators_different_orderings():
     assert function4.tag == "multi4"
     assert function4.phase == "test4"
     assert function4.thread_id == "worker-1"
-    assert function4.ttl_minutes == 15.0
+    assert function4.schedule.ttl_sec == 15 * 60
     assert function4.skip == True
 
     # Test if decorators override each other's values correctly

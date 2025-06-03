@@ -158,7 +158,7 @@ class Ten8tChecker:
     1) Load what ever packages/modules/functions are associated with a system as
        a collection of functions that could be run.
     2) Load any environment that may be needed for the rules.
-    2) Optionally filter those functions based on any of the function attributes.
+    2) Optionally dfilter those functions based on any of the function attributes.
     3) Check all the rules and collect the results while providing status using
        a user specified progress object.
     4) Score the results based on the scoring strategy.
@@ -500,7 +500,7 @@ class Ten8tChecker:
         Prepare the collected functions for running checks.
 
         Run through the collected functions to prepare the checks that will be run.
-        A list of filter functions may be provided to filter the functions. Filter
+        A list of dfilter functions may be provided to dfilter the functions. Filter
         functions must return True if the function should be kept.
 
         Args:
@@ -510,14 +510,14 @@ class Ten8tChecker:
             _type_: _description_
         """
 
-        # If no filter functions are provided then use a default one allows all functions
+        # If no dfilter functions are provided then use a default one allows all functions
         filter_functions = filter_functions or [lambda _: True]
 
         # If the user didn't provide ruids, generic ones will be created.
         self.auto_gen_ruids()
 
         # At this point we have all the functions in the packages, modules and functions
-        # Now we need to filter out the ones that are not wanted. Filter functions return
+        # Now we need to dfilter out the ones that are not wanted. Filter functions return
         # True if the function should be kept
         self.check_func_list = []
         for ten8t_func in self.pre_collected:
@@ -529,7 +529,7 @@ class Ten8tChecker:
                 else:
                     self.check_func_list.append(ten8t_func)
 
-        # Now use the RC file.  Note that if you are running filter functions AND
+        # Now use the RC file.  Note that if you are running dfilter functions AND
         # an RC file this can be confusing.  Ideally you use one or the other. but
         # it isn't an error to do so, you just need to know what you are doing.
         self.apply_rc(self.rc)
@@ -725,7 +725,7 @@ class Ten8tChecker:
 
         # Note that it is possible for the collected list to be
         # empty.  This is not an error condition.  It is possible
-        # that the filter functions have filtered out all the
+        # that the dfilter functions have filtered out all the
         # functions.
         count = 0
         self.progress_object.message("Start Rule Check")

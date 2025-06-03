@@ -312,7 +312,6 @@ def test_use_return_with_no_info():
             assert result.func_name == s_func.function_name
             assert result.weight == 100
             assert result.count == 1
-            assert result.ttl_minutes == 0
             assert result.level == 1
             assert result.module_name == ''
             assert result.pkg_name == ''

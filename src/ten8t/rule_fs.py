@@ -197,7 +197,7 @@ def rule_fs_oldest_file_age(filesys: FS, max_age_minutes: float = 0,
             Defaults to 0.
         max_age_seconds (float, Optional[float]): Maximum allowable age for a file, in
             seconds. Defaults to 0.
-        patterns (list | str, Optional[str]): Filename patterns to filter files,
+        patterns (list | str, Optional[str]): Filename patterns to dfilter files,
             provided as a single string (comma-separated) or a list of strings.
             Defaults to ['*'], which matches all files.
         no_files_stat (bool, Optional[bool]): Status to yield when no files are found.
