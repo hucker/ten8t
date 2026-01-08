@@ -111,7 +111,7 @@ typing_extensions==4.12.2
 tzdata==2025.1
 tzlocal>=5.3
 ujson==5.10.0
-urllib3==2.3.0
+urllib3==2.6.3
 uvicorn==0.34.0
 uvloop==0.21.0
 validators==0.34.0
