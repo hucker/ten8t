@@ -119,5 +119,5 @@ virtualenv>=20.29.2
 watchdog==6.0.0
 watchfiles==1.0.4
 websockets>=15.0.1
-wheel==0.45.1
+wheel==0.46.2
 zipp==3.21.0
