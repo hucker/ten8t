@@ -193,6 +193,57 @@ def check_file_age(csv_file):
         return TR(status=False, msg="The file is stale")
 ```
 
+## VSCode Development Setup
+
+### Working Locally with VSCode and AI Assistants
+
+Prefer to develop in VSCode with GitHub Copilot or other AI coding assistants instead of working through the GitHub web interface? We've got you covered!
+
+The repository includes complete VSCode configuration for local development with AI-powered assistance:
+
+**Quick Setup:**
+1. Clone the repository: `git clone https://github.com/hucker/ten8t.git`
+2. Open in VSCode: `code ten8t`
+3. Install recommended extensions (VSCode will prompt you)
+4. Create and activate a Python virtual environment
+5. Install dependencies: `pip install -e .`
+6. Start asking questions with GitHub Copilot! (Press `Ctrl+Alt+I` or `Cmd+Alt+I`)
+
+**Pre-configured VSCode Features:**
+- ✅ **Debug configurations** for running and debugging Ten8t checks
+- ✅ **Tasks** for testing, linting, formatting, and running demos
+- ✅ **Settings** optimized for Python and Ten8t development
+- ✅ **Recommended extensions** including GitHub Copilot support
+- ✅ **Pytest integration** with the Testing panel
+- ✅ **Auto-formatting** on save with Ruff
+
+**Using GitHub Copilot in VSCode:**
+
+Ask questions about Ten8t directly in your editor:
+- Press `Ctrl+I` (inline chat) or `Ctrl+Alt+I` (chat panel)
+- Example questions:
+  - `@workspace How do I create a Ten8t check for API endpoints?`
+  - `Create a Ten8t check function that validates file age`
+  - `/explain #selection` (select code first)
+  - `/tests Generate pytest tests for this function`
+
+**Common Development Tasks:**
+
+Run Ten8t checks:
+- Press `F5` and select "Python: Ten8t CLI (Module)"
+- Or use Terminal → Run Task → "Ten8t: Run Checks"
+
+Run tests:
+- Click Testing icon in Activity Bar
+- Or press `Ctrl+Shift+P` → "Tasks: Run Task" → "Pytest: Run All Tests"
+
+Debug your code:
+- Set breakpoints (click left of line numbers)
+- Press `F5` to start debugging
+- Use debug console to inspect variables
+
+**📖 Full Documentation:** See [docs/VSCODE_SETUP.md](docs/VSCODE_SETUP.md) for complete setup instructions, keyboard shortcuts, troubleshooting, and tips for using AI assistants effectively with Ten8t.
+
 ## Attempts (Try,Retry,Retries??) Support
 
 OK, the description of `retry` can be confusing. Does the first try count as a retry? There is evidence

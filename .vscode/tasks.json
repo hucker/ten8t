@@ -1,0 +1,220 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Ten8t: Run Checks (Examples)",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "-m",
+        "ten8t",
+        "${workspaceFolder}/src/ten8t/examples"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Ten8t: Run Current File",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "-m",
+        "ten8t",
+        "${file}"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pytest: Run All Tests",
+      "type": "shell",
+      "command": "pytest",
+      "args": [
+        "test/",
+        "-v"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pytest: Run Current Test File",
+      "type": "shell",
+      "command": "pytest",
+      "args": [
+        "${file}",
+        "-v"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pytest: Run with Coverage",
+      "type": "shell",
+      "command": "pytest",
+      "args": [
+        "--cov=src/ten8t",
+        "--cov-report=html",
+        "--cov-report=term",
+        "test/"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint: Run Pylint",
+      "type": "shell",
+      "command": "pylint",
+      "args": [
+        "src/ten8t/"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint: Run Ruff",
+      "type": "shell",
+      "command": "ruff",
+      "args": [
+        "check",
+        "src/ten8t/"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Format: Run Ruff Format",
+      "type": "shell",
+      "command": "ruff",
+      "args": [
+        "format",
+        "src/ten8t/"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Type Check: Run MyPy",
+      "type": "shell",
+      "command": "mypy",
+      "args": [
+        "src/ten8t/"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build: Install Package (Development Mode)",
+      "type": "shell",
+      "command": "pip",
+      "args": [
+        "install",
+        "-e",
+        "."
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Ten8t: Start API Server",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "src/ten8t/cli/ten8t_cli.py",
+        "api"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Ten8t: Run Streamlit Demo",
+      "type": "shell",
+      "command": "streamlit",
+      "args": [
+        "run",
+        "src/ten8t/st_ten8t/ten8t_st.py"
+      ],
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
