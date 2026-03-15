@@ -101,7 +101,7 @@ tenacity==9.0.0
 toml==0.10.2
 tomlkit==0.13.2
 toolz==1.0.0
-tornado==6.4.2
+tornado==6.5.1
 twine==6.1.0
 typer>=0.15.1
 types-pytz==2025.1.0.20250204
